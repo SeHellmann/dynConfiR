@@ -1,0 +1,39 @@
+Package: dynConfiR
+Type: Package
+Title: Dynamic Models for Confidence and Response Time Distributions
+Depends: R (>= 4.0)
+Encoding: UTF-8
+Suggests: 
+    tidyr,
+    purrr,
+    testthat (>= 3.0.0),
+    knitr,
+    rmarkdown
+Imports: stats, Rcpp, rtdists, dplyr, magrittr, rlang, logger, minqa, Hmisc, progress, parallel
+LinkingTo: Rcpp
+Description: 
+       Provides density functions for the joint distribution of choice, 
+       response time and confidence for discrete confidence judgements
+       as well as functions for parameter fitting, prediction and simulation 
+       for various dynamical models of decision confidence. 
+       Implemented models are the dynWEV model (Hellmann & Rausch),
+       the 2DSD model (Pleskac & Busemeyer, 2010, 
+       <https://doi.org/10.1037/a0019737>), and various Race Models. 
+       Cpp-Code for dynWEV and 2DSD is based on the rtdists package by 
+       Henrik Singmann. 
+URL: https://github.com/SeHellmann/dynConfiR
+License: GPL (>= 3)
+BugReports: https://github.com/SeHellmann/dynConfiR
+Authors@R: c(person(given="Sebastian", family="Hellmann", 
+       email="sebastian.hellmann@ku.de", role=c("aut", "cre")) )
+Version: 0.0.1
+NeedsCompilation: yes
+Packaged: 2022-05-03
+Author: Sebastian Hellmann [aut, cre]
+Maintainer: Sebastian Hellmann <sebastian.hellmann@ku.de>
+Repository: CRAN
+Date/Publication: 2020-12-18 15:00:02 UTC
+Roxygen: list(old_usage = TRUE)
+RoxygenNote: 7.1.2
+Config/testthat/edition: 3
+VignetteBuilder: knitr
