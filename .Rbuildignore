@@ -3,6 +3,7 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 .Rhistory
+.github
 test
 RebuildPackage.R
 script_fit_test.R
@@ -20,3 +21,4 @@ README_files
 CRAN_Checks.RData
 ^cran-comments\.md$
 ^CRAN-SUBMISSION$
+cran_prep.RData
