@@ -139,8 +139,7 @@ distributions.
 
 ## Further functions
 
-Implementation of a race decision model, ignoring confidence judgments
-(see `fitRMdec`) and simulation of observations in the Leaky Competing
+Implementation of a simulation of observations in the Leaky Competing
 Accumulator model (see `rLCA`).
 
 ## Contact
