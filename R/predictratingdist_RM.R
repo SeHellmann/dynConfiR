@@ -1,67 +1,71 @@
-#' Prediction of Rating and Reaction Time Distribution in  the independent
-#' and partially anti-correlated race models of confidence
+#' Prediction of Confidence Rating and Reaction Time Distribution in race models of confidence
 #'
 #' \code{predictRM_Conf} predicts the categorical response distribution of
-#' decision and confidence ratings, \code{predictRM_RT} computes the predicted
-#' RT-Distribution (density) in the independent and partially anti-correlated race models
-#' (IRM and PCRM), given specific parameter constellations.
-#' See \code{\link{dIRM}} and \code{\link{dPCRM}} for more information about parameters.
+#' decision and confidence ratings, \code{predictRM_RT} computes the
+#' RT distribution (density) in the independent and partially anti-correlated
+#' race models  (Hellmann et al., preprint), given specific parameter
+#' constellations. See \link{RaceModels} for more information about the models
+#' and parameters.
 #'
-#' @param paramDf a list or dataframe with one row. Column names should match the
-#' names of dRM model parameter names. For different stimulus
-#' quality/mean drift rates, names should be v1, v2, v3,.... Different s parameters
-#' are possible with s1, s2, s3... with equally many steps as for drift rates.
+#' @param paramDf a list or data frame with one row. Column names should match the names of
+#' IRM and PCRM model parameter names (only mu1 and mu2 are not used in this context but
+#' replaced by the parameter v). For different stimulus quality/mean drift rates,
+#' names should be v1, v2, v3,... The functions allow also the process noise to vary (using
+#' s1, s2, ...), which is otherwise not required and set to 1.
 #' Additionally, the confidence thresholds should be given by names with
-#' thetaUpper1, thetaUpper2,..., thetaLower1,... or,
-#' for symmetric thresholds only by theta1, theta2,....
+#' thetaUpper1, thetaUpper2,..., thetaLower1,... or, for symmetric thresholds only by theta1, theta2,....
 #' @param model character scalar. One of "IRM" or "PCRM". ("IRMt" and "PCRMt" will also be accepted. In that case,
 #' time_scaled is set to TRUE.)
 #' @param time_scaled logical. Whether the confidence measure should be scaled by 1/sqrt(rt). Default: FALSE.
 #' (It is set to TRUE, if model is "IRMt" or "PCRMt")
 #' @param maxrt numeric. The maximum RT for the
-#' integration/density computation. Default: 15 (for _Conf (integration)), 9 (for _RT).
+#' integration/density computation. Default: 15 (for `predictRM_Conf`
+#' (integration)), 9 (for `predictRM_RT`).
 #' @param subdivisions \code{integer} (default: 100).
 #' For \code{predictRM_Conf} it is used as argument for the inner integral routine.
 #' For \code{predictRM_RT} it is the number of points for which the density is computed.
 #' @param minrt numeric or NULL(default). The minimum rt for the density computation.
 #' @param scaled logical. For \code{predictRM_RT}. Whether the computed density
 #' should be scaled to integrate to one (additional column densscaled). Otherwise the output
-#' is a defective density (i.e. its integral is equal to the probability of a response and
-#' not 1). If TRUE, the argument DistConf should be given, if available. Default: FALSE.
-#' @param DistConf NULL or data.frame. For \code{predictRM_RT}. A data.frame or matrix
-#' with column names, giving the distribution of response and rating choices for
+#' contains only the defective density (i.e. its integral is equal to the probability of a
+#' response and not 1). If TRUE, the argument `DistConf` should be given, if available.
+#' Default: FALSE.
+#' @param DistConf NULL or data.frame. A data.frame or matrix with column
+#' names, giving the distribution of response and rating choices for
 #' different conditions and stimulus categories in the form of the output of
-#' \code{predictRM_Conf}. It is only necessary, if scaled=TRUE, because these
-#' probabilities are used for scaling. If scaled=TRUE and DistConf=NULL, it will be computed
+#' \code{predictRM_Conf}. It is only necessary, if `scaled=TRUE`, because these
+#' probabilities are used for scaling. If `scaled=TRUE` and `DistConf=NULL`, it will be computed
 #' with the function \code{predictRM_Conf}, which takes some time and the function will
 #' throw a message. Default: NULL
-#' @param stop.on.error logical. Argument directly passed on to integrate. Default is FALSE, since
-#' the densities invoked may converge slowly (but are still quite accurate) which causes R to throw an
-#' error.
+#' @param stop.on.error logical. Argument directly passed on to integrate. Default is FALSE,
+#' since the densities invoked may lead to slow convergence of the integrals (which are still
+#' quite accurate) which causes R to throw an error.
 #' @param .progress logical. If TRUE (default) a progress bar is drawn to the console.
 #'
-#' @return \code{predictRM_Conf} gives a data frame/tibble with columns: condition, stimulus,
+#' @return \code{predictRM_Conf} returns a data frame/tibble with columns: condition, stimulus,
 #' response, rating, correct, p, info, err. p is the predicted probability of a response
 #' and rating, given the stimulus category and condition. Message and error refer to the
-#' respective outputs of the integration routine used for prediction.
+#' respective outputs of the integration routine used for the computation.
 #' \code{predictRM_RT} returns a data frame/tibble with columns: condition, stimulus,
-#' response, rating, correct, rt and dens (and densscaled, if scaled=TRUE).
+#' response, rating, correct, rt and dens (and densscaled, if `scaled=TRUE`).
 #'
 #'
 #' @details The function \code{predictRM_Conf} consists merely of an integration of
-#' the reaction time density, \code{\link{dIRM}} and \code{\link{dPCRM}}, over the reaction time in a reasonable
-#' interval (0 to maxrt). The function \code{predictRM_RT} wraps these density
+#' the response time density, \code{\link{dIRM}} and \code{\link{dPCRM}}, over the
+#' response time in a reasonable interval (0 to maxrt). The function
+#' \code{predictRM_RT} wraps these density
 #' functions to a parameter set input and a data.frame output.
 #' For the argument \code{paramDf}, the output of the fitting function \code{\link{fitRTConf}}
 #' with the respective model may be used.
 #'
-#' @note Different parameters for different conditions are only allowed for drift rate,
-#' \code{v}, and drift rate variability, \code{s}. All other parameters are used for all
-#' conditions.
+#' The drift rate parameters differ from those used in \code{\link{dIRM}}/\code{\link{dPCRM}}
+#' since in many perceptual decision experiments the drift on one accumulator is assumed to
+#' be the negative of the other. The drift rate of the correct accumulator is `v` (`v1`, `v2`,
+#' ... respectively) in `paramDf`.
 #'
-#' @references Moreno-Bote, R. (2010). Decision confidence and uncertainty in diffusion models with
-#' partially correlated neuronal integrators. Neural Computation, 22(7), 1786–1811.
-#' https://doi.org/10.1162/neco.2010.12-08-930
+#' @note Different parameters for different conditions are only allowed for drift rate,
+#' \code{v}, and process variability \code{s}. All other parameters are used for all
+#' conditions.
 #'
 #'
 #' @author Sebastian Hellmann.
@@ -97,10 +101,6 @@ predictRM_Conf <- function(paramDf, model="IRM", time_scaled = FALSE,
     paramDf$wint = 0
   }
 
-  if (!("s" %in% names(paramDf))) {
-    paramDf$s = 1
-  }
-
   nConds <- length(grep(pattern = "^v[0-9]", names(paramDf), value = T))
   symmetric_confidence_thresholds <- length(grep(pattern = "thetaUpper", names(paramDf), value = T))<1
   if (symmetric_confidence_thresholds) {
@@ -115,8 +115,16 @@ predictRM_Conf <- function(paramDf, model="IRM", time_scaled = FALSE,
     V <- paramDf$v
     nConds <- 1
   }
-
-
+  vary_s <-   length(grep(pattern = "^s[0-9]", names(paramDf), value = T))>1
+  if (vary_s){
+    S <- c(t((paramDf[,paste("s",1:(nConds), sep = "")])))
+  } else {
+    if ("s" %in% names(paramDf)) {
+      S <- rep(paramDf$s, nConds)
+    } else {
+      S <- rep(1, nConds)
+    }
+  }
   ## Recover confidence thresholds
   if (symmetric_confidence_thresholds) {
     if (nRatings==1) {
@@ -130,6 +138,11 @@ predictRM_Conf <- function(paramDf, model="IRM", time_scaled = FALSE,
     thetas_1 <- c(1e-32, t(paramDf[,paste("thetaUpper",1:(nRatings-1), sep = "")]), 1e+64)
     thetas_2 <- c(1e-32, t(paramDf[,paste("thetaLower",1:(nRatings-1), sep="")]), 1e+64)
   }
+  # Because we integrate over the response time, st0 does not matter
+  # So, to speed up computations for high values of st0, we set it to 0
+  # but add the constant to maxrt
+  maxrt <- maxrt + paramDf$st0
+  paramDf$st0 <- 0
 
   if (.progress) {
     pb <- progress_bar$new(total = nConds*nRatings*4)
@@ -170,7 +183,7 @@ predictRM_Conf <- function(paramDf, model="IRM", time_scaled = FALSE,
                      response=c(1,2), rating = 1:nRatings) %>%
     mutate(a    = paramDf$a,
            b    = paramDf$b,
-           s    = paramDf$s,
+           s    = S[.data$condition],
            th1  = if_else(.data$response == 1, thetas_1[(.data$rating)], thetas_2[(.data$rating)]),
            th2  = if_else(.data$response == 1, thetas_1[(.data$rating+1)], thetas_2[(.data$rating + 1)]),
            mu1  = V[.data$condition]*(-1)^(1+.data$stimulus),
@@ -211,8 +224,15 @@ predictRM_RT <- function(paramDf, model="IRM", time_scaled = FALSE,
     paramDf$wrt = 0
     paramDf$wint = 0
   }
-  if (!("s" %in% names(paramDf))) {
-    paramDf$s = 1
+  vary_s <-   length(grep(pattern = "^s[0-9]", names(paramDf), value = T))>1
+  if (vary_s){
+    S <- c(t((paramDf[,paste("s",1:(nConds), sep = "")])))
+  } else {
+    if ("s" %in% names(paramDf)) {
+      S <- rep(paramDf$s, nConds)
+    } else {
+      S <- rep(1, nConds)
+    }
   }
 
   if (scaled && is.null(DistConf)) {
@@ -259,7 +279,7 @@ predictRM_RT <- function(paramDf, model="IRM", time_scaled = FALSE,
            th2 = if_else(.data$response==1, thetas_1[(.data$rating+1)], thetas_2[(.data$rating+1)]),
            mu1 = V[.data$condition]*(-1)^(1+.data$stimulus),
            mu2 = V[.data$condition]*(-1)^(.data$stimulus),
-           s = paramDf$s)
+           s = S[.data$condition])
   if (.progress) {
     pb <- progress_bar$new(total = nConds*nRatings*4)
   }

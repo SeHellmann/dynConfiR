@@ -14,7 +14,7 @@ rLCA(paramDf, n = 10000, time_scaled = FALSE, gamma = FALSE,
 model parameters (mu1, mu2, pi, sig, th, k, beta, SPV, and tau, wx, wrt, and wint and t0 and st0). For different
 experimental conditions, simply numerate the respective parameters (e.g. for varying
 drift rates, use mu11, mu12, mu13, mu21, mu22, mu23). All non-numerated parameters are
-assumed to be constant accross conditions. Additionally, the confidence thresholds may be given by names with
+assumed to be constant across conditions. Additionally, the confidence thresholds may be given by names with
 thetaUpper1, thetaUpper2,..., thetaLower1,... or, for symmetric thresholds only by theta1, theta2,....
 Note that confidence thresholds are not allowed to vary with experimental condition.}
 
@@ -27,7 +27,7 @@ be used.}
 \item{gamma}{logical. If TRUE, the gamma correlation between confidence ratings, rt and accuracy is
 computed.}
 
-\item{agg_simus}{logical. Simulation is done on a trial basis with rt's outcome. If TRUE,
+\item{agg_simus}{logical. Simulation is done on a trial basis with rts outcome. If TRUE,
 the simulations will be aggregated over RTs to return only the distribution of response and
 confidence ratings. Default: FALSE.}
 
@@ -36,7 +36,7 @@ Together with condition represents the experimental situation. In a 2AFC task th
 stimulus belongs to one of two categories. In the default setting trials with
 both categories presented are simulated but one can choose to simulate only trials with the
 stimulus coming from one category (each associated with positive drift in one of two accumulators).
-More precisesly, if stimulus is 2, trials with interchanged mu1 and mu2 are simulated representing a trial
+More precisely, if stimulus is 2, trials with interchanged mu1 and mu2 are simulated representing a trial
 with contrary stimulus identity as represented in the paramDf.}
 
 \item{delta}{numerical. Size of steps for the discretized simulation (see details).}
@@ -59,19 +59,19 @@ Simulates the decision responses, reaction times and state of the loosing accumu
 together with a discrete confidence judgment  in the leaky competing accumulator model.
 Optionally, there is a post-decisional accumulation period, where the process continues.
 Parameters required (in \code{paramDf}):
-   mu1 and mu2 (mean momentary evidence for alternatives)
-   pi (factor for input dependent noise of infinitesimal variance of processes)
-   sig (input independent component of infinitesimal variance of processes)
-   th (decision threshold)
-   k (leakage)
-   beta (inhibition)
-   SPV (variation in starting points)
-   tau (fixed post decisional accumulation period)
-   wx (weight on balance of evidence in confidence measure)
-   wrt (weight on RT in confidence measure)
-   wint (weight on interaction of evidence and RT in confidence measure)
-   t0 (minimal non-decision time)
-   st0 (range of uniform distribution of non-decision time)
+mu1 and mu2 (mean momentary evidence for alternatives)
+pi (factor for input dependent noise of infinitesimal variance of processes)
+sig (input independent component of infinitesimal variance of processes)
+th (decision threshold)
+k (leakage)
+beta (inhibition)
+SPV (variation in starting points)
+tau (fixed post decisional accumulation period)
+wx (weight on balance of evidence in confidence measure)
+wrt (weight on RT in confidence measure)
+wint (weight on interaction of evidence and RT in confidence measure)
+t0 (minimal non-decision time)
+st0 (range of uniform distribution of non-decision time)
 Also computes the Gamma rank correlation between the confidence
 ratings and condition (task difficulty), reaction times and accuracy in the simulated output.
 }
@@ -83,24 +83,15 @@ with \eqn{\varepsilon_i(t) \sim N(0, (\pi \mu_i)^2 + \sigma^2 )}. If no boundary
 set to 0. After the decision, the accumulation continues for a time period (tau), until
 the final state is used for the computation of confidence.
 
-The Gamma coefficients are computed seperately for
+The Gamma coefficients are computed separately for
 correct/incorrect responses for the correlation of confidence ratings with condition and rt
-and seperately for conditions for the correlation of accuracy and confidence. The resulting
+and separately for conditions for the correlation of accuracy and confidence. The resulting
 tibbles in the output thus have two columns. One for the grouping variable and one for the
 Gamma coefficient.
 }
 \note{
 Different parameters for different conditions are only allowed for drift rate, \code{v},
 and variability, \code{s}. All other parameters are used for all conditions.
-}
-\references{
-Moreno-Bote, R. (2010). Decision confidence and uncertainty in diffusion models with
-partially correlated neuronal integrators. Neural Computation, 22(7), 1786–1811.
-https://doi.org/10.1162/neco.2010.12-08-930
-
-Rausch, M., Hellmann, S., & Zehetleitner, M. (2018). Confidence in masked orientation judgments is
-informed by both evidence and visibility. \emph{Attention, Perception, & Psychophysics}, 80(1), 134–154.
-doi: 10.3758/s13414-017-1431-5
 }
 \author{
 Sebastian Hellmann.

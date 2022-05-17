@@ -1,10 +1,10 @@
 /* Density_PCRM.h - Functions for PDF calculation in the partially anti-correlated race model
  *
- * Copyright (C) 2020  Sebastian Hellmann.
+ * Copyright (C) 2022 Sebastian Hellmann.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of the
+ * published by the Free Software Foundation; either version 3 of the
  * License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful, but
@@ -12,11 +12,8 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
  */
+
 
 #ifndef DENSITY_PCRM_H
 #define DENSITY_PCRM_H
@@ -77,14 +74,14 @@ NumericVector density_PCRM (NumericVector rts, NumericVector params, int win=1, 
     }
 
     double fac = 1/(sqrt(3.)*4*M_PI);
-    NumericVector C = {1, -1, -1, 1, 1, -1};
-    NumericVector expC1 = {0, a, 0, a, a+b, a+b};
-    NumericVector expC2 = {0, 0, b, a+b, b, a+b};
+    NumericVector C = NumericVector::create(1, -1, -1, 1, 1, -1);
+    NumericVector expC1 = NumericVector::create(0, a, 0, a, a+b, a+b);
+    NumericVector expC2 = NumericVector::create(0, 0, b, a+b, b, a+b);
 
     NumericVector expC = -2* (muw*expC1 + mul*expC2);
 
-    NumericVector Xis = {a, -a, a+b, b, -a-b, -b,
-                         b, a+b, -b, -a-b, a, -a};
+    NumericVector Xis = NumericVector::create(a, -a, a+b, b, -a-b, -b,
+                         b, a+b, -b, -a-b, a, -a);
     Xis.attr("dim") = Dimension(6,2);
 
     if (st0==0) {

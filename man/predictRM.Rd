@@ -6,8 +6,7 @@
 \alias{predictIRM}
 \alias{predictPCRM}
 \alias{predictRM_RT}
-\title{Prediction of Rating and Reaction Time Distribution in  the independent
-and partially anti-correlated race models of confidence}
+\title{Prediction of Confidence Rating and Reaction Time Distribution in race models of confidence}
 \usage{
 predictRM_Conf(paramDf, model = "IRM", time_scaled = FALSE, maxrt = 15,
   subdivisions = 100L, stop.on.error = FALSE, .progress = TRUE)
@@ -17,13 +16,13 @@ predictRM_RT(paramDf, model = "IRM", time_scaled = FALSE, maxrt = 9,
   .progress = TRUE)
 }
 \arguments{
-\item{paramDf}{a list or dataframe with one row. Column names should match the
-names of dRM model parameter names. For different stimulus
-quality/mean drift rates, names should be v1, v2, v3,.... Different s parameters
-are possible with s1, s2, s3... with equally many steps as for drift rates.
+\item{paramDf}{a list or data frame with one row. Column names should match the names of
+IRM and PCRM model parameter names (only mu1 and mu2 are not used in this context but
+replaced by the parameter v). For different stimulus quality/mean drift rates,
+names should be v1, v2, v3,... The functions allow also the process noise to vary (using
+s1, s2, ...), which is otherwise not required and set to 1.
 Additionally, the confidence thresholds should be given by names with
-thetaUpper1, thetaUpper2,..., thetaLower1,... or,
-for symmetric thresholds only by theta1, theta2,....}
+thetaUpper1, thetaUpper2,..., thetaLower1,... or, for symmetric thresholds only by theta1, theta2,....}
 
 \item{model}{character scalar. One of "IRM" or "PCRM". ("IRMt" and "PCRMt" will also be accepted. In that case,
 time_scaled is set to TRUE.)}
@@ -32,15 +31,16 @@ time_scaled is set to TRUE.)}
 (It is set to TRUE, if model is "IRMt" or "PCRMt")}
 
 \item{maxrt}{numeric. The maximum RT for the
-integration/density computation. Default: 15 (for _Conf (integration)), 9 (for _RT).}
+integration/density computation. Default: 15 (for \code{predictRM_Conf}
+(integration)), 9 (for \code{predictRM_RT}).}
 
 \item{subdivisions}{\code{integer} (default: 100).
 For \code{predictRM_Conf} it is used as argument for the inner integral routine.
 For \code{predictRM_RT} it is the number of points for which the density is computed.}
 
-\item{stop.on.error}{logical. Argument directly passed on to integrate. Default is FALSE, since
-the densities invoked may converge slowly (but are still quite accurate) which causes R to throw an
-error.}
+\item{stop.on.error}{logical. Argument directly passed on to integrate. Default is FALSE,
+since the densities invoked may lead to slow convergence of the integrals (which are still
+quite accurate) which causes R to throw an error.}
 
 \item{.progress}{logical. If TRUE (default) a progress bar is drawn to the console.}
 
@@ -48,49 +48,52 @@ error.}
 
 \item{scaled}{logical. For \code{predictRM_RT}. Whether the computed density
 should be scaled to integrate to one (additional column densscaled). Otherwise the output
-is a defective density (i.e. its integral is equal to the probability of a response and
-not 1). If TRUE, the argument DistConf should be given, if available. Default: FALSE.}
+contains only the defective density (i.e. its integral is equal to the probability of a
+response and not 1). If TRUE, the argument \code{DistConf} should be given, if available.
+Default: FALSE.}
 
-\item{DistConf}{NULL or data.frame. For \code{predictRM_RT}. A data.frame or matrix
-with column names, giving the distribution of response and rating choices for
+\item{DistConf}{NULL or data.frame. A data.frame or matrix with column
+names, giving the distribution of response and rating choices for
 different conditions and stimulus categories in the form of the output of
-\code{predictRM_Conf}. It is only necessary, if scaled=TRUE, because these
-probabilities are used for scaling. If scaled=TRUE and DistConf=NULL, it will be computed
+\code{predictRM_Conf}. It is only necessary, if \code{scaled=TRUE}, because these
+probabilities are used for scaling. If \code{scaled=TRUE} and \code{DistConf=NULL}, it will be computed
 with the function \code{predictRM_Conf}, which takes some time and the function will
 throw a message. Default: NULL}
 }
 \value{
-\code{predictRM_Conf} gives a data frame/tibble with columns: condition, stimulus,
+\code{predictRM_Conf} returns a data frame/tibble with columns: condition, stimulus,
 response, rating, correct, p, info, err. p is the predicted probability of a response
 and rating, given the stimulus category and condition. Message and error refer to the
-respective outputs of the integration routine used for prediction.
+respective outputs of the integration routine used for the computation.
 \code{predictRM_RT} returns a data frame/tibble with columns: condition, stimulus,
-response, rating, correct, rt and dens (and densscaled, if scaled=TRUE).
+response, rating, correct, rt and dens (and densscaled, if \code{scaled=TRUE}).
 }
 \description{
 \code{predictRM_Conf} predicts the categorical response distribution of
-decision and confidence ratings, \code{predictRM_RT} computes the predicted
-RT-Distribution (density) in the independent and partially anti-correlated race models
-(IRM and PCRM), given specific parameter constellations.
-See \code{\link{dIRM}} and \code{\link{dPCRM}} for more information about parameters.
+decision and confidence ratings, \code{predictRM_RT} computes the
+RT distribution (density) in the independent and partially anti-correlated
+race models  (Hellmann et al., preprint), given specific parameter
+constellations. See \link{RaceModels} for more information about the models
+and parameters.
 }
 \details{
 The function \code{predictRM_Conf} consists merely of an integration of
-the reaction time density, \code{\link{dIRM}} and \code{\link{dPCRM}}, over the reaction time in a reasonable
-interval (0 to maxrt). The function \code{predictRM_RT} wraps these density
+the response time density, \code{\link{dIRM}} and \code{\link{dPCRM}}, over the
+response time in a reasonable interval (0 to maxrt). The function
+\code{predictRM_RT} wraps these density
 functions to a parameter set input and a data.frame output.
 For the argument \code{paramDf}, the output of the fitting function \code{\link{fitRTConf}}
 with the respective model may be used.
+
+The drift rate parameters differ from those used in \code{\link{dIRM}}/\code{\link{dPCRM}}
+since in many perceptual decision experiments the drift on one accumulator is assumed to
+be the negative of the other. The drift rate of the correct accumulator is \code{v} (\code{v1}, \code{v2},
+... respectively) in \code{paramDf}.
 }
 \note{
 Different parameters for different conditions are only allowed for drift rate,
-\code{v}, and drift rate variability, \code{s}. All other parameters are used for all
+\code{v}, and process variability \code{s}. All other parameters are used for all
 conditions.
-}
-\references{
-Moreno-Bote, R. (2010). Decision confidence and uncertainty in diffusion models with
-partially correlated neuronal integrators. Neural Computation, 22(7), 1786–1811.
-https://doi.org/10.1162/neco.2010.12-08-930
 }
 \author{
 Sebastian Hellmann.

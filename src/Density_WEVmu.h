@@ -1,6 +1,6 @@
-/* Density.hpp - Functions for PDF calculation in 3rd version of -WEV
+/* Density_WEVmu.h - Functions for PDF calculation in dynWEV model
  *
- * Copyright (C) 2021 Sebastian Hellmann
+ * Copyright (C) 2022 Sebastian Hellmann.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -12,10 +12,6 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
  */
 
 #ifndef DENSITY_WEVmu_H

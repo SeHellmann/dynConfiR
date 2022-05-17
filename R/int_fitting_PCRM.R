@@ -1,14 +1,11 @@
-fittingPCRM <- function(df, nConds, nRatings, fixed, sym_thetas,
+fittingPCRM <- function(df, nConds, nRatings, fixed, sym_thetas, time_scaled,
                           grid_search, init_grid=NULL, optim_method, opts,
                           logging, filename,
                           useparallel, n.cores,
                           used_cats, actual_nRatings){
   ## Be sure that the parallel cluster is stopped if anything happens (error or user interupt)
   on.exit(try(stopCluster(cl), silent = TRUE))
-  time_scaled <- FALSE
-  if (model=="PCRMt") {
-    time_scaled <- TRUE
-  }
+
   fitted_weights <- NULL
   if (time_scaled) {   ## Incorporate fixed weight parameters
     max_par_weight <- 1

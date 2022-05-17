@@ -1,14 +1,11 @@
-fittingIRM <- function(df, nConds, nRatings, fixed, sym_thetas,
+fittingIRM <- function(df, nConds, nRatings, fixed, sym_thetas, time_scaled,
                           grid_search, init_grid=NULL, optim_method, opts,
                           logging, filename,
                           useparallel, n.cores,
                           used_cats, actual_nRatings){
   ## Be sure that the parallel cluster is stopped if anything happens (error or user interupt)
   on.exit(try(stopCluster(cl), silent = TRUE))
-  time_scaled <- FALSE
-  if (model=="IRMt") {
-    time_scaled <- TRUE
-  }
+
   fitted_weights <- NULL
   if (time_scaled) {   ## Incorporate fixed weight parameters
     max_par_weight <- 1
@@ -277,7 +274,7 @@ fittingIRM <- function(df, nConds, nRatings, fixed, sym_thetas,
         if (logging==TRUE) {
           log_info(paste("Finished attempt No.", i, " restart no. ", l))
         }
-        if (!exists("m") || class(m) == "try-error"){
+        if (!exists("m") || inherits(m, "try-error")){
           if (logging==TRUE) {
             log_error(paste("No fit obtained at attempt No.", i))
             log_error(paste("Used parameter set", paste(start, sep="", collapse=" "), sep=" ", collapse = ""))
@@ -352,7 +349,7 @@ fittingIRM <- function(df, nConds, nRatings, fixed, sym_thetas,
         } else {
           stop(paste("Not implemented or unknown method: ", optim_method, ". Use 'bobyqa', Nelder-Mead' or 'L-BFGS-B' instead.", sep=""))
         }
-        if (!exists("m") || class(m) == "try-error"){
+        if (!exists("m") || inherits(m, "try-error")){
           break
         }
         if (exists("m") && is.list(m)){

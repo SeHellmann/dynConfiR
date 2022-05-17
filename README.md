@@ -8,13 +8,8 @@ simulation.
 
 ## Installation
 
-So far: download source or binary (for Windows only) package and
-install, using
-
-    install.packages("dynConfiR_0.0.1.tar.gz", type = "source", dependencies=TRUE,repos="https://ftp.gwdg.de/pub/misc/cran/")
-
-In the future, the package will be public. Installation from GitHub
-(development version):
+So far, the easiest way of installation is using `devtools` and install
+from GitHub:
 
     devtools::install_github("SeHellmann/dynConfiR")
 

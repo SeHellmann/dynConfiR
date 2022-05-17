@@ -5,7 +5,7 @@ Depends: R (>= 4.0)
 Encoding: UTF-8
 Suggests: 
     tidyr,
-    purrr,
+    ggplot2,
     testthat (>= 3.0.0),
     knitr,
     rmarkdown
@@ -13,27 +13,32 @@ Imports: stats, Rcpp, rtdists, dplyr, magrittr, rlang, logger, minqa, Hmisc, pro
 LinkingTo: Rcpp
 Description: 
        Provides density functions for the joint distribution of choice, 
-       response time and confidence for discrete confidence judgements
+       response time and confidence for discrete confidence judgments
        as well as functions for parameter fitting, prediction and simulation 
        for various dynamical models of decision confidence. 
-       Implemented models are the dynWEV model (Hellmann & Rausch),
-       the 2DSD model (Pleskac & Busemeyer, 2010, 
-       <https://doi.org/10.1037/a0019737>), and various Race Models. 
-       Cpp-Code for dynWEV and 2DSD is based on the rtdists package by 
+       All models are explained in detail by Hellmann et al. 
+       (preprint; <https://osf.io/9jfqr/>).
+       Implemented models are the dynWEV model, the 2DSD model (Pleskac & Busemeyer, 2010, 
+       <doi:10.1037/a0019737>), and various race models. 
+       C++ code for dynWEV and 2DSD is based on the rtdists package by 
        Henrik Singmann. 
 URL: https://github.com/SeHellmann/dynConfiR
 License: GPL (>= 3)
 BugReports: https://github.com/SeHellmann/dynConfiR
 Authors@R: c(person(given="Sebastian", family="Hellmann", 
-       email="sebastian.hellmann@ku.de", role=c("aut", "cre")) )
+       email="sebastian.hellmann@ku.de", role=c("aut", "cre"), 
+       comment=c(ORCID="0000-0002-3621-6343")),
+       person(given="Manuel", family="Rausch", 
+       email="manuel.rausch@ku.de", role=c("ctb", "fnd"),
+       comment=c(ORCID="0000-0002-5805-5544")))
 Version: 0.0.1
 NeedsCompilation: yes
-Packaged: 2022-05-03
-Author: Sebastian Hellmann [aut, cre]
+Packaged: 2022-05-13
 Maintainer: Sebastian Hellmann <sebastian.hellmann@ku.de>
 Repository: CRAN
-Date/Publication: 2020-12-18 15:00:02 UTC
-Roxygen: list(old_usage = TRUE)
+Date/Publication: 2022-05-16 
+Roxygen: list(old_usage = TRUE, markdown=TRUE)
 RoxygenNote: 7.1.2
 Config/testthat/edition: 3
+LazyData: true
 VignetteBuilder: knitr

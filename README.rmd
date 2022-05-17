@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 #gitsubdir <- paste(tail(strsplit(getwd(),"/")[[1]],1),"/",sep="")
 #gitrep <- "https://github.com/SeHellmann/myliuduomenis.lt"
 gitrep <- "https://github.com/SeHellmann/dynConfiR/tree"
-gitbranch <- "restructure_fcts/"
+gitbranch <- "main/"
 #knitr::opts_knit$set(base.url=paste(gitrep,gitbranch,gitsubdir,sep="/"))
 knitr::opts_knit$set(base.url=paste(gitrep,gitbranch, sep="/"))
 ```
@@ -23,11 +23,7 @@ This package includes implementation for several sequential sampling models of d
 
 ## Installation
 
-So far: download source or binary (for Windows only) package and install, using
-
-    install.packages("dynConfiR_0.0.1.tar.gz", type = "source", dependencies=TRUE,repos="https://ftp.gwdg.de/pub/misc/cran/")
-
-In the future, the package will be public. Installation from GitHub (development version):
+So far, the easiest way of installation is using `devtools` and install from GitHub:
 
     devtools::install_github("SeHellmann/dynConfiR")
 

@@ -4,83 +4,76 @@
 #' together with a discrete confidence judgment for the sequential sampling confidence model
 #' specified by the argument \code{model}, given specific parameter constellations.
 #' This function is a wrapper that calls the respective functions for diffusion based
-#' models (dynWEV and 2DSD: \code{\link{rWEV}}) and race models (IRM, PCRM,
-#' IRMt, and PCRMt: \code{\link{rRM}}. It also computes the Gamma rank correlation between the confidence ratings and
+#' models (dynWEV and 2DSD: \code{\link{simulateWEV}}) and race models (IRM, PCRM,
+#' IRMt, and PCRMt: \code{\link{simulateRM}}. It also computes the Gamma rank correlation
+#' between the confidence ratings and
 #' condition (task difficulty), reaction times and accuracy in the simulated output.
 #'
-#' @param paramDf a list or dataframe with one row. Column names should match the
-#' names of the respective model parameters. For different stimulus quality/mean
-#' drift rates, names should be v1, v2, v3,.... Additionally, the confidence
-#' thresholds should be given by names with thetaUpper1, thetaUpper2,...,
-#' thetaLower1,... or, for symmetric thresholds only by theta1, theta2,....
+#' @param paramDf a list or dataframe with one row with the required parameters.
 #' @param n integer. The number of samples (per condition and stimulus direction) generated.
 #' Total number of samples is \code{n*nConditions*length(stimulus)}.
 #' @param model character scalar. One of "2DSD", "dynWEV", "IRM", "PCRM", "IRMt", or "PCRMt".
 #' @param gamma logical. If TRUE, the gamma correlation between confidence ratings, rt and accuracy is
 #' computed.
-#' @param agg_simus logical. Simulation is done on a trial basis with rt's outcome. If TRUE,
+#' @param agg_simus logical. Simulation is done on a trial basis with rts outcome. If TRUE,
 #' the simulations will be aggregated over RTs to return only the distribution of response and
 #' confidence ratings. Default: FALSE.
 #' @param stimulus numeric vector. Either 1, 2 or c(1, 2) (default).
 #' Together with condition represents the experimental situation. In a 2AFC task the presented
 #' stimulus belongs to one of two categories. In the default setting trials with
 #' both categories presented are simulated but one can choose to simulate only trials with the
-#' stimulus coming from one category (each associated with positive drift in one of two accumulators).
-#' @param delta numerical. Size of steps for the discretized simulation (see details).
-#' @param maxrt numerical. Maximum reaction time to be simulated (see details). Default: 15.
+#' stimulus coming from one category.
+#' @param delta numerical. Size of steps for the discretized simulation.
+#' @param maxrt numerical. Maximum reaction time to be simulated. Default: 15.
 #' @param seed numerical. Seeding for non-random data generation. (Also possible outside of the function.)
 #'
-#' @return Depending on gamma and agg_simus. If gamma is TRUE, returns a list with elements:
-#' "simus" (the simulated data frame) and "gamma", which is again a list with elements
-#' "condition", "rt" and "correct", each a tibble with two columns (see details for more
-#' information). If gamma is FALSE, returns a data frame with columns: condition, stimulus,
-#' response, correct, rt, conf (the continuous confidence measure) and rating (the discrete
-#' confidence rating) or (if agg_simus=TRUE): condition, stimulus, response, correct, rating
-#' and p (for the probability of a response and rating, given the condition and stimulus).
+#' @return Depending on `gamma` and `agg_simus`.
+#'
+#' If `gamma` is `FALSE`, returns a `data.frame` with columns: `condition`,
+#' `stimulus`, `response`, `correct`, `rt`, `conf` (the continuous confidence
+#' measure) and `rating` (the discrete confidence rating) or
+#' (if `agg_simus=TRUE`): `condition`, `stimulus`,`response`, `correct`,
+#' `rating` and `p` (for the probability of a response and rating, given
+#' the condition and stimulus).
+#'
+#' If `gamma` is `TRUE`, returns a `list` with elements:
+#' `simus` (the simulated data frame) and `gamma`, which is again a `list` with elements
+#' `condition`, `rt` and `correct`, each a `tibble` with two columns (see details for more
+#' information).
 #'
 #' @details The output of the fitting function \code{\link{fitRTConf}} with the respective model
-#' fits the argument paramDf for simulation. The function calls the respective simulation
-#' function for diffusion based models, i.e. dynWEV and 2DSD (\code{\link{rWEV}}) or race models,
-#' i.e. IRM(t) and PCRM(t), (\code{\link{rRM}}). See there for more information.
+#' fits the argument `paramDf` for simulation. The function calls the respective simulation
+#' function for diffusion based models, i.e. dynWEV and 2DSD (\code{\link{simulateWEV}}) or race models,
+#' i.e. IRM(t) and PCRM(t), (\code{\link{simulateRM}}). See there for more information.
 #'
-#' \strong{Simulation Method:} The simulation is done by simulating normal variables in discretized steps until
+#' \strong{Simulation Method:} The simulation is done by simulating normal variables
+#' in discretized steps until
 #' the processes reach the boundary. If no boundary is met within the maximum time,
 #' response is set to 0.
 #'
-#' \strong{Gamma correlations:} The Gamma coefficients are computed seperately for
+#' \strong{Gamma correlations:} The Gamma coefficients are computed separately for
 #' correct/incorrect responses for the correlation of confidence ratings with condition and rt
-#' and seperately for conditions for the correlation of accuracy and confidence. The resulting
+#' and separately for conditions for the correlation of accuracy and confidence. The resulting
 #' tibbles in the output thus have two columns. One for the grouping variable and one for the
 #' Gamma coefficient.
-#'
-#' @note Different parameters for different conditions are only allowed for drift rate, \code{v},
-#' and variability, \code{s}. All other parameters are used for all conditions.
-#'
-#' @references Moreno-Bote, R. (2010). Decision confidence and uncertainty in diffusion models with
-#' partially correlated neuronal integrators. Neural Computation, 22(7), 1786–1811.
-#' https://doi.org/10.1162/neco.2010.12-08-930
-#'
-#' Rausch, M., Hellmann, S., & Zehetleitner, M. (2018). Confidence in masked orientation judgments is
-#' informed by both evidence and visibility. \emph{Attention, Perception, & Psychophysics}, 80(1), 134–154.
-#' doi: 10.3758/s13414-017-1431-5
 #'
 #'
 #' @author Sebastian Hellmann.
 #'
-#' @name rConfModel
+#' @name simulateRTConf
 #' @import dplyr
 #' @importFrom magrittr %>%
 #' @importFrom Hmisc rcorr.cens
 #' @importFrom rlang .data
 #' @importFrom stats runif
 # @importFrom pracma integral
-#' @aliases simulateConfModel  simulateRTConf
+#' @aliases rConfModel  simulateConfModel
 #'
 
 ## When given vectorised parameters, n is the number of replicates for each parameter set
-#' @rdname rConfModel
+#' @rdname simulateRTConf
 #' @export
-rConfModel <- function (paramDf, n=1e+4,  model = NULL,
+simulateRTConf <- function (paramDf, n=1e+4,  model = NULL,
                  gamma = FALSE, agg_simus=FALSE,
                  stimulus = c(1,2), delta=0.01, maxrt=15, seed=NULL)
 {
@@ -88,7 +81,7 @@ rConfModel <- function (paramDf, n=1e+4,  model = NULL,
   if (is.null(model) && ("model" %in% names(paramDf))) model <- paramDf$model
   if ((model %in% c("dynWEV", "WEVmu", "2DSD")) && stimulus == c(1,2)) stimulus <- c(-1,1)
   if (grepl("RM", model)) {
-    res <- rRM(paramDf, n, model, FALSE, gamma, agg_simus, stimulus, delta, maxrt, seed)
+    res <- simulateRM(paramDf, n, model, FALSE, gamma, agg_simus, stimulus, delta, maxrt, seed)
     if (!agg_simus ) {
       if (gamma) {
         res$simus <- res$simus[c("condition", "stimulus", "response", "correct", "rt", "conf", "rating")]
@@ -97,7 +90,7 @@ rConfModel <- function (paramDf, n=1e+4,  model = NULL,
       }
     }
   } else if (model %in% c("dynWEV", "2DSD")) {
-    res <- rWEV(paramDf, n, model, gamma, agg_simus, stimulus, delta=delta, maxrt=maxrt, seed=seed)
+    res <- simulateWEV(paramDf, n, model, gamma, agg_simus, stimulus, delta=delta, maxrt=maxrt, seed=seed)
   } else {stop("model not known.")}
   return(res)
 }

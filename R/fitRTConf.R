@@ -1,103 +1,139 @@
 #' Function for fitting sequential sampling confidence models
 #'
-#' Fits the parameters of different model of response time and confidence, including
-#' dynWEV (Hellmann & Rausch), the 2DSD model (Pleskac & Busemeyer, 2010), and verious
-#' flavors of race models. Which model to fit is specified by the argument \code{model}.
+#' Fits the parameters of different models of response time and confidence, including
+#' the 2DSD model (Pleskac & Busemeyer, 2010), dynWEV, and various
+#' flavors of race models (Hellmann et al., preprint). Which model to fit is
+#' specified by the argument \code{model}.
 #' So far, only a ML method is implemented (a quantile-Chi square method may be
 #' implemented in the future, too).
-#' Also, see \code{\link{dWEV}}, \code{\link{d2DSD}}, and \code{\link{dRM}} for more
+#' See \code{\link{dWEV}}, \code{\link{d2DSD}}, and \code{\link{dRM}} for more
 #' information about the parameters.
 #'
-#' @param data a dataframe where each row is one trial. Containing following variables (column names can be changed by passing arguments of the form \code{rating=confidence} (unquoted!)):
+#' @param data a `data.frame` where each row is one trial, containing following
+#' variables (column names can be changed by passing additional arguments of
+#' the form \code{condition="contrast"}):
 #' * \code{condition} (not necessary; for different levels of stimulus quality, will be transformed to a factor),
 #' * \code{rating} (discrete confidence judgments, should be given as integer vector; otherwise will be transformed to integer),
 #' * \code{rt} (giving the reaction times for the decision task),
 #' * either 2 of the following (see details for more information about the accepted formats):
-#'   * \code{stimulus} (encoding the stimulus category in a 2AFC task),
+#'   * \code{stimulus} (encoding the stimulus category in a binary choice task),
 #'   * \code{response} (encoding the decision response),
 #'   * \code{correct} (encoding whether the decision was correct; values in 0, 1)
-#'   * \code{sbj} or \code{participant} (optional; giving the subject ID; only relevant if logging == TRUE;
+#' * \code{sbj} or \code{participant} (optional; giving the subject ID; only relevant if logging == TRUE;
 #'                                                       if unique the ID is used in autosave files and logging messages;
 #'                                                       if non-unique or missing AND logging ==TRUE, 999 will be used then)
 #' @param model character scalar. One of "dynWEV", "2DSD", "IRM", "PCRM", "IRMt", "PCRMt" for the model to be fit.
-#' @param fixed list. List with parameter value pairs for parameters that should not be fitted.
-#' @param init_grid dataframe or NULL. Grid for the initial parameter search. Each row is one parameter constellation.
+#' @param fixed list. List with parameter value pairs for parameters that should not be fitted. See Details.
+#' @param init_grid data.frame or `NULL`. Grid for the initial parameter search. Each row is one parameter constellation.
 #' See details for more information. If \code{NULL} a default grid will be used.
-#' @param grid_search logical. If FALSE, the grid search before the fitting is omitted. The fitting is then started with a mean parameter set from the
-#' default grid (if init_grid=NULL) or directly with the rows from init_grid, if not NULL. (Default: TRUE)
-#' @param data_names named list (e.g. c("rating"="confidence")). Alternative possibility of giving other column names for the variables in the data. By default
+#' @param grid_search logical. If `FALSE`, the grid search before the optimization
+#' algorithm is omitted. The fitting is then started with a mean parameter set
+#' from the default grid (if `init_grid=NULL`) or directly with the rows from
+#' `init_grid`, if not NULL. (Default: `TRUE`)
+#' @param data_names named list (e.g. `c(rating="confidence")`). Alternative
+#' possibility of giving other column names for the variables in the data. By default
 #' column names are identical to the ones given in the data argument description.
-#' @param nRatings integer. Number of rating categories. If NULL, the maximum of rating and length(unique(rating)) is used.
-#' This argument is especially important for data sets where not the whole range of rating categories is realized.
+#' @param nRatings integer. Number of rating categories. If `NULL`, the maximum of
+#' `rating` and `length(unique(rating))` is used. This argument is especially
+#' important for data sets where not the whole range of rating categories is realized.
 #' If given, ratings has to be given as factor or integer.
-#' @param logging logical. If TRUE, a folder autosave/fit**model** is created and messages about the process are printed
-#' in a logging file and to console. Additionally intermediate results are saved in a .RData file with the
+#' @param logging logical. If `TRUE`, a folder autosave/fit**model** is created and
+#' messages about the process are printed in a logging file and to console (depending
+#' on OS). Additionally intermediate results are saved in a .RData file with the
 #' participant ID in the name.
-#' @param opts list. A list for more control options in the optimisation routines (depending on the method). See details for more information.
-#' @param optim_method character. Determines which optimization function is used for the parameter estimation.
-#' Either "bobyqa" (default), "L-BFGS-B" or "Nelder-Mead". "bobyqa" uses a box-constrained optimization with quadratic interpolation.
-#' (See \code{\link[minqa]{bobyqa}} for more information.) The first two use a box-constraint optimization. For Nelder-Mead a
-#' transfinite function rescaling is used (i.e. the constrained arguments are suitably transformed to the whole real line)
-#' @param useparallel logical. If TRUE the grid search in the beginning is done with a parallel back-end, using the \code{parallel} package.
-#' @param n.cores integer. Number of cores used for parallelization. If NULL (default) the number of available cores -1 is used.
-#' @param restr_tau numerical or Inf or "simult_conf". For 2DSD and dynWEV only. Upper bound for tau.
-#' Fits will be in the interval (0,restr_tau). If FALSE tau will be unbound. For "simult_conf", see the documentation of
-#' \code{\link{d2DSD}} and \code{\link{dWEV}}
+#' @param opts list. A list for more control options in the optimization routines
+#' (depending on the `optim_method`). See details for more information.
+#' @param optim_method character. Determines which optimization function is used for
+#' the parameter estimation. Either `"bobyqa"` (default), `"L-BFGS-B"` or `"Nelder-Mead"`.
+#' `"bobyqa"` uses a box-constrained optimization with quadratic interpolation.
+#' (See \code{\link[minqa]{bobyqa}} for more information.) The first two use a
+#' box-constraint optimization. For Nelder-Mead a transfinite function rescaling is used
+#' (i.e. the constrained arguments are suitably transformed to the whole real line).
+#' @param useparallel logical. If `TRUE` the grid search in the beginning is done with a
+#' parallel back-end, using the \code{parallel} package.
+#' @param n.cores integer or `NULL`. Number of cores used for parallelization. If `NULL`
+#' (default) the number of available cores -1 is used.
+#' @param restr_tau numerical or Inf or "simult_conf". For 2DSD and dynWEV only.
+#' Upper bound for tau. Fits will be in the interval (0,restr_tau). If FALSE tau will be unbound.
+#' For "simult_conf", see the documentation of \code{\link{d2DSD}} and \code{\link{dWEV}}
 #' @param precision numerical scalar. For 2DSD and dynWEV only. Precision of calculation.
 #' (in the respective models) for the density functions (see \code{\link{dWEV}} for more information).
-#' @param ... Possibility of giving alternative variable names in data frame (in the form \code{condition = "SOA"}).
+#' @param ... Possibility of giving alternative variable names in data frame
+#' (in the form \code{condition = "SOA"}, or \code{response="pressedKey"}).
 #'
-#' @return Gives a one-row data frame with columns for the different parameters as fitted result as well as
-#' additional information about the fit (negLogLik (for final parameters), k (number of parameters), N (number of data rows),
-#' BIC, AICc and AIC) and the column fixed, which includes all information about fixed and not fitted parameters.
+#' @return Gives a one-row data frame with columns for the different parameters as
+#' fitted result as well as additional information about the fit (`negLogLik` (for
+#' final parameters), `k` (number of parameters), `N` (number of data rows),
+#' `BIC`, `AICc` and `AIC`) and the column `fixed`, which includes all information
+#' about fixed and not fitted parameters.
 #'
-#' @details The fitting involves a first grid search through an initial grid. Then the best \code{nAttempts}
-#' parameter sets are chosen for an optimisation, which is done with an algorithm, depending on the argument
-#' \code{optim-method}. The Nelder-Mead alorithm uses the R function \code{\link[stats]{optim}}.
-#' The optimization routine is restarted \code{nRestarts} times with the starting parameter set equal to the
+#' @details The fitting involves a first grid search through computation of the
+#' likelihood on an initial grid with possible sets of parameters to start the
+#' optimization routine. Then the best \code{nAttempts} parameter sets are
+#' chosen for an optimization, which is done with an algorithm, depending on the
+#' argument \code{optim-method}. The Nelder-Mead algorithm uses the R function
+#' \code{\link[stats]{optim}}. The optimization routine is restarted
+#' \code{nRestarts} times with the starting parameter set equal to the
 #' best parameters from the previous routine.
 #'
-#'  \strong{stimulus, response and correct}. Two of these columns must be given in data. If all three are given, correct will have no effect (and will be not checked!).
-#'  stimulus can always be given in numerical format with values -1 and 1. reponse can always be given as a character vector with "lower" and "upper" as values.
-#'  Correct must always be given as a 0-1-vector. If stimulus is given together with response and they both do not match the above format, they need to have the same values/levels (if factor).
-#'  In the case that only stimulus/response is given in any other format together with correct, the unique values will be sorted increasingly and
+#'  \strong{stimulus, response and correct}. Two of these columns must be given in
+#'  data. If all three are given, correct will have no effect (and will be not checked!).
+#'  stimulus can always be given in numerical format with values -1 and 1. response
+#'  can always be given as a character vector with "lower" and "upper" as values.
+#'  Correct must always be given as a 0-1-vector. If stimulus is given together with
+#'  response and they both do not match the above format, they need to have the same
+#'  values/levels (if factor).
+#'  In the case that only stimulus/response is given in any other format together with
+#'  correct, the unique values will be sorted increasingly and
 #'  the first value will be encoded as "lower"/-1 and the second as "upper"/+1.
 #'
-#'  \strong{fixed}. Parameters that should not be fitted but kept constant. These will be dropped from the initial grid search
-#'  but will be present in the output, to keep all parameters for prediction in the result. Includes the
-#' possibility for symmetric confidence thresholds for both alternative (\code{sym_thetas}=logical). Other examples are
-#' \code{z =.5}, \code{sv=0}, \code{st0=0}, \code{sz=0}. For race models, the possibility of setting \code{a='b'} (or vice versa)
-#' leads to identical upper bounds on the decision processes, which is the equivalence for \code{z=.5} in a diffusion process
+#'  \strong{fixed}. Parameters that should not be fitted but kept constant. These will
+#'  be dropped from the initial grid search
+#'  but will be present in the output, to keep all parameters for prediction in the result.
+#'  Includes the possibility for symmetric confidence thresholds for both alternative
+#'  (\code{sym_thetas}=logical). Other examples are
+#' \code{z =.5}, \code{sv=0}, \code{st0=0}, \code{sz=0}. For race models, the possibility
+#' of setting \code{a='b'} (or vice versa)
+#' leads to identical upper bounds on the decision processes, which is the equivalence for
+#'  \code{z=.5} in a diffusion process
 #'
-#' \strong{init_grid}. Each row should be one parameter set to check. The column names should include the parameters of the
-#' desired model, which are the following for 2DSD: a, vmin and vmax (will be equidistantly spanned across conditions),
-#' sv, z (as the relative starting point between 0 and a), sz (also in relative terms), t0, st0, theta0 (minimal threshold),
-#' thetamax (maximal threshold; the others will be equidistantly spanned symmetrically for both decisions), and tau. For dynWEV,
-#' additionally w , svis, and sigvis are required. For the race models the parameters are: vmin, vmax (will be equidistantly
-#' spanned across conditions), a and b (decision thresholds), t0, st0, theta0 (minimal threshold), thetamax (maximal threshold;
-#' the others will be equidistantly spanned symmetrically for both decisions), and for time-dependent confidence race models
+#' \strong{init_grid}. Each row should be one parameter set to check. The column names
+#' should include the parameters of the desired model, which are the following for 2DSD:
+#' a, vmin and vmax (will be equidistantly spanned across conditions), sv, z (as the
+#' relative starting point between 0 and a), sz (also in relative terms), t0, st0, theta0
+#' (minimal threshold), thetamax (maximal threshold; the others will be equidistantly
+#' spanned symmetrically for both decisions), and tau. For dynWEV,
+#' additionally w , svis, and sigvis are required. For the race models the parameters
+#' are: vmin, vmax (will be equidistantly
+#' spanned across conditions), a and b (decision thresholds), t0, st0, theta0 (minimal
+#'  threshold), thetamax (maximal threshold;
+#' the others will be equidistantly spanned symmetrically for both decisions), and for
+#' time-dependent confidence race models
 #' additionally wrt and wint (as weights compared to wx=1).
 #'
-#'  \strong{opts}. A list with numerical values. Possible options are listed below (together with the optimization method they are used for).
-#'  * \code{nAttempts} (all) number of best performing initial parameter sets used for optimization; default 5, if grid_search is TRUE.
-#'  If grid_search is FALSE and init_grid is NULL, then nAttempts will be set to 1 (and any input will be ignored).
-#'  If grid_search is FALSE and init_grid is not NULL, the rows of init_grid will be used from top to bottom
+#'  \strong{opts}. A list with numerical values. Possible options are listed below
+#'  (together with the optimization method they are used for).
+#'  * \code{nAttempts} (all) number of best performing initial parameter sets used for
+#'   optimization; default 5, if grid_search is TRUE.
+#'  If grid_search is FALSE and init_grid is NULL, then nAttempts will be set to 1 (and
+#'  any input will be ignored).
+#'  If grid_search is FALSE and init_grid is not NULL, the rows of init_grid will be used
+#'  from top to bottom
 #'  (since no initial grid search is done) with not more than nAttempts rows used.
 #'  * \code{nRestarts} (all) number of successive optim routines for each of the starting parameter sets; default 5,
 #'  * \code{maxfun} (\code{'bobyqa'}) maximum number of function evaluations; default: 5000,
 #'  * \code{maxit} (\code{'Nelder-Mead' and 'L-BFGS-B'}) maximum iterations; default: 2000,
-#'  * \code{reltol} (\code{'Nelder-Mead'})relative tolerance; default:  1e-6),
-#'  * \code{factr} (\code{'L-BFGS-B'})tolerance in terms of reduction factor of the objective, default: 1e-10)
+#'  * \code{reltol} (\code{'Nelder-Mead'}) relative tolerance; default:  1e-6),
+#'  * \code{factr} (\code{'L-BFGS-B'}) tolerance in terms of reduction factor of the objective, default: 1e-10)
 #'
 #' @md
 #'
-#' @references Pleskac, T. J., & Busemeyer, J. R. (2010). Two-Stage Dynamic Signal Detection: A Theory of Choice, Decision Time, and Confidence, \emph{Psychological Review}, 117(3), 864-901. doi:10.1037/a0019737
-#'
-#' Rausch, M., Hellmann, S., & Zehetleitner, M. (2018). Confidence in masked orientation judgments is informed by both evidence and visibility. \emph{Attention, Perception, & Psychophysics}, 80(1), 134–154.  doi: 10.3758/s13414-017-1431-5
+#' @references Hellmann, S., Zehetleitner, M., & Rausch, M. (preprint). Simultaneous modeling of choice,
+#' confidence and response time in visual perception. https://osf.io/9jfqr/
 #'
 #' https://nashjc.wordpress.com/2016/11/10/why-optim-is-out-of-date/
 #'
-#' https://hwborchers.lima-city.de/Presents/ROptimSlides4.pdf
+#' https://www.damtp.cam.ac.uk/user/na/NA_papers/NA2009_06.pdf
 #'
 #'
 #'
@@ -314,12 +350,14 @@ fitRTConf <- function(data, model = "dynWEV",
                                               useparallel, n.cores,
                                               restr_tau, precision,
                                               used_cats, actual_nRatings)
-  if (grepl("IRM", model)) res <- fittingIRM(df, nConds, nRatings, fixed, sym_thetas,
+  if (grepl("IRM", model)) res <- fittingIRM(df, nConds, nRatings, fixed,
+                                             sym_thetas, grepl("t", model),
                                         grid_search, init_grid, optim_method, opts,
                                         logging, filename,
                                         useparallel, n.cores,
                                         used_cats, actual_nRatings)
-  if (grepl("PCRM", model)) res <- fittingPCRM(df, nConds, nRatings, fixed , sym_thetas,
+  if (grepl("PCRM", model)) res <- fittingPCRM(df, nConds, nRatings, fixed ,
+                                               sym_thetas, grepl("t", model),
                                           grid_search, init_grid, optim_method, opts,
                                           logging, filename,
                                           useparallel, n.cores,

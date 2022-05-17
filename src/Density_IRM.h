@@ -1,10 +1,10 @@
 /* Density_IRM.h - Functions for PDF calculation in the independent race model
  *
- * Copyright (C) 2020  Sebastian Hellmann.
+ * Copyright (C) 2022 Sebastian Hellmann.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of the
+ * published by the Free Software Foundation; either version 3 of the
  * License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful, but
@@ -12,10 +12,6 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
  */
 
 #ifndef DENSITY_IRM_H
@@ -107,16 +103,16 @@ NumericVector density_IRM (NumericVector rts, NumericVector params, int win=1, d
         }
     } else {
         double fac = inv_sqrt_2pi/4;
-        NumericVector C = {1, -1, -1, 1};
-        NumericVector expC1 = {a, 0, a};
-        NumericVector expC2 = {0, b, b};
+        NumericVector C = NumericVector::create(1, -1, -1, 1);
+        NumericVector expC1 = NumericVector::create(a, 0, a);
+        NumericVector expC2 = NumericVector::create(0, b, b);
 
         NumericVector expC = -2 * (muw*expC1 + mul*expC2);
 
         expC.push_front(0);
 
-        NumericVector Xis = {a, -a, a, -a,
-                             b, b, -b, -b};
+        NumericVector Xis = NumericVector::create(a, -a, a, -a,
+                             b, b, -b, -b);
         Xis.attr("dim") = Dimension(4,2);
         if (st0==0) {
             for (int i = 0; i < length; i++) {

@@ -1,4 +1,4 @@
 library(testthat)
-library(dynWEV)
+library(dynConfiR)
 
-test_check("dynWEV")
+test_check("dynConfiR")

@@ -1,62 +1,75 @@
 #' Function for fitting several sequential sampling confidence models in parallel
 #'
-#' This function is a wrapper around the function \code{\link{fitConfModel}} (see
-#' there for more information). It calls the function for every model and
-#' participant combination in \code{data}.
+#' This function is a wrapper of the function \code{\link{fitConfModel}} (see
+#' there for more information). It calls the function for every possible combination
+#' of model and participant in `model` and \code{data} respectively.
 #' Also, see \code{\link{dWEV}}, \code{\link{d2DSD}}, and \code{\link{dRM}} for more
 #' information about the parameters.
 #'
-#' @param data a dataframe where each row is one trial. Containing following variables (column names can be changed by passing arguments of the form \code{rating="confidence"}):
+#' @param data a `data.frame` where each row is one trial, containing following
+#' variables (column names can be changed by passing additional arguments of
+#' the form \code{condition="contrast"}):
 #' * \code{condition} (not necessary; for different levels of stimulus quality, will be transformed to a factor),
 #' * \code{rating} (discrete confidence judgments, should be given as integer vector; otherwise will be transformed to integer),
 #' * \code{rt} (giving the reaction times for the decision task),
 #' * either 2 of the following (see details for more information about the accepted formats):
-#'   * \code{stimulus} (encoding the stimulus category in a 2AFC task),
+#'   * \code{stimulus} (encoding the stimulus category in a binary choice task),
 #'   * \code{response} (encoding the decision response),
 #'   * \code{correct} (encoding whether the decision was correct; values in 0, 1)
 #'   * \code{sbj} (giving the subject ID; the models given in the second argument are fitted for each
 #'   subject individually. (Furthermore, logging == TRUE, the ID is used in autosave files and logging messages.))
 #' @param models character vector with following possible elements "dynWEV", "2DSD", "IRM", "PCRM", "IRMt", and "PCRMt"  for the models to be fit.
-#' @param nRatings integer. Number of rating categories. If NULL, the maximum of rating and length(unique(rating)) is used.
-#' This argument is especially important for data sets where not the whole range of rating categories is realized.
+#' @param nRatings integer. Number of rating categories. If `NULL`, the maximum of
+#' `rating` and `length(unique(rating))` is used. This argument is especially
+#' important for data sets where not the whole range of rating categories is realized.
 #' If given, ratings has to be given as factor or integer.
-#' @param fixed list. List with parameter value pairs for parameters that should not be fitted.
+#' @param fixed list. List with parameter value pairs for parameters that should not be fitted. (see Details).
 #' @param restr_tau numerical or Inf or "simult_conf". Used for 2DSD and dynWEV only. Upper bound for tau.
 #' Fits will be in the interval (0,restr_tau). If FALSE tau will be unbound. For "simult_conf", see the documentation of
 #' \code{\link{d2DSD}} and \code{\link{dWEV}}
-#' @param opts list. A list for more control options in the optimisation routines (depending on the method). See details for more information.
-#' @param optim_method character. Determines which optimization function is used for the parameter estimation.
-#' Either "bobyqa" (default), "L-BFGS-B" or "Nelder-Mead". "bobyqa" uses a box-constrained optimization with quadratic interpolation.
-#' (See \code{\link[minqa]{bobyqa}} for more information.) The first two use a box-constraint optimization. For Nelder-Mead a
-#' transfinite function rescaling is used (i.e. the constrained arguments are suitably transformed to the whole real line)
-#' @param logging logical. If TRUE, a folder autosave/fit**model** is created and messages about the process are printed
-#' in a logging file and to console. Additionally intermediate results are saved in a .RData file with the
+#' @param opts list. A list for more control options in the optimization routines
+#' (depending on the `optim_method`). See details for more information.
+#' @param optim_method character. Determines which optimization function is used for
+#' the parameter estimation. Either `"bobyqa"` (default), `"L-BFGS-B"` or `"Nelder-Mead"`.
+#' `"bobyqa"` uses a box-constrained optimization with quadratic interpolation.
+#' (See \code{\link[minqa]{bobyqa}} for more information.) The first two use a
+#' box-constraint optimization. For Nelder-Mead a transfinite function rescaling is used
+#' (i.e. the constrained arguments are suitably transformed to the whole real line).
+#' @param logging logical. If `TRUE`, a folder autosave/fit**model** is created and
+#' messages about the process are printed in a logging file and to console (depending
+#' on OS). Additionally intermediate results are saved in a .RData file with the
 #' participant ID in the name.
-#' @param parallel "models", "single", "both" or FALSE. If FALSE, no parallelization is used in the fitting process. If "models"
-#' fitting process is parallelized over participants and models (i.e. over the calls for fitting functions). If "single",
-#' parallelization is used within the fitting processes (over initial grid search and optimization processes for different
-#' start points). If "both", parallelization is done hierarchical. For small number of models and participants "single" or "both"
-#' is preferable. Otherwise, you may use "models".
-#' @param n.cores integer vector. If \code{parallel} is "models" or "both", a single integer for the number of cores used for
-#' parallelization is required. If \code{parallel} is "both", two values are required. The first for the number of parallel
-#' model-particiant combinations and the second for the parallel processes within the fitting procedures (this may be specified
-#' to match the \code{nAttemps}-Value in the \code{opts} argument. If NULL (default) the number of available cores -1 is used.
-#' If NULL and \code{parallel} is "both", the cores will be used for model-participant-parallelization, only.
-#' @param ... Possibility of giving more arguments to the model-specific fitting-functions as well as alternative
-#' variable names in data frame (in the form \code{condition = "SOA"}).
+#' @param parallel "models", "single", "both" or FALSE. If FALSE no parallelization
+#' is used in the fitting process. If "models" the fitting process is parallelized over
+#' participants and models (i.e. over the calls for fitting functions). If "single"
+#' parallelization is used within the fitting processes (over initial grid search and
+#' optimization processes for different start points, but see \code{\link{fitRTConf}}).
+#' If "both", parallelization is done hierarchical. For small number of
+#' models and participants "single" or "both" is preferable. Otherwise, you may use "models".
+#' @param n.cores integer vector or NULL. If \code{parallel} is "models" or "both", a single
+#' integer for the number of cores used for parallelization is required. If
+#' \code{parallel} is "both", two values are required. The first for the number of parallel
+#' model-participant combinations and the second for the parallel processes within the
+#' fitting procedures (this may be specified
+#' to match the \code{nAttemps}-Value in the \code{opts} argument. If NULL (default)
+#' the number of available cores -1 is used.
+#' If NULL and \code{parallel} is "both", the cores will be used for
+#' model-participant-parallelization, only.
+#' @param ... Possibility of giving alternative variable names in data frame
+#' (in the form \code{condition = "SOA"}, or \code{response="pressedKey"}).
 #'
 #' @return Gives data frame with rows for each model-participant combination and columns for the different parameters
 #' as fitted result as well as additional information about the fit (negLogLik (for final parameters),
 #' k (number of parameters), N (number of data rows), BIC, AICc and AIC)
 #'
 #' @details The fitting involves a first grid search through an initial grid. Then the best \code{nAttempts}
-#' parameter sets are chosen for an optimisation, which is done with an algorithm, depending on the argument
-#' \code{optim-method}. The Nelder-Mead alorithm uses the R function \code{\link[stats]{optim}}.
+#' parameter sets are chosen for an optimization, which is done with an algorithm, depending on the argument
+#' \code{optim-method}. The Nelder-Mead algorithm uses the R function \code{\link[stats]{optim}}.
 #' The optimization routine is restarted \code{nRestarts} times with the starting parameter set equal to the
 #' best parameters from the previous routine.
 #'
 #'  \strong{stimulus, response and correct}. Two of these columns must be given in data. If all three are given, correct will have no effect (and will be not checked!).
-#'  stimulus can always be given in numerical format with values -1 and 1. reponse can always be given as a character vector with "lower" and "upper" as values.
+#'  stimulus can always be given in numerical format with values -1 and 1. response can always be given as a character vector with "lower" and "upper" as values.
 #'  Correct must always be given as a 0-1-vector. If stimulus is given together with response and they both do not match the above format, they need to have the same values/levels (if factor).
 #'  In the case that only stimulus/response is given in any other format together with correct, the unique values will be sorted increasingly and
 #'  the first value will be encoded as "lower"/-1 and the second as "upper"/+1.
@@ -72,20 +85,13 @@
 #'  * \code{nRestarts} (all) number of successive optim routines for each of the starting parameter sets; default 5,
 #'  * \code{maxfun} (\code{'bobyqa'}) maximum number of function evaluations; default: 5000,
 #'  * \code{maxit} (\code{'Nelder-Mead' and 'L-BFGS-B'}) maximum iterations; default: 2000,
-#'  * \code{reltol} (\code{'Nelder-Mead'})relative tolerance; default:  1e-6),
-#'  * \code{factr} (\code{'L-BFGS-B'})tolerance in terms of reduction factor of the objective, default: 1e-10)
+#'  * \code{reltol} (\code{'Nelder-Mead'}) relative tolerance; default:  1e-6),
+#'  * \code{factr} (\code{'L-BFGS-B'}) tolerance in terms of reduction factor of the objective, default: 1e-10)
 #'
 #' @md
 #'
-#' @references Pleskac, T. J., & Busemeyer, J. R. (2010). Two-Stage Dynamic Signal Detection: A Theory of Choice, Decision Time, and Confidence, \emph{Psychological Review}, 117(3), 864-901. doi:10.1037/a0019737
-#'
-#' Rausch, M., Hellmann, S., & Zehetleitner, M. (2018). Confidence in masked orientation judgments is informed by both evidence and visibility. \emph{Attention, Perception, & Psychophysics}, 80(1), 134–154.  doi: 10.3758/s13414-017-1431-5
-#'
-#' https://nashjc.wordpress.com/2016/11/10/why-optim-is-out-of-date/
-#'
-#' https://hwborchers.lima-city.de/Presents/ROptimSlides4.pdf
-#'
-#'
+#' @references Hellmann, S., Zehetleitner, M., & Rausch, M. (preprint). Simultaneous modeling of choice,
+#' confidence and response time in visual perception. https://osf.io/9jfqr#'
 #'
 #' @author Sebastian Hellmann.
 #'
@@ -240,6 +246,10 @@ fitRTConfModels <- function(data, models = c("dynWEV", "2DSD"),
     res <- apply(X=jobs, 1, FUN=call_fitfct)
 
   }
+  # bind list-outout together into data.frame
   res <- do.call(rbind, res)
+
+  # finally, drop columns with unnecessary parameters
+  res <- res[,apply(res, 2, function(X) any(!is.na(X)))]
   return(res)
 }

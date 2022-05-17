@@ -7,7 +7,7 @@
 \alias{LL2DSD}
 \alias{LogLikdynWEV}
 \alias{LogLikWEV2DSD}
-\title{Log-Likelihood functions for the dWEV and 2DSD models}
+\title{Log-Likelihood functions for the dWEV and 2DSD models of confidence}
 \usage{
 LogLikWEV(data, paramDf, model = "dynWEV", simult_conf = FALSE,
   precision = 1e-05, stop_on_error = TRUE, data_names = list(), ...)
@@ -15,18 +15,22 @@ LogLikWEV(data, paramDf, model = "dynWEV", simult_conf = FALSE,
 \arguments{
 \item{data}{a dataframe where each row is one trial. Containing following variables:
 \itemize{
-  \item condition    (not necessary; convertable to integer (e.g. factor); for different levels of stimulus quality),
-  \item rating            (convertable to integer (e.g. factor); discrete confidence judgments),
-  \item rt                    (numeric; giving reaction times for decision task),
-  \item stimulus     (values at least convertible to c(-1,1); stimulus category (direction of evidence accumulation))
-  \item response     (characters in "upper", "lower" (or convertible to); direction of decision; correct answers are "lower" for stimulus=-1; and "upper" for stimulus=1),
+\item condition    (not necessary; convertible to integer (e.g. factor); for different levels of stimulus quality),
+\item rating       (convertible to integer (e.g. factor); discrete confidence judgments),
+\item rt           (numeric; giving reaction times for decision task),
+\item stimulus     (values at least convertible to c(-1,1); stimulus category (direction of evidence accumulation))
+\item response     (characters in "upper", "lower" (or convertible to); direction of decision; correct answers are "lower" for stimulus=-1; and "upper" for stimulus=1),
 
 }}
 
-\item{paramDf}{list or dataframe with one row. Names should match the names of dWEV and 2DSD model specific parameter names.
-For different stimulus quality/mean drift rates, names should be v1, v2, v3,.... Different sv parameters are possible with sv1, sv2, sv3...
-with equally many steps as for drift rates. Additionally, the confidence thresholds should be given by names with
-thetaUpper1, thetaUpper2,..., thetaLower1,... or, for symmetric thresholds only by theta1, theta2,.... (see Details for the correspondance to the data)}
+\item{paramDf}{list or dataframe with one row. Names should match the names of
+dWEV and 2DSD model specific parameter names.
+For different stimulus quality/mean drift rates, names should be v1, v2, v3,....
+Different sv parameters an/or s parameters are possible with sv1, sv2, sv3...
+(s1, s2, ... respectively) with equally many steps as for drift rates.
+Additionally, the confidence thresholds should be given by names with
+thetaUpper1, thetaUpper2,..., thetaLower1,... or, for symmetric thresholds
+only by theta1, theta2,.... (see Details for the correspondence to the data)}
 
 \item{model}{character scalar. One of "dynWEV" or "2DSD" for the model to fit.}
 
@@ -37,45 +41,52 @@ interjudgment time (then simult_conf should be FALSE).}
 
 \item{precision}{numerical scalar. Precision of calculation for integration over z and t0.}
 
-\item{stop_on_error}{logical. If TRUE an error in the function will be returned in case of invalid parameters. Otherwise, the output will be 0 without error.}
+\item{stop_on_error}{logical. If TRUE an error in the function will be returned in case of
+invalid parameters. Otherwise, the output will be 0 without error.}
 
-\item{data_names}{list. Possibility of giving alternative column names for the variables in the data. By default columnnames are identical to the
+\item{data_names}{list. Possibility of giving alternative column names for the variables
+in the data. By default column names are identical to the
 ones given in the data argument description.}
 
-\item{...}{Possibility of giving alternative variable names (unquoted) in data frame (in the form \code{condition = SOA}).}
+\item{...}{Possibility of giving alternative variable names in data frame
+(in the form \code{condition = "SOA"}).}
 }
 \value{
 Numeric scalar. The summed Log-likelihood of the data given the parameters in the respective model. If one or more row-wise probabilities is <=0,
 the function returns -1e+12.
 }
 \description{
-Computes the Log-likelihood for given data and parameters in the versions of the dWEV model (Hellmann & Rausch) and the 2DSD model (Pleskac & Busemeyer, 2010).
-It is a wrapped version of the respective densities \code{\link{dWEV}} and \code{\link{d2DSD}}, where one can find more information about the parameters (\code{z} is always given relatively, in the likelihood).
-The function is mainly used in \code{\link{fitRTConf}} but exported for individual usage in other contexts.
+Computes the Log-likelihood for given data and parameters in the
+dynWEV model (Hellmann et al., preprint) and the 2DSD model
+(Pleskac & Busemeyer, 2010). It is a wrapped version of the
+respective densities \code{\link{dWEV}} and \code{\link{d2DSD}},
+where one can find more information about the parameters
+(\code{z} is always given relatively, in the likelihood).
+The function is mainly used in \code{\link{fitRTConf}} but
+exported for individual usage in other contexts.
 }
 \details{
-Note, that the requirements on the format of the columns for the likelihood functions are much stricter, than in \code{\link{fitRTConf}}.
-This is because the function is very frequently calls in the optimisation routines of the fitting process and the preprocessing steps are
+Note, that the requirements on the format of the columns for the likelihood functions
+are much stricter, than in \code{\link{fitRTConf}}.
+This is because the function is very frequently calls in the optimization routines of the
+fitting process and the preprocessing steps are
 therefore included in that function.
 
- \strong{rating, condition}. If integer, values should range from 1 to number of possible ratings/conditions. If factor, the number of levels should be
- equal to number of possible ratings/conditions. This should be consistent with the parameter vector. The confidence thresholds should be named
- as thetaUpper1, thetaLower1,.... (or theta1,... for symmetric thresholds), with the number of ratings -1 and the mean drift rates (and possibly the
- standard deviation in drift rates) should be denoted as v1, v2,... (and sv1, sv2,...) with the number equal to the number of conditions. If only
- one condition is used \code{v} will be accepted as well as \code{v1}.
+\strong{rating, condition}. If integer, values should range from 1 to number of possible
+ratings/conditions. If factor, the number of levels should be
+equal to number of possible ratings/conditions. This should be consistent with the
+parameter vector. The confidence thresholds should be named
+as thetaUpper1, thetaLower1,.... (or theta1,... for symmetric thresholds), with the
+number of ratings -1 and the mean drift rates (and possibly the
+standard deviation in drift rates) should be denoted as v1, v2,...
+(and sv1, sv2,.../s1, s2, ...) with the number equal to the number of conditions.
+If only one condition is used \code{v} will be accepted as well as \code{v1}.
 
- \strong{stimulus, response}. stimulus should always be given in numerical format with values -1 and 1.
- reponse should always be given as a character vector with "lower" and "upper" as values.
- This corresponds to the situation of Ratcliff's diffusion model (Ratcliff, 1978), where stimulus is the sign of the mean drift direction and
- the response is the "upper" or "lower" boundary that is first hit by the evidence accumulation. A correct decision is therefore "lower",
- if stimulus is -1, and "upper", if stimulus is 1.
-}
-\references{
-Pleskac, T. J., & Busemeyer, J. R. (2010). Two-Stage Dynamic Signal Detection: A Theory of Choice, Decision Time, and Confidence, \emph{Psychological Review}, 117(3), 864-901. doi:10.1037/a0019737
-
-Ratcliff, R. (1978). A theory of memory retrieval. \emph{Psychological Review}, 85(2), 59-108.
-
-Rausch, M., Hellmann, S., & Zehetleitner, M. (2018). Confidence in masked orientation judgments is informed by both evidence and visibility. \emph{Attention, Perception, & Psychophysics}, 80(1), 134–154.  doi: 10.3758/s13414-017-1431-5
+\strong{stimulus, response}. stimulus should always be given in numerical format with values -1 and 1.
+response should always be given as a character vector with "lower" and "upper" as values.
+This corresponds to the situation of Ratcliff's diffusion model (Ratcliff, 1978), where stimulus is the sign of the mean drift direction and
+the response is the "upper" or "lower" boundary that is first hit by the evidence accumulation. A correct decision is therefore "lower",
+if stimulus is -1, and "upper", if stimulus is 1.
 }
 \author{
 Sebastian Hellmann.

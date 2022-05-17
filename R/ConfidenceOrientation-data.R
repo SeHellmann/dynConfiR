@@ -1,0 +1,29 @@
+#' Confidence and response time data
+#'
+#' A data set containing results from an orientation discrimination experiment
+#' with confidence judgments. The data set includes results from 16 participants
+#' and 3 sessions. The task was to identify the orientation (horizontal or vertical)
+#' of a grid that was briefly visible and then covered by a mask in form of a
+#' checkerboard pattern.
+#'
+#' @docType data
+#'
+#' @usage data(ConfidenceOrientation)
+#'
+#' @format A data frame with 25920 rows and 12 variables:
+#' \describe{
+#'   \item{participant}{integer values as unique participant identifier}
+#'   \item{session}{session identifier ranging from 1 to 3}
+#'   \item{gender}{gender of the participant: "w" for female; "m" for male participants}
+#'   \item{age}{the age of participants in years}
+#'   \item{SOA}{stimulus-onset-asynchrony in ms (i.e. time between stimulus and mask onset)}
+#'   \item{orientation}{orientation of the target stimulus (0: vertical, 90: horizontal)}
+#'   \item{stimulus}{stimulus identity ("senkrecht": vertical, "waagrecht": horizontal)}
+#'   \item{response}{response for the discrimination task (see stimulus column)}
+#'   \item{correct}{0-1 column indicating whether the discrimination response was correct (1) or not (0)}
+#'   \item{rt}{response time for the discrimination response in sec}
+#'   \item{cont_rating}{confidence rating as registered (continuous values ranging from -1 (unsure) to 1 (sure))}
+#'   \item{disc_rating}{confidence rating discretized in 5 steps using equidistant breaks}
+#' }
+#' @source \url{https://github.com/SeHellmann/SeqSamplingConfidenceModels}
+"ConfidenceOrientation"

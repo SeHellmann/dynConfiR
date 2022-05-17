@@ -13,28 +13,29 @@ LogLikRM(data, paramDf, model = "IRM", time_scaled = FALSE,
 \arguments{
 \item{data}{a dataframe where each row is one trial. Containing following variables:
 \itemize{
-  \item condition    (not necessary; convertable to integer (e.g. factor); for different levels of stimulus quality),
-  \item rating            (convertable to integer (e.g. factor); discrete confidence judgments),
-  \item rt                    (numeric; giving reaction times for decision task),
-  \item stimulus     (values at least convertible to c(1,2); stimulus category (index of accumulator with positive drift))
-  \item response     (values at least convertible to c(1,2); direction of decision; (index of accumulator reaching the boundary first))
+\item condition    (not necessary; convertible to integer (e.g. factor); for different levels of stimulus quality),
+\item rating            (convertible to integer (e.g. factor); discrete confidence judgments),
+\item rt                    (numeric; giving reaction times for decision task),
+\item stimulus     (values at least convertible to c(1,2), i.e. integer or factor; stimulus category (index of accumulator with higher drift))
+\item response     (values at least convertible to c(1,2); direction of decision; (index of accumulator reaching the boundary first))
 
 }}
 
-\item{paramDf}{list or dataframe with one row. Names should match the names of IRM and PCRM model specific parameter names.
+\item{paramDf}{list or dataframe with one row. Names should match the names of IRM and PCRM model specific parameter names (but with \code{v}
+instead of mu1 and mu2).
 For different stimulus quality/mean drift rates, names should be v1, v2, v3,.... Different s parameters are possible with s1, s2, s3...
 with equally many steps as for drift rates. Additionally, the confidence thresholds should be given by names with
-thetaUpper1, thetaUpper2,..., thetaLower1,... or, for symmetric thresholds only by theta1, theta2,.... (see Details for the correspondance to the data)}
+thetaUpper1, thetaUpper2,..., thetaLower1,... or, for symmetric thresholds only by theta1, theta2,.... (see Details for the correspondence to the data)}
 
 \item{model}{character scalar. One of "IRM" or "PCRM". ("IRMt" and "PCRMt" will also be accepted. In that case,
 time_scaled is set to TRUE.)}
 
 \item{time_scaled}{logical. Whether the confidence measure should be scaled by 1/sqrt(rt). Default: TRUE.}
 
-\item{data_names}{list. Possibility of giving alternative column names for the variables in the data. By default columnnames are identical to the
+\item{data_names}{list. Possibility of giving alternative column names for the variables in the data. By default column names are identical to the
 ones given in the data argument description.}
 
-\item{...}{Possibility of giving alternative variable names (unquoted) in data frame (in the form \code{condition = SOA}).}
+\item{...}{Another possibility of giving alternative variable names in data frame (in the form \code{condition = "SOA"}).}
 }
 \value{
 Numeric scalar. The summed Log-likelihood of the data given the parameters in the respective model. If one or more row-wise probabilities is <=0,
@@ -42,29 +43,35 @@ the function returns -1e+12.
 }
 \description{
 Computes the Log-likelihood for given data and parameters in the IRM and PCRM with or without time-scaled
-confidence measure. It is a wrapped version of the respective densities \code{\link{dIRM}} and \code{\link{dPCRM}}, where one can
-find more information about the parameters. The function is mainly used inside \code{\link{fitRTConf}} for race models but exported
+confidence measure. It is a wrapped version of the respective densities \code{\link{dIRM}} and \code{\link{dPCRM}},
+where one can find more information about the parameters. It restricts the rates of accumulation to be the negative
+of each other, though (a common assumption in perceptual decision tasks).
+The function is mainly used inside \code{\link{fitRTConf}} for race models but exported
 for individual usage in other contexts.
 }
 \details{
 Note, that the requirements on the format of the columns for the likelihood functions are much stricter, than in \code{\link{fitRTConf}}.
-This is because the function is very frequently calls in the optimisation routines of the fitting process and the preprocessing steps are
-therefore included in that function.
+This is because the function is very frequently called in the optimization routines of the fitting process and the preprocessing steps are
+therefore included in the other function.
 
- \strong{rating, condition}. If integer, values should range from 1 to number of possible ratings/conditions. If factor, the number of levels should be
- equal to number of possible ratings/conditions. This should be consistent with the parameter vector. The confidence thresholds should be named
- as thetaUpper1, thetaLower1,.... (or theta1,... for symmetric thresholds), with the number of ratings -1 and the mean drift rates (and possibly the
- standard deviation in drift rates) should be denoted as v1, v2,... (and sv1, sv2,...) with the number equal to the number of conditions. If only
- one condition is used \code{v} will be accepted as well as \code{v1}.
+\strong{rating, condition}. If integer, values should range from 1
+to number of possible ratings/conditions. If factor,
+the number of levels should be equal to number of possible
+ratings/conditions. This should be consistent with the
+parameter vector. The confidence thresholds should be named as
+thetaUpper1, thetaLower1,.... (or theta1,... for symmetric
+thresholds), with the number of ratings -1 and the mean drift rates
+(and possibly the
+standard deviation in drift rates) should be denoted as v1, v2,...
+(and sv1, sv2,...) with the number equal to the number of conditions.
+If only one condition is used \code{v} will be accepted as well as \code{v1}.
 
- \strong{stimulus, response}. stimulus and response should always be given in numerical format with values 1 and 2.
- Stimulus determines which of two accumulators has positive drift. The other has negative drift with the same absolute
- value. Response gives the index of the accumulator that reaches the boundary first.
-}
-\references{
-Moreno-Bote, R. (2010). Decision confidence and uncertainty in diffusion models with
-partially correlated neuronal integrators. Neural Computation, 22(7), 1786–1811.
-https://doi.org/10.1162/neco.2010.12-08-930
+\strong{stimulus, response}. stimulus and response should always
+be given in numerical format with values 1 and 2.
+Stimulus determines which of two accumulators has positive drift.
+The other has negative drift with the same absolute
+value. Response gives the index of the accumulator that reaches the
+boundary first.
 }
 \author{
 Sebastian Hellmann.

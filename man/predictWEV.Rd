@@ -6,7 +6,8 @@
 \alias{predictdynWEV}
 \alias{predict2DSD}
 \alias{predictWEV_RT}
-\title{Prediction of Rating and Reaction Time Distribution in dWEV and 2DSD confidence models}
+\title{Prediction of Confidence Rating and Response Time Distribution in dynWEV
+and 2DSD confidence models}
 \usage{
 predictWEV_Conf(paramDf, model = "dynWEV", precision = 1e-05, maxrt = 15,
   subdivisions = 100L, simult_conf = FALSE, stop.on.error = FALSE,
@@ -17,35 +18,34 @@ predictWEV_RT(paramDf, model = "dynWEV", precision = 1e-05, maxrt = 9,
   scaled = FALSE, DistConf = NULL, .progress = TRUE)
 }
 \arguments{
-\item{paramDf}{a list or dataframe with one row. Column names should match the
-names of dWEV and 2DSD model specific parameter names. For different stimulus
-quality/mean drift rates, names should be v1, v2, v3,.... Different sv parameters
-are possible with sv1, sv2, sv3... with equally many steps as for drift rates.
-Additionally, the confidence thresholds should be given by names with
-thetaUpper1, thetaUpper2,..., thetaLower1,... or,
+\item{paramDf}{a list or dataframe with one row. Column names should match the names
+of dynWEV and 2DSD model specific parameter names. For different stimulus quality/mean
+drift rates, names should be v1, v2, v3,....
+Different sv and/or s parameters are possible with sv1, sv2, sv3... (s1, s2, s3,...
+respectively) with equally many steps as for drift rates. Additionally, the confidence
+thresholds should be given by names with thetaUpper1, thetaUpper2,..., thetaLower1,... or,
 for symmetric thresholds only by theta1, theta2,....}
 
 \item{model}{character scalar. One of "dynWEV" or "2DSD".}
 
-\item{precision}{\code{numerical} scalar value. Precision of calculation.
-Corresponds roughly to the number of decimals of the predicted CDFs that are
-calculated accurately. Default is 3.}
+\item{precision}{numerical scalar value. Precision of calculation. Corresponds to the
+step size of integration w.r.t. \code{z} and \code{t0}. Default is 1e-5.}
 
-\item{maxrt}{numeric. The maximum RT for the
-integration/density computation. Default: 15 (for _Conf (integration)), 9 (for _RT).}
+\item{maxrt}{numeric. The maximum RT for the integration/density computation.
+Default: 15 (for \code{predictWEV_Conf} (integration)), 9 (for \code{predictWEV_RT}).}
 
-\item{subdivisions}{\code{integer} (default: 100).
+\item{subdivisions}{integer (default: 100).
 For \code{predictWEV_Conf} it is used as argument for the inner integral routine.
 For \code{predictWEV_RT} it is the number of points for which the density is computed.}
 
 \item{simult_conf}{logical. Whether in the experiment confidence was reported simultaneously
 with the decision, as then decision and confidence judgment are assumed to have happened
 subsequent before response and computations are different, when there is an observable
-interjudgment time (then simult_conf should be FALSE).}
+interjudgment time (then \code{simult_conf} should be FALSE).}
 
-\item{stop.on.error}{logical. Argument directly passed on to integrate. Default is FALSE, since
-the densities invoked may converge slowly (but are still quite accurate) which causes R to throw an
-error.}
+\item{stop.on.error}{logical. Argument directly passed on to integrate. Default is FALSE,
+since the densities invoked may lead to slow convergence of the integrals (which are still
+quite accurate) which causes R to throw an error.}
 
 \item{.progress}{logical. if TRUE (default) a progress bar is drawn to the console.}
 
@@ -54,52 +54,52 @@ error.}
 \item{scaled}{logical. For \code{predictWEV_RT}. Whether the computed density
 should be scaled to integrate to one (additional column densscaled). Otherwise the output
 is a defective density (i.e. its integral is equal to the probability of a response and
-not 1). If TRUE, the argument DistConf should be given, if available. Default: FALSE.}
+not 1). If TRUE, the argument \code{DistConf} should be given, if available. Default: FALSE.}
 
-\item{DistConf}{NULL or data.frame. For \code{predictWEV_RT}. A data.frame or matrix
-with column names, giving the distribution of response and rating choices for
-different conditions and stimulus categories in the form of the output of
-\code{predictWEV_Conf}. It is only necessary, if scaled=TRUE, because these
-probabilities are used for scaling. If scaled=TRUE and DistConf=NULL, it will be computed
+\item{DistConf}{NULL or data.frame. A data.frame or matrix with column names, giving
+the distribution of response and rating choices for different conditions and stimulus
+categories in the form of the output of \code{predictWEV_Conf}. It is only necessary,
+if \code{scaled=TRUE}, because these probabilities are used for scaling.
+If \code{scaled=TRUE} and \code{DistConf=NULL}, it will be computed
 with the function \code{predictWEV_Conf}, which takes some time and the function will
 throw a message. Default: NULL}
 }
 \value{
-\code{predictWEV_Conf} gives a data frame/tibble with columns: condition, stimulus,
+\code{predictWEV_Conf} returns a data frame/tibble with columns: condition, stimulus,
 response, rating, correct, p, info, err. p is the predicted probability of a response
 and rating, given the stimulus category and condition. Message and error refer to the
-respective outputs of the integration routine used for prediction.
+respective outputs of the integration routine used for computation.
 \code{predictWEV_RT} returns a data frame/tibble with columns: condition, stimulus,
-response, rating, correct, rt and dens (and densscaled, if scaled=TRUE).
+response, rating, correct, rt and dens (and densscaled, if \code{scaled=TRUE}).
 }
 \description{
 \code{predictWEV_Conf} predicts the categorical response distribution of
 decision and confidence ratings, \code{predictWEV_RT} computes the predicted
-RT-Distribution (density) in the 2DSD Model (Pleskac & Busemeyer, 2010) and the
-dWEV model (Hellmann & Rausch), given specific parameter constellations.
+RT distribution (density) in the 2DSD Model (Pleskac & Busemeyer, 2010) and the
+dynWEV model (Hellmann et al., preprint), given specific parameter constellations.
 See \code{\link{dWEV}} and \code{\link{d2DSD}} for more information about parameters.
 }
 \details{
 The function \code{predictWEV_Conf} consists merely of an integration of
-the reaction time density, \code{\link{dWEV}} and \code{\link{d2DSD}}, over the reaction time in a reasonable
+the response time density, \code{\link{dWEV}} and \code{\link{d2DSD}}, over the response time in a reasonable
 interval (\code{t0} to maxrt). The function \code{predictWEV_RT} wraps these density
 functions to a parameter set input and a data.frame output.
 For the argument \code{paramDf}, the output of the fitting function \code{\link{fitRTConf}}
 with the respective model may be used.
 }
 \note{
-Different parameters for different conditions are only allowed for drift rate,
-\code{v}, and drift rate variability, \code{sv}. All other parameters are used for all
+Different parameters for different conditions are only allowed for drift rate
+\code{v}, drift rate variability \code{sv}, and process variability \code{s}. Otherwise, \code{s} is
+not required in \code{paramDf} but set to 1 by default. All other parameters are used for all
 conditions.
 }
 \references{
+Hellmann, S., Zehetleitner, M., & Rausch, M. (preprint). Simultaneous modeling of choice,
+confidence and response time in visual perception. https://osf.io/9jfqr/
+
 Pleskac, T. J., & Busemeyer, J. R. (2010). Two-Stage Dynamic Signal Detection:
 A Theory of Choice, Decision Time, and Confidence, \emph{Psychological Review}, 117(3),
 864-901. doi:10.1037/a0019737
-
-Rausch, M., Hellmann, S., & Zehetleitner, M. (2018). Confidence in masked orientation
-judgments is informed by both evidence and visibility. \emph{Attention, Perception, &
-Psychophysics}, 80(1), 134–154.  doi: 10.3758/s13414-017-1431-5
 }
 \author{
 Sebastian Hellmann.

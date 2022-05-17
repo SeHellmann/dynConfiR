@@ -1,10 +1,11 @@
-/* RTSDSD.cpp - Main source file for the RCpp implementation of the 2DSD and WEV Model
+/* SeqSampConf.cpp - Main source file for the RCpp implementation of the
+ * sequential sampling models contained in the dynConfiR package
  *
- * Copyright (C) 2020  Sebastian Hellmann.
+ * Copyright (C) 2022 Sebastian Hellmann.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of the
+ * published by the Free Software Foundation; either version 3 of the
  * License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful, but
@@ -12,11 +13,8 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
  */
+
 
 #include <Rcpp.h>
 //#include <R_ext/Rdynload.h>
@@ -159,16 +157,16 @@ NumericVector dd_IRM (NumericVector rts, NumericVector xj, NumericVector params,
             double fac = 1/(4*sigma*sigma*M_PI);
 
 
-            NumericVector C = {1, -1, -1, 1};
-            NumericVector expC1 = {a, 0, a};
-            NumericVector expC2 = {0, b, b};
+            NumericVector C = NumericVector::create(1, -1, -1, 1);
+            NumericVector expC1 = NumericVector::create(a, 0, a);
+            NumericVector expC2 = NumericVector::create(0, b, b);
 
             NumericVector expC = -2/(sigma*sigma) * (muw*expC1 + mul*expC2);
             //Rcout << "expC is" << expC << std::endl;
             expC.push_front(0);
 
-            NumericVector Xis = {a, -a, a, -a,
-                                 b, b, -b, -b};
+            NumericVector Xis = NumericVector::create(a, -a, a, -a,
+                                 b, b, -b, -b);
             Xis.attr("dim") = Dimension(4,2);
 
             for (int i = 0; i < length; i++) {
@@ -193,15 +191,15 @@ NumericVector dd_IRM (NumericVector rts, NumericVector xj, NumericVector params,
             double muu = muw + mul;
             double muv = muw-mul;
 
-            NumericVector C = {1, -1, -1, 1};
-            NumericVector expC1 = {0, a, 0, a};
-            NumericVector expC2 = {0, 0, b, b};
+            NumericVector C = NumericVector::create(1, -1, -1, 1);
+            NumericVector expC1 = NumericVector::create(0, a, 0, a);
+            NumericVector expC2 = NumericVector::create(0, 0, b, b);
 
             C = C * exp(-2/(sigma*sigma) * (muw*expC1 + mul*expC2));
             //Rcout << "C is" << C << std::endl;
 
-            NumericVector Xis = {a, -a, a, -a,
-                                 b, b, -b, -b};
+            NumericVector Xis = NumericVector::create(a, -a, a, -a,
+                                 b, b, -b, -b);
             Xis.attr("dim") = Dimension(4,2);
             double Sigma = sqrt(2.)*sigma;
 
@@ -263,14 +261,14 @@ NumericVector dd_PCRM (NumericVector rts, NumericVector xj, NumericVector params
 
     double fac = 1/(3*sqrt(3.)*M_PI*sigma*sigma);
 
-    NumericVector C = {1, -1, -1, 1, 1, -1};
-    NumericVector expC1 = {0, a, 0, a, a+b, a+b};
-    NumericVector expC2 = {0, 0, b, a+b, b, a+b};
+    NumericVector C = NumericVector::create(1, -1, -1, 1, 1, -1);
+    NumericVector expC1 = NumericVector::create(0, a, 0, a, a+b, a+b);
+    NumericVector expC2 = NumericVector::create(0, 0, b, a+b, b, a+b);
 
     NumericVector expC = -2/(sigma*sigma) * (muw*expC1 + mul*expC2);
 
-    NumericVector Xis = {a, -a, a+b, b, -a-b, -b,
-                         b, a+b, -b, -a-b, a, -a};
+    NumericVector Xis = NumericVector::create(a, -a, a+b, b, -a-b, -b,
+                         b, a+b, -b, -a-b, a, -a);
     Xis.attr("dim") = Dimension(6,2);
 
 
@@ -295,7 +293,6 @@ NumericVector dd_PCRM (NumericVector rts, NumericVector xj, NumericVector params
 // [[Rcpp::export]]
 NumericVector r_RM (int n, NumericVector params, bool indep, double delta=0.01, double maxT=9)
 {
-
     double sdu, sdv;
     double muu = (params[0]+params[1])*delta;
     double muv = (params[0]-params[1])*delta;
@@ -342,7 +339,7 @@ NumericVector r_RM (int n, NumericVector params, bool indep, double delta=0.01, 
                 xl = std::min(x01, x02);
             }
         }
-        out( i , 0 ) = t;
+        out( i , 0 ) = t ;
         out( i , 1 ) = win;
         out( i , 2 ) = xl;
         if (i % 200 == 0 ) Rcpp::checkUserInterrupt();
@@ -353,33 +350,41 @@ NumericVector r_RM (int n, NumericVector params, bool indep, double delta=0.01, 
 
 
 // [[Rcpp::export]]
-NumericVector r_WEV (int n, NumericVector params, int model, double delta=0.01, double maxT=9)
+NumericVector r_WEV (int n, NumericVector params, int model, double delta=0.01, double maxT=9, bool stop_on_error=true)
 {
+  g_Params = new Parameters (params, 1e-3);
+
+  NumericMatrix out(n, 3);
+
+  if (!g_Params->ValidateParams_2DSD(stop_on_error))
+  {
+    if (stop_on_error) { Rcpp::stop("Error validating parameters.\n"); }
+    else { return out; }
+  }
     // model codes: 1: 2DSD, 2: dynWEV
-    double v   = params[0];
-    double sv  = params[1];
-    double a   = params[2];
-    double zr  = params[3];
+    double a   = params[0];
+    double v   = params[1];
+    double t0  = params[2];
+    double d   = params[3];
     double szr = params[4];
-    double t0  = params[5];
+    double sv  = params[5];
     double st0 = params[6];
-    double tau = params[7];
+    double zr  = params[7];
+    double tau = params[8];
     double w = 0;   // they are set to default values, that are not used; just to ommit warning at compiling
-    double sig = 0;
-    double sigmu = 0;
-    double vismu = 0;
+    double svis = 0;
+    double sigvis = 0;
+    double muvis = 0;
     if (model > 1) {
-        w   = params[8];
-        vismu = params[9];
-        sigmu = params[10];
-        sig = params[11];
+        w   = params[11];
+        muvis = params[12];
+        sigvis = params[13];
+        svis = params[14];
     }
 
     double mu, x0, t, conf, evid, vis;
     int resp;
 
-
-    NumericMatrix out(n, 3);
     for (int i=0; i < n; i++) {
         mu = R::rnorm(v, sv);
         x0 = a* R::runif(zr-szr/2, zr+szr/2);
@@ -390,9 +395,11 @@ NumericVector r_WEV (int n, NumericVector params, int model, double delta=0.01, 
         }
         if (x0 >= a) {
             resp = 1;
+            t = std::max(0.0, t - d/2);
         } else {
             if (x0 <= 0) {
                 resp = -1;
+                t = std::max(0.0, t + d/2);
             } else {
                 resp = 0;
             }
@@ -401,7 +408,7 @@ NumericVector r_WEV (int n, NumericVector params, int model, double delta=0.01, 
             conf = x0 + R::rnorm(tau*mu, sqrt(tau));
         } else {
             evid = R::rnorm(tau*mu*resp, sqrt(tau));
-            vis = R::rnorm((tau+t)*vismu, sqrt(sig*sig*(tau+t)+(t+tau)*(t+tau)*sigmu*sigmu));
+            vis = R::rnorm((tau+t)*muvis, sqrt(svis*svis*(tau+t)+(t+tau)*(t+tau)*sigvis*sigvis));
             conf = w*evid + (1-w)*vis;
         }
         t = t  + R::runif(t0, t0+st0);

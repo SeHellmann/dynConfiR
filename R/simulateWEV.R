@@ -1,47 +1,94 @@
-#' Simulation of confidence ratings and RTs in dWEV and 2DSD confidence models
+#' Simulation of confidence ratings and RTs in dynWEV and 2DSD confidence models
 #'
-#' Simulates the decision responses and reaction times together with a discrete confidence judgement  in the 2DSD Model (Pleskac & Busemeyer, 2010) and the dWEV model (Hellmann & Rausch), given specific parameter constellations.
-#' See \code{\link{dWEV}} and \code{\link{d2DSD}} for more information about parameters. Also computes the Gamma rank correlation between the confidence ratings and condition (task difficulty), reaction times and accuracy in the simulated output.
+#' Simulates the decision responses and reaction times together with a
+#' discrete confidence judgment in the 2DSD model (Pleskac & Busemeyer, 2010)
+#' and the dynWEV model (Hellmann et al., preprint), given specific parameter constellations.
+#' See \code{\link{dWEV}} and \code{\link{d2DSD}} for more information about parameters.
+#' Also computes the Gamma rank correlation between the confidence ratings and condition
+#' (task difficulty), reaction times and accuracy in the simulated output.
+#' Basically, this function is a wrapper for \code{\link{rWEV}} and \code{\link{r2DSD}}
+#' for application in confidence experiments with manipulation of specific parameters.
 #'
-#' @param n integer. The number of samples (per condition and stimulus direction) generated. Total number of samples is \code{n*nConditions*length(stimulus)}.
-#' @param paramDf a list or dataframe with one row. Column names should match the names of dWEV and 2DSD model specific parameter names. For different stimulus quality/mean drift rates, names should be v1, v2, v3,.... Different sv parameters are possible with sv1, sv2, sv3... with equally many steps as for drift rates. Additionally, the confidence thresholds should be given by names with thetaUpper1, thetaUpper2,..., thetaLower1,... or, for symmetric thresholds only by theta1, theta2,....
-#' @param model character scalar. One of "WEVmu", "dynWEV", or "2DSD".
-#' @param delta numeric. Discretization steps for simulations with the stochastic process (used, if method!="rtdists")
-#' @param maxrt numeric. Maximum reaction time returned, if method!="rtdists". If the simulation of the stochastic process exceeds a rt of maxrt,
-#' the response will be set to 0 and the maxrt will be returned as rt.
-#' @param  simult_conf logical. TRUE, if in the experiment confidence was reported simultaneously
+#' @param paramDf a list or dataframe with one row. Column names should match the names
+#' of dynWEV and 2DSD model specific parameter names. For different stimulus quality/mean
+#' drift rates, names should be v1, v2, v3,....
+#' Different sv and/or s parameters are possible with sv1, sv2, sv3... (s1, s2, s3,...
+#' respectively) with equally many steps as for drift rates. Additionally, the confidence
+#' thresholds should be given by names with thetaUpper1, thetaUpper2,..., thetaLower1,... or,
+#' for symmetric thresholds only by theta1, theta2,....
+#' @param n integer. The number of samples (per condition and stimulus direction) generated.
+#' Total number of samples is \code{n*nConditions*length(stimulus)}.
+#' @param model character scalar. One of "dynWEV", or "2DSD".
+#' @param delta numeric. Discretization steps for simulations with the stochastic process
+#' (used, if `method!="rtdists"`)
+#' @param maxrt numeric. Maximum reaction time returned, if `method!="rtdists"`.
+#' If the simulation of the stochastic process exceeds a rt of `maxrt`,
+#' the response will be set to 0 and `maxrt` will be returned as rt.
+#' @param  simult_conf logical. `TRUE`, if in the experiment confidence was reported simultaneously
 #' with the decision, as then decision and confidence judgment are assumed to have happened
-#' subsequent before response and tau is added to the simulated decision time. If FALSE,
+#' subsequent before response and tau is added to the simulated decision time. If `FALSE`
 #' returned response time will only be decision time plus non-judgment time component.
-#' @param gamma logical.
-#' @param agg_simus logical. Simulation is done on a trial basis with rt's outcome. If TRUE, the simulations will be aggregated over RTs to return only the distribution of response and confidence ratings. Default: FALSE.
+#' @param gamma logical. If TRUE, the gamma correlation between confidence ratings, rt
+#' and accuracy is computed.
+#' @param agg_simus logical. Simulation is done on a trial basis with rts outcome.
+#' If TRUE, the simulations will be aggregated over RTs to return only the distribution
+#' of response and confidence ratings. Default: FALSE.
 #'
-#' @param stimulus numeric vector. Either 1, -1 or c(-1, 1) (default). Together with condition represents the experimental situation. In a 2AFC task the presented stimulus belongs to one of two categories. In the default setting trials with
-#' both categories presented are simulated but one can choose to simulate only trials with the stimulus coming from one category (1 for the category that is associated with positive drift in the decision process where "upper"/1 responses are considered correct and -1 correspondingly for negative drifts and "lower"/-1 correct decisions).
-#' @param method character. Method for the simulation. If "rtdists", simulations are done using the function rdiffusion from the rtdists package. Else (default), for each observation the
-#' stochastic process is simulated in discrete steps.
-#' @param precision \code{numerical} scalar value. Precision of calculation. Corresponds roughly to the number of decimals of the predicted CDFs that are calculated accurately. Default is 3. This argument is given directly to \code{\link[rtdists:Diffusion]{rdiffusion}} used for generating samples in the decision process.
+#' @param stimulus numeric vector. Either 1, -1 or c(-1, 1) (default). Together with
+#' condition represents the experimental situation. In a binary decision task the presented
+#' stimulus belongs to one of two categories. In the default setting trials with
+#' both categories presented are simulated but one can choose to simulate only trials with
+#' the stimulus coming from one category (1 for the category that is associated with positive
+#' drift in the decision process where "upper"/1 responses are considered correct and -1
+#' correspondingly for negative drifts and "lower"/-1 correct decisions).
+#' @param method character. Method for the simulation. If "rtdists", simulations are done
+#' using the function `rdiffusion` from the `rtdists` package. For any other value (e.g. the
+#' default "Cpp") for each observation the stochastic process is simulated in discrete steps
+#' with a C++ routine.
+#' @param precision \code{numerical} scalar value. This argument is given directly to
+#' \code{\link[rtdists:Diffusion]{rdiffusion}} if it is used for generating samples in the
+#' decision process. Default is 3.
+#'
 #' @param seed numerical. Seeding for non-random data generation.
 #'
-#' @return Depending on gamma and agg_simus. If gamma is TRUE, returns a list with elements:
-#' "simus" (the simulated data frame) and "gamma", which is again a list with elements
-#' "condition", "rt" and "correct", each a tibble with two columns (see details for more
-#' information). If gamma is FALSE, returns a data frame with columns: condition, stimulus,
-#' response, correct, rt, conf (the continuous confidence measure) and rating (the discrete
-#' confidence rating) or (if agg_simus=TRUE): condition, stimulus, response, correct, rating
-#' and p (for the probability of a response and rating, given the condition and stimulus).
+#' @return Depending on `gamma` and `agg_simus`.
+#'
+#' If `gamma` is `FALSE`, returns a `data.frame` with columns: `condition`,
+#' `stimulus`, `response`, `correct`, `rt`, `conf` (the continuous confidence
+#' measure) and `rating` (the discrete confidence rating) or
+#' (if `agg_simus=TRUE`): `condition`, `stimulus`,`response`, `correct`,
+#' `rating` and `p` (for the probability of a response and rating, given
+#' the condition and stimulus).
+#'
+#' If `gamma` is `TRUE`, returns a `list` with elements:
+#' `simus` (the simulated data frame) and `gamma`, which is again a `list` with elements
+#' `condition`, `rt` and `correct`, each a `tibble` with two columns (see details for more
+#' information).
 #'
 #'
-#' @details The function combines the random generator \code{\link[rtdists:Diffusion]{rdiffusion}} from the package \code{rtdists} for the decision process outputs and \code{rnorm} to produce the confidence measure in the respective model.
-#' The confidence outputs are then binned according to the given thresholds. The output of the fitting function \code{\link{fitRTConf}} with the respective model fits the argument paramDf for simulation.
-#' The Gamma coefficients are computed seperately for correct/incorrect responses for the correlation of confidence ratings with condition and rt and seperately for conditions for the correlation of accuracy and confidence. The
-#' resulting tibbles in the output thus have two columns. One for the grouping variable and one for the Gamma coefficient.
+#' @details By default the simulation is done by simulating normal variables in
+#' discretized steps until the lower or upper boundary is met (or the maximal rt
+#' is reached).
 #'
-#' @note Different parameters for different conditions are only allowed for drift rate, \code{v}, and drift rate variability, \code{sv}. All other parameters are used for all conditions.
+#' If `method="rtdistw"`, the function combines the random generator
+#' \code{\link[rtdists:Diffusion]{rdiffusion}}
+#' and \code{rnorm} to produce the confidence measure in the respective model.
 #'
-#' @references Pleskac, T. J., & Busemeyer, J. R. (2010). Two-Stage Dynamic Signal Detection: A Theory of Choice, Decision Time, and Confidence, \emph{Psychological Review}, 117(3), 864-901. doi:10.1037/a0019737
+#' In any case, the confidence outputs are then binned according to the given thresholds.
+#' The output of the fitting function \code{\link{fitRTConf}} with the respective model
+#' fits the argument `paramDf` for simulation.
+#' The Gamma coefficients are computed separately for correct/incorrect responses for the
+#' correlation of confidence ratings with condition and rt and separately for conditions
+#' for the correlation of accuracy and confidence. The
+#' resulting tibbles in the output thus have two columns. One for the grouping variable
+#' and one for the Gamma coefficient.
 #'
-#' Rausch, M., Hellmann, S., & Zehetleitner, M. (2018). Confidence in masked orientation judgments is informed by both evidence and visibility. \emph{Attention, Perception, & Psychophysics}, 80(1), 134–154.  doi: 10.3758/s13414-017-1431-5
+#' @note Different parameters for different conditions are only allowed for drift rate,
+#' \code{v}, drift rate variability, \code{sv} and diffusion constant `s`.
+#' All other parameters are used for all conditions.
+#'
+#' @references Hellmann, S., Zehetleitner, M., & Rausch, M. (preprint). Simultaneous modeling of choice,
+#' confidence and response time in visual perception. https://osf.io/9jfqr/
 #'
 #'
 #' @author Sebastian Hellmann.
@@ -54,13 +101,13 @@
 #' @importFrom Hmisc rcorr.cens
 #' @importFrom rlang .data
 # @importFrom pracma integral
-#' @aliases rWEV r2DSD simulate2DSD
+#' @aliases simulate2DSD
 #'
 
 ## When given vectorised parameters, n is the number of replicates for each parameter set
 #' @rdname simulateWEV
 #' @export
-rWEV <- function (paramDf, n=1e+4,  model = "dynWEV", simult_conf = TRUE, gamma = FALSE, agg_simus=FALSE,
+simulateWEV <- function (paramDf, n=1e+4,  model = "dynWEV", simult_conf = TRUE, gamma = FALSE, agg_simus=FALSE,
                          stimulus = c(-1,1), method = "Cpp",  precision = 3, delta=0.01, maxrt=15, seed=NULL)
 {
   if (!is.null(seed)) {
@@ -81,7 +128,11 @@ rWEV <- function (paramDf, n=1e+4,  model = "dynWEV", simult_conf = TRUE, gamma 
   t0 <- paramDf$t0
   st0 <- paramDf$st0
   tau = paramDf$tau
-
+  if ("d" %in% names(paramDf)) {
+    d <- paramDf$d
+  } else {
+    d <- 0
+  }
   nConds <- length(grep(pattern = "^v[0-9]", names(paramDf), value = T))
   if (nConds > 0 ) {
     V <- c(t(paramDf[,paste("v",1:(nConds), sep = "")]))
@@ -95,7 +146,16 @@ rWEV <- function (paramDf, n=1e+4,  model = "dynWEV", simult_conf = TRUE, gamma 
   } else {
     SV <- rep(paramDf$sv, nConds)
   }
-
+  vary_s <-   length(grep(pattern = "^s[0-9]", names(paramDf), value = T))>1
+  if (vary_s){
+    S <- c(t((paramDf[,paste("s",1:(nConds), sep = "")])))
+  } else {
+    if ("s" %in% names(paramDf)) {
+      S <- rep(paramDf$s, nConds)
+    } else {
+      S <- rep(1, nConds)
+    }
+  }
   symmetric_confidence_thresholds <- length(grep(pattern = "thetaUpper", names(paramDf), value = T))<1
   if (symmetric_confidence_thresholds) {
     nRatings <- length(grep(pattern = "^theta[0-9]", names(paramDf)))+1
@@ -110,11 +170,11 @@ rWEV <- function (paramDf, n=1e+4,  model = "dynWEV", simult_conf = TRUE, gamma 
       if (all(SV==0)) {
         simus <- cbind(simus, rdiffusion(n=nrow(simus), a=rep(a, nrow(simus)), v=V[simus$condition]*simus$stimulus, t0 = t0,
                                      z = z*a, d = 0, sz = a*sz, sv = 0,
-                                     st0=st0, s=1,
+                                     st0=st0, s=S[simus$condition],
                                      precision = precision))
         simus$conf <- rnorm(n=nrow(simus),
                                mean=a * 0^(simus$response=="lower") +tau*V[simus$condition]*simus$stimulus,
-                               sd=sqrt(tau))
+                               sd=sqrt(tau)*S[simus$condition])
       } else {
         simus$d <- rnorm(n=nrow(simus),
                        mean=V[simus$condition]*simus$stimulus,
@@ -122,11 +182,11 @@ rWEV <- function (paramDf, n=1e+4,  model = "dynWEV", simult_conf = TRUE, gamma 
         simus <- cbind(simus,
                      rdiffusion(n=nrow(simus), a=rep(a, nrow(simus)), v=simus$d, t0 = t0,
                                 z = z*a, d = 0, sz = a*sz, sv = 0,
-                                st0=st0, s=1,
+                                st0=st0, s=S[simus$condition],
                                 precision = precision))
         simus$conf <- rnorm(n=nrow(simus),
                           mean=a * 0^(simus$response=="lower") +tau*simus$d,
-                          sd=sqrt(tau))
+                          sd=sqrt(tau)*S[simus$condition])
       }
     } else {
       ### Simulation in the dynWEV model   ####
@@ -136,11 +196,11 @@ rWEV <- function (paramDf, n=1e+4,  model = "dynWEV", simult_conf = TRUE, gamma 
         simus <- cbind(simus,
                      rdiffusion(n=nrow(simus), a=a, v=V[simus$condition]*simus$stimulus, t0 = t0,
                                 z = z*a, d = 0, sz = a*sz, sv = 0,
-                                st0=st0, s=1,
+                                st0=st0, s=S[simus$condition],
                                 precision = precision))
         simus$evid_conf <- rnorm(n=nrow(simus),
                                mean=V[simus$condition]*simus$stimulus*tau*(-1)^(simus$response=="lower"),
-                               sd = sqrt(tau))
+                               sd = sqrt(tau)*S[simus$condition])
 
       } else {
         simus$d <- rnorm(n=nrow(simus),
@@ -149,11 +209,11 @@ rWEV <- function (paramDf, n=1e+4,  model = "dynWEV", simult_conf = TRUE, gamma 
         simus <- cbind(simus,
                      rdiffusion(n=nrow(simus), a=a, v=simus$d, t0 = t0,
                                 z = z*a, d = 0, sz = a*sz, sv = 0,
-                                st0=st0, s=1,
+                                st0=st0, s=S[simus$condition],
                                 precision = precision))
         simus$evid_conf <- rnorm(n=nrow(simus),
                                mean=simus$d*tau*(-1)^(simus$response=="lower"),
-                               sd = sqrt(tau))
+                               sd = sqrt(tau)*S[simus$condition])
       }
       sigvis <- paramDf$sigvis
       simus$visibility <- rnorm(n=nrow(simus), mean= (simus$rt+tau)*abs(V[simus$condition]), sd = sqrt(svis^2*(tau+simus$rt)+(simus$rt+tau)^2*sigvis^2))
@@ -165,27 +225,33 @@ rWEV <- function (paramDf, n=1e+4,  model = "dynWEV", simult_conf = TRUE, gamma 
       w = -1
       svis = -1
       sigvis = -1
-      vismu = rep(-1, nConds)
+      muvis = rep(-1, nConds)
     } else {
       w = paramDf$w
       svis = paramDf$svis
       sigvis = paramDf$sigvis
-      if ("vismu" %in% names(paramDf)) {
-        vismu <- rep(paramDf$vismu, nConds)
+      if ("muvis" %in% names(paramDf)) {
+        muvis <- rep(paramDf$muvis, nConds)
       } else {
-        vismu <- abs(V)
+        muvis <- abs(V)
       }
     }
 
     simus <- expand.grid(condition = 1:nConds, stimulus=stimulus) %>%
       mutate(v  = V[.data$condition]*.data$stimulus,
              sv = SV[.data$condition],
-             vismu = vismu[.data$condition]) %>%
-      group_by(.data$condition, .data$stimulus) %>%
-      summarise(as.data.frame(r_WEV(n=n, params=c(as.numeric(cur_data()[1:2]),a, z, sz, t0, st0, tau,w, as.numeric(cur_data()[3]), sigvis, svis),
-                      model=which(model == c("2DSD", "dynWEV")),
-                      delta = delta, maxT =maxrt), c("rt", "response", "conf"))) %>%
-      rename(rt=3, response=4, conf=5)
+             s = S[simus$condition],
+             muvis = muvis[.data$condition]) %>%
+      group_by(.data$condition, .data$stimulus, .data$s) %>%
+      summarise(as.data.frame(r_WEV(n=n, params=c(a/as.numeric(cur_data()[3]),as.numeric(cur_data()[1])/as.numeric(cur_data()[3]),
+                                                  t0, d, sz, as.numeric(cur_data()[2])/as.numeric(cur_data()[3]),
+                                                  st0, z, tau, 0, 1, w, as.numeric(cur_data()[4])/as.numeric(cur_data()[3]),
+                                                  sigvis/as.numeric(cur_data()[3]), svis/as.numeric(cur_data()[3])),
+                                    model=which(model == c("2DSD", "dynWEV")),
+                                    delta = delta, maxT =maxrt, TRUE), c("rt", "response", "conf"))) %>%
+      rename(rt=3, response=4, conf=5) %>%
+      mutate(conf = .data$conf * .data$s) %>%
+      select(-c("s"))
   }
 
   ### Bin confidence measure for discrete ratings:

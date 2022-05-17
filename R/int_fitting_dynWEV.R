@@ -265,7 +265,7 @@ fittingdynWEV <- function(df, nConds, nRatings, fixed, sym_thetas,
         if (logging==TRUE) {
           log_info(paste("Finished attempt No.", i, " restart no. ", l))
         }
-        if (!exists("m") || class(m) == "try-error"){
+        if (!exists("m") || inherits(m, "try-error")){
           if (logging==TRUE) {
             log_error(paste("No fit obtained at attempt No.", i))
             log_error(paste("Used parameter set", paste(start, sep="", collapse=" "), sep=" ", collapse = ""))
@@ -341,7 +341,7 @@ fittingdynWEV <- function(df, nConds, nRatings, fixed, sym_thetas,
         } else {
           stop(paste("Not implemented or unknown method: ", optim_method, ". Use 'bobyqa', Nelder-Mead' or 'L-BFGS-B' instead.", sep=""))
         }
-        if (!exists("m") || class(m) == "try-error"){
+        if (!exists("m") || inherits(m, "try-error")){
           break
         }
         if (exists("m") && is.list(m)){

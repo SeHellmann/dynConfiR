@@ -2,14 +2,21 @@
 #'
 #' Simulates the decision responses, reaction times and state of the loosing accumulator
 #' together with a discrete confidence judgment  in the independent and partially anti-correlated
-#' race model (IRM and PCRM), given specific parameter constellations. See \code{\link{dIRM}} and
-#' \code{\link{dPCRM}} for more information about parameters. Also computes the Gamma rank
-#' correlation between the confidence ratings and condition (task difficulty), reaction times
-#' and accuracy in the simulated output.
+#' race model (IRM and PCRM) (Hellmann et al., preprint), given specific parameter constellations.
+#' See \link{RaceModels} for more information about
+#' parameters. Also computes the Gamma rank correlation between the confidence
+#' ratings and condition (task difficulty), reaction times and accuracy in the
+#' simulated output. Basically, this function is a wrapper for \code{\link{rIRM}}
+#' and \code{\link{rPCRM}} for application in confidence experiments with
+#' manipulation of specific parameters.
+#' `rRM_Kiani` simulates a different version of race models, presented in
+#' Kiani et al. (2014), but without a confidence measure.
 #'
-#' @param paramDf a list or dataframe with one row. Column names should match the names of
+#' @param paramDf a list or data frame with one row. Column names should match the names of
 #' IRM and PCRM model parameter names. For different stimulus quality/mean drift rates, names should
-#' be v1, v2, v3,.... Additionally, the confidence thresholds should be given by names with
+#' be v1, v2, v3,.... The function allows also the process noise to vary (using
+#' s1, s2, ...), which is otherwise not required and set to 1.
+#' Additionally, the confidence thresholds should be given by names with
 #' thetaUpper1, thetaUpper2,..., thetaLower1,... or, for symmetric thresholds only by theta1, theta2,....
 #' @param n integer. The number of samples (per condition and stimulus direction) generated.
 #' Total number of samples is \code{n*nConditions*length(stimulus)}.
@@ -19,11 +26,11 @@
 #' be used.
 #' @param gamma logical. If TRUE, the gamma correlation between confidence ratings, rt and accuracy is
 #' computed.
-#' @param agg_simus logical. Simulation is done on a trial basis with rt's outcome. If TRUE,
+#' @param agg_simus logical. Simulation is done on a trial basis with rts outcome. If TRUE,
 #' the simulations will be aggregated over RTs to return only the distribution of response and
 #' confidence ratings. Default: FALSE.
 #' @param stimulus numeric vector. Either 1, 2 or c(1, 2) (default).
-#' Together with condition represents the experimental situation. In a 2AFC task the presented
+#' Together with condition represents the experimental situation. In a binary decision task the presented
 #' stimulus belongs to one of two categories. In the default setting trials with
 #' both categories presented are simulated but one can choose to simulate only trials with the
 #' stimulus coming from one category (each associated with positive drift in one of two accumulators).
@@ -31,52 +38,56 @@
 #' @param maxrt numerical. Maximum reaction time to be simulated (see details). Default: 15.
 #' @param seed numerical. Seeding for non-random data generation. (Also possible outside of the function.)
 #'
-#' @return Depending on gamma and agg_simus. If gamma is TRUE, returns a list with elements:
-#' "simus" (the simulated data frame) and "gamma", which is again a list with elements
-#' "condition", "rt" and "correct", each a tibble with two columns (see details for more
-#' information). If gamma is FALSE, returns a data frame with columns: condition, stimulus,
-#' response, correct, rt, conf (the continuous confidence measure) and rating (the discrete
-#' confidence rating) or (if agg_simus=TRUE): condition, stimulus, response, correct, rating
-#' and p (for the probability of a response and rating, given the condition and stimulus).
+#' @return Depending on `gamma` and `agg_simus`.
+#'
+#' If `gamma` is `FALSE`, returns a `data.frame` with columns: `condition`,
+#' `stimulus`, `response`, `correct`, `rt`, `conf` (the continuous confidence
+#' measure) and `rating` (the discrete confidence rating) or
+#' (if `agg_simus=TRUE`): `condition`, `stimulus`,`response`, `correct`,
+#' `rating` and `p` (for the probability of a response and rating, given
+#' the condition and stimulus).
+#'
+#' If `gamma` is `TRUE`, returns a `list` with elements:
+#' `simus` (the simulated data frame) and `gamma`, which is again a `list` with elements
+#' `condition`, `rt` and `correct`, each a `tibble` with two columns (see details for more
+#' information).
 #'
 #'
 #' @details The simulation is done by simulating normal variables in discretized steps until
 #' one process reaches the boundary. If no boundary is met within the maximum time, response is
 #' set to 0. The output of the fitting function \code{\link{fitRTConf}} with the respective model
-#' fits the argument paramDf for simulation. The Gamma coefficients are computed seperately for
+#' fits the argument `paramDf` for simulation. The Gamma coefficients are computed separately for
 #' correct/incorrect responses for the correlation of confidence ratings with condition and rt
-#' and seperately for conditions for the correlation of accuracy and confidence. The resulting
+#' and separately for conditions for the correlation of accuracy and confidence. The resulting
 #' tibbles in the output thus have two columns. One for the grouping variable and one for the
 #' Gamma coefficient.
 #'
 #' @note Different parameters for different conditions are only allowed for drift rate, \code{v},
-#' and variability, \code{s}. All other parameters are used for all conditions.
+#' and process variability, \code{s}. All other parameters are used for all conditions.
 #'
-#' @references Moreno-Bote, R. (2010). Decision confidence and uncertainty in diffusion models with
-#' partially correlated neuronal integrators. Neural Computation, 22(7), 1786–1811.
-#' https://doi.org/10.1162/neco.2010.12-08-930
+#' @references Hellmann, S., Zehetleitner, M., & Rausch, M. (preprint). Simultaneous modeling of choice,
+#' confidence and response time in visual perception. https://osf.io/9jfqr/
 #'
-#' Rausch, M., Hellmann, S., & Zehetleitner, M. (2018). Confidence in masked orientation judgments is
-#' informed by both evidence and visibility. \emph{Attention, Perception, & Psychophysics}, 80(1), 134–154.
-#' doi: 10.3758/s13414-017-1431-5
-#'
+#' Kiani, R., Corthell, L., & Shadlen, M.N. (2014) Choice certainty is informed
+#' by both evidence and decision time.
+#' Neuron, 84(6), 1329-1342. doi:10.1016/j.neuron.2014.12.015
 #'
 #' @author Sebastian Hellmann.
 #'
-#' @name rRM
+#' @name simulateRM
 #' @import dplyr
 #' @importFrom magrittr %>%
 #' @importFrom Hmisc rcorr.cens
 #' @importFrom rlang .data
 #' @importFrom stats runif
 # @importFrom pracma integral
-#' @aliases simulateRM  simulateIRM simulatePCRM
+#' @aliases simulateIRM simulatePCRM
 #'
 
 ## When given vectorised parameters, n is the number of replicates for each parameter set
-#' @rdname rRM
+#' @rdname simulateRM
 #' @export
-rRM <- function (paramDf, n=1e+4,  model = "IRM", time_scaled=FALSE,
+simulateRM <- function (paramDf, n=1e+4,  model = "IRM", time_scaled=FALSE,
                         gamma = FALSE, agg_simus=FALSE,
                         stimulus = c(1,2), delta=0.01, maxrt=15, seed=NULL)
 {
@@ -108,13 +119,19 @@ rRM <- function (paramDf, n=1e+4,  model = "IRM", time_scaled=FALSE,
     V <- paramDf$v
     nConds <- 1
   }
-  if (!("s" %in% names(paramDf))) {
-    paramDf$s = 1
+  vary_s <-   length(grep(pattern = "^s[0-9]", names(paramDf), value = T))>1
+  if (vary_s){
+    S <- c(t((paramDf[,paste("s",1:(nConds), sep = "")])))
+  } else {
+    if ("s" %in% names(paramDf)) {
+      S <- rep(paramDf$s, nConds)
+    } else {
+      S <- rep(1, nConds)
+    }
   }
-
   df <- expand.grid(condition = 1:nConds, stimulus=stimulus)
   help_fct <- function(row) {
-    res <- as.data.frame(r_RM(n,c(row$mu1, row$mu2, -paramDf$a, -paramDf$b, paramDf$s, paramDf$t0, paramDf$st0),
+    res <- as.data.frame(r_RM(n,c(row$mu1, row$mu2, -paramDf$a, -paramDf$b, row$s, paramDf$t0, paramDf$st0),
                               indep = (model=="IRM"),
                               delta=delta, maxT=maxrt))
     names(res) <- c("rt", "response", "xl")
@@ -123,7 +140,8 @@ rRM <- function (paramDf, n=1e+4,  model = "IRM", time_scaled=FALSE,
   ## Produce process outcomes and compute confidence measure
   simus <- df %>%
     mutate(mu1 = if_else(.data$stimulus==1, V[.data$condition], -V[.data$condition]),
-           mu2 = if_else(.data$stimulus==1, -V[.data$condition], V[.data$condition])) %>%
+           mu2 = if_else(.data$stimulus==1, -V[.data$condition], V[.data$condition]),
+           s = S[.data$condition]) %>%
     group_by(.data$condition, .data$stimulus) %>%
     summarise(help_fct(.data)) %>%
     mutate(xj = if_else(.data$response==1, paramDf$b, paramDf$a) + .data$xl)
@@ -220,26 +238,8 @@ rRM <- function (paramDf, n=1e+4,  model = "IRM", time_scaled=FALSE,
 }
 
 
-
-
-
-#' @rdname rRM
-#' @export
-rRM_CPP <- function (n=1e+4,  paramDf, model="IRM", delta=0.01, maxrt = 15)
-{
-  res <- as.data.frame(r_RM(n,c(paramDf$mu1, paramDf$mu2, paramDf$a, paramDf$b, paramDf$s), indep = (model=="IRM"),
-                              delta=delta, maxT=maxrt))
-  if ("t0" %in% names(paramDf)) {
-    res$rt <- res$rt + runif(nrow(res), min = paramDf$t0, max=paramDf$t0+paramDf$st0)
-  }
-  names(res) <- c("rt", "response", "xl")
-  res
-
-}
-
-
 ## When given vectorised parameters, n is the number of replicates for each parameter set
-#' @rdname rRM
+#' @rdname simulateRM
 #' @export
 rRM_Kiani <- function (paramDf, n=1e+4, time_scaled=FALSE,
                  gamma = FALSE, agg_simus=FALSE,

@@ -1,39 +1,48 @@
-#' Get Quantiles from predicted Density or CDF
+#' Get Quantiles from vectors of PDF or CDF values
 #'
-#' \code{compute_quantiles_cdf} computes quantiles for a given CDF vector.
-#' \code{RTDensityToQuantiles} computes the quantiles from a vector of probability
-#' density values within groups of other given variables (in the context of confidence
-#' models: conditions, correct/incorrect answers and confidence ratings), if
-#' available.
-#'
-#' @param pred dataframe. Should have at least two columns: rt (for reaction times)
-#' and dens or densscaled. All other columns will be used as grouping factors.
-#' As input for pred, the outputs of predictRT and predictRTModels can be used.
+#' `CDFtoQuantiles` computes quantiles for a given CDF.
+#' `PDFtoQuantiles` computes the quantiles for given PDF values within
+#' groups of other variables, if available.
+
+#' @param pdf_df dataframe. Should have at least two columns:
+#' * `rt` (for reaction times) or `x` for the support values of the pdf
+#' * `dens` or `pdf` for the pdf values
+#' * All other columns will be used as grouping factors, for which separate quantiles will be returned.
 #' @param p numeric vector. Probabilities for returned quantiles. Default:
 #' c(.1, .3, .5, .7, .9).
-#' @param agg_over character. Names of columns to aggregate over (using the mean of
+#' @param agg_over character. Names of columns in `pdf_df` to aggregate over (using the mean of
 #' densities, which is valid only, if groups occur with equal probabilities) before
 #' computing the quantiles.
-#' @param cdf numeric. A increasing vector of the same length as \code{rt} giving the CDF for RT-Values.
-#' @param rt numeric. A increasing vector of same length as \code{cdf}. May be anything, not only rt's.
-
+#' @param scaled logical. Indicating whether the pdf values are from a proper probability
+#' distribution. Non-scaled pdfs will scaled to 1. If `scaled` is TRUE, this may cause
+#' problems with high probabilities. In any case we strongly recommend to cover the most
+#' probability mass with the values in the support vector.
+#' @param cdf numeric. A increasing vector of the same length as `x` giving the CDF for respective x-Values.
+#' Dataframe inputs are accepted. If a column `x` is available there, this will be used as support values.
+#' @param x numeric. A increasing vector of same length as `cdf`. Can also be specified as column of `cdf`.
 #'
-#' @return \code{RTDensityToQuantiles} returns a tibble with columns p and q indicating
-#' probabilities and respective quantiles. Furhtermore, the output has grouping columns
-#' identical to the additional columns in the input (without rt, dens and densscaled),
-#' but without the ones in the agg_over argument. \code{compute_quantiles_cdf}
+#' @return `PDFtoQuantiles` returns a tibble with columns p and q indicating
+#' probabilities and respective quantiles. Furthermore, the output has grouping columns
+#' identical to the additional columns in the input (without rt/x, dens and densscaled),
+#' but without the ones in the agg_over argument. `CDFtoQuantiles`
 #' returns only a data.frame with columns p and q.
 #'
-#' @details The RTs in the input data frame should be equidistant, i.e. the difference
-#' between consecutive RT-values should be constant. For a reasonable accuracy the number
-#' of steps in the input should be very high, i.e. the distant between rt values small.
-#' The precision of the output is bounded from above by the step size of the RTs in the input.
+#' @details
+#' For a reasonable accuracy the number of steps in the support column (`rt`/`x`)
+#' should be high, i.e. the distance between values small.
+#' We recommend, to ensure that the support vector in the input to be equidistant,
+#' i.e. the difference between consecutive support values should be constant, though
+#' this is not required.
+#' If both column names `x` and `rt` are present in `pdf_df`, `rt` will be preferred.
+#' Attention should be given to the columns of `pdf_df` other than `rt`/`x`
+#' and `dens`/`pdf`.
 #'
-#' If available, the column densscaled will be preferred.
-#' If the column dens is used, it will be scaled by the summed probability.
+#' The column for the pdf may be scaled to integrate to 1 but do not have to.
 #'
-#' Attention should be given to the columns of pred other then rt and dens/densscaled, because
-#' the quantiles are computed
+#' ## Quantile computation in the `dynConfiR` package
+#' As argument `pdf_df`, the outputs of `predictRT` and `predictRTModels` from the
+#' `dynConfiR` package can be used. In the context of confidence models grouping factors
+#' often used are conditions, correct/incorrect answers and confidence ratings.
 #'
 #' @references Pleskac, T. J., & Busemeyer, J. R. (2010). Two-Stage Dynamic Signal Detection:
 #' A Theory of Choice, Decision Time, and Confidence, \emph{Psychological Review}, 117(3),
@@ -46,76 +55,105 @@
 #'
 #' @author Sebastian Hellmann.
 #'
-#' @name RTDensityToQuantiles
-#' @import dplyr
+#' @name PDFtoQuantiles
 #' @importFrom magrittr %>%
 #' @importFrom rlang .data
-#' @aliases getquantiles getRTquantiles
+#' @import dplyr
+#'
+#' @aliases getquantiles getRTquantiles RTDensityToQuantiles
 #' @importFrom Rcpp evalCpp
 #'
 
 
-#' @rdname RTDensityToQuantiles
+#' @rdname PDFtoQuantiles
 #' @export
-RTDensityToQuantiles <- function(pred, p = c(.1,.3,.5,.7,.9),
-                                 agg_over = NULL){
-  pred <- ungroup(pred)
-
-
-
-  if ("densscaled" %in% names(pred)) {
-    if ("dens"  %in% names(pred)) {
-      pred <- select(pred, -"dens")
+PDFtoQuantiles <- function(pdf_df, p = c(.1,.3,.5,.7,.9),
+                                 agg_over = NULL, scaled=FALSE){
+  pdf_df <- ungroup(pdf_df)
+  columns <- names(pdf_df)
+  if ("x" %in% columns) {
+    if ("rt" %in% columns) {
+      warning("The column 'rt' is used as support values, not 'x'!")
+    } else {
+      pdf_df$rt <- pdf_df$x
     }
-    temp <- pred %>% select(-rt, -densscaled) %>%
-      group_by(across()) %>% summarise(N=n())
-    if (min(temp$N) < 100) {
-      warning(paste("There are only", min(temp$N), "rows for at least one subgroup of the data set.",
-      "\nConsider refining the rt-grid for more accurate computations."))
-    }
-    pred <- pred %>% group_by(pred[,setdiff(names(pred), c("rt", "densscaled"))]) %>%
-      arrange(.data$rt) %>%
-      mutate(dt = (c(0, diff(.data$rt))+c(diff(.data$rt),0))*0.5)
-  } else {
-    if (!("dens" %in% names(pred))) {
-      stop("At least dens or densscaled should be a column of pred")
-    }
-    temp <- pred %>% select(-rt, -dens) %>%
-      group_by(across()) %>% summarise(N=n())
-    if (min(temp$N) < 100) {
-      warning(paste("There are only", min(temp$N), "rows for at least one subgroup of the data set.",
-                    "\nConsider refining the rt-grid for more accurate computations."))
-    }
+  } else if (!("rt" %in% columns)) stop("Either 'x' or 'rt' must be a column of pdf_df")
 
-    pred <- pred %>% group_by(pred[,setdiff(names(pred), c("rt", "dens"))]) %>%
+  if ("pdf" %in% columns) {
+    if ("dens" %in% columns) {
+      warning("The column 'dens' is used as density values, not 'pdf'!")
+      pdf_df$pdf <- NULL
+    } else {
+      pdf_df$dens <- pdf_df$pdf
+      pdf_df$pdf <- NULL
+    }
+  } else if (!("dens" %in% columns)) stop("Either 'dens' or 'pdf' must be a column of pdf_df")
+
+  temp <- pdf_df %>% select(-c("rt", "dens")) %>%
+    group_by(across()) %>% summarise(N=n())
+  if (min(temp$N) < 100) {
+    warning(paste("There are only", min(temp$N), "rows for at least one subgroup of the data set.",
+                  "\nConsider refining the rt-grid for more accurate computations."))
+  }
+  if (!scaled) {
+    pdf_df <- pdf_df %>% group_by(pdf_df[,setdiff(names(pdf_df), c("rt", "dens"))]) %>%
       arrange(.data$rt) %>%
       mutate(dt = (c(0, diff(.data$rt))+c(diff(.data$rt),0))*0.5,
              p=sum(.data$dens*.data$dt),
              densscaled = .data$dens/.data$p) %>%
       select(-c("p", "dens"))
+  } else {
+    pdf_df <- pdf_df %>% group_by(pdf_df[,setdiff(names(pdf_df), c("rt", "dens"))]) %>%
+      arrange(.data$rt) %>%
+      mutate(dt = (c(0, diff(.data$rt))+c(diff(.data$rt),0))*0.5,
+             densscaled = .data$dens) %>%
+      select(-c("dens"))
   }
 
-  pred <- pred %>% group_by(pred[, setdiff(names(pred), c("rt", "densscaled", "dt"))]) %>%
+
+  pdf_df <- pdf_df %>% group_by(pdf_df[, setdiff(names(pdf_df), c("rt", "densscaled", "dt"))]) %>%
     mutate(cdfscaled= cumsum(.data$densscaled*.data$dt)) %>%
     select(-"densscaled", - "dt")
   if (!is.null(agg_over)) {
-    pred <- pred %>% group_by(pred[,setdiff(names(pred), c("cdfscaled", agg_over))]) %>%
+    pdf_df <- pdf_df %>% group_by(pdf_df[,setdiff(names(pdf_df), c("cdfscaled", agg_over))]) %>%
       summarise(cdfscaled = mean(.data$cdfscaled))
   }
-  pred <- pred %>% group_by(pred[, setdiff(names(pred), c("rt", "cdfscaled"))]) %>%
-    summarise(compute_quantiles_cdf(.data$cdfscaled, .data$rt, p = p))
+  pdf_df <- pdf_df %>% group_by(pdf_df[, setdiff(names(pdf_df), c("rt", "cdfscaled"))]) %>%
+    summarise(CDFtoQuantiles(.data$cdfscaled, .data$rt, p = p))
 
-  pred
+  pdf_df
 }
 
 
-#' @rdname RTDensityToQuantiles
+#' @rdname PDFtoQuantiles
 #' @export
-compute_quantiles_cdf <- function(cdf, rt, p) {
+CDFtoQuantiles <- function(cdf, x=NULL, p) {
+  if (is.data.frame(cdf)) {
+    if (!("cdf" %in% names(cdf))) stop("cdf is a data.frame but neither 'cdf' nor 'p' is a column")
+    if (ncol(cdf)==2) {
+      if ("p" %in% names(cdf)) {
+        x <- cdf[,-which(names(cdf)=="p")]
+        cdf <- cdf[["p"]]
+      } else {
+        x <- cdf[,-which(names(cdf)=="cdf")]
+        cdf <- cdf[["cdf"]]
+      }
+    } else if (ncol(cdf)>2) {
+      if (!("x" %in% names(cdf))) stop("cdf is a data.frame with more than two columns but 'x' is not a column. \n Try using the function with two vector arguments.")
+      x <- cdf[['x']]
+      if ("p" %in% names(cdf)) {
+        cdf <- cdf[["p"]]
+      } else {
+        cdf <- cdf[["cdf"]]
+      }
+    }
+  } else {
+    if (is.null(x)) stop("'x' must be specified unless 'cdf' is a data.frame")
+  }
   q <- rep(0, length(p))
   for (i in 1:length(p)) {
     loc <- min(which(cdf>= p[i]))
-    q[i] <- rt[loc]
+    q[i] <- x[loc]
   }
   return(data.frame(p = p, q = q))
 }
