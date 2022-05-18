@@ -98,17 +98,17 @@ BEGIN_RCPP
 END_RCPP
 }
 // r_RM
-NumericVector r_RM(int n, NumericVector params, bool indep, double delta, double maxT);
-RcppExport SEXP _dynConfiR_r_RM(SEXP nSEXP, SEXP paramsSEXP, SEXP indepSEXP, SEXP deltaSEXP, SEXP maxTSEXP) {
+NumericVector r_RM(int n, NumericVector params, double rho, double delta, double maxT);
+RcppExport SEXP _dynConfiR_r_RM(SEXP nSEXP, SEXP paramsSEXP, SEXP rhoSEXP, SEXP deltaSEXP, SEXP maxTSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type n(nSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type params(paramsSEXP);
-    Rcpp::traits::input_parameter< bool >::type indep(indepSEXP);
+    Rcpp::traits::input_parameter< double >::type rho(rhoSEXP);
     Rcpp::traits::input_parameter< double >::type delta(deltaSEXP);
     Rcpp::traits::input_parameter< double >::type maxT(maxTSEXP);
-    rcpp_result_gen = Rcpp::wrap(r_RM(n, params, indep, delta, maxT));
+    rcpp_result_gen = Rcpp::wrap(r_RM(n, params, rho, delta, maxT));
     return rcpp_result_gen;
 END_RCPP
 }

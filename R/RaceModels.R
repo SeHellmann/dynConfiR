@@ -39,8 +39,11 @@
 #' Range: t0>=0. Default: t0=0.
 #' @param st0 numeric. Range of a uniform distribution for non-decision time. Range: st0>=0.
 #' Default: st0=0.
-#' @param s numeric. Diffusion constant of the two accumulators.  Usually fixed to 1 for most
-#' purposes as it scales other parameters (see Details). Range: s>0, Default: s=1.
+#' @param s1 numeric. Diffusion constant of the first accumulator.  Usually fixed to 1 for most
+#' purposes as it scales other parameters (see Details). Range: s1>0, Default: s1=1.
+#' @param s2 numeric. Diffusion constant of the second accumulator.  Usually fixed to 1 for most
+#' purposes as it scales other parameters (see Details). Range: s2>0, Default: s2=1.
+#'
 #'
 #' @param time_scaled logical. Whether the confidence measure should be time-dependent. See Details.
 #' @param step_width numeric. Step size for the integration in t0 (motor time). Default: 1e-6.
@@ -92,8 +95,11 @@
 #' set to 0.
 #'
 #' @note Similarly to the drift diffusion models (like \code{ddiffusion} and
-#' \code{\link{dWEV}}), s is a scaling factor (scales: \code{mu1},\code{mu2}, \code{a},\code{b},
-#' \code{th1},\code{th2},and \code{wrt}) and is usually fixed to 1.
+#' \code{\link{dWEV}}), `s1` and `s2` are scaling factors (`s1` scales: \code{mu1} and  \code{a},
+#' `s2` scales: \code{mu2} and \code{b}, and depending on response: if `response=2`, `s1` scales
+#' \code{th1},\code{th2},and \code{wrt}), otherwise `s2` is the scaling factor. It is sometimes
+#' assumed (Moreno-Bote, 2010), that both noise terms are equal, then they should definitely be
+#' fixed for fitting.
 #'
 #' @references Hellmann, S., Zehetleitner, M., & Rausch, M. (preprint). Simultaneous modeling of choice,
 #' confidence and response time in visual perception. https://osf.io/9jfqr/
@@ -169,7 +175,7 @@
 #' @export
 dIRM <- function (rt,response=1, mu1, mu2, a, b,
                   th1, th2, wx=1, wrt=0, wint=0,
-                  t0=0, st0=0, s=1,
+                  t0=0, st0=0, s1=1, s2=1,
                   time_scaled = TRUE, step_width=NULL)
 {
   # for convenience accept data.frame as first argument.
@@ -198,7 +204,7 @@ dIRM <- function (rt,response=1, mu1, mu2, a, b,
   pars <- prepare_RaceModel_parameter(response = response,
                                       mu1, mu2,
                                       a, b,
-                                      s, th1, th2,
+                                      s1, s2, th1, th2,
                                       t0, st0,
                                       wx, wrt, wint,
                                       nn)
@@ -206,9 +212,9 @@ dIRM <- function (rt,response=1, mu1, mu2, a, b,
   for (i in seq_len(length(pars$parameter_indices))) {
     ok_rows <- pars$parameter_indices[[i]]
 
-    densities[ok_rows] <- d_IRM (rt[ok_rows]-pars$params[ok_rows[1],12],
-                                 pars$params[ok_rows[1],1:11],
-                                 pars$params[ok_rows[1],13],
+    densities[ok_rows] <- d_IRM (rt[ok_rows]-pars$params[ok_rows[1],13],
+                                 pars$params[ok_rows[1],1:12],
+                                 pars$params[ok_rows[1],14],
                                  step_width)
   }
   abs(densities)
@@ -218,7 +224,7 @@ dIRM <- function (rt,response=1, mu1, mu2, a, b,
 #' @export
 dPCRM <- function (rt,response=1, mu1, mu2, a, b,
                    th1, th2, wx=1, wrt=0, wint=0,
-                   t0=0, st0=0, s=1,
+                   t0=0, st0=0, s1=1, s2=1,
                    time_scaled = TRUE, step_width=NULL)
 {
   # for convenience accept data.frame as first argument.
@@ -246,7 +252,7 @@ dPCRM <- function (rt,response=1, mu1, mu2, a, b,
   pars <- prepare_RaceModel_parameter(response = response,
                                       mu1, mu2,
                                       a, b,
-                                      s, th1, th2,
+                                      s1, s2, th1, th2,
                                       t0, st0,
                                       wx, wrt, wint,
                                       nn)
@@ -254,9 +260,9 @@ dPCRM <- function (rt,response=1, mu1, mu2, a, b,
   for (i in seq_len(length(pars$parameter_indices))) {
     ok_rows <- pars$parameter_indices[[i]]
 
-    densities[ok_rows] <- d_PCRM (rt[ok_rows]-pars$params[ok_rows[1],12],
-                                  pars$params[ok_rows[1],1:11],
-                                  pars$params[ok_rows[1],13],
+    densities[ok_rows] <- d_PCRM (rt[ok_rows]-pars$params[ok_rows[1],13],
+                                  pars$params[ok_rows[1],1:12],
+                                  pars$params[ok_rows[1],14],
                                   step_width)
   }
   abs(densities)
@@ -267,14 +273,14 @@ dPCRM <- function (rt,response=1, mu1, mu2, a, b,
 #' @export
 rIRM <- function (n, mu1, mu2, a, b,
                  wx=1, wrt=0, wint=0,
-                 t0=0, st0=0, s=1,
+                 t0=0, st0=0, s1=1, s2=1,
                  time_scaled = TRUE, step_width=NULL,
                  delta=0.01, maxrt=15)
 {
   if (any(missing(mu1), missing(mu2),
           missing(a), missing(b))) stop("mu1, mu2, a, and b must be supplied")
   if (any(c(a<=0, b<=0))) {stop("Both thresholds (a  and b) must be positive")}
-  if (any(s<=0)) {stop("s must be positive")}
+  if (any((s1<=0) | (s1<=0))) {stop("s1 and s2 must be positive")}
   if (any(t0<0)) {stop("Non-decision time, t0, has to be non-negative")}
   if (any(st0<0)) {stop("Non-decision time range, st0, has to be non-negative")}
 
@@ -287,7 +293,7 @@ rIRM <- function (n, mu1, mu2, a, b,
   pars <- prepare_RaceModel_parameter(response = 1,
                                       mu1, mu2,
                                       a, b,
-                                      s, 0, 1,
+                                      s1, s2, 0, 1,
                                       t0, st0,
                                       wx, wrt, wint,
                                       n)
@@ -295,9 +301,9 @@ rIRM <- function (n, mu1, mu2, a, b,
   for (i in seq_len(length(pars$parameter_indices))) {
     ok_rows <- pars$parameter_indices[[i]]
     current_n <- length(ok_rows)
-    out <- r_RM(current_n, pars$params[ok_rows[1],1:5], indep=TRUE, delta = delta, maxT = maxrt)
+    out <- r_RM(current_n, pars$params[ok_rows[1],1:6], indep=TRUE, delta = delta, maxT = maxrt)
 
-    ws <- pars$params[ok_rows[1],9:11]
+    ws <- pars$params[ok_rows[1],10:12]
     ws <- ws/sum(ws)
 
     # Since the Cpp function uses a different parametrization, -out[,3] is
@@ -312,7 +318,7 @@ rIRM <- function (n, mu1, mu2, a, b,
     # "state"
     out[,3] <- out[,3] - ifelse(out[,2]==1, pars$params[ok_rows[1],4], pars$params[ok_rows[1],3])
     ## Add the non-decision time to the rt-outcome
-    out[,1] <- out[,1] + pars$params[ok_rows[1],12] + runif(current_n, 0, pars$params[ok_rows[1],8])
+    out[,1] <- out[,1] + pars$params[ok_rows[1],13] + runif(current_n, 0, pars$params[ok_rows[1],9])
     res[ok_rows,1:3] <- out
 
   }
@@ -327,14 +333,14 @@ rIRM <- function (n, mu1, mu2, a, b,
 #' @export
 rPCRM <- function (n, mu1, mu2, a, b,
                   wx=1, wrt=0, wint=0,
-                  t0=0, st0=0, s=1,
+                  t0=0, st0=0, s1=1, s2=1,
                   time_scaled = TRUE, step_width=NULL,
                   delta=0.01, maxrt=15)
 {
   if (any(missing(mu1), missing(mu2),
           missing(a), missing(b))) stop("mu1, mu2, a, and b must be supplied")
   if (any(c(a<=0, b<=0))) {stop("Both thresholds (a  and b) must be positive")}
-  if (any(s<=0)) {stop("s must be positive")}
+  if (any((s1<=0) | (s2 <=0))) {stop("s1 and s2 must be positive")}
   if (any(t0<0)) {stop("Non-decision time, t0, has to be non-negative")}
   if (any(st0<0)) {stop("Non-decision time range, st0, has to be non-negative")}
 
@@ -347,7 +353,7 @@ rPCRM <- function (n, mu1, mu2, a, b,
   pars <- prepare_RaceModel_parameter(response = 1,
                                       mu1, mu2,
                                       a, b,
-                                      s, 0, 1,
+                                      s1, s2, 0, 1,
                                       t0, st0,
                                       wx, wrt, wint,
                                       n)
@@ -355,9 +361,9 @@ rPCRM <- function (n, mu1, mu2, a, b,
   for (i in seq_len(length(pars$parameter_indices))) {
     ok_rows <- pars$parameter_indices[[i]]
     current_n <- length(ok_rows)
-    out <- r_RM(current_n, pars$params[ok_rows[1],1:5], indep=FALSE, delta = delta, maxT = maxrt)
+    out <- r_RM(current_n, pars$params[ok_rows[1],1:6], indep=FALSE, delta = delta, maxT = maxrt)
 
-    ws <- pars$params[ok_rows[1],9:11]
+    ws <- pars$params[ok_rows[1],10:12]
     ws <- ws/sum(ws)
 
     # Since the Cpp function uses a different parametrization, -out[,3] is
@@ -372,7 +378,7 @@ rPCRM <- function (n, mu1, mu2, a, b,
     # "state"
     out[,3] <- out[,3] - ifelse(out[,2]==1, pars$params[ok_rows[1],4], pars$params[ok_rows[1],3])
     ## Add the non-decision time to the rt-outcome
-    out[,1] <- out[,1] + pars$params[ok_rows[1],12] + runif(current_n, 0, pars$params[ok_rows[1],8])
+    out[,1] <- out[,1] + pars$params[ok_rows[1],13] + runif(current_n, 0, pars$params[ok_rows[1],9])
     res[ok_rows,1:3] <- out
 
   }
@@ -388,13 +394,14 @@ rPCRM <- function (n, mu1, mu2, a, b,
 
 
 prepare_RaceModel_parameter <- function(response,mu1, mu2,
-                                        a, b, s, th1, th2,t0, st0, wx, wrt, wint, nn) {
+                                        a, b, s1, s2, th1, th2,t0, st0, wx, wrt, wint, nn) {
 
   if ( (length(mu1) == 1) &
        (length(mu2) == 1) &
        (length(a) == 1) &
        (length(b) == 1) &
-       (length(s) == 1) &
+       (length(s1) == 1) &
+       (length(s2) == 1) &
        (length(th1) == 1) &
        (length(th2) == 1) &
        (length(t0) == 1) &
@@ -418,7 +425,8 @@ prepare_RaceModel_parameter <- function(response,mu1, mu2,
     mu1 <- rep(mu1, length.out = nn)
     mu2 <- rep(mu2, length.out = nn)
     b <- rep(b, length.out = nn)
-    s <- rep(s, length.out = nn)
+    s1 <- rep(s1, length.out = nn)
+    s2 <- rep(s2, length.out = nn)
     a <- rep(a, length.out = nn)
     th1 <- rep(th1, length.out = nn)
     th2 <- rep(th2, length.out = nn)
@@ -431,10 +439,10 @@ prepare_RaceModel_parameter <- function(response,mu1, mu2,
   th1[th1==-Inf] <- 0
   th2[th2==Inf] <- .Machine$double.xmax
   # Build parameter matrix (and divide a, v, and sv, by s)
-  params <- cbind (mu1, mu2, -a, -b, s, th1, th2, st0, wx, wrt, wint, t0, numeric_bounds)
+  params <- cbind (mu1, mu2, -a, -b, s1, s2, th1, th2, st0, wx, wrt, wint, t0, numeric_bounds)
 
   # Check for illegal parameter values
-  if(ncol(params)<13) stop("Not enough parameters supplied: probable attempt to pass NULL values?")
+  if(ncol(params)<14) stop("Not enough parameters supplied: probable attempt to pass NULL values?")
   if(!is.numeric(params)) stop("Parameters need to be numeric.")
   if (any(is.na(params)) || !all(is.finite(params))) {
     stop("Parameters need to be numeric and finite.")

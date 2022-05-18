@@ -83,7 +83,7 @@ NumericVector d_IRM (NumericVector rts, NumericVector params, int win=1,  double
 {
     int length = rts.length();
 
-    if (params.length()!= 11) {Rcpp::stop ("Wrong number of parameters given. (Must be 9)\n"); }
+    if (params.length()!= 12) {Rcpp::stop ("Wrong number of parameters given. (Must be 12)\n"); }
     if ((win < 1) || (win > 2)) { Rcpp::stop ("Boundary must be either 2 (upper) or 1 (lower)\n"); }
 
     NumericVector out(length, 0.0);  // Should default to 0s when creating NumericVector, but just in case..
@@ -100,7 +100,7 @@ NumericVector d_PCRM (NumericVector rts, NumericVector params, int win=1, double
 {
     int length = rts.length();
 
-    if (params.length()!= 11) {Rcpp::stop ("Wrong number of parameters given. (Must be 9)\n"); }
+    if (params.length()!= 12) {Rcpp::stop ("Wrong number of parameters given. (Must be 12)\n"); }
     if ((win < 1) || (win > 2)) { Rcpp::stop ("Boundary must be either 2 (upper) or 1 (lower)\n"); }
 
     NumericVector out(length, 0.0);  // Should default to 0s when creating NumericVector, but just in case..
@@ -291,18 +291,15 @@ NumericVector dd_PCRM (NumericVector rts, NumericVector xj, NumericVector params
 
 
 // [[Rcpp::export]]
-NumericVector r_RM (int n, NumericVector params, bool indep, double delta=0.01, double maxT=9)
+NumericVector r_RM (int n, NumericVector params, double rho, double delta=0.01, double maxT=9)
 {
     double sdu, sdv;
     double muu = (params[0]+params[1])*delta;
     double muv = (params[0]-params[1])*delta;
-    if (indep) {
-        sdu = params[4]*sqrt(2*delta);
-        sdv = sdu;
-    } else {
-        sdu = params[4]*sqrt(delta);
-        sdv = params[4]*sqrt(3*delta);
-    }
+
+    sdu = sqrt(2*(1+rho)*delta);
+    sdv = sqrt(2*(1-rho)*delta);
+
     double x01, x02, u,v, t, xl;
     int win;
 
@@ -314,8 +311,8 @@ NumericVector r_RM (int n, NumericVector params, bool indep, double delta=0.01, 
         while ((x01 < 0) && (x02 < 0) && (t < maxT)) {
             u = R::rnorm(muu, sdu);
             v = R::rnorm(muv, sdv);
-            x01 = x01+0.5*(u+v);
-            x02 = x02+0.5*(u-v);
+            x01 = x01+0.5*params[4]*(u+v);
+            x02 = x02+0.5*params[5]*(u-v);
             t += delta;
         }
         if (x01 > 0) {

@@ -43,22 +43,22 @@ NumericVector density_PCRM (NumericVector rts, NumericVector params, int win=1, 
     double mul = params[2-win];
     double a = params[1+win];
     double b = params[4-win];
-    double sigma = params[4];
-    double st0 = params[7];
-    double th1 = params[5];
-    double th2 = params[6];
-    double wx = params[8];
-    double wrt = params[9];
-    double wint = params[10];
-    if (sigma != 1) {
-        muw = muw/sigma;
-        mul = mul/sigma;
-        a = a/sigma;
-        b = b/sigma;
-        th1 = th1/sigma;
-        th2 = th2/sigma;
-        wrt = wrt/sigma;
-    }
+    double sigmaw = params[3+win];
+    double sigmal = params[6-win];
+    double st0 = params[8];
+    double th1 = params[6];
+    double th2 = params[7];
+    double wx = params[9];
+    double wrt = params[10];
+    double wint = params[11];
+
+    muw = muw/sigmaw;
+    mul = mul/sigmal;
+    a = a/sigmaw;
+    b = b/sigmal;
+    th1 = th1/sigmal;
+    th2 = th2/sigmal;
+    wrt = wrt/sigmal;
 
     int nsteps;
     double dt;

@@ -12,20 +12,20 @@
 \title{Independent and partially anti-correlated Race Model for Decision Confidence}
 \usage{
 dIRM(rt, response = 1, mu1, mu2, a, b, th1, th2, wx = 1, wrt = 0,
-  wint = 0, t0 = 0, st0 = 0, s = 1, time_scaled = TRUE,
+  wint = 0, t0 = 0, st0 = 0, s1 = 1, s2 = 1, time_scaled = TRUE,
   step_width = NULL)
 
 dPCRM(rt, response = 1, mu1, mu2, a, b, th1, th2, wx = 1, wrt = 0,
-  wint = 0, t0 = 0, st0 = 0, s = 1, time_scaled = TRUE,
+  wint = 0, t0 = 0, st0 = 0, s1 = 1, s2 = 1, time_scaled = TRUE,
   step_width = NULL)
 
 rIRM(n, mu1, mu2, a, b, wx = 1, wrt = 0, wint = 0, t0 = 0, st0 = 0,
-  s = 1, time_scaled = TRUE, step_width = NULL, delta = 0.01,
-  maxrt = 15)
+  s1 = 1, s2 = 1, time_scaled = TRUE, step_width = NULL,
+  delta = 0.01, maxrt = 15)
 
 rPCRM(n, mu1, mu2, a, b, wx = 1, wrt = 0, wint = 0, t0 = 0, st0 = 0,
-  s = 1, time_scaled = TRUE, step_width = NULL, delta = 0.01,
-  maxrt = 15)
+  s1 = 1, s2 = 1, time_scaled = TRUE, step_width = NULL,
+  delta = 0.01, maxrt = 15)
 }
 \arguments{
 \item{rt}{a numeric vector of RTs. For convenience also a \code{data.frame} with
@@ -62,8 +62,11 @@ Range: t0>=0. Default: t0=0.}
 \item{st0}{numeric. Range of a uniform distribution for non-decision time. Range: st0>=0.
 Default: st0=0.}
 
-\item{s}{numeric. Diffusion constant of the two accumulators.  Usually fixed to 1 for most
-purposes as it scales other parameters (see Details). Range: s>0, Default: s=1.}
+\item{s1}{numeric. Diffusion constant of the first accumulator.  Usually fixed to 1 for most
+purposes as it scales other parameters (see Details). Range: s1>0, Default: s1=1.}
+
+\item{s2}{numeric. Diffusion constant of the second accumulator.  Usually fixed to 1 for most
+purposes as it scales other parameters (see Details). Range: s2>0, Default: s2=1.}
 
 \item{time_scaled}{logical. Whether the confidence measure should be time-dependent. See Details.}
 
@@ -139,8 +142,11 @@ set to 0.
 }
 \note{
 Similarly to the drift diffusion models (like \code{ddiffusion} and
-\code{\link{dWEV}}), s is a scaling factor (scales: \code{mu1},\code{mu2}, \code{a},\code{b},
-\code{th1},\code{th2},and \code{wrt}) and is usually fixed to 1.
+\code{\link{dWEV}}), \code{s1} and \code{s2} are scaling factors (\code{s1} scales: \code{mu1} and  \code{a},
+\code{s2} scales: \code{mu2} and \code{b}, and depending on response: if \code{response=2}, \code{s1} scales
+\code{th1},\code{th2},and \code{wrt}), otherwise \code{s2} is the scaling factor. It is sometimes
+assumed (Moreno-Bote, 2010), that both noise terms are equal, then they should definitely be
+fixed for fitting.
 }
 \examples{
 # Plot rt distribution ignoring confidence
