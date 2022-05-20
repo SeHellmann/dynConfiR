@@ -8,7 +8,7 @@
 \alias{rWEV}
 \title{Dynamical weighted evidence and visibility model (dynWEV)}
 \usage{
-dWEV(rt, th1, th2, response = "upper", a, v, t0 = 0, z = 0.5, d = 0,
+dWEV(rt, response = "upper", th1, th2, a, v, t0 = 0, z = 0.5, d = 0,
   sz = 0, sv = 0, st0 = 0, tau = 1, w = 0.5, muvis = NULL,
   sigvis = 0, svis = 1, s = 1, simult_conf = FALSE,
   precision = 1e-05, z_absolute = FALSE, stop_on_error = TRUE)
@@ -22,16 +22,17 @@ rWEV(n, a, v, t0 = 0, z = 0.5, d = 0, sz = 0, sv = 0, st0 = 0,
 \item{rt}{a vector of RTs. Or for convenience also a \code{data.frame} with columns \code{rt}
 and \code{response}.}
 
+\item{response}{character vector, indicating the decision, i.e. which boundary was
+met first. Possible values are \code{c("upper", "lower")} (possibly abbreviated) and
+\code{"upper"} being the default. Alternatively, a numeric vector with values 1=lower
+and 2=upper or -1=lower and 1=upper, respectively. For convenience, \code{response} is
+converted via \code{as.numeric} also
+allowing factors. Ignored if the first argument is a \code{data.frame}.}
+
 \item{th1}{together with th2: scalars or numerical vectors giving the lower and upper bound of the
 interval of the confidence measure (see Details). Only values with \code{th2}>=\code{th1} are accepted.}
 
 \item{th2}{(see th1)}
-
-\item{response}{character vector, indicating the decision, i.e. which boundary was
-met first. Possible values are \code{c("upper", "lower")} (possibly abbreviated) and
-\code{"upper"} being the default. Alternatively, a numeric vector with values 1=lower
-and 2=upper. For convenience, \code{response} is converted via \code{as.numeric} also
-allowing factors. Ignored if the first argument is a \code{data.frame}.}
 
 \item{a}{threshold separation. Amount of information that is considered for a decision. Large values
 indicate a conservative decisional style. Typical range: 0.5 < \code{a} < 2}
@@ -182,6 +183,56 @@ may be scaled to produce the same distributions (as is done in the code).
 
 The function code is basically an extension of the \code{ddiffusion} function from the
 package \code{rtdists} for the Ratcliff diffusion model.
+}
+\examples{
+# Plot rt distribution ignoring confidence
+curve(dWEV(x, "upper", -Inf, Inf, tau=1, a=2, v=0.4, sz=0.2, sv=0.9), xlim=c(0, 2), lty=2)
+curve(dWEV(x, "lower", -Inf, Inf,tau=1, a=2, v=0.4, sz=0.2, sv=0.9), col="red", lty=2, add=TRUE)
+curve(dWEV(x, "upper", -Inf, Inf,  tau=1, a=2, v=0.4),add=TRUE)
+curve(dWEV(x, "lower", -Inf, Inf, tau=1, a=2, v=0.4), col="red", add=TRUE)
+# Generate a random sample
+df1 <- rWEV(5000, a=2,v=0.5,t0=0,z=0.5,d=0,sz=0,sv=0, st0=0,  tau=1, s=1, w=0.9)
+# Same RT and response distribution but different confidence distribution
+df2 <- rWEV(5000, a=2,v=0.5,t0=0,z=0.5,d=0,sz=0,sv=0, st0=0,  tau=1, s=1, w=0.1)
+head(df1)
+
+# Scaling diffusion parameters leads do same density values
+dWEV(df1[1:5,], th1=-Inf, th2=Inf, a=2, v=.5)[1:5]
+s <- 2
+dWEV(df1[1:5,], th1=-Inf, th2=Inf, a=2*s, v=.5*s, s=2)[1:5]
+
+# Diffusion constant also scales confidence parameters
+dWEV(df1[1:5,], th1=0.2, th2=1, a=2, v=.5, sv=0.2, w=0.5, sigvis = 0.2, svis = 1)[1:5]
+s <- 2
+dWEV(df1[1:5,], th1=0.2*s, th2=1*s, a=2*s, v=.5*s, s=2,
+     sv=0.2*s, w=0.5, sigvis=0.2*s, svis=1*s)[1:5]
+
+
+two_samples <- rbind(cbind(df1, w="high"),
+                     cbind(df2, w="low"))
+# no difference in RT distributions
+boxplot(rt~w+response, data=two_samples)
+# but different confidence distributions
+boxplot(conf~w+response, data=two_samples)
+\dontrun{
+  require(ggplot2)
+  ggplot(two_samples, aes(x=rt, y=conf))+
+    stat_density_2d(aes(fill = ..density..), geom = "raster", contour = FALSE) +
+    xlim(c(0, 2))+ ylim(c(-1.5, 4))+
+    #geom_bin2d()+
+    facet_grid(cols=vars(w), rows=vars(response), labeller = "label_both")
+}
+
+# Restricting to specific confidence region
+df1 <- df1[df1$conf >0 & df1$conf <1,]
+dWEV(df1[1:5,], th1=0, th2=1, a=2, v=0.5)[1:5]
+\dontrun{
+  # If lower confidence threshold is higher than the upper, the function throws an error,
+  # except when stop_on_error is FALSE
+  dWEV(df1, th1=1, th2=0, a=2, v=0.5)
+  dWEV(df1, th1=1, th2=0, a=2, v=0.5, stop_on_error = FALSE)
+}
+
 }
 \references{
 Hellmann, S., Zehetleitner, M., & Rausch, M. (preprint). Simultaneous modeling of choice,

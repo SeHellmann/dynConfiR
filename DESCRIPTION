@@ -20,7 +20,7 @@ Description:
        (preprint; <https://osf.io/9jfqr/>).
        Implemented models are the dynWEV model, the 2DSD model (Pleskac & Busemeyer, 2010, 
        <doi:10.1037/a0019737>), and various race models. 
-       C++ code for dynWEV and 2DSD is based on the rtdists package by 
+       C++ code for dynWEV and 2DSD is based on the 'rtdists' package by 
        Henrik Singmann. 
 URL: https://github.com/SeHellmann/dynConfiR
 License: GPL (>= 3)

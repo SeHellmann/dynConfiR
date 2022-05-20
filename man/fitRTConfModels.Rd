@@ -118,6 +118,48 @@ leads to identical upper bounds on the decision processes, which is the equivale
 \item \code{factr} (\code{'L-BFGS-B'}) tolerance in terms of reduction factor of the objective, default: 1e-10)
 }
 }
+\examples{
+# 1. Generate data from two artificial participants
+# Get random drift direction (i.e. stimulus category) and
+# stimulus discriminability (two steps: hard, easy)
+stimulus <- sample(c(-1, 1), 400, replace=TRUE)
+discriminability <- sample(c(1, 2), 400, replace=TRUE)
+
+# generate data for participant 1
+data <- rWEV(400, a=2,v=stimulus*discriminability*0.5,
+             t0=0.2,z=0.5, sz=0.1,sv=0.1, st0=0,  tau=4, s=1, w=0.3)
+# discretize confidence ratings (only 2 steps: unsure vs. sure)
+data$rating <- as.numeric(cut(data$conf, breaks = c(-Inf, 1, Inf), include.lowest = TRUE))
+data$participant = 1
+data$stimulus <- stimulus
+data$discriminability <- discriminability
+# generate data for participant 2
+data2 <- rWEV(400, a=2.5,v=stimulus*discriminability*0.7,
+             t0=0.1,z=0.7, sz=0,sv=0.2, st0=0,  tau=2, s=1, w=0.5)
+data2$rating <- as.numeric(cut(data$conf, breaks = c(-Inf, 0.3, Inf), include.lowest = TRUE))
+data2$participant = 2
+data2$stimulus <- stimulus
+data2$discriminability <- discriminability
+
+# bind data from participants
+data <- rbind(data, data2)
+data[data$response!=0, ] # drop not finished decision processes
+data <- data[,-3] # drop conf measure (unobservable variable)
+head(data)
+
+
+# 2. Use fitting function
+\dontrun{
+  # Fitting takes too long to run and uses multiple (6) cores with this
+  # call:
+  fitRTConfModels(data, models=c("dynWEV", "PCRM"), nRatings = 2,
+                logging=TRUE, parallel="both",
+                n.cores = c(2,3), # fit two participant-model combination in parallel,
+                # each with 3 parallel cores (speeds up grid_search and optimizations)
+                condition="discriminability") # tell which column is "condition"
+}
+
+}
 \references{
 Hellmann, S., Zehetleitner, M., & Rausch, M. (preprint). Simultaneous modeling of choice,
 confidence and response time in visual perception. https://osf.io/9jfqr#'

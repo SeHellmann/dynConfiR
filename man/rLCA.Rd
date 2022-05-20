@@ -5,75 +5,64 @@
 \alias{simulateLCA}
 \title{Simulation of confidence ratings and RTs in leaky competing accumulator model}
 \usage{
-rLCA(paramDf, n = 10000, time_scaled = FALSE, gamma = FALSE,
-  agg_simus = FALSE, stimulus = c(1, 2), delta = 0.01, maxrt = 15,
-  seed = NULL)
+rLCA(n, mu1, mu2, th1, th2, k = 0, beta = 0, SPV = 0, tau = 0,
+  wx = 1, wrt = 0, wint = 0, t0 = 0, st0 = 0, pi = 0, sig = 1,
+  time_scaled = TRUE, simult_conf = FALSE, delta = 0.01, maxrt = 15)
 }
 \arguments{
-\item{paramDf}{a list or dataframe with one row. Column names should match the names of
-model parameters (mu1, mu2, pi, sig, th, k, beta, SPV, and tau, wx, wrt, and wint and t0 and st0). For different
-experimental conditions, simply numerate the respective parameters (e.g. for varying
-drift rates, use mu11, mu12, mu13, mu21, mu22, mu23). All non-numerated parameters are
-assumed to be constant across conditions. Additionally, the confidence thresholds may be given by names with
-thetaUpper1, thetaUpper2,..., thetaLower1,... or, for symmetric thresholds only by theta1, theta2,....
-Note that confidence thresholds are not allowed to vary with experimental condition.}
+\item{n}{integer. number of samples.}
 
-\item{n}{integer. The number of samples (per condition (and stimulus direction)) generated.
-Total number of samples is \code{n*nConditions*length(stimulus)}.}
+\item{mu1}{mean momentary evidence for alternative 1}
+
+\item{mu2}{mean momentary evidence for alternative 2}
+
+\item{th1}{decision threshold for alternative 1}
+
+\item{th2}{decision threshold for alternative 2}
+
+\item{k}{leakage (default: 0)}
+
+\item{beta}{inhibition  (default: 0)}
+
+\item{SPV}{variation in starting points  (default: 0)}
+
+\item{tau}{fixed post decisional accumulation period  (default: 0)}
+
+\item{wx}{weight on balance of evidence in confidence measure  (default: 1)}
+
+\item{wrt}{weight on RT in confidence measure  (default: 0)}
+
+\item{wint}{weight on interaction of evidence and RT in confidence measure (default: 0)}
+
+\item{t0}{minimal non-decision time (default: 0)}
+
+\item{st0}{range of uniform distribution of non-decision time (default: 0)}
+
+\item{pi}{factor for input dependent noise of infinitesimal variance of processes (default: 0)}
+
+\item{sig}{input independent component of infinitesimal variance of processes (default: 1)}
 
 \item{time_scaled}{logical. Whether a time_scaled transformation for the confidence measure should
 be used.}
 
-\item{gamma}{logical. If TRUE, the gamma correlation between confidence ratings, rt and accuracy is
-computed.}
-
-\item{agg_simus}{logical. Simulation is done on a trial basis with rts outcome. If TRUE,
-the simulations will be aggregated over RTs to return only the distribution of response and
-confidence ratings. Default: FALSE.}
-
-\item{stimulus}{numeric vector. Either 1, 2 or c(1, 2) (default).
-Together with condition represents the experimental situation. In a 2AFC task the presented
-stimulus belongs to one of two categories. In the default setting trials with
-both categories presented are simulated but one can choose to simulate only trials with the
-stimulus coming from one category (each associated with positive drift in one of two accumulators).
-More precisely, if stimulus is 2, trials with interchanged mu1 and mu2 are simulated representing a trial
-with contrary stimulus identity as represented in the paramDf.}
+\item{simult_conf}{logical. Whether in the experiment confidence was reported simultaneously
+with the decision. If that is the case decision and confidence judgment are assumed to have happened
+subsequent before the response. Therefore \code{tau} is included in the response time. If the decision was
+reported before the confidence report, \code{simul_conf} should be \code{FALSE}.}
 
 \item{delta}{numerical. Size of steps for the discretized simulation (see details).}
 
 \item{maxrt}{numerical. Maximum reaction time to be simulated (see details). Default: 15.}
-
-\item{seed}{numerical. Seeding for non-random data generation. (Also possible outside of the function.)}
 }
 \value{
-Depending on gamma and agg_simus. If gamma is TRUE, returns a list with elements:
-"simus" (the simulated data frame) and "gamma", which is again a list with elements
-"condition", "rt" and "correct", each a tibble with two columns (see details for more
-information). If gamma is FALSE, returns a data frame with columns: condition, stimulus,
-response, correct, rt, conf (the continuous confidence measure) and rating (the discrete
-confidence rating) or (if agg_simus=TRUE): condition, stimulus, response, correct, rating
-and p (for the probability of a response and rating, given the condition and stimulus).
+Returns a \code{data.frame} with three columns and \code{n} rows. Column names are \code{rt} (response
+time), \code{response} (1 or 2, indicating which accumulator hit its boundary first), and \code{conf} (the
+value of the confidence measure; not discretized!).
 }
 \description{
 Simulates the decision responses, reaction times and state of the loosing accumulator
-together with a discrete confidence judgment  in the leaky competing accumulator model.
-Optionally, there is a post-decisional accumulation period, where the process continues.
-Parameters required (in \code{paramDf}):
-mu1 and mu2 (mean momentary evidence for alternatives)
-pi (factor for input dependent noise of infinitesimal variance of processes)
-sig (input independent component of infinitesimal variance of processes)
-th (decision threshold)
-k (leakage)
-beta (inhibition)
-SPV (variation in starting points)
-tau (fixed post decisional accumulation period)
-wx (weight on balance of evidence in confidence measure)
-wrt (weight on RT in confidence measure)
-wint (weight on interaction of evidence and RT in confidence measure)
-t0 (minimal non-decision time)
-st0 (range of uniform distribution of non-decision time)
-Also computes the Gamma rank correlation between the confidence
-ratings and condition (task difficulty), reaction times and accuracy in the simulated output.
+together with a confidence measure in the leaky competing accumulator model.
+Optionally, there is a post-decisional accumulation period, where the processes continues.
 }
 \details{
 The simulation is done by simulating discretized steps until one process reaches
@@ -82,16 +71,26 @@ the boundary with an update rule:
 with \eqn{\varepsilon_i(t) \sim N(0, (\pi \mu_i)^2 + \sigma^2 )}. If no boundary is met within the maximum time, response is
 set to 0. After the decision, the accumulation continues for a time period (tau), until
 the final state is used for the computation of confidence.
-
-The Gamma coefficients are computed separately for
-correct/incorrect responses for the correlation of confidence ratings with condition and rt
-and separately for conditions for the correlation of accuracy and confidence. The resulting
-tibbles in the output thus have two columns. One for the grouping variable and one for the
-Gamma coefficient.
 }
-\note{
-Different parameters for different conditions are only allowed for drift rate, \code{v},
-and variability, \code{s}. All other parameters are used for all conditions.
+\examples{
+# minimal arguments
+simus<- rLCA(n=20, mu1=1, mu2=-0.5, th1=1, th2=0.8)
+head(simus)
+
+# specifying all relevant parameters
+simus <- rLCA(n=1000, mu1 = 2.5, mu2=1, th1=1.5, th2=1.6,
+               k=0.1, beta=0.1, SPV=0.2, tau=0.1,
+               wx=0.8, wrt=0.2, wint=0, t0=0.2, st0=0.1,
+               pi=0.2, sig=1)
+\dontrun{
+  require(ggplot2)
+  ggplot(simus, aes(x=rt, y=conf))+
+    stat_density_2d(aes(fill = ..density..), geom = "raster", contour = FALSE) +
+    #geom_bin2d()+
+    facet_wrap(~response)
+}
+boxplot(conf~response, data=simus)
+
 }
 \author{
 Sebastian Hellmann.

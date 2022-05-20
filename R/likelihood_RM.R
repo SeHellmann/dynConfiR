@@ -65,6 +65,41 @@
 #' @aliases LLRM LogLikIRM  LogLikPCRM
 #' @importFrom Rcpp evalCpp
 #'
+#' @examples
+#' # 1. Generate data from an artificial participants
+#' # Get random index for accumulator with positive
+#' # drift (i.e. stimulus category) and
+#' # stimulus discriminability (two steps: hard, easy)
+#' stimulus <- sample(c(1, 2), 400, replace=TRUE)
+#' discriminability <- sample(c(1, 2), 400, replace=TRUE)
+#' # generate data for participant 1
+#' data <- rPCRM(400, mu1=ifelse(stimulus==1, 1, -1)*discriminability*0.5,
+#'               mu2=ifelse(stimulus==1, -1, 1)*discriminability*0.5,
+#'              a=2, b=1.8, t0=0.2, st0=0, wx=0.7, wint=0.3, wrt=0)
+#' # discretize confidence ratings (only 2 steps: unsure vs. sure)
+#' data$rating <- as.numeric(cut(data$conf, breaks = c(0, 3, Inf), include.lowest = TRUE))
+#' data$participant = 1
+#' data$stimulus <- stimulus
+#' data$discriminability <- discriminability
+#' data <- data[data$response!=0, ] # drop not finished decision processes
+#' data <- data[,-c(3,4)] # drop xl and conf measure (unobservable variable)
+#' head(data)
+#'
+#' # 2. Define some parameter set in a data.frame
+#' paramDf <- data.frame(a=2,b=2, v1=0.5, v2=1, t0=0.1,st0=0,
+#'                       wx=0.6, wint=0.2, wrt=0.2,
+#'                       theta1=4)
+#'
+#' # 3. Compute log likelihood for parameter and data
+#' LogLikRM(data, paramDf, model="PCRMt", condition="discriminability")
+#' # same result
+#' LogLikRM(data, paramDf, model="PCRM", time_scaled=TRUE,condition="discriminability")
+#' # different
+#' LogLikRM(data, paramDf, model="PCRM", condition="discriminability")
+#'
+#' # same parameters used for IRM model
+#' LogLikRM(data, paramDf, model="IRMt", condition="discriminability")
+#'
 
 #' @rdname LogLikRM
 #' @export

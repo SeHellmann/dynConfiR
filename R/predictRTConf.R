@@ -75,6 +75,55 @@
 #' @aliases predictConf
 #' @importFrom Rcpp evalCpp
 #'
+#' @examples
+#' # Examples for "dynWEV" model (equivalent applicable for
+#' # all other models (with different parameters!))
+#'
+#' # 1. Define some parameter set in a data.frame
+#' paramDf <- data.frame(a=1.5,v1=0.2, v2=1, t0=0.1,z=0.52,
+#'                       sz=0.3,sv=0.4, st0=0,  tau=3, w=0.5,
+#'                       theta1=1, svis=0.5, sigvis=0.8)
+#'
+#' # 2. Predict discrete Choice x Confidence distribution:
+#' preds_Conf <- predictConf(paramDf, "dynWEV", maxrt = 25, simult_conf=TRUE)
+#' head(preds_Conf)
+#'
+#'
+#' # 3. Compute RT density
+#' preds_RT <- predictRT(paramDf, "dynWEV", maxrt=5, subdivisions=200,
+#'                       minrt=paramDf$tau+paramDf$t0, simult_conf = TRUE,
+#'                       scaled=TRUE, DistConf = preds_Conf)
+#' head(preds_RT)
+#' ## same output with default rt-grid and without scaled density column:
+#' #preds_RT <- predictRT(paramDf, "dynWEV") #(scaled=FALSE)
+#' \dontrun{
+#'   # produces a warning, if scaled=TRUE and DistConf missing
+#'   preds_RT <- predictRT(paramDf, "dynWEV",
+#'                            scaled=TRUE)
+#' }
+#'
+#' \dontrun{
+#'   # Example of visualization
+#'   library(ggplot2)
+#'   preds_Conf$rating <- factor(preds_Conf$rating, labels=c("unsure", "sure"))
+#'   preds_RT$rating <- factor(preds_RT$rating, labels=c("unsure", "sure"))
+#'   ggplot(preds_Conf, aes(x=interaction(rating, response), y=p))+
+#'     geom_bar(stat="identity")+
+#'     facet_grid(cols=vars(stimulus), rows=vars(condition), labeller = "label_both")
+#'   ggplot(preds_RT, aes(x=rt, color=interaction(rating, response), y=densscaled))+
+#'     geom_line(stat="identity")+
+#'     facet_grid(cols=vars(stimulus), rows=vars(condition), labeller = "label_both")+
+#'     theme(legend.position = "bottom")+ ggtitle("Scaled Densities")
+#'   ggplot(aggregate(dens~rt+correct+rating+condition, preds_RT, mean),
+#'          aes(x=rt, color=rating, y=dens))+
+#'     geom_line(stat="identity")+
+#'     facet_grid(cols=vars(condition), rows=vars(correct), labeller = "label_both")+
+#'     theme(legend.position = "bottom")+ ggtitle("Non-Scaled Densities")
+#' }
+#' # Use PDFtoQuantiles to get predicted RT quantiles
+#' head(PDFtoQuantiles(preds_RT, scaled = FALSE))
+#'
+
 
 #' @rdname predictRTConf
 #' @export

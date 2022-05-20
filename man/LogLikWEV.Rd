@@ -88,6 +88,43 @@ This corresponds to the situation of Ratcliff's diffusion model (Ratcliff, 1978)
 the response is the "upper" or "lower" boundary that is first hit by the evidence accumulation. A correct decision is therefore "lower",
 if stimulus is -1, and "upper", if stimulus is 1.
 }
+\examples{
+# 1. Generate data from an artificial participants
+# Get random drift direction (i.e. stimulus category) and
+# stimulus discriminability (two steps: hard, easy)
+stimulus <- sample(c(-1, 1), 400, replace=TRUE)
+discriminability <- sample(c(1, 2), 400, replace=TRUE)
+# generate data for participant 1
+data <- rWEV(400, a=2,v=stimulus*discriminability*0.5,
+             t0=0.2,z=0.5, sz=0.1,sv=0.1, st0=0,  tau=4, s=1, w=0.3)
+# discretize confidence ratings (only 2 steps: unsure vs. sure)
+data$rating <- as.numeric(cut(data$conf, breaks = c(-Inf, 1, Inf), include.lowest = TRUE))
+data$participant = 1
+data$stimulus <- stimulus
+data$discriminability <- discriminability
+data <- data[data$response!=0, ] # drop not finished decision processes
+data <- data[,-3] # drop conf measure (unobservable variable)
+head(data)
+
+# 2. Define some parameter set in a data.frame
+paramDf <- data.frame(a=2.5,v1=0.5, v2=1, t0=0.1,z=0.7,
+                      sz=0,sv=0.2, st0=0,  tau=3, w=0.3,
+                      theta1=0.8, svis=0.5, sigvis=0.8)
+
+# 3. Compute log likelihood for parameter and data
+LogLikWEV(data, paramDf, model="dynWEV", condition="discriminability")
+# adding the hypothetical inter-judgment time to response times
+# results in the same log likelihood as before when simult_conf=TRUE
+data$rt <- data$rt + paramDf$tau
+LogLikWEV(data, paramDf, model="dynWEV", condition="discriminability", simult_conf=TRUE)
+
+# the same function for "2DSD" model
+paramDf <- data.frame(a=2.5,v1=0.5, v2=1, t0=0.1,z=0.7,
+                      sz=0,sv=0.2, st0=0,  tau=3, theta1=0.8)
+LogLikWEV(data, paramDf, model="2DSD", condition="discriminability", simult_conf=TRUE)
+# this results in the same log likelihood as before
+
+}
 \author{
 Sebastian Hellmann.
 }

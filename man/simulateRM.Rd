@@ -93,6 +93,50 @@ Gamma coefficient.
 Different parameters for different conditions are only allowed for drift rate, \code{v},
 and process variability, \code{s}. All other parameters are used for all conditions.
 }
+\examples{
+# Examples for "PCRM" model (equivalent applicable for "IRM" model)
+# 1. Define some parameter set in a data.frame
+paramDf <- data.frame(a=2,b=2, v1=0.5, v2=1, t0=0.1,st0=0,
+                      wx=0.6, wint=0.2, wrt=0.2,
+                      theta1=4)
+
+# 2. Simulate trials for both stimulus categories and all conditions (2)
+simus <- simulateRM(paramDf, n=300,model="PCRM", time_scaled=TRUE)
+head(simus)
+## equivalent:
+# simus <- simulateRM(paramDf, model="PCRMt")
+\dontrun{
+  library(ggplot2)
+  simus <- simus[simus$response!=0,]
+  simus$rating <- factor(simus$rating, labels=c("unsure", "sure"))
+  ggplot(simus, aes(x=rt, group=interaction(correct, rating),
+                    color=as.factor(correct), linetype=rating))+
+    geom_density(size=1.2)+
+    facet_grid(rows=vars(condition), labeller = "label_both")
+}
+
+# automatically aggregate simulation distribution
+# to get only accuracy x confidence rating distribution for
+# all conditions
+agg_simus <- simulateRM(paramDf, n = 200, model="PCRMt", agg_simus = TRUE)
+head(agg_simus)
+\dontrun{
+  agg_simus$rating <- factor(agg_simus$rating, labels=c("unsure", "sure"))
+  library(ggplot2)
+  ggplot(agg_simus, aes(x=rating, group=correct, fill=as.factor(correct), y=p))+
+    geom_bar(stat="identity", position="dodge")+
+    facet_grid(cols=vars(condition), labeller = "label_both")
+}
+
+\dontrun{
+  # Compute Gamma correlation coefficients between
+  # confidence and other behavioral measures
+  # output will be a list
+  simu_list <- simulateRM(paramDf, model="IRMt", gamma=TRUE)
+  simu_list
+}
+
+}
 \references{
 Hellmann, S., Zehetleitner, M., & Rausch, M. (preprint). Simultaneous modeling of choice,
 confidence and response time in visual perception. https://osf.io/9jfqr/

@@ -83,6 +83,50 @@
 # @importFrom pracma integral
 #' @aliases simulateIRM simulatePCRM
 #'
+#' @examples
+#' # Examples for "PCRM" model (equivalent applicable for "IRM" model)
+#' # 1. Define some parameter set in a data.frame
+#' paramDf <- data.frame(a=2,b=2, v1=0.5, v2=1, t0=0.1,st0=0,
+#'                       wx=0.6, wint=0.2, wrt=0.2,
+#'                       theta1=4)
+#'
+#' # 2. Simulate trials for both stimulus categories and all conditions (2)
+#' simus <- simulateRM(paramDf, n=300,model="PCRM", time_scaled=TRUE)
+#' head(simus)
+#' ## equivalent:
+#' # simus <- simulateRM(paramDf, model="PCRMt")
+#' \dontrun{
+#'   library(ggplot2)
+#'   simus <- simus[simus$response!=0,]
+#'   simus$rating <- factor(simus$rating, labels=c("unsure", "sure"))
+#'   ggplot(simus, aes(x=rt, group=interaction(correct, rating),
+#'                     color=as.factor(correct), linetype=rating))+
+#'     geom_density(size=1.2)+
+#'     facet_grid(rows=vars(condition), labeller = "label_both")
+#' }
+#'
+#' # automatically aggregate simulation distribution
+#' # to get only accuracy x confidence rating distribution for
+#' # all conditions
+#' agg_simus <- simulateRM(paramDf, n = 200, model="PCRMt", agg_simus = TRUE)
+#' head(agg_simus)
+#' \dontrun{
+#'   agg_simus$rating <- factor(agg_simus$rating, labels=c("unsure", "sure"))
+#'   library(ggplot2)
+#'   ggplot(agg_simus, aes(x=rating, group=correct, fill=as.factor(correct), y=p))+
+#'     geom_bar(stat="identity", position="dodge")+
+#'     facet_grid(cols=vars(condition), labeller = "label_both")
+#' }
+#'
+#' \dontrun{
+#'   # Compute Gamma correlation coefficients between
+#'   # confidence and other behavioral measures
+#'   # output will be a list
+#'   simu_list <- simulateRM(paramDf, model="IRMt", gamma=TRUE)
+#'   simu_list
+#' }
+#'
+
 
 ## When given vectorised parameters, n is the number of replicates for each parameter set
 #' @rdname simulateRM
@@ -378,6 +422,7 @@ rRM_Kiani <- function (paramDf, n=1e+4, time_scaled=FALSE,
     return(simus)
   }
 }
+
 
 
 

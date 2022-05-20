@@ -83,6 +83,56 @@
 #' @aliases predictWEV predictdynWEV predict2DSD
 #' @importFrom Rcpp evalCpp
 #'
+#' @examples
+#' # Examples for "dynWEV" model (equivalent applicable for "2DSD" model (with less parameters))
+#' # 1. Define some parameter set in a data.frame
+#' paramDf <- data.frame(a=2.5,v1=0.5, v2=1, t0=0.1,z=0.55,
+#'                       sz=0,sv=0.2, st0=0,  tau=3, w=0.3,
+#'                       theta1=0.8, svis=0.5, sigvis=0.8)
+#'
+#' # 2. Predict discrete Choice x Confidence distribution:
+#' preds_Conf <- predictWEV_Conf(paramDf, "dynWEV", maxrt = 15)
+#' head(preds_Conf)
+#'
+#' # To set simult_conf=TRUE makes a minor difference in the discrete distribution,
+#' # because we integrate over response times (we just adapt maxrt for comparison)
+#' preds_Conf2 <- predictWEV_Conf(paramDf, "dynWEV", simult_conf = TRUE, maxrt = 15+paramDf$tau)
+#' summary(preds_Conf$p-preds_Conf2$p) # difference in predicted probabilities
+#'
+#' # 3. Compute RT density
+#' preds_RT <- predictWEV_RT(paramDf, "dynWEV", maxrt=4, subdivisions=200,
+#'                          scaled=TRUE, DistConf = preds_Conf)
+#' head(preds_RT)
+#' ## same output without scaled density column:
+#' #preds_RT <- predictWEV_RT(paramDf, "dynWEV", maxrt=4, subdivisions=200) #(scaled=FALSE)
+#' \dontrun{
+#'   # produces a warning, if scaled=TRUE and DistConf missing
+#'   preds_RT <- predictWEV_RT(paramDf, "dynWEV", maxrt=4, subdivisions=200,
+#'                            scaled=TRUE)
+#' }
+#'
+#' \dontrun{
+#'   # Example of visualization
+#'   library(ggplot2)
+#'   preds_Conf$rating <- factor(preds_Conf$rating, labels=c("unsure", "sure"))
+#'   preds_RT$rating <- factor(preds_RT$rating, labels=c("unsure", "sure"))
+#'   ggplot(preds_Conf, aes(x=interaction(rating, response), y=p))+
+#'     geom_bar(stat="identity")+
+#'     facet_grid(cols=vars(stimulus), rows=vars(condition), labeller = "label_both")
+#'   ggplot(preds_RT, aes(x=rt, color=interaction(rating, response), y=dens))+
+#'     geom_line(stat="identity")+
+#'     facet_grid(cols=vars(stimulus), rows=vars(condition), labeller = "label_both")+
+#'     theme(legend.position = "bottom")
+#'   ggplot(aggregate(densscaled~rt+correct+rating+condition, preds_RT, mean),
+#'          aes(x=rt, color=rating, y=densscaled))+
+#'     geom_line(stat="identity")+
+#'     facet_grid(cols=vars(condition), rows=vars(correct), labeller = "label_both")+
+#'     theme(legend.position = "bottom")
+#' }
+#' # Use PDFtoQuantiles to get predicted RT quantiles
+#' head(PDFtoQuantiles(preds_RT, scaled = FALSE))
+#'
+
 
 #' @rdname predictWEV
 #' @export

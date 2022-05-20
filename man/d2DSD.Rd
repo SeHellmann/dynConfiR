@@ -7,7 +7,7 @@
 \alias{r2DSD}
 \title{Pleskac and Busemeyer's 2DSD Model for Decision Confidence}
 \usage{
-d2DSD(rt, th1, th2, response = "upper", tau = 1, a, v, t0 = 0, z = 0.5,
+d2DSD(rt, response = "upper", th1, th2, tau = 1, a, v, t0 = 0, z = 0.5,
   d = 0, sz = 0, sv = 0, st0 = 0, s = 1, simult_conf = FALSE,
   precision = 1e-05, z_absolute = FALSE, stop_on_error = TRUE)
 
@@ -19,18 +19,19 @@ r2DSD(n, a, v, t0 = 0, z = 0.5, d = 0, sz = 0, sv = 0, st0 = 0,
 \item{rt}{a vector of RTs. Or for convenience also a \code{data.frame} with columns
 \code{rt} and \code{response}.}
 
+\item{response}{character vector, indicating the decision, i.e. which boundary was
+met first. Possible values are \code{c("upper", "lower")} (possibly abbreviated) and
+\code{"upper"} being the default. Alternatively, a numeric vector with values 1=lower
+and 2=upper or -1=lower and 1=upper, respectively. For convenience, \code{response} is
+converted via \code{as.numeric} also
+allowing factors. Ignored if the first argument is a \code{data.frame}.}
+
 \item{th1}{together with th2: scalars or numerical vectors giving the lower and upper
 bound of the interval, in which the accumulator should end at the time of the
 confidence judgment (i.e. at time \code{rt}+\code{tau}). Only values with
 \code{th2}>=\code{th1} are accepted.}
 
 \item{th2}{(see th1)}
-
-\item{response}{character vector, indicating the decision, i.e. which boundary was
-met first. Possible values are \code{c("upper", "lower")} (possibly abbreviated) and
-\code{"upper"} being the default. Alternatively, a numeric vector with values 1=lower
-and 2=upper. For convenience, \code{response} is converted via \code{as.numeric} also
-allowing factors. Ignored if the first argument is a \code{data.frame}.}
 
 \item{tau}{post-decisional accumulation time. The length of the time period after the
 decision was made until the confidence judgment is made. Range: \code{tau}>0.
@@ -173,6 +174,42 @@ Roger Ratcliff and others. Usually \code{s} is not specified as the other parame
 
 The function code is basically an extension of the \code{ddiffusion} function from the
 package \code{rtdists} for the Ratcliff diffusion model.
+}
+\examples{
+# Plot rt distribution ignoring confidence
+curve(d2DSD(x, "upper", -Inf, Inf, tau=1, a=2, v=0.4, sz=0.2, sv=0.9), xlim=c(0, 2), lty=2)
+curve(d2DSD(x, "lower", -Inf, Inf, tau=1, a=2, v=0.4, sz=0.2, sv=0.9), col="red", lty=2, add=TRUE)
+curve(d2DSD(x, "upper", -Inf, Inf, tau=1, a=2, v=0.4),add=TRUE)
+curve(d2DSD(x, "lower", -Inf, Inf, tau=1, a=2, v=0.4), col="red", add=TRUE)
+# Generate a random sample
+dfu <- r2DSD(5000, a=2,v=0.5,t0=0,z=0.5,d=0,sz=0,sv=0, st0=0,  tau=1, s=1)
+# Same RT distribution but upper and lower responses changed
+dfl <- r2DSD(50, a=2,v=-0.5,t0=0,z=0.5,d=0,sz=0,sv=0, st0=0,  tau=1, s=1)
+head(dfu)
+
+d2DSD(dfu, th1=-Inf, th2=Inf, a=2, v=.5)[1:5]
+# Scaling diffusion parameters leads do same density values
+s <- 2
+d2DSD(dfu, th1=-Inf, th2=Inf, a=2*s, v=.5*s, s=2)[1:5]
+\dontrun{
+  require(ggplot2)
+  ggplot(dfu, aes(x=rt, y=conf))+
+    stat_density_2d(aes(fill = ..density..), geom = "raster", contour = FALSE) +
+    #geom_bin2d()+
+    facet_wrap(~response)
+}
+boxplot(conf~response, data=dfu)
+
+# Restricting to specific confidence region
+dfu <- dfu[dfu$conf >0 & dfu$conf <1,]
+d2DSD(dfu, th1=0, th2=1, a=2, v=0.5)[1:5]
+\dontrun{
+  # If lower confidence threshold is higher than the upper, the function throws an error,
+  # except when stop_on_error is FALSE
+  d2DSD(dfu, th1=1, th2=0, a=2, v=0.5)
+  d2DSD(dfu, th1=1, th2=0, a=2, v=0.5, stop_on_error = FALSE)
+}
+
 }
 \references{
 Pleskac, T. J., & Busemeyer, J. R. (2010). Two-Stage Dynamic Signal Detection: A Theory of Choice, Decision Time, and Confidence, \emph{Psychological Review}, 117(3), 864-901. doi:10.1037/a0019737

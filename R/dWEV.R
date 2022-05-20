@@ -27,7 +27,8 @@
 #' @param response character vector, indicating the decision, i.e. which boundary was
 #' met first. Possible values are \code{c("upper", "lower")} (possibly abbreviated) and
 #' \code{"upper"} being the default. Alternatively, a numeric vector with values 1=lower
-#' and 2=upper. For convenience, \code{response} is converted via \code{as.numeric} also
+#' and 2=upper or -1=lower and 1=upper, respectively. For convenience, \code{response} is
+#' converted via \code{as.numeric} also
 #' allowing factors. Ignored if the first argument is a \code{data.frame}.
 #' @param th1 together with th2: scalars or numerical vectors giving the lower and upper bound of the
 #' interval of the confidence measure (see Details). Only values with \code{th2}>=\code{th1} are accepted.
@@ -150,10 +151,59 @@
 #' @aliases WEVmodel dWEV ddynWEV rWEV
 #' @importFrom Rcpp evalCpp
 #'
+#' @examples
+#' # Plot rt distribution ignoring confidence
+#' curve(dWEV(x, "upper", -Inf, Inf, tau=1, a=2, v=0.4, sz=0.2, sv=0.9), xlim=c(0, 2), lty=2)
+#' curve(dWEV(x, "lower", -Inf, Inf,tau=1, a=2, v=0.4, sz=0.2, sv=0.9), col="red", lty=2, add=TRUE)
+#' curve(dWEV(x, "upper", -Inf, Inf,  tau=1, a=2, v=0.4),add=TRUE)
+#' curve(dWEV(x, "lower", -Inf, Inf, tau=1, a=2, v=0.4), col="red", add=TRUE)
+#' # Generate a random sample
+#' df1 <- rWEV(5000, a=2,v=0.5,t0=0,z=0.5,d=0,sz=0,sv=0, st0=0,  tau=1, s=1, w=0.9)
+#' # Same RT and response distribution but different confidence distribution
+#' df2 <- rWEV(5000, a=2,v=0.5,t0=0,z=0.5,d=0,sz=0,sv=0, st0=0,  tau=1, s=1, w=0.1)
+#' head(df1)
+#'
+#' # Scaling diffusion parameters leads do same density values
+#' dWEV(df1[1:5,], th1=-Inf, th2=Inf, a=2, v=.5)[1:5]
+#' s <- 2
+#' dWEV(df1[1:5,], th1=-Inf, th2=Inf, a=2*s, v=.5*s, s=2)[1:5]
+#'
+#' # Diffusion constant also scales confidence parameters
+#' dWEV(df1[1:5,], th1=0.2, th2=1, a=2, v=.5, sv=0.2, w=0.5, sigvis = 0.2, svis = 1)[1:5]
+#' s <- 2
+#' dWEV(df1[1:5,], th1=0.2*s, th2=1*s, a=2*s, v=.5*s, s=2,
+#'      sv=0.2*s, w=0.5, sigvis=0.2*s, svis=1*s)[1:5]
+#'
+#'
+#' two_samples <- rbind(cbind(df1, w="high"),
+#'                      cbind(df2, w="low"))
+#' # no difference in RT distributions
+#' boxplot(rt~w+response, data=two_samples)
+#' # but different confidence distributions
+#' boxplot(conf~w+response, data=two_samples)
+#' \dontrun{
+#'   require(ggplot2)
+#'   ggplot(two_samples, aes(x=rt, y=conf))+
+#'     stat_density_2d(aes(fill = ..density..), geom = "raster", contour = FALSE) +
+#'     xlim(c(0, 2))+ ylim(c(-1.5, 4))+
+#'     #geom_bin2d()+
+#'     facet_grid(cols=vars(w), rows=vars(response), labeller = "label_both")
+#' }
+#'
+#' # Restricting to specific confidence region
+#' df1 <- df1[df1$conf >0 & df1$conf <1,]
+#' dWEV(df1[1:5,], th1=0, th2=1, a=2, v=0.5)[1:5]
+#' \dontrun{
+#'   # If lower confidence threshold is higher than the upper, the function throws an error,
+#'   # except when stop_on_error is FALSE
+#'   dWEV(df1, th1=1, th2=0, a=2, v=0.5)
+#'   dWEV(df1, th1=1, th2=0, a=2, v=0.5, stop_on_error = FALSE)
+#' }
+#'
 
 #' @rdname dynWEV
 #' @export
-dWEV <- function (rt,th1,th2,response="upper",a,v,t0=0,z=0.5,d=0,sz=0,sv=0, st0=0,
+dWEV <- function (rt, response="upper", th1,th2, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, st0=0,
                   tau=1, w=0.5, muvis=NULL, sigvis=0, svis=1,
                   s=1, simult_conf = FALSE, precision=1e-5, z_absolute = FALSE,  stop_on_error=TRUE)
 {
@@ -219,11 +269,12 @@ rWEV <- function (n, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, st0=0,
     out <- r_WEV(current_n, pars$params[ok_rows[1], 1:15],
                  model=2, delta = delta, maxT =maxrt, stop_on_error)
     out[,3] <- out[,3]/pars$params[ok_rows[1], 11]  # multiply by s (diffusion constant)
+    if (simult_conf) {
+      out[1,] <- out[1,] + pars$params[ok_rows[1], 9]
+    }
     res[ok_rows,] <- out
   }
-  if (simult_conf) {
-    res[1,] <- res[1,] +tau
-  }
+
   res <- as.data.frame(res)
   names(res) <- c("rt", "response", "conf")
   return(res)
@@ -241,7 +292,7 @@ prepare_WEV_parameter <- function(response,
                                   s, nn,
                                   z_absolute = FALSE,
                                   stop_on_error) {
-  if(any(missing(a), missing(v), missing(t0))) stop("a, v, and/or t0 must be supplied")
+  if(any(missing(a), missing(v))) stop("a and v must be supplied")
   if ( (length(s) == 1) &
        (length(a) == 1) &
        (length(v) == 1) &
@@ -265,6 +316,9 @@ prepare_WEV_parameter <- function(response,
 
   # Build parameter matrix
   # Convert boundaries to numeric if necessary
+  if (all(response %in% c(-1, 1))) {
+    response <- ifelse(response==1, 2, 1)
+  }
   if (is.character(response)) {
     response <- match.arg(response, choices=c("upper", "lower"),several.ok = TRUE)
     numeric_bounds <- ifelse(response == "upper", 2L, 1L)

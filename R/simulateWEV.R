@@ -103,11 +103,53 @@
 # @importFrom pracma integral
 #' @aliases simulate2DSD
 #'
+#' @examples
+#' # Examples for "dynWEV" model (equivalent applicable
+#' # for "2DSD" model (with less parameters))
+#' # 1. Define some parameter set in a data.frame
+#' paramDf <- data.frame(a=2.5,v1=0.1, v2=1, t0=0.1,z=0.55,
+#'                       sz=0.3,sv=0.8, st0=0,  tau=3, w=0.1,
+#'                       theta1=0.8, svis=0.5, sigvis=0.8)
+#'
+#' # 2. Simulate trials for both stimulus categories and all conditions (2)
+#' simus <- simulateWEV(paramDf, model="dynWEV")
+#' head(simus)
+#' ## equivalent:
+#' # simus <- simulateRM(paramDf, model="dynWEV")
+#' \dontrun{
+#'   library(ggplot2)
+#'   simus <- simus[simus$response!=0,]
+#'   simus$rating <- factor(simus$rating, labels=c("unsure", "sure"))
+#'   ggplot(simus, aes(x=rt, group=interaction(correct, rating),
+#'                     color=as.factor(correct), linetype=rating))+
+#'     geom_density(size=1.2)+xlim(c(0,5))+
+#'     facet_grid(rows=vars(condition), labeller = "label_both")
+#' }
+#'
+#' # automatically aggregate simulation distribution
+#' # to get only accuracy x confidence rating distribution for
+#' # all conditions
+#' agg_simus <- simulateWEV(paramDf, model="dynWEV", agg_simus = TRUE)
+#' head(agg_simus)
+#' \dontrun{
+#'   agg_simus$rating <- factor(agg_simus$rating, labels=c("unsure", "sure"))
+#'   library(ggplot2)
+#'   ggplot(agg_simus, aes(x=rating, group=correct, fill=as.factor(correct), y=p))+
+#'     geom_bar(stat="identity", position="dodge")+
+#'     facet_grid(cols=vars(condition), labeller = "label_both")
+#' }
+#' \dontrun{
+#'   # Compute Gamma correlation coefficients between
+#'   # confidence and other behavioral measures
+#'   # output will be a list
+#'   simu_list <- simulateWEV(paramDf,n = 400, model="dynWEV", gamma=TRUE)
+#'   simu_list
+#' }
 
 ## When given vectorised parameters, n is the number of replicates for each parameter set
 #' @rdname simulateWEV
 #' @export
-simulateWEV <- function (paramDf, n=1e+4,  model = "dynWEV", simult_conf = TRUE, gamma = FALSE, agg_simus=FALSE,
+simulateWEV <- function (paramDf, n=1e+4,  model = "dynWEV", simult_conf = FALSE, gamma = FALSE, agg_simus=FALSE,
                          stimulus = c(-1,1), method = "Cpp",  precision = 3, delta=0.01, maxrt=15, seed=NULL)
 {
   if (!is.null(seed)) {
@@ -240,9 +282,9 @@ simulateWEV <- function (paramDf, n=1e+4,  model = "dynWEV", simult_conf = TRUE,
     simus <- expand.grid(condition = 1:nConds, stimulus=stimulus) %>%
       mutate(v  = V[.data$condition]*.data$stimulus,
              sv = SV[.data$condition],
-             s = S[simus$condition],
+             s = S[.data$condition],
              muvis = muvis[.data$condition]) %>%
-      group_by(.data$condition, .data$stimulus, .data$s) %>%
+      group_by(.data$condition, .data$stimulus) %>%
       summarise(as.data.frame(r_WEV(n=n, params=c(a/as.numeric(cur_data()[3]),as.numeric(cur_data()[1])/as.numeric(cur_data()[3]),
                                                   t0, d, sz, as.numeric(cur_data()[2])/as.numeric(cur_data()[3]),
                                                   st0, z, tau, 0, 1, w, as.numeric(cur_data()[4])/as.numeric(cur_data()[3]),
@@ -250,8 +292,7 @@ simulateWEV <- function (paramDf, n=1e+4,  model = "dynWEV", simult_conf = TRUE,
                                     model=which(model == c("2DSD", "dynWEV")),
                                     delta = delta, maxT =maxrt, TRUE), c("rt", "response", "conf"))) %>%
       rename(rt=3, response=4, conf=5) %>%
-      mutate(conf = .data$conf * .data$s) %>%
-      select(-c("s"))
+      mutate(conf = .data$conf * S[.data$condition])
   }
 
   ### Bin confidence measure for discrete ratings:

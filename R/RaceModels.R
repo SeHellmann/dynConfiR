@@ -109,6 +109,60 @@
 #' @name RaceModels
 #' @aliases dIRM dPCRM rRM dRM rIRM rPCRM racemodels
 #' @importFrom Rcpp evalCpp
+#'
+#' @examples
+#' # Plot rt distribution ignoring confidence
+#' curve(dPCRM(x, 1, mu1=0.5, mu2=-0.5, a=1, b=1, th1=-Inf, th2=Inf, t0=0.1), xlim=c(0,2.5))
+#' curve(dPCRM(x, 2, mu1=0.5, mu2=-0.5, a=1, b=1, th1=-Inf, th2=Inf, t0=0.1), col="red", add=TRUE)
+#' curve(dIRM(x, 1, mu1=0.5, mu2=-0.5, a=1, b=1, th1=-Inf, th2=Inf, t0=0.1), lty=2,add=TRUE)
+#' curve(dIRM(x, 2, mu1=0.5, mu2=-0.5, a=1, b=1, th1=-Inf, th2=Inf, t0=0.1),
+#'       col="red", lty=2, add=TRUE)
+#' # t0 indicates minimal response time possible
+#' abline(v=0.1)
+#' ## Following example may be equivalently used for the IRM model functions.
+#' # Generate a random sample
+#' df1 <- rPCRM(5000,  mu1=0.2, mu2=-0.2, a=1, b=1, t0=0.1,
+#'             wx = 1) # Balance of Evidence
+#' # Same RT and response distribution but different confidence distribution
+#' df2 <- rPCRM(5000,  mu1=0.2, mu2=-0.2, a=1, b=1, t0=0.1,
+#'              wint = 0.2, wrt=0.8)
+#' head(df1)
+#'
+#' # s scales other decision relevant parameters
+#' dPCRM(df1[1:5,], 2, mu1=0.2, mu2=-0.2, a=1, b=1, th1=0, th2=Inf, t0=0.1)
+#' s <- 2
+#' dPCRM(df1[1:5,], 2, mu1=0.2*s, mu2=-0.2*s, a=1*s, b=1*s, th1=0, th2=Inf, t0=0.1, s=s)
+#' # s also scales confidence parameters
+#' dPCRM(df1[1:5,], 2, mu1=0.2, mu2=-0.2, a=1, b=1,
+#'      th1=0.5, th2=2, wx = 0.3, wint=0.4, wrt=0.1, t0=0.1)
+#' s <- 2
+#' dPCRM(df1[1:5,], 2, mu1=0.2*s, mu2=-0.2*s, a=1*s, b=1*s,
+#'      th1=0.5*s, th2=2*s, wx = 0.3, wint=0.4, wrt=0.1*s, t0=0.1, s=s)
+#'
+#' two_samples <- rbind(cbind(df1, ws="BoE"),
+#'                    cbind(df2, ws="RT"))
+#' # drop not finished decision processes
+#' two_samples <- two_samples[two_samples$response!=0,]
+#' # no difference in RT distributions
+#' boxplot(rt~ws+response, data=two_samples)
+#' # but different confidence distributions
+#' boxplot(conf~ws+response, data=two_samples)
+#' \dontrun{
+#' require(ggplot2)
+#' ggplot(two_samples, aes(x=rt, y=conf))+
+#'   stat_density_2d(aes(fill = ..density..), geom = "raster", contour = FALSE, h=c(0.3, 0.7)) +
+#'   xlim(c(0.2, 1.3))+ ylim(c(0, 2.5))+
+#'   #geom_bin2d()+
+#'   facet_grid(cols=vars(ws), rows=vars(response), labeller = "label_both")
+#' }
+#' # Restricting to specific confidence region
+#' df1 <- df1[df1$conf >0 & df1$conf <1,]
+#' dPCRM(df1[1:5,], th1=0, th2=1,mu1=0.2, mu2=-0.2, a=1, b=1, t0=0.1,wx = 1 )
+#' \dontrun{
+#' # If any parameter is out of range (e.g. t0 < 0) the function throws an error.
+#'   dPCRM(df1[1:5,], th1=0, th2=1,mu1=0.2, mu2=-0.2, a=1, b=1, t0=-0.1, wx = 1 )
+#' }
+#'
 
 
 #' @rdname RaceModels

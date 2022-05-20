@@ -164,6 +164,34 @@ from top to bottom
 \item \code{factr} (\code{'L-BFGS-B'}) tolerance in terms of reduction factor of the objective, default: 1e-10)
 }
 }
+\examples{
+# We use one of the implemented models, "dynWEV"
+# 1. Generate data
+# data with positive drift (stimulus = "upper")
+data <- rWEV(20, a=2,v=0.5,t0=0.2,z=0.5, sz=0.1,sv=0.1, st0=0,  tau=4, s=1, w=0.3)
+data$stimulus <- "upper"
+# data with negtive drift (stimulus = "lower") but same intensity
+data2 <- rWEV(100, a=2,v=-0.5,t0=0.2,z=0.5,sz=0.1,sv=0.1, st0=0,  tau=4, s=1, w=0.3)
+data2$stimulus <- "lower"
+data <- rbind(data, data2)
+# Transfer response column and add dummy condition column
+data$response <- ifelse(data$response==1, "upper", "lower")
+data$condition <- 1
+# Take some confidence thresholds for discrete ratings
+threshs <- c(-Inf, 1, 2, Inf)
+data$rating <- as.numeric(cut(data$conf, breaks = threshs, include.lowest = TRUE))
+head(data)
+
+# 2. Use fitting function
+# Fitting the model with these opts results in a pretty bad fit
+# (especially because of omitting the grid_search)
+\dontrun{
+   fitRTConf(data, "dynWEV", fixed=list(sym_thetas=TRUE, z=0.5, st0=0),
+            grid_search = FALSE, logging=FALSE,
+            opts = list(nAttempts=1, nRestarts=2, maxfun=2000))
+ }
+
+}
 \references{
 Hellmann, S., Zehetleitner, M., & Rausch, M. (preprint). Simultaneous modeling of choice,
 confidence and response time in visual perception. https://osf.io/9jfqr/

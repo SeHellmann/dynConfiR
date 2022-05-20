@@ -22,3 +22,4 @@ CRAN_Checks.RData
 ^cran-comments\.md$
 ^CRAN-SUBMISSION$
 cran_prep.RData
+tests/testthat/comparePackageRaceModelsToSimus.R

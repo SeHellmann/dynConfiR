@@ -80,6 +80,56 @@
 #' @aliases predictIRM predictPCRM
 #' @importFrom Rcpp evalCpp
 #'
+#' @examples
+#' # Examples for "PCRM" model (equivalent applicable for "IRM" model)
+#' # 1. Define some parameter set in a data.frame
+#' paramDf <- data.frame(a=2,b=2, v1=0.5, v2=1, t0=0.1,st0=0,
+#'                       wx=0.6, wint=0.2, wrt=0.2,
+#'                       theta1=4)
+#'
+#' # 2. Predict discrete Choice x Confidence distribution:
+#' preds_Conf <- predictRM_Conf(paramDf, "PCRM", time_scaled=TRUE)
+#' ## equivalent:
+#' # preds_Conf <- predictRM_Conf(paramDf, "PCRMt")
+#' head(preds_Conf)
+#'
+#' # 3. Compute RT density
+#' preds_RT <- predictRM_RT(paramDf, "PCRMt", maxrt=7, subdivisions=50,
+#'                          scaled=TRUE, DistConf = preds_Conf)
+#' head(preds_RT)
+#' ## same output without scaled density column:
+#' #preds_RT <- predictRM_RT(paramDf, "PCRMt", maxrt=7, subdivisions=50) #(scaled=FALSE)
+#' \dontrun{
+#'   # produces a warning, if scaled=TRUE and DistConf missing
+#'   preds_RT <- predictRM_RT(paramDf, "PCRMt", maxrt=7, subdivisions=50,
+#'                            scaled=TRUE)
+#' }
+#'
+#' \dontrun{
+#'   # Example of visualization
+#'   library(ggplot2)
+#'   preds_Conf$rating <- factor(preds_Conf$rating, labels=c("unsure", "sure"))
+#'   preds_RT$rating <- factor(preds_RT$rating, labels=c("unsure", "sure"))
+#'   ggplot(preds_Conf, aes(x=interaction(rating, response), y=p))+
+#'     geom_bar(stat="identity")+
+#'     facet_grid(cols=vars(stimulus), rows=vars(condition), labeller = "label_both")
+#'   ggplot(preds_RT, aes(x=rt, color=interaction(rating, response), y=dens))+
+#'     geom_line(stat="identity")+
+#'     facet_grid(cols=vars(stimulus), rows=vars(condition), labeller = "label_both")+
+#'     theme(legend.position = "bottom")
+#'   ggplot(aggregate(densscaled~rt+correct+rating+condition, preds_RT, mean),
+#'          aes(x=rt, color=rating, y=densscaled))+
+#'     geom_line(stat="identity")+
+#'     facet_grid(cols=vars(condition), rows=vars(correct), labeller = "label_both")+
+#'     theme(legend.position = "bottom")
+#' }
+#' \dontrun{
+#'   # Use PDFtoQuantiles to get predicted RT quantiles
+#'   # (produces warning because of few rt steps (--> inaccurate calculations))
+#'   PDFtoQuantiles(preds_RT, scaled = FALSE)
+#' }
+#'
+
 
 #' @rdname predictRM
 #' @export
@@ -224,16 +274,6 @@ predictRM_RT <- function(paramDf, model="IRM", time_scaled = FALSE,
     paramDf$wrt = 0
     paramDf$wint = 0
   }
-  vary_s <-   length(grep(pattern = "^s[0-9]", names(paramDf), value = T))>1
-  if (vary_s){
-    S <- c(t((paramDf[,paste("s",1:(nConds), sep = "")])))
-  } else {
-    if ("s" %in% names(paramDf)) {
-      S <- rep(paramDf$s, nConds)
-    } else {
-      S <- rep(1, nConds)
-    }
-  }
 
   if (scaled && is.null(DistConf)) {
     message(paste("scaled is TRUE and DistConf is NULL. The rating distribution will",
@@ -252,6 +292,16 @@ predictRM_RT <- function(paramDf, model="IRM", time_scaled = FALSE,
   } else {
     V <- paramDf$v
     nConds <- 1
+  }
+  vary_s <-   length(grep(pattern = "^s[0-9]", names(paramDf), value = T))>1
+  if (vary_s){
+    S <- c(t((paramDf[,paste("s",1:(nConds), sep = "")])))
+  } else {
+    if ("s" %in% names(paramDf)) {
+      S <- rep(paramDf$s, nConds)
+    } else {
+      S <- rep(1, nConds)
+    }
   }
 
 

@@ -63,6 +63,48 @@
 #' @aliases getquantiles getRTquantiles RTDensityToQuantiles
 #' @importFrom Rcpp evalCpp
 #'
+#' @examples
+#' ## Demonstrate PDFtoQuantiles
+#' pred <- expand.grid(model = c("dynWEV", "PCRMt"),
+#'                     rt =  seq(0, 15, length.out=1200),
+#'                     condition = c(1,2,3),
+#'                     rating = c(1,2))
+#' pred$dens <- dchisq(pred$rt, 3) # pdf may also be used as column name
+#' head(pred)
+#' res <- PDFtoQuantiles(pred, p=c(0.3, 0.5, 0.7))
+#' head(res)
+#' nrow(res) #= 3(quantiles)*2(models)*3(conditions)*2(rating)
+#' # Compare to true quantiles of Chi-square distribution
+#' qchisq(p=c(0.3, 0.5, 0.7), 3)
+#' res$q[1:3]
+#'
+#'
+#' res2 <- PDFtoQuantiles(pred, p=c(0.3, 0.5, 0.7), agg_over = "model")
+#' nrow(res2) #=18 because res aggregated over models
+#'
+#' \dontrun{
+#'   pred$pdf <- dchisq(pred$rt, 3)
+#'   head(pred)
+#'   # following call throws a warning, because both columns pdf and dens are present
+#'   PDFtoQuantiles(pred, p=c(0.3, 0.5, 0.7), agg_over = "model")
+#' }
+#'
+#' \dontrun{
+#'   pred2 <- data.frame(rt=seq(0, 7, length.out=100))
+#'   pred2$dens <- dchisq(pred2$rt, 5)
+#'   # following gives a warning, because density is assumed to be scaled (scaled=TRUE), i.e.
+#'   # integrate to 1, but the .95 quantile is not reached in the rt column
+#'   PDFtoQuantiles(pred2, p=c(0.3, 0.5, 0.95), scaled=TRUE) # Gives a warning
+#' }
+#'
+#' ## Demonstrate CDFtoQuantiles
+#' X <- seq(-2, 2, length.out=300)
+#' pdf_values <- pnorm(X)
+#' CDFtoQuantiles(pdf_values, X, p=c(0.2, 0.5, 0.8))
+#' qnorm(c(0.2, 0.5, 0.8))
+
+
+
 
 
 #' @rdname PDFtoQuantiles
@@ -88,6 +130,7 @@ PDFtoQuantiles <- function(pdf_df, p = c(.1,.3,.5,.7,.9),
       pdf_df$pdf <- NULL
     }
   } else if (!("dens" %in% columns)) stop("Either 'dens' or 'pdf' must be a column of pdf_df")
+  if ("densscaled" %in% names(pdf_df)) pdf_df$densscaled <- NULL
 
   temp <- pdf_df %>% select(-c("rt", "dens")) %>%
     group_by(across()) %>% summarise(N=n())

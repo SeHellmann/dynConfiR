@@ -68,6 +68,46 @@ As argument \code{pdf_df}, the outputs of \code{predictRT} and \code{predictRTMo
 often used are conditions, correct/incorrect answers and confidence ratings.
 }
 }
+\examples{
+## Demonstrate PDFtoQuantiles
+pred <- expand.grid(model = c("dynWEV", "PCRMt"),
+                    rt =  seq(0, 15, length.out=1200),
+                    condition = c(1,2,3),
+                    rating = c(1,2))
+pred$dens <- dchisq(pred$rt, 3) # pdf may also be used as column name
+head(pred)
+res <- PDFtoQuantiles(pred, p=c(0.3, 0.5, 0.7))
+head(res)
+nrow(res) #= 3(quantiles)*2(models)*3(conditions)*2(rating)
+# Compare to true quantiles of Chi-square distribution
+qchisq(p=c(0.3, 0.5, 0.7), 3)
+res$q[1:3]
+
+
+res2 <- PDFtoQuantiles(pred, p=c(0.3, 0.5, 0.7), agg_over = "model")
+nrow(res2) #=18 because res aggregated over models
+
+\dontrun{
+  pred$pdf <- dchisq(pred$rt, 3)
+  head(pred)
+  # following call throws a warning, because both columns pdf and dens are present
+  PDFtoQuantiles(pred, p=c(0.3, 0.5, 0.7), agg_over = "model")
+}
+
+\dontrun{
+  pred2 <- data.frame(rt=seq(0, 7, length.out=100))
+  pred2$dens <- dchisq(pred2$rt, 5)
+  # following gives a warning, because density is assumed to be scaled (scaled=TRUE), i.e.
+  # integrate to 1, but the .95 quantile is not reached in the rt column
+  PDFtoQuantiles(pred2, p=c(0.3, 0.5, 0.95), scaled=TRUE) # Gives a warning
+}
+
+## Demonstrate CDFtoQuantiles
+X <- seq(-2, 2, length.out=300)
+pdf_values <- pnorm(X)
+CDFtoQuantiles(pdf_values, X, p=c(0.2, 0.5, 0.8))
+qnorm(c(0.2, 0.5, 0.8))
+}
 \references{
 Pleskac, T. J., & Busemeyer, J. R. (2010). Two-Stage Dynamic Signal Detection:
 A Theory of Choice, Decision Time, and Confidence, \emph{Psychological Review}, 117(3),

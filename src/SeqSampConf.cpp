@@ -495,15 +495,16 @@ NumericVector r_LCA (int n, NumericVector params, double delta=0.01, double maxT
 // pi (intensity dependency of noise),
 // th (threshold), k (leak), beta (inhibition),
 // SPV (start point variability), tau (post-dec. accumulation time)
-    double sig = params[2];
-    double pi = params[3];
-    double Th = params[4];
-    double alpha = params[5]-1;
-    double beta = params[6];
-    double SPV = params[7];
-    double tau = params[8];
     double mu1 = (params[0]);
     double mu2 = (params[1]);
+    double th1 = params[2];
+    double th2 = params[3];
+    double alpha = params[4]-1;
+    double beta = params[5];
+    double SPV = params[6];
+    double tau = params[7];
+    double pi = params[13];
+    double sig = params[14];
     double x1, x2, dx1, dx2, t, xl;
     int win;
     double sig1 = sqrt(delta)*sqrt(sig*sig + pi*pi*mu1*mu1);
@@ -513,27 +514,27 @@ NumericVector r_LCA (int n, NumericVector params, double delta=0.01, double maxT
         x1 = R::runif(0, SPV);
         x2 = R::runif(0, SPV);
         t = 0;
-        while ((x1 < Th) && (x2 < Th) && (t < maxT)) {
+        while ((x1 < th1) && (x2 < th2) && (t < maxT)) {
             dx1 = delta*alpha*x1 - delta*beta*x2 + R::rnorm(mu1*delta, sig1);
             dx2 = delta*alpha*x2 - delta*beta*x1 + R::rnorm(mu2*delta, sig2);
             x1 = std::max(0.0, x1 + dx1);
             x2 = std::max(0.0, x2 + dx2);
             t += delta;
         }
-        if (x1 > Th) {
+        if (x1 > th1) {
             if (x2 < x1) {
                 win = 1;
-                if (x2 < Th) {
+                if (x2 < th2) {
                     xl = x2;
                 } else {
-                    xl = Th;
+                    xl = th2;
                 }
             } else {
                 win = 2;
-                xl = Th;
+                xl = th1;
             }
         } else {
-            if (x2 > Th) {
+            if (x2 > th2) {
                 win = 2;
                 xl = x1;
             } else {

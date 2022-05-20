@@ -18,6 +18,10 @@
 #' @param agg_simus logical. Simulation is done on a trial basis with rts outcome. If TRUE,
 #' the simulations will be aggregated over RTs to return only the distribution of response and
 #' confidence ratings. Default: FALSE.
+#' @param  simult_conf logical. Whether in the experiment confidence was reported simultaneously
+#' with the decision. If that is the case decision and confidence judgment are assumed to have happened
+#' subsequent before the response. Therefore `tau` is included in the response time. If the decision was
+#' reported before the confidence report, `simul_conf` should be `FALSE`.
 #' @param stimulus numeric vector. Either 1, 2 or c(1, 2) (default).
 #' Together with condition represents the experimental situation. In a 2AFC task the presented
 #' stimulus belongs to one of two categories. In the default setting trials with
@@ -69,17 +73,39 @@
 # @importFrom pracma integral
 #' @aliases rConfModel  simulateConfModel
 #'
+#' @examples
+#'
+#' # The function is particularly useful, when having a collection
+#' # of parameter sets for different models (e.g. output by fitRTConfModels for
+#' # more than one model).
+#' library(dplyr)
+#' # 1. Generate only one parameter set but for two different models
+#' paramDf1 <- data.frame(model="dynWEV", a=1.5,v1=0.2, v2=1, t0=0.1,z=0.52,
+#'                       sz=0.3,sv=0.4, st0=0,  tau=3, w=0.5,
+#'                       theta1=1, svis=0.5, sigvis=0.8)
+#' paramDf2 <- data.frame(model="PCRMt", a=2,b=2, v1=0.5, v2=1, t0=0.1,st0=0,
+#'                       wx=0.6, wint=0.2, wrt=0.2, theta1=4)
+#' paramDf <- full_join(paramDf1, paramDf2)
+#' paramDf  # each model parameters sets hat its relevant parameters
+#' # Split paramDf by model (maybe also other columns) and simulate data
+#' simus <- paramDf |> group_by(model) |>
+#'  summarise(simulateRTConf(cur_data_all(), n=200, simult_conf = TRUE))
+#' head(simus)
+#'
+
 
 ## When given vectorised parameters, n is the number of replicates for each parameter set
 #' @rdname simulateRTConf
 #' @export
 simulateRTConf <- function (paramDf, n=1e+4,  model = NULL,
-                 gamma = FALSE, agg_simus=FALSE,
+                 gamma = FALSE, agg_simus=FALSE, simult_conf = FALSE,
                  stimulus = c(1,2), delta=0.01, maxrt=15, seed=NULL)
 {
-  paramDf <- paramDf[,!is.na(paramDf)]
+  if (nrow(paramDf)>1) stop("paramDf must have one row. For more than one parameter set, please use a split-apply method,
+                            like group_by, summarise (from the dplyr package).")
+  paramDf <- paramDf[,c(!is.na(paramDf))]
   if (is.null(model) && ("model" %in% names(paramDf))) model <- paramDf$model
-  if ((model %in% c("dynWEV", "WEVmu", "2DSD")) && stimulus == c(1,2)) stimulus <- c(-1,1)
+  if ((model %in% c("dynWEV", "WEVmu", "2DSD")) && identical(stimulus, c(1,2))) stimulus <- c(-1,1)
   if (grepl("RM", model)) {
     res <- simulateRM(paramDf, n, model, FALSE, gamma, agg_simus, stimulus, delta, maxrt, seed)
     if (!agg_simus ) {
@@ -90,7 +116,7 @@ simulateRTConf <- function (paramDf, n=1e+4,  model = NULL,
       }
     }
   } else if (model %in% c("dynWEV", "2DSD")) {
-    res <- simulateWEV(paramDf, n, model, gamma, agg_simus, stimulus, delta=delta, maxrt=maxrt, seed=seed)
+    res <- simulateWEV(paramDf, n, model, simult_conf, gamma, agg_simus, stimulus, delta=delta, maxrt=maxrt, seed=seed)
   } else {stop("model not known.")}
   return(res)
 }

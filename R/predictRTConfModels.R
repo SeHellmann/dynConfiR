@@ -10,8 +10,9 @@
 #' information about the parameters.
 #'
 #' @param paramDf a dataframe with one row per combination of model and
-#' participant/parameter set. Columns must include a participant or subject column,
-#' a model column and the names of the model parameters. For different stimulus
+#' participant/parameter set. Columns may include a participant (sbj, or
+#' subject) column, and must include a model column and the names of the model parameters.
+#' For different stimulus
 #' quality/mean drift rates, names should be v1, v2, v3,.... Different s parameters
 #' are possible with s1, s2, s3... with equally many steps as for drift rates (same
 #' for sv parameter in dynWEV and 2DSD).
@@ -51,11 +52,13 @@
 #' @param .progress logical. If TRUE (default) a progress bar is drawn to the console. (Works
 #' for some OS only when `parallel=FALSE`.)
 #'
-#' @return \code{predictConfModels} gives a data frame/tibble with columns: participant, model,
+#' @return \code{predictConfModels} gives a data frame/tibble with columns: participant (or sbj,
+#' subject depending on the input), model,
 #' condition, stimulus, response, rating, correct, p, info, err. p is the predicted probability
 #' of a response and rating, given the stimulus category and condition. Message and error refer
 #' to the respective outputs of the integration routine used for computation.
-#' \code{predictRTModels} returns a data frame/tibble with columns: participant, model,
+#' \code{predictRTModels} returns a data frame/tibble with columns: participant (or sbj,
+#' subject depending on the input), model,
 #' condition, stimulus, response, rating, correct, rt and dens (and densscaled, if `scaled=TRUE`).
 #'
 #'
@@ -92,6 +95,57 @@
 #' @aliases predictConfModels
 #' @importFrom Rcpp evalCpp
 #'
+#' @examples
+#' # First example for 2 participant and the "dynWEV" model
+#' # (equivalent applicable for
+#' # all other models (with different parameters!))
+#' # 1. Define two parameter sets from different participants
+#' paramDf <- data.frame(participant = c(1,2), model="dynWEV",
+#'                       a=c(1.5, 2),v1=c(0.2,0.1), v2=c(1, 1.5),
+#'                       t0=c(0.1, 0.2),z=c(0.52,0.45),
+#'                       sz=c(0.0,0.3),sv=c(0.4,0.7), st0=c(0,0.01),
+#'                       tau=c(2,3), w=c(0.5,0.2),
+#'                       theta1=c(1,1.5), svis=c(0.5,0.1), sigvis=c(0.8, 1.2))
+#' paramDf
+#' # 2. Predict discrete Choice x Confidence distribution:
+#' preds_Conf <- predictConfModels(paramDf, maxrt = 15, simult_conf=TRUE,
+#'                                 .progress=TRUE, parallel = FALSE)
+#' head(preds_Conf)
+#' \dontrun{
+#'   # model is not an extra argument but must be a column of paramDf
+#'   paramDf$model <- NULL
+#'   # throws an error
+#'   preds_Conf <- predictConfModels(paramDf, model="dynWEV",
+#'                                   maxrt = 15, simult_conf=TRUE,
+#'                                  .progress=TRUE, parallel = FALSE)
+#' }
+#' # 3. Compute RT density
+#' preds_RT <- predictRTModels(paramDf, maxrt=6, subdivisions=100,
+#'                       scaled=TRUE, DistConf = preds_Conf,
+#'                       parallel=FALSE, .progress = TRUE)
+#' head(preds_RT)
+#' ## same output with default rt-grid and without scaled density column:
+#' #preds_RT <- predictRTModels(paramDf) #(scaled=FALSE)
+#' \dontrun{
+#'   # produces a warning, if scaled=TRUE and DistConf missing
+#'   preds_RT <- predictRT(paramDf, scaled=TRUE)
+#' }
+#' # Use PDFtoQuantiles to get predicted RT quantiles
+#' head(PDFtoQuantiles(preds_RT, scaled = FALSE))
+#'
+#' # Second Example: only one parameter set but for two different models
+#' \dontrun{
+#'   paramDf1 <- data.frame(model="dynWEV", a=1.5,v1=0.2, v2=1, t0=0.1,z=0.52,
+#'                         sz=0.3,sv=0.4, st0=0,  tau=3, w=0.5,
+#'                         theta1=1, svis=0.5, sigvis=0.8)
+#'   paramDf2 <- data.frame(model="PCRMt", a=2,b=2, v1=0.5, v2=1, t0=0.1,st0=0,
+#'                         wx=0.6, wint=0.2, wrt=0.2, theta1=4)
+#'   paramDf <- dplyr::full_join(paramDf1, paramDf2)
+#'   paramDf  # each model parameters sets hat its relevant parameters
+#'   predictConfModels(paramDf, parallel=FALSE, .progress=TRUE)
+#' }
+#'
+
 
 #' @rdname predictRTConfModels
 #' @export
@@ -99,8 +153,9 @@ predictConfModels <- function(paramDf,
                               maxrt=15, subdivisions = 100L, simult_conf = FALSE,
                               stop.on.error=FALSE,
                               .progress=TRUE,
-                              parallel = TRUE, n.cores=NULL){ #  ?ToDO: vary_sv=FALSE, RRT=NULL, vary_tau=FALSE
+                              parallel = FALSE, n.cores=NULL){
   models <- unique(paramDf$model)
+  if (is.null(models)) stop("model column missing in paramDf")
   if (!is.numeric(maxrt)) stop("maxrt must be numeric")
   if (!all(models %in% c("IRM", "PCRM", "IRMt", "PCRMt", "dynWEV", "2DSD"))) stop("model must be 'dynWEV', '2DSD', 'IRM', 'PCRM', 'IRMt', or 'PCRMt'")
   sbjcol <- c("subject", "participant", "sbj")[which(c("subject", "participant", "sbj") %in% names(paramDf))]
@@ -158,9 +213,11 @@ predictConfModels <- function(paramDf,
     res <- apply(jobs, 1, call_predfct)
   }
   res <- do.call(rbind, res)
+
+  # Put sbj and model column to the front
+  res[,c(ncol(res),(ncol(res)-1), 1:(ncol(res)-2))]
   return(res)
 }
-
 
 
 
@@ -173,9 +230,10 @@ predictRTModels <- function(paramDf,
                             simult_conf = FALSE,
                             scaled = FALSE, DistConf=NULL,
                             .progress = TRUE,
-                            parallel = TRUE, n.cores=NULL){ #  ?ToDO: vary_sv=FALSE, RRT=NULL, vary_tau=FALSE
+                            parallel = FALSE, n.cores=NULL){ #  ?ToDO: vary_sv=FALSE, RRT=NULL, vary_tau=FALSE
   if (!is.numeric(maxrt)) stop("maxrt must be numeric")
   models <- unique(paramDf$model)
+  if (is.null(models)) stop("model column missing in paramDf")
   if (!all(models %in% c("IRM", "PCRM", "IRMt", "PCRMt", "dynWEV", "2DSD"))) stop("model must be 'dynWEV', '2DSD', 'IRM', 'PCRM', 'IRMt', or 'PCRMt'")
   sbjcol <- c("subject", "participant", "sbj")[which(c("subject", "participant", "sbj") %in% names(paramDf))]
   if (length(sbjcol)==0) {
@@ -269,5 +327,8 @@ predictRTModels <- function(paramDf,
     res <- apply(jobs, 1, call_predfct)
   }
   res <- do.call(rbind, res)
+
+  # Put sbj and model column to the front
+  res[,c(ncol(res),(ncol(res)-1), 1:(ncol(res)-2))]
   return(res)
 }

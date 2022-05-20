@@ -107,7 +107,7 @@ print(head(predictedRTdist))
 
 ### Visual comparison
 
-The predicted distributions may be visually compared to the empirical distributions to check how accurately the model fits the data. Therefore, we transform the condition column in the prediction data sets to fit the one in the empirical data and aggregate the datasets over stimulus and response identity and distinguish only correct and incorrect responses.
+The predicted distributions may be visually compared to the empirical distributions to check how accurately the model fits the data. Therefore, we transform the condition column in the prediction data sets to fit the one in the empirical data and aggregate the data sets over stimulus and response identity and distinguish only correct and incorrect responses.
 
 ```{r}
 part8 <- part8 %>% 

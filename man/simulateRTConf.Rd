@@ -7,8 +7,8 @@
 \title{Simulation of confidence ratings and RTs in sequential sampling confidence models}
 \usage{
 simulateRTConf(paramDf, n = 10000, model = NULL, gamma = FALSE,
-  agg_simus = FALSE, stimulus = c(1, 2), delta = 0.01, maxrt = 15,
-  seed = NULL)
+  agg_simus = FALSE, simult_conf = FALSE, stimulus = c(1, 2),
+  delta = 0.01, maxrt = 15, seed = NULL)
 }
 \arguments{
 \item{paramDf}{a list or dataframe with one row with the required parameters.}
@@ -24,6 +24,11 @@ computed.}
 \item{agg_simus}{logical. Simulation is done on a trial basis with rts outcome. If TRUE,
 the simulations will be aggregated over RTs to return only the distribution of response and
 confidence ratings. Default: FALSE.}
+
+\item{simult_conf}{logical. Whether in the experiment confidence was reported simultaneously
+with the decision. If that is the case decision and confidence judgment are assumed to have happened
+subsequent before the response. Therefore \code{tau} is included in the response time. If the decision was
+reported before the confidence report, \code{simul_conf} should be \code{FALSE}.}
 
 \item{stimulus}{numeric vector. Either 1, 2 or c(1, 2) (default).
 Together with condition represents the experimental situation. In a 2AFC task the presented
@@ -78,6 +83,26 @@ correct/incorrect responses for the correlation of confidence ratings with condi
 and separately for conditions for the correlation of accuracy and confidence. The resulting
 tibbles in the output thus have two columns. One for the grouping variable and one for the
 Gamma coefficient.
+}
+\examples{
+
+# The function is particularly useful, when having a collection
+# of parameter sets for different models (e.g. output by fitRTConfModels for
+# more than one model).
+library(dplyr)
+# 1. Generate only one parameter set but for two different models
+paramDf1 <- data.frame(model="dynWEV", a=1.5,v1=0.2, v2=1, t0=0.1,z=0.52,
+                      sz=0.3,sv=0.4, st0=0,  tau=3, w=0.5,
+                      theta1=1, svis=0.5, sigvis=0.8)
+paramDf2 <- data.frame(model="PCRMt", a=2,b=2, v1=0.5, v2=1, t0=0.1,st0=0,
+                      wx=0.6, wint=0.2, wrt=0.2, theta1=4)
+paramDf <- full_join(paramDf1, paramDf2)
+paramDf  # each model parameters sets hat its relevant parameters
+# Split paramDf by model (maybe also other columns) and simulate data
+simus <- paramDf |> group_by(model) |>
+ summarise(simulateRTConf(cur_data_all(), n=200, simult_conf = TRUE))
+head(simus)
+
 }
 \author{
 Sebastian Hellmann.

@@ -1,59 +1,38 @@
 #' Simulation of confidence ratings and RTs in leaky competing accumulator model
 #'
 #' Simulates the decision responses, reaction times and state of the loosing accumulator
-#' together with a discrete confidence judgment  in the leaky competing accumulator model.
-#' Optionally, there is a post-decisional accumulation period, where the process continues.
-#' Parameters required (in \code{paramDf}):
-#'    mu1 and mu2 (mean momentary evidence for alternatives)
-#'    pi (factor for input dependent noise of infinitesimal variance of processes)
-#'    sig (input independent component of infinitesimal variance of processes)
-#'    th (decision threshold)
-#'    k (leakage)
-#'    beta (inhibition)
-#'    SPV (variation in starting points)
-#'    tau (fixed post decisional accumulation period)
-#'    wx (weight on balance of evidence in confidence measure)
-#'    wrt (weight on RT in confidence measure)
-#'    wint (weight on interaction of evidence and RT in confidence measure)
-#'    t0 (minimal non-decision time)
-#'    st0 (range of uniform distribution of non-decision time)
-#' Also computes the Gamma rank correlation between the confidence
-#' ratings and condition (task difficulty), reaction times and accuracy in the simulated output.
+#' together with a confidence measure in the leaky competing accumulator model.
+#' Optionally, there is a post-decisional accumulation period, where the processes continues.
+
+#' @param n integer. number of samples.
+#' @param mu1 mean momentary evidence for alternative 1
+#' @param mu2 mean momentary evidence for alternative 2
+#' @param th1 decision threshold for alternative 1
+#' @param th2 decision threshold for alternative 2
+#' @param k leakage (default: 0)
+#' @param beta inhibition  (default: 0)
+#' @param SPV variation in starting points  (default: 0)
+#' @param tau fixed post decisional accumulation period  (default: 0)
+#' @param wx weight on balance of evidence in confidence measure  (default: 1)
+#' @param wrt weight on RT in confidence measure  (default: 0)
+#' @param wint weight on interaction of evidence and RT in confidence measure (default: 0)
+#' @param t0 minimal non-decision time (default: 0)
+#' @param st0 range of uniform distribution of non-decision time (default: 0)
+#' @param pi factor for input dependent noise of infinitesimal variance of processes (default: 0)
+#' @param sig input independent component of infinitesimal variance of processes (default: 1)
 #'
-#' @param paramDf a list or dataframe with one row. Column names should match the names of
-#' model parameters (mu1, mu2, pi, sig, th, k, beta, SPV, and tau, wx, wrt, and wint and t0 and st0). For different
-#' experimental conditions, simply numerate the respective parameters (e.g. for varying
-#' drift rates, use mu11, mu12, mu13, mu21, mu22, mu23). All non-numerated parameters are
-#' assumed to be constant across conditions. Additionally, the confidence thresholds may be given by names with
-#' thetaUpper1, thetaUpper2,..., thetaLower1,... or, for symmetric thresholds only by theta1, theta2,....
-#' Note that confidence thresholds are not allowed to vary with experimental condition.
-#' @param n integer. The number of samples (per condition (and stimulus direction)) generated.
-#' Total number of samples is \code{n*nConditions*length(stimulus)}.
 #' @param time_scaled logical. Whether a time_scaled transformation for the confidence measure should
 #' be used.
-#' @param gamma logical. If TRUE, the gamma correlation between confidence ratings, rt and accuracy is
-#' computed.
-#' @param agg_simus logical. Simulation is done on a trial basis with rts outcome. If TRUE,
-#' the simulations will be aggregated over RTs to return only the distribution of response and
-#' confidence ratings. Default: FALSE.
-#' @param stimulus numeric vector. Either 1, 2 or c(1, 2) (default).
-#' Together with condition represents the experimental situation. In a 2AFC task the presented
-#' stimulus belongs to one of two categories. In the default setting trials with
-#' both categories presented are simulated but one can choose to simulate only trials with the
-#' stimulus coming from one category (each associated with positive drift in one of two accumulators).
-#' More precisely, if stimulus is 2, trials with interchanged mu1 and mu2 are simulated representing a trial
-#' with contrary stimulus identity as represented in the paramDf.
+#' @param  simult_conf logical. Whether in the experiment confidence was reported simultaneously
+#' with the decision. If that is the case decision and confidence judgment are assumed to have happened
+#' subsequent before the response. Therefore `tau` is included in the response time. If the decision was
+#' reported before the confidence report, `simul_conf` should be `FALSE`.
 #' @param delta numerical. Size of steps for the discretized simulation (see details).
 #' @param maxrt numerical. Maximum reaction time to be simulated (see details). Default: 15.
-#' @param seed numerical. Seeding for non-random data generation. (Also possible outside of the function.)
 #'
-#' @return Depending on gamma and agg_simus. If gamma is TRUE, returns a list with elements:
-#' "simus" (the simulated data frame) and "gamma", which is again a list with elements
-#' "condition", "rt" and "correct", each a tibble with two columns (see details for more
-#' information). If gamma is FALSE, returns a data frame with columns: condition, stimulus,
-#' response, correct, rt, conf (the continuous confidence measure) and rating (the discrete
-#' confidence rating) or (if agg_simus=TRUE): condition, stimulus, response, correct, rating
-#' and p (for the probability of a response and rating, given the condition and stimulus).
+#' @return Returns a `data.frame` with three columns and `n` rows. Column names are `rt` (response
+#' time), `response` (1 or 2, indicating which accumulator hit its boundary first), and `conf` (the
+#' value of the confidence measure; not discretized!).
 #'
 #'
 #' @details The simulation is done by simulating discretized steps until one process reaches
@@ -63,236 +42,155 @@
 #' set to 0. After the decision, the accumulation continues for a time period (tau), until
 #' the final state is used for the computation of confidence.
 #'
-#' The Gamma coefficients are computed separately for
-#' correct/incorrect responses for the correlation of confidence ratings with condition and rt
-#' and separately for conditions for the correlation of accuracy and confidence. The resulting
-#' tibbles in the output thus have two columns. One for the grouping variable and one for the
-#' Gamma coefficient.
-#'
-#' @note Different parameters for different conditions are only allowed for drift rate, \code{v},
-#' and variability, \code{s}. All other parameters are used for all conditions.
-#'
-#'
 #'
 #' @author Sebastian Hellmann.
 #'
 #' @name rLCA
-#' @import dplyr
-#' @importFrom magrittr %>%
 #' @importFrom Hmisc rcorr.cens
-#' @importFrom rlang .data
 #' @importFrom stats runif
 # @importFrom pracma integral
 #' @aliases simulateLCA
+#'
+#' @examples
+#' # minimal arguments
+#' simus<- rLCA(n=20, mu1=1, mu2=-0.5, th1=1, th2=0.8)
+#' head(simus)
+#'
+#' # specifying all relevant parameters
+#' simus <- rLCA(n=1000, mu1 = 2.5, mu2=1, th1=1.5, th2=1.6,
+#'                k=0.1, beta=0.1, SPV=0.2, tau=0.1,
+#'                wx=0.8, wrt=0.2, wint=0, t0=0.2, st0=0.1,
+#'                pi=0.2, sig=1)
+#' \dontrun{
+#'   require(ggplot2)
+#'   ggplot(simus, aes(x=rt, y=conf))+
+#'     stat_density_2d(aes(fill = ..density..), geom = "raster", contour = FALSE) +
+#'     #geom_bin2d()+
+#'     facet_wrap(~response)
+#' }
+#' boxplot(conf~response, data=simus)
 #'
 
 ## When given vectorised parameters, n is the number of replicates for each parameter set
 #' @rdname rLCA
 #' @export
-rLCA <- function (paramDf, n=1e+4,   time_scaled=FALSE,
-                        gamma = FALSE, agg_simus=FALSE,
-                        stimulus = c(1,2), delta=0.01, maxrt=15, seed=NULL)
+rLCA <- function (n, mu1, mu2, th1, th2,
+                  k=0, beta=0, SPV=0,tau=0,
+                  wx=1, wrt=0, wint=0, t0=0, st0=0,
+                  pi=0, sig=1, time_scaled=TRUE, simult_conf=FALSE,
+                  delta=0.01, maxrt=15)
 {
-  # library(tidyverse)
-  # n <- 100
-  # time_scaled = FALSE
-  # gamma = FALSE
-  # agg_simus = FALSE
-  # stimulus = c(1,2)
-  # delta = 0.01
-  # maxrt = 15
-  # seed = NULL
-  #
-  # paramDf <- as.data.frame(list("mu1"=1, "mu2"=0, "pi"=1, "sig"=1,
-  #                 "th"=2, "k"=0.9, "beta"=0.2,
-  #                 "SPV"=0.1, "tau"=1,
-  #                 "theta1" = 0.2, "theta2" = 0.4, "theta3" = 1,
-  #                 "wx" = 0.7, "wrt" = 0.2, "wint"=0.1,
-  #                   "t0" = 0.1, "st0"=0.05))
-  #
-  #
-  # paramDf <- as.data.frame(list("mu11"=1, "mu21"=0,
-  #                 "mu12"=2, "mu22"=1,
-  #                 "pi"=1, "sig"=1,
-  #                 "th"=2, "k"=0.9, "beta"=0.2,
-  #                 "SPV"=0.1, "tau"=1,
-  #                 "theta1" = 0.2, "theta2" = 0.4, "theta3" = 1,
-  #                 "wx" = 0.7, "wrt" = 0.2, "wint"=0.1,
-  #                   "t0" = 0.1, "st0"=0.05))
 
-  ## Create dummy parameters, s.t. R CMD check does not complain that they are not defined
-  mu1 <- 0
-  mu2 <- 0
-  sig <- 0
-  th <- 0
-  k <- 0
-  SPV <- 0
-  tau <- 0
-  wx <- 0
-  wint <- 0
-  wrt <- 0
-
-  if (!is.null(seed)) {
-    set.seed(seed)
-  }
-
-  if (!(all(stimulus %in% c(1,2)))) {
-    stop(paste("Not accepted value for stimulus: ", paste(stimulus, collapse=", "),". Must be either 1, 2 or c(1,2).", sep=""))
-  }
-  if (("wx1" %in% names(paramDf)) || ("wrt1" %in% names(paramDf)) || ("wint1" %in% names(paramDf))) {
-    stop("Weights in confidence measure should not change with conditions (at least its not implemented, yet)!")
-  }
   if (!time_scaled) {
-    paramDf$wint <- 0
-    paramDf$wrt <- 0
-    paramDf$wx <- 1
+    wint <- 0
+    wrt <- 0
+    wx <- 1
   }
+  pars <- prepare_LCA_parameter(n, mu1, mu2, th1, th2, k, beta, SPV,tau,
+                                wx, wrt, wint, t0, st0, pi, sig)
+  res <- matrix(NA, nrow=n, ncol=6)
+  for (i in seq_len(length(pars$parameter_indices))) {
+    ok_rows <- pars$parameter_indices[[i]]
+    current_n <- length(ok_rows)
+    out <- r_LCA(current_n, pars$params[ok_rows[1], 1:15],
+                 delta = delta, maxT =maxrt)
 
-  ## recover parameters from paramDf
-  bin_conf = FALSE
-  if (length(grep(pattern = "theta", names(paramDf)))>=1) {
-    bin_conf = TRUE
-    symmetric_confidence_thresholds <- length(grep(pattern = "thetaUpper", names(paramDf), value = T))<1
-    if (symmetric_confidence_thresholds) {
-      nRatings <- length(grep(pattern = "^theta[0-9]", names(paramDf)))+1
-      thetas_1 <- c(-Inf, t(paramDf[paste("theta",1:(nRatings-1), sep = "")]), Inf)
-      thetas_2 <- c(-Inf, t(paramDf[paste("theta",1:(nRatings-1), sep = "")]), Inf)
+    ws <- pars$params[ok_rows[1],9:11]
+    ws <- ws/sum(ws)
+
+    # Since the Cpp function uses a different parametrization, -out[,3] is
+    # exactly the distance of the loosing accumulator from its boundary
+    if (time_scaled) {
+      res[ok_rows,6] <- -ws[1]*out[,3] + ws[2]/sqrt(out[,1]) - ws[3]*out[,3]/sqrt(out[,1])
     } else {
-      nRatings <- length(grep(pattern = "^thetaUpper[0-9]", names(paramDf)))+1
-      thetas_1 <- c(-Inf, t(paramDf[paste("thetaUpper",1:(nRatings-1), sep = "")]), Inf)
-      thetas_2 <- c(-Inf, t(paramDf[paste("thetaLower",1:(nRatings-1), sep="")]), Inf)
+      res[ok_rows,6] <- -out[,3]
     }
-    paramDf <- paramDf[names(paramDf)[!grepl("theta", names(paramDf))]]
-  }
-  parnames <- c("mu1", "mu2", "pi", "sig", "th","k", "beta", "SPV", "tau", "wx", "wrt", "wint", "t0", "st0")
-  cond_pars <- NULL
-  for (l in 1:length(parnames)) {
-    if (length(grep(pattern=paste0(parnames[l], "[0-9]"), names(paramDf)))>1) {
-      cond_pars <- c(cond_pars, parnames[l])
+    # Add non-decision time to response time
+    out[,1] <- out[,1] + pars$params[ok_rows[1],12] + runif(current_n, 0, pars$params[ok_rows[1],13])
+
+    # Add inter-rating time if confidence was reported simultaneously with decision
+    if (simult_conf) {
+      out[1,] <- out[1,] + pars$params[ok_rows[1], 8]
     }
+    res[ok_rows,1:5] <- out
   }
-  if (length(cond_pars) > 0 ) {
-    nConds <- length(grep(pattern = paste0(cond_pars[1],"[0-9]"), names(paramDf), value = T))
-    df <- expand.grid(condition = 1:nConds, stimulus=stimulus)
-    for (l in 1:length(cond_pars)) {
-      #df[[cond_pars[l]]] <- NA
-      for (i in 1:nrow(df)) {
-        df[[cond_pars[l]]][i] <- paramDf[[paste0(cond_pars[l], df[i, "condition"])]]
-      }
-      paramDf <- paramDf[!grepl(pattern=cond_pars[l], names(paramDf))]
-      #df[[cond_pars[l]]] <- paramDf[grep(pattern=cond_pars[l], names(paramDf), value = TRUE)][df$condition]
-    }
-  } else {
-    nConds <- 1
-  }
-  if (!("mu1" %in% names(df))) {
-    df$mu1 <- paramDf["mu1"]
-    df$mu2 <- paramDf["mu2"]
-  }
-  if (length(stimulus) > 1) {
-    temp <- df[df$stimulus==2, "mu1"]
-    df[df$stimulus==2, "mu1"] <- df[df$stimulus==2, "mu2"]
-    df[df$stimulus==2, "mu2"] <- temp
-  }
-  df$stimulus <- if_else(df$mu1==df$mu2, 0,
-                         if_else(df$mu1>df$mu2, 1, 2))
-  df <- df[!duplicated(df),]
-
-  paramDf[c("wx", "wrt", "wint")] <-   paramDf[c("wx", "wrt", "wint")]/sum(as.numeric(  paramDf[c("wx", "wrt", "wint")]))
-
-  #list2env(paramDf, envir = environment())
-  parnames <- names(paramDf)
-  for (i in 1:length(parnames)) {
-    assign(parnames[i], paramDf[[parnames[i]]], envir = environment())
-  }
-
-  help_fct <- function(mu1, mu2, sig, pi, th, k, beta, SPV, tau) {
-    res <- as.data.frame(r_LCA(n,
-                               c(mu1, mu2, sig, pi, th, k, beta, SPV, tau),
-                              delta=delta, maxT=maxrt))
-    names(res) <- c("rt", "response", "xl", "x1", "x2")
-    res
-  }
-  ## Produce process outcomes and compute confidence measure
-  simus <- df %>%
-    group_by(.data$condition, .data$stimulus) %>%
-    summarise(help_fct(mu1, mu2, sig, pi, th, k, beta, SPV, tau)) %>%
-    mutate(BoE = (.data$x2-.data$x1)*(if_else(.data$response==2, 1, -1)),
-           conf = if_else(rep(time_scaled, n),
-                          wx*.data$BoE + wrt/sqrt(.data$rt) + wint*.data$BoE/sqrt(.data$rt),
-                          wx*.data$BoE))
-  if ("t0" %in% cond_pars) {
-    t0 <- df[1:nConds,"t0"][simus$condition]
-  }
-  if ("st0" %in% cond_pars) {
-    st0 <- df[1:nConds,"st0"][simus$condition]
-  }
-  simus <- simus %>% ungroup() %>%
-    rename(dt = "rt") %>%
-    mutate(rt = .data$dt + runif(nrow(simus), min = t0, max=t0+st0),
-           correct = if_else(.data$stimulus==0, 3, as.numeric(.data$response==.data$stimulus)))
-
-  ### Bin confidence measure for discrete ratings, if parameters given:
-  if (!bin_conf) {
-    if (gamma) {
-      warning("gamma correlations only returned, if theta-parameters given and confidence returned")
-    }
-    if (agg_simus) {
-      simus <- simus %>% group_by(.data$correct, .data$condition) %>%
-        summarise(p = n()/(2*n)) %>%
-        full_join(y=expand.grid(condition=1:nConds,
-                                correct=c(0,1))) %>%
-        mutate(p = ifelse(is.na(.data$p), 0, .data$p))
-    } else {
-      simus <- simus[c("condition", "stimulus", "response", "correct", "rt","BoE", "conf", "dt")]
-    }
-    return(simus)
-  }
-
-
-  simus$rating <- 1
-  simus$rating[simus$response==1] <- as.numeric(as.factor(cut(simus$conf[simus$response==1], breaks=thetas_1)))
-  simus$rating[simus$response==2] <- as.numeric(as.factor(cut(simus$conf[simus$response==2], breaks=thetas_2)))
-
-
-
-
-  if (gamma==TRUE) {
-    gamma_condition <- simus %>% group_by(.data$correct) %>%
-      summarise(data.frame(t(rcorr.cens(.data$rating,S=.data$condition, outx=TRUE)))) %>%
-      select(.data$correct, Gamma = .data$Dxy)
-    gamma_rt <- simus %>% group_by(.data$correct) %>%
-      summarise(data.frame(t(rcorr.cens(.data$rating,S=.data$rt, outx=TRUE))))%>%
-      select(.data$correct, Gamma = .data$Dxy)
-    gamma_correct <- simus %>% group_by(.data$condition) %>%
-      summarise(data.frame(t(rcorr.cens(.data$rating,S=.data$correct, outx=TRUE))))%>%
-      select(.data$condition, Gamma = .data$Dxy)
-    gamma_rt_bycondition <- simus %>% group_by(.data$condition) %>%
-      summarise(data.frame(t(rcorr.cens(.data$rating,S=.data$rt, outx=TRUE))))%>%
-      select(.data$condition, Gamma = .data$Dxy)
-    gamma_rt_byconditionbycorrect <- simus %>% group_by(.data$condition, .data$correct) %>%
-      summarise(data.frame(t(rcorr.cens(.data$rating,S=.data$rt, outx=TRUE))))%>%
-      select(.data$condition, Gamma = .data$Dxy)
-  }
-  if (agg_simus) {
-    simus <- simus %>% group_by(.data$rating, .data$correct, .data$condition) %>%
-      summarise(p = n()/(2*n)) %>%
-      full_join(y=expand.grid(rating=1:nRatings, condition=1:nConds,
-                              correct=c(0,1))) %>%
-      mutate(p = ifelse(is.na(.data$p), 0, .data$p))
-  } else {
-    simus <- simus[c("condition", "stimulus", "response", "rating", "correct", "rt","BoE", "conf", "dt")]
-  }
-  if (gamma) {
-    return(list("simus"=simus,
-                "gamma" = list("condition" = gamma_condition,
-                               "rt" = gamma_rt,
-                               "correct" = gamma_correct,
-                               "rt_bycondition" = gamma_rt_bycondition,
-                               "rt_byconditionbycorrect" = gamma_rt_byconditionbycorrect)))
-  } else {
-    return(simus)
-  }
+  res <- as.data.frame(res)
+  names(res) <- c("rt", "response", "xl", "x1", "x2", "conf")
+  return(res)
 }
 
+
+
+
+prepare_LCA_parameter <- function(nn, mu1, mu2, th1, th2,
+                                  k, beta, SPV,tau,
+                                  wx, wrt, wint, t0, st0,
+                                  pi, sig) {
+  if(any(missing(mu1), missing(mu2), missing(th1), missing(th2))) stop("mu1, mu2, th1, and th2 must be supplied")
+  if ( (length(mu1) == 1) &
+       (length(mu2) == 1) &
+       (length(th1) == 1) &
+       (length(th2) == 1) &
+       (length(k) == 1) &
+       (length(beta) == 1) &
+       (length(SPV) == 1) &
+       (length(tau) == 1) &
+       (length(wx) == 1)&
+       (length(wrt) ==1) &
+       (length(wint) ==1) &
+       (length(t0) == 1) &
+       (length(st0) ==1) &
+       (length(pi) ==1) &
+       (length(sig) ==1)) {
+    skip_checks <- TRUE
+  } else {
+    skip_checks <- FALSE
+  }
+
+  if (!skip_checks) {
+    # all parameters brought to length of n
+    mu1 <- rep(mu1, length.out = nn)
+    mu2 <- rep(mu2, length.out = nn)
+    th1 <- rep(th1, length.out = nn)
+    th2 <- rep(th2, length.out = nn)
+    k <- rep(k, length.out = nn)
+    beta <- rep(beta, length.out = nn)
+    SPV <- rep(SPV, length.out = nn)
+    tau <- rep(tau, length.out = nn)
+    wx <- rep(wx, length.out = nn)
+    wrt <- rep(wrt, length.out = nn)
+    wint <- rep(wint, length.out = nn)
+    t0 <- rep(t0, length.out = nn)
+    st0 <- rep(st0, length.out = nn)
+    pi <- rep(pi, length.out = nn)
+    sig <- rep(sig, length.out = nn)
+  }
+
+  # Build parameter matrix (and divide a, v, sv, sigvis and by s )
+
+  params <- cbind (mu1, mu2, th1, th2, k, beta, SPV,tau,
+                    wx, wrt, wint, t0, st0, pi, sig)
+
+  # Check for illegal parameter values
+  if(ncol(params)<15) stop("Not enough parameters supplied: probable attempt to pass NULL values?")
+  if(!is.numeric(params)) stop("Parameters need to be numeric.")
+  if (any(is.na(params)) || !all(is.finite(params))) {
+    stop("Parameters need to be numeric and finite.")
+  }
+
+
+  if (!skip_checks) {
+    parameter_char <- apply(params, 1, paste0, collapse = "\t")
+    parameter_factor <- factor(parameter_char, levels = unique(parameter_char))
+    parameter_indices <- split(seq_len(nn), f = parameter_factor)
+  } else {
+    parameter_indices <- list(
+      seq_len(nn)
+    )
+  }
+  list(
+    params = params
+    , parameter_indices = parameter_indices
+  )
+}
 
