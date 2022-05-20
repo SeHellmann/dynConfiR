@@ -134,16 +134,28 @@
 #'              wint = 0.2, wrt=0.8)
 #' head(df1)
 #'
-#' # s scales other decision relevant parameters
-#' dPCRM(df1[1:5,], 2, mu1=0.2, mu2=-0.2, a=1, b=1, th1=0, th2=Inf, t0=0.1)
-#' s <- 2
-#' dPCRM(df1[1:5,], 2, mu1=0.2*s, mu2=-0.2*s, a=1*s, b=1*s, th1=0, th2=Inf, t0=0.1, s=s)
-#' # s also scales confidence parameters
-#' dPCRM(df1[1:5,], 2, mu1=0.2, mu2=-0.2, a=1, b=1,
+#' # Compute density with rt and response as separate arguments
+#' dPCRM(seq(0, 2, by =0.4), response= 2, mu1=0.2, mu2=-0.2, a=1, b=1, th1=0.5, th2=2, wx = 0.3, wint=0.4, wrt=0.1, t0=0.1)
+#' # Compute density with rt and response in data.frame argument
+#' dPCRM(df1[1:5,], mu1=0.2, mu2=-0.2, a=1, b=1, th1=0, th2=Inf, t0=0.1)
+#' # s1 and s2 scale other decision relevant parameters
+#'  s <- 2  # common (equal) standard deviation
+#' dPCRM(df1[1:5,], mu1=0.2*s, mu2=-0.2*s, a=1*s, b=1*s, th1=0, th2=Inf, t0=0.1, s1=s, s2=s)
+#' s1 <- 2  # different standard deviations
+#' s2 <- 1.5
+#' dPCRM(df1[1:5,], mu1=0.2*s1, mu2=-0.2*s2, a=1*s1, b=1*s2, th1=0, th2=Inf, t0=0.1, s1=s1, s2=s2)
+#'
+#'
+#' # s1 and s2 scale also confidence parameters
+#' df1[1:5,]$response <- 2   # set response to 2
+#' # for confidence it is important to scale confidence parameters with
+#' # the right variation parameter (the one of the loosing accumulator)
+#' dPCRM(df1[1:5,], mu1=0.2, mu2=-0.2, a=1, b=1,
 #'      th1=0.5, th2=2, wx = 0.3, wint=0.4, wrt=0.1, t0=0.1)
-#' s <- 2
-#' dPCRM(df1[1:5,], 2, mu1=0.2*s, mu2=-0.2*s, a=1*s, b=1*s,
-#'      th1=0.5*s, th2=2*s, wx = 0.3, wint=0.4, wrt=0.1*s, t0=0.1, s=s)
+#' dPCRM(df1[1:5,], mu1=0.2*s1, mu2=-0.2*s2, a=1*s1, b=1*s2,
+#'       th1=0.5, th2=2, wx = wx/s1, wint = wint/s1, wrt = wrt, t0=0.1, s1=s1, s2=s2)
+#' dPCRM(df1[1:5,], mu1=0.2*s1, mu2=-0.2*s2, a=1*s1, b=1*s2,
+#'       th1=0.5*s1, th2=2*s1, wx = wx, wint = wint, wrt = wrt*s1, t0=0.1, s1=s1, s2=s2)
 #'
 #' two_samples <- rbind(cbind(df1, ws="BoE"),
 #'                    cbind(df2, ws="RT"))
@@ -154,12 +166,12 @@
 #' # but different confidence distributions
 #' boxplot(conf~ws+response, data=two_samples)
 #' \dontrun{
-#' require(ggplot2)
-#' ggplot(two_samples, aes(x=rt, y=conf))+
-#'   stat_density_2d(aes(fill = ..density..), geom = "raster", contour = FALSE, h=c(0.3, 0.7)) +
-#'   xlim(c(0.2, 1.3))+ ylim(c(0, 2.5))+
-#'   #geom_bin2d()+
-#'   facet_grid(cols=vars(ws), rows=vars(response), labeller = "label_both")
+#'  require(ggplot2)
+#'  ggplot(two_samples, aes(x=rt, y=conf))+
+#'      stat_density_2d(aes(fill = ..density..), geom = "raster", contour = FALSE, h=c(0.3, 0.7)) +
+#'      xlim(c(0.2, 1.3))+ ylim(c(0, 2.5))+
+#'      #geom_bin2d()+
+#'      facet_grid(cols=vars(ws), rows=vars(response), labeller = "label_both")
 #' }
 #' # Restricting to specific confidence region
 #' df1 <- df1[df1$conf >0 & df1$conf <1,]
@@ -189,7 +201,7 @@ dIRM <- function (rt,response=1, mu1, mu2, a, b,
     step_width = 0.089045 * exp(-1.037580*step_width)
   }
   if (any(c(a<=0, b<=0))) {stop("Both thresholds (a  and b) must be positive")}
-  if (any(s<=0)) {stop("s must be positive")}
+  if (any(c(s1<=0,s2<=0) )) {stop("s1 and s2 must be positive")}
   if (any(t0<0)) {stop("Non-decision time, t0, has to be non-negative")}
   if (any(st0<0)) {stop("Non-decision time range, st0, has to be non-negative")}
 
@@ -238,7 +250,7 @@ dPCRM <- function (rt,response=1, mu1, mu2, a, b,
     step_width = 0.089045 * exp(-1.037580*step_width)
   }
   if (any(c(a<=0, b<=0))) {stop("Both thresholds (a  and b) must be positive")}
-  if (any(s<=0)) {stop("s must be positive")}
+  if (any(c(s1<=0,s2<=0) )) {stop("s must be positive")}
   if (any(t0<0)) {stop("Non-decision time, t0, has to be non-negative")}
   if (any(st0<0)) {stop("Non-decision time range, st0, has to be non-negative")}
 
@@ -280,7 +292,7 @@ rIRM <- function (n, mu1, mu2, a, b,
   if (any(missing(mu1), missing(mu2),
           missing(a), missing(b))) stop("mu1, mu2, a, and b must be supplied")
   if (any(c(a<=0, b<=0))) {stop("Both thresholds (a  and b) must be positive")}
-  if (any((s1<=0) | (s1<=0))) {stop("s1 and s2 must be positive")}
+  if (any(c(s1<=0,s2<=0) )) {stop("s1 and s2 must be positive")}
   if (any(t0<0)) {stop("Non-decision time, t0, has to be non-negative")}
   if (any(st0<0)) {stop("Non-decision time range, st0, has to be non-negative")}
 
@@ -301,10 +313,9 @@ rIRM <- function (n, mu1, mu2, a, b,
   for (i in seq_len(length(pars$parameter_indices))) {
     ok_rows <- pars$parameter_indices[[i]]
     current_n <- length(ok_rows)
-    out <- r_RM(current_n, pars$params[ok_rows[1],1:6], indep=TRUE, delta = delta, maxT = maxrt)
+    out <- r_RM(current_n, pars$params[ok_rows[1],1:6], rho=0, delta = delta, maxT = maxrt)
 
     ws <- pars$params[ok_rows[1],10:12]
-    ws <- ws/sum(ws)
 
     # Since the Cpp function uses a different parametrization, -out[,3] is
     # exactly the distance of the loosing accumulator from its boundary
@@ -340,7 +351,7 @@ rPCRM <- function (n, mu1, mu2, a, b,
   if (any(missing(mu1), missing(mu2),
           missing(a), missing(b))) stop("mu1, mu2, a, and b must be supplied")
   if (any(c(a<=0, b<=0))) {stop("Both thresholds (a  and b) must be positive")}
-  if (any((s1<=0) | (s2 <=0))) {stop("s1 and s2 must be positive")}
+  if (any(c(s1<=0,s2<=0) )) {stop("s1 and s2 must be positive")}
   if (any(t0<0)) {stop("Non-decision time, t0, has to be non-negative")}
   if (any(st0<0)) {stop("Non-decision time range, st0, has to be non-negative")}
 
@@ -361,10 +372,9 @@ rPCRM <- function (n, mu1, mu2, a, b,
   for (i in seq_len(length(pars$parameter_indices))) {
     ok_rows <- pars$parameter_indices[[i]]
     current_n <- length(ok_rows)
-    out <- r_RM(current_n, pars$params[ok_rows[1],1:6], indep=FALSE, delta = delta, maxT = maxrt)
+    out <- r_RM(current_n, pars$params[ok_rows[1],1:6], rho=-.5, delta = delta, maxT = maxrt)
 
     ws <- pars$params[ok_rows[1],10:12]
-    ws <- ws/sum(ws)
 
     # Since the Cpp function uses a different parametrization, -out[,3] is
     # exactly the distance of the loosing accumulator from its boundary

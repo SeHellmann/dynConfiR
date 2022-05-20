@@ -166,16 +166,28 @@ df2 <- rPCRM(5000,  mu1=0.2, mu2=-0.2, a=1, b=1, t0=0.1,
              wint = 0.2, wrt=0.8)
 head(df1)
 
-# s scales other decision relevant parameters
-dPCRM(df1[1:5,], 2, mu1=0.2, mu2=-0.2, a=1, b=1, th1=0, th2=Inf, t0=0.1)
-s <- 2
-dPCRM(df1[1:5,], 2, mu1=0.2*s, mu2=-0.2*s, a=1*s, b=1*s, th1=0, th2=Inf, t0=0.1, s=s)
-# s also scales confidence parameters
-dPCRM(df1[1:5,], 2, mu1=0.2, mu2=-0.2, a=1, b=1,
+# Compute density with rt and response as separate arguments
+dPCRM(seq(0, 2, by =0.4), response= 2, mu1=0.2, mu2=-0.2, a=1, b=1, th1=0.5, th2=2, wx = 0.3, wint=0.4, wrt=0.1, t0=0.1)
+# Compute density with rt and response in data.frame argument
+dPCRM(df1[1:5,], mu1=0.2, mu2=-0.2, a=1, b=1, th1=0, th2=Inf, t0=0.1)
+# s1 and s2 scale other decision relevant parameters
+ s <- 2  # common (equal) standard deviation
+dPCRM(df1[1:5,], mu1=0.2*s, mu2=-0.2*s, a=1*s, b=1*s, th1=0, th2=Inf, t0=0.1, s1=s, s2=s)
+s1 <- 2  # different standard deviations
+s2 <- 1.5
+dPCRM(df1[1:5,], mu1=0.2*s1, mu2=-0.2*s2, a=1*s1, b=1*s2, th1=0, th2=Inf, t0=0.1, s1=s1, s2=s2)
+
+
+# s1 and s2 scale also confidence parameters
+df1[1:5,]$response <- 2   # set response to 2
+# for confidence it is important to scale confidence parameters with
+# the right variation parameter (the one of the loosing accumulator)
+dPCRM(df1[1:5,], mu1=0.2, mu2=-0.2, a=1, b=1,
      th1=0.5, th2=2, wx = 0.3, wint=0.4, wrt=0.1, t0=0.1)
-s <- 2
-dPCRM(df1[1:5,], 2, mu1=0.2*s, mu2=-0.2*s, a=1*s, b=1*s,
-     th1=0.5*s, th2=2*s, wx = 0.3, wint=0.4, wrt=0.1*s, t0=0.1, s=s)
+dPCRM(df1[1:5,], mu1=0.2*s1, mu2=-0.2*s2, a=1*s1, b=1*s2,
+      th1=0.5, th2=2, wx = wx/s1, wint = wint/s1, wrt = wrt, t0=0.1, s1=s1, s2=s2)
+dPCRM(df1[1:5,], mu1=0.2*s1, mu2=-0.2*s2, a=1*s1, b=1*s2,
+      th1=0.5*s1, th2=2*s1, wx = wx, wint = wint, wrt = wrt*s1, t0=0.1, s1=s1, s2=s2)
 
 two_samples <- rbind(cbind(df1, ws="BoE"),
                    cbind(df2, ws="RT"))
@@ -186,12 +198,12 @@ boxplot(rt~ws+response, data=two_samples)
 # but different confidence distributions
 boxplot(conf~ws+response, data=two_samples)
 \dontrun{
-require(ggplot2)
-ggplot(two_samples, aes(x=rt, y=conf))+
-  stat_density_2d(aes(fill = ..density..), geom = "raster", contour = FALSE, h=c(0.3, 0.7)) +
-  xlim(c(0.2, 1.3))+ ylim(c(0, 2.5))+
-  #geom_bin2d()+
-  facet_grid(cols=vars(ws), rows=vars(response), labeller = "label_both")
+ require(ggplot2)
+ ggplot(two_samples, aes(x=rt, y=conf))+
+     stat_density_2d(aes(fill = ..density..), geom = "raster", contour = FALSE, h=c(0.3, 0.7)) +
+     xlim(c(0.2, 1.3))+ ylim(c(0, 2.5))+
+     #geom_bin2d()+
+     facet_grid(cols=vars(ws), rows=vars(response), labeller = "label_both")
 }
 # Restricting to specific confidence region
 df1 <- df1[df1$conf >0 & df1$conf <1,]
