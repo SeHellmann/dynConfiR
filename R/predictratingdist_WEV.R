@@ -93,25 +93,26 @@
 #' # 2. Predict discrete Choice x Confidence distribution:
 #' preds_Conf <- predictWEV_Conf(paramDf, "dynWEV", maxrt = 15)
 #' head(preds_Conf)
-#'
-#' # To set simult_conf=TRUE makes a minor difference in the discrete distribution,
-#' # because we integrate over response times (we just adapt maxrt for comparison)
-#' preds_Conf2 <- predictWEV_Conf(paramDf, "dynWEV", simult_conf = TRUE, maxrt = 15+paramDf$tau)
-#' summary(preds_Conf$p-preds_Conf2$p) # difference in predicted probabilities
+#' \donttest{
+#'   # To set simult_conf=TRUE makes a minor difference in the discrete distribution,
+#'   # because we integrate over response times (we just adapt maxrt for comparison)
+#'   preds_Conf2 <- predictWEV_Conf(paramDf, "dynWEV", simult_conf = TRUE, maxrt = 15+paramDf$tau)
+#'   summary(preds_Conf$p-preds_Conf2$p) # difference in predicted probabilities
+#' }
 #'
 #' # 3. Compute RT density
+#' preds_RT <- predictWEV_RT(paramDf, "dynWEV", maxrt=4, subdivisions=200) #(scaled=FALSE)
+#' # same output with scaled density column:
 #' preds_RT <- predictWEV_RT(paramDf, "dynWEV", maxrt=4, subdivisions=200,
 #'                          scaled=TRUE, DistConf = preds_Conf)
 #' head(preds_RT)
-#' ## same output without scaled density column:
-#' #preds_RT <- predictWEV_RT(paramDf, "dynWEV", maxrt=4, subdivisions=200) #(scaled=FALSE)
-#' \dontrun{
+#' \donttest{
 #'   # produces a warning, if scaled=TRUE and DistConf missing
 #'   preds_RT <- predictWEV_RT(paramDf, "dynWEV", maxrt=4, subdivisions=200,
 #'                            scaled=TRUE)
 #' }
 #'
-#' \dontrun{
+#' \donttest{
 #'   # Example of visualization
 #'   library(ggplot2)
 #'   preds_Conf$rating <- factor(preds_Conf$rating, labels=c("unsure", "sure"))

@@ -87,17 +87,17 @@ res$q[1:3]
 res2 <- PDFtoQuantiles(pred, p=c(0.3, 0.5, 0.7), agg_over = "model")
 nrow(res2) #=18 because res aggregated over models
 
-\dontrun{
+\donttest{
   pred$pdf <- dchisq(pred$rt, 3)
   head(pred)
   # following call throws a warning, because both columns pdf and dens are present
   PDFtoQuantiles(pred, p=c(0.3, 0.5, 0.7), agg_over = "model")
 }
 
-\dontrun{
+\donttest{
   pred2 <- data.frame(rt=seq(0, 7, length.out=100))
   pred2$dens <- dchisq(pred2$rt, 5)
-  # following gives a warning, because density is assumed to be scaled (scaled=TRUE), i.e.
+  # following call throws a warning, because density is assumed to be scaled (scaled=TRUE), i.e.
   # integrate to 1, but the .95 quantile is not reached in the rt column
   PDFtoQuantiles(pred2, p=c(0.3, 0.5, 0.95), scaled=TRUE) # Gives a warning
 }

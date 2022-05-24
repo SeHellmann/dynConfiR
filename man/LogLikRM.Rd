@@ -78,10 +78,10 @@ boundary first.
 # Get random index for accumulator with positive
 # drift (i.e. stimulus category) and
 # stimulus discriminability (two steps: hard, easy)
-stimulus <- sample(c(1, 2), 400, replace=TRUE)
-discriminability <- sample(c(1, 2), 400, replace=TRUE)
+stimulus <- sample(c(1, 2), 200, replace=TRUE)
+discriminability <- sample(c(1, 2), 200, replace=TRUE)
 # generate data for participant 1
-data <- rPCRM(400, mu1=ifelse(stimulus==1, 1, -1)*discriminability*0.5,
+data <- rPCRM(200, mu1=ifelse(stimulus==1, 1, -1)*discriminability*0.5,
               mu2=ifelse(stimulus==1, -1, 1)*discriminability*0.5,
              a=2, b=1.8, t0=0.2, st0=0, wx=0.7, wint=0.3, wrt=0)
 # discretize confidence ratings (only 2 steps: unsure vs. sure)

@@ -6,9 +6,9 @@
 \title{Function for fitting several sequential sampling confidence models in parallel}
 \usage{
 fitRTConfModels(data, models = c("dynWEV", "2DSD"), nRatings = NULL,
-  fixed = list(sym_thetas = FALSE), restr_tau = Inf, opts = list(),
-  optim_method = "bobyqa", logging = FALSE, parallel = TRUE,
-  n.cores = NULL, ...)
+  fixed = list(sym_thetas = FALSE), restr_tau = Inf, grid_search = TRUE,
+  opts = list(), optim_method = "bobyqa", logging = FALSE,
+  parallel = TRUE, n.cores = NULL, ...)
 }
 \arguments{
 \item{data}{a \code{data.frame} where each row is one trial, containing following
@@ -40,6 +40,10 @@ If given, ratings has to be given as factor or integer.}
 \item{restr_tau}{numerical or Inf or "simult_conf". Used for 2DSD and dynWEV only. Upper bound for tau.
 Fits will be in the interval (0,restr_tau). If FALSE tau will be unbound. For "simult_conf", see the documentation of
 \code{\link{d2DSD}} and \code{\link{dWEV}}}
+
+\item{grid_search}{logical. If \code{FALSE}, the grid search before the optimization
+algorithm is omitted. The fitting is then started with a mean parameter set
+from the default grid. (Default: \code{TRUE})}
 
 \item{opts}{list. A list for more control options in the optimization routines
 (depending on the \code{optim_method}). See details for more information.}
@@ -126,16 +130,16 @@ stimulus <- sample(c(-1, 1), 400, replace=TRUE)
 discriminability <- sample(c(1, 2), 400, replace=TRUE)
 
 # generate data for participant 1
-data <- rWEV(400, a=2,v=stimulus*discriminability*0.5,
-             t0=0.2,z=0.5, sz=0.1,sv=0.1, st0=0,  tau=4, s=1, w=0.3)
+data <- rWEV(400, a=2, v=stimulus*discriminability*0.5,
+             t0=0.2, z=0.5, sz=0.1, sv=0.1, st0=0,  tau=4, s=1, w=0.3)
 # discretize confidence ratings (only 2 steps: unsure vs. sure)
 data$rating <- as.numeric(cut(data$conf, breaks = c(-Inf, 1, Inf), include.lowest = TRUE))
 data$participant = 1
 data$stimulus <- stimulus
 data$discriminability <- discriminability
 # generate data for participant 2
-data2 <- rWEV(400, a=2.5,v=stimulus*discriminability*0.7,
-             t0=0.1,z=0.7, sz=0,sv=0.2, st0=0,  tau=2, s=1, w=0.5)
+data2 <- rWEV(400, a=2.5, v=stimulus*discriminability*0.7,
+             t0=0.1, z=0.7, sz=0, sv=0.2, st0=0,  tau=2, s=1, w=0.5)
 data2$rating <- as.numeric(cut(data$conf, breaks = c(-Inf, 0.3, Inf), include.lowest = TRUE))
 data2$participant = 2
 data2$stimulus <- stimulus
@@ -143,21 +147,21 @@ data2$discriminability <- discriminability
 
 # bind data from participants
 data <- rbind(data, data2)
-data[data$response!=0, ] # drop not finished decision processes
+data <- data[data$response!=0, ] # drop not finished decision processes
 data <- data[,-3] # drop conf measure (unobservable variable)
 head(data)
 
 
 # 2. Use fitting function
 \dontrun{
-  # Fitting takes too long to run and uses multiple (6) cores with this
+  # Fitting takes very long to run and uses multiple (6) cores with this
   # call:
   fitRTConfModels(data, models=c("dynWEV", "PCRM"), nRatings = 2,
-                logging=TRUE, parallel="both",
-                n.cores = c(2,3), # fit two participant-model combination in parallel,
-                # each with 3 parallel cores (speeds up grid_search and optimizations)
-                condition="discriminability") # tell which column is "condition"
+                logging=FALSE, parallel="both",
+                n.cores = c(2,3), # fit two participant-model combination in parallel
+                condition="discriminability")# tell which column is "condition"
 }
+
 
 }
 \references{
