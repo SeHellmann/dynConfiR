@@ -104,23 +104,23 @@ paramDf <- data.frame(a=2,b=2, v1=0.5, v2=1, t0=0.1,st0=0,
 
 # 2. Predict discrete Choice x Confidence distribution:
 preds_Conf <- predictRM_Conf(paramDf, "PCRM", time_scaled=TRUE)
-## equivalent:
-# preds_Conf <- predictRM_Conf(paramDf, "PCRMt")
+# equivalent:
+preds_Conf <- predictRM_Conf(paramDf, "PCRMt")
 head(preds_Conf)
 
 # 3. Compute RT density
+preds_RT <- predictRM_RT(paramDf, "PCRMt", maxrt=7, subdivisions=50)
+# same output with scaled density column:
 preds_RT <- predictRM_RT(paramDf, "PCRMt", maxrt=7, subdivisions=50,
                          scaled=TRUE, DistConf = preds_Conf)
 head(preds_RT)
-## same output without scaled density column:
-#preds_RT <- predictRM_RT(paramDf, "PCRMt", maxrt=7, subdivisions=50) #(scaled=FALSE)
-\dontrun{
+\donttest{
   # produces a warning, if scaled=TRUE and DistConf missing
   preds_RT <- predictRM_RT(paramDf, "PCRMt", maxrt=7, subdivisions=50,
                            scaled=TRUE)
 }
 
-\dontrun{
+\donttest{
   # Example of visualization
   library(ggplot2)
   preds_Conf$rating <- factor(preds_Conf$rating, labels=c("unsure", "sure"))
@@ -138,7 +138,7 @@ head(preds_RT)
     facet_grid(cols=vars(condition), rows=vars(correct), labeller = "label_both")+
     theme(legend.position = "bottom")
 }
-\dontrun{
+\donttest{
   # Use PDFtoQuantiles to get predicted RT quantiles
   # (produces warning because of few rt steps (--> inaccurate calculations))
   PDFtoQuantiles(preds_RT, scaled = FALSE)

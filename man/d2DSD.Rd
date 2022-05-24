@@ -191,11 +191,10 @@ d2DSD(dfu, th1=-Inf, th2=Inf, a=2, v=.5)[1:5]
 # Scaling diffusion parameters leads do same density values
 s <- 2
 d2DSD(dfu, th1=-Inf, th2=Inf, a=2*s, v=.5*s, s=2)[1:5]
-\dontrun{
+if (requireNamespace("ggplot2", quietly = TRUE)) {
   require(ggplot2)
   ggplot(dfu, aes(x=rt, y=conf))+
     stat_density_2d(aes(fill = ..density..), geom = "raster", contour = FALSE) +
-    #geom_bin2d()+
     facet_wrap(~response)
 }
 boxplot(conf~response, data=dfu)
@@ -203,12 +202,10 @@ boxplot(conf~response, data=dfu)
 # Restricting to specific confidence region
 dfu <- dfu[dfu$conf >0 & dfu$conf <1,]
 d2DSD(dfu, th1=0, th2=1, a=2, v=0.5)[1:5]
-\dontrun{
-  # If lower confidence threshold is higher than the upper, the function throws an error,
-  # except when stop_on_error is FALSE
-  d2DSD(dfu, th1=1, th2=0, a=2, v=0.5)
-  d2DSD(dfu, th1=1, th2=0, a=2, v=0.5, stop_on_error = FALSE)
-}
+
+# If lower confidence threshold is higher than the upper, the function throws an error,
+# except when stop_on_error is FALSE
+d2DSD(dfu[1:5,], th1=1, th2=0, a=2, v=0.5, stop_on_error = FALSE)
 
 }
 \references{

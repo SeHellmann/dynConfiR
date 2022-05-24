@@ -93,9 +93,9 @@
 #' # 2. Simulate trials for both stimulus categories and all conditions (2)
 #' simus <- simulateRM(paramDf, n=300,model="PCRM", time_scaled=TRUE)
 #' head(simus)
-#' ## equivalent:
-#' # simus <- simulateRM(paramDf, model="PCRMt")
-#' \dontrun{
+#' # equivalent:
+#' simus <- simulateRM(paramDf, model="PCRMt")
+#' \donttest{
 #'   library(ggplot2)
 #'   simus <- simus[simus$response!=0,]
 #'   simus$rating <- factor(simus$rating, labels=c("unsure", "sure"))
@@ -110,7 +110,7 @@
 #' # all conditions
 #' agg_simus <- simulateRM(paramDf, n = 200, model="PCRMt", agg_simus = TRUE)
 #' head(agg_simus)
-#' \dontrun{
+#' \donttest{
 #'   agg_simus$rating <- factor(agg_simus$rating, labels=c("unsure", "sure"))
 #'   library(ggplot2)
 #'   ggplot(agg_simus, aes(x=rating, group=correct, fill=as.factor(correct), y=p))+
@@ -118,7 +118,7 @@
 #'     facet_grid(cols=vars(condition), labeller = "label_both")
 #' }
 #'
-#' \dontrun{
+#' \donttest{
 #'   # Compute Gamma correlation coefficients between
 #'   # confidence and other behavioral measures
 #'   # output will be a list

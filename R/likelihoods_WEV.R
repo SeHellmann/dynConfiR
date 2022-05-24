@@ -80,10 +80,10 @@
 #' # 1. Generate data from an artificial participants
 #' # Get random drift direction (i.e. stimulus category) and
 #' # stimulus discriminability (two steps: hard, easy)
-#' stimulus <- sample(c(-1, 1), 400, replace=TRUE)
-#' discriminability <- sample(c(1, 2), 400, replace=TRUE)
+#' stimulus <- sample(c(-1, 1), 200, replace=TRUE)
+#' discriminability <- sample(c(1, 2), 200, replace=TRUE)
 #' # generate data for participant 1
-#' data <- rWEV(400, a=2,v=stimulus*discriminability*0.5,
+#' data <- rWEV(200, a=2,v=stimulus*discriminability*0.5,
 #'              t0=0.2,z=0.5, sz=0.1,sv=0.1, st0=0,  tau=4, s=1, w=0.3)
 #' # discretize confidence ratings (only 2 steps: unsure vs. sure)
 #' data$rating <- as.numeric(cut(data$conf, breaks = c(-Inf, 1, Inf), include.lowest = TRUE))
