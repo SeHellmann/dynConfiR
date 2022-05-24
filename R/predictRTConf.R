@@ -90,19 +90,19 @@
 #'
 #'
 #' # 3. Compute RT density
+#' preds_RT <- predictRT(paramDf, "dynWEV") #(scaled=FALSE)
+#' # same output with default rt-grid and without scaled density column:
 #' preds_RT <- predictRT(paramDf, "dynWEV", maxrt=5, subdivisions=200,
 #'                       minrt=paramDf$tau+paramDf$t0, simult_conf = TRUE,
 #'                       scaled=TRUE, DistConf = preds_Conf)
 #' head(preds_RT)
-#' ## same output with default rt-grid and without scaled density column:
-#' #preds_RT <- predictRT(paramDf, "dynWEV") #(scaled=FALSE)
-#' \dontrun{
+#' \donttest{
 #'   # produces a warning, if scaled=TRUE and DistConf missing
 #'   preds_RT <- predictRT(paramDf, "dynWEV",
 #'                            scaled=TRUE)
 #' }
 #'
-#' \dontrun{
+#' \donttest{
 #'   # Example of visualization
 #'   library(ggplot2)
 #'   preds_Conf$rating <- factor(preds_Conf$rating, labels=c("unsure", "sure"))

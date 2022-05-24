@@ -214,24 +214,21 @@ two_samples <- rbind(cbind(df1, w="high"),
 boxplot(rt~w+response, data=two_samples)
 # but different confidence distributions
 boxplot(conf~w+response, data=two_samples)
-\dontrun{
+if (requireNamespace("ggplot2", quietly = TRUE)) {
   require(ggplot2)
   ggplot(two_samples, aes(x=rt, y=conf))+
     stat_density_2d(aes(fill = ..density..), geom = "raster", contour = FALSE) +
     xlim(c(0, 2))+ ylim(c(-1.5, 4))+
-    #geom_bin2d()+
     facet_grid(cols=vars(w), rows=vars(response), labeller = "label_both")
 }
 
 # Restricting to specific confidence region
 df1 <- df1[df1$conf >0 & df1$conf <1,]
 dWEV(df1[1:5,], th1=0, th2=1, a=2, v=0.5)[1:5]
-\dontrun{
-  # If lower confidence threshold is higher than the upper, the function throws an error,
-  # except when stop_on_error is FALSE
-  dWEV(df1, th1=1, th2=0, a=2, v=0.5)
-  dWEV(df1, th1=1, th2=0, a=2, v=0.5, stop_on_error = FALSE)
-}
+
+# If lower confidence threshold is higher than the upper, the function throws an error,
+# except when stop_on_error is FALSE
+dWEV(df1[1:5,], th1=1, th2=0, a=2, v=0.5, stop_on_error = FALSE)
 
 }
 \references{

@@ -125,33 +125,23 @@ paramDf <- data.frame(participant = c(1,2), model="dynWEV",
                       theta1=c(1,1.5), svis=c(0.5,0.1), sigvis=c(0.8, 1.2))
 paramDf
 # 2. Predict discrete Choice x Confidence distribution:
+# model is not an extra argument but must be a column of paramDf
 preds_Conf <- predictConfModels(paramDf, maxrt = 15, simult_conf=TRUE,
                                 .progress=TRUE, parallel = FALSE)
-head(preds_Conf)
-\dontrun{
-  # model is not an extra argument but must be a column of paramDf
-  paramDf$model <- NULL
-  # throws an error
-  preds_Conf <- predictConfModels(paramDf, model="dynWEV",
-                                  maxrt = 15, simult_conf=TRUE,
-                                 .progress=TRUE, parallel = FALSE)
-}
 # 3. Compute RT density
 preds_RT <- predictRTModels(paramDf, maxrt=6, subdivisions=100,
                       scaled=TRUE, DistConf = preds_Conf,
                       parallel=FALSE, .progress = TRUE)
 head(preds_RT)
-## same output with default rt-grid and without scaled density column:
-#preds_RT <- predictRTModels(paramDf) #(scaled=FALSE)
-\dontrun{
+\donttest{
   # produces a warning, if scaled=TRUE and DistConf missing
-  preds_RT <- predictRT(paramDf, scaled=TRUE)
+  preds_RT <- predictRTModels(paramDf, scaled=TRUE)
 }
 # Use PDFtoQuantiles to get predicted RT quantiles
 head(PDFtoQuantiles(preds_RT, scaled = FALSE))
 
 # Second Example: only one parameter set but for two different models
-\dontrun{
+\donttest{
   paramDf1 <- data.frame(model="dynWEV", a=1.5,v1=0.2, v2=1, t0=0.1,z=0.52,
                         sz=0.3,sv=0.4, st0=0,  tau=3, w=0.5,
                         theta1=1, svis=0.5, sigvis=0.8)

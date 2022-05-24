@@ -172,7 +172,7 @@
 #' # 2. Use fitting function
 #' # Fitting the model with these opts results in a pretty bad fit
 #' # (especially because of omitting the grid_search)
-#' \dontrun{
+#' \donttest{
 #'    fitRTConf(data, "dynWEV", fixed=list(sym_thetas=TRUE, z=0.5, st0=0),
 #'             grid_search = FALSE, logging=FALSE,
 #'             opts = list(nAttempts=1, nRestarts=2, maxfun=2000))

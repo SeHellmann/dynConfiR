@@ -4,13 +4,13 @@ preddist <- function(row, thetas_lower, thetas_upper, paramDf,V, SV, model, simu
                      maxrt=15, subdivisions=100L,
                      stop.on.error = FALSE,
                      .progress = TRUE, pb=NULL) {
-  if (model != "2DSD") {
+  # if (model != "2DSD") {
     vth1 <- ifelse(row$response =="upper", thetas_upper[row$rating], thetas_lower[(row$rating)])
     vth2 <- ifelse(row$response =="upper", thetas_upper[(row$rating+1)], thetas_lower[(row$rating+1)])
-  } else {
-    vth1 <- ifelse(row$response =="upper", thetas_upper[row$rating], rev(thetas_lower)[(row$rating+1)])
-    vth2 <- ifelse(row$response =="upper", thetas_upper[(row$rating+1)], rev(thetas_lower)[(row$rating)])
-  }
+  # } else {
+  #   vth1 <- ifelse(row$response =="upper", thetas_upper[row$rating], rev(thetas_lower)[(row$rating+1)])
+  #   vth2 <- ifelse(row$response =="upper", thetas_upper[(row$rating+1)], rev(thetas_lower)[(row$rating)])
+  # }
 
 
   integrand <- with(paramDf, switch(which(model== c("dynWEV", "2DSD")),

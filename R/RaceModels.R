@@ -165,21 +165,16 @@
 #' boxplot(rt~ws+response, data=two_samples)
 #' # but different confidence distributions
 #' boxplot(conf~ws+response, data=two_samples)
-#' \dontrun{
-#'  require(ggplot2)
-#'  ggplot(two_samples, aes(x=rt, y=conf))+
-#'      stat_density_2d(aes(fill = ..density..), geom = "raster", contour = FALSE, h=c(0.3, 0.7)) +
-#'      xlim(c(0.2, 1.3))+ ylim(c(0, 2.5))+
-#'      #geom_bin2d()+
-#'      facet_grid(cols=vars(ws), rows=vars(response), labeller = "label_both")
+#' if (requireNamespace("ggplot2", quietly = TRUE)) {
+#' require(ggplot2)
+#' ggplot(two_samples, aes(x=rt, y=conf))+
+#'   stat_density_2d(aes(fill = ..density..), geom = "raster", contour = FALSE, h=c(0.3, 0.7)) +
+#'   xlim(c(0.2, 1.3))+ ylim(c(0, 2.5))+
+#'   facet_grid(cols=vars(ws), rows=vars(response), labeller = "label_both")
 #' }
 #' # Restricting to specific confidence region
 #' df1 <- df1[df1$conf >0 & df1$conf <1,]
 #' dPCRM(df1[1:5,], th1=0, th2=1,mu1=0.2, mu2=-0.2, a=1, b=1, t0=0.1,wx = 1 )
-#' \dontrun{
-#' # If any parameter is out of range (e.g. t0 < 0) the function throws an error.
-#'   dPCRM(df1[1:5,], th1=0, th2=1,mu1=0.2, mu2=-0.2, a=1, b=1, t0=-0.1, wx = 1 )
-#' }
 #'
 
 
