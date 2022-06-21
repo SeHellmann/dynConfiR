@@ -31,10 +31,12 @@
 #define PARAM_tau  8
 #define PARAM_th1  9
 #define PARAM_th2  10
-#define PARAM_w    11
-#define PARAM_muvis  12
-#define PARAM_sigvis 13
-#define PARAM_svis   14
+#define PARAM_omega 11
+#define PARAM_w    12
+#define PARAM_muvis  13
+#define PARAM_sigvis 14
+#define PARAM_svis   15
+
 
 
 class Parameters
@@ -51,12 +53,11 @@ public:
     double tau;   // Postdecisional accumulation time for confidence
     double th1;   // Lower bound for confidence interval
     double th2;   // Upper bound for confidence interval
-    double thD;   // State of the process at decision time (a for upper; 0 for lower boundary)
     double w;     // weight on decision evidence; (1-w) is weight on visibility accumulator
     double muvis;   // mean drift in the visibility accumulation process
     double sigvis; // variability in the drift rate of the visibility process
     double svis;   // variability in the visibility accumulation process
-    double q_WEV; // frequently used constant in WEV version 2 and 3
+    double omega; // power for the decision of confidence by judgment time
 
     // Precision constants set by SetPrecision()
     double  TUNE_INT_T0;
@@ -78,36 +79,42 @@ public:
         sv  = params[PARAM_sv];
         st0 = params[PARAM_st0];
         zr  = params[PARAM_zr];
-        tau = params[PARAM_tau];
-        th1 = params[PARAM_th1];
-        th2 = params[PARAM_th2];
-        thD = 0; // The default value is 0, because we use g_minus as default function (which corresponds to the lower boundary)
-        q_WEV = 0;
+
 
         //Rcpp::Rcout << "note: length of params vector " << params.size() << std::endl;
-
-        if (params.size()<= 11)
+        if (params.size()<= 10) // DDMConf model
         {
-
+          tau = 1;
+          th1 = params[PARAM_th1-1];
+          th2 = params[PARAM_th2-1];
+          w = 0;
+          omega = 1;
+          muvis = 0;
+          sigvis = 1;
+          svis = 1;
+        }
+        if (params.size()>= 12)  //2DSD model
+        {
+          omega = params[PARAM_omega];tau = params[PARAM_tau];
+          th1 = params[PARAM_th1];
+          th2 = params[PARAM_th2];
           w = 0;
           muvis = 0;
           sigvis = 1;
           svis = 1;
         }
 
-        if (params.size() > 11)    // This switches between parameters for dWEV model or simpler 2DSD model
+        if (params.size() > 12)    // This switches between parameters for dWEV model or simpler 2DSD model
         {
+
           w   = params[PARAM_w];
           muvis = params[PARAM_muvis];
           sigvis=1;
           svis = 1;
-          if (params.size()>13)
+          if (params.size()>14)
           {
             sigvis = params[PARAM_sigvis];
             svis = params[PARAM_svis];
-            q_WEV = -(1-w)/(w*tau);
-            th2 = -th1/(w*tau);
-            th1 = -params[PARAM_th2]/(w*tau);
           }
         }
 
@@ -128,9 +135,10 @@ public:
         if (zr + 0.5*szr >= 1)              { valid = false; if (print) Rcpp::Rcout << "error: invalid parameter combination zr = " << zr << ", szr = " << szr << std::endl;}
         if (tau < 0)                        { valid = false; if (print) Rcpp::Rcout << "error: invalid parameter tau = " << tau << std::endl;}
         if (th2 < th1)                      { valid = false; if (print) Rcpp::Rcout << "error: invalid parameter combination th1 = " << th1 << ", th2 = " << th2 << std::endl;}
-        if (w<0 || w >= 1)                  { valid = false; if (print) Rcpp::Rcout << "error: invalid parameter w = " << w << ", allowed: w in [0,1)" <<  std::endl; }
+        if (w<0 || w > 1)                  { valid = false; if (print) Rcpp::Rcout << "error: invalid parameter w = " << w << ", allowed: w in [0,1]" <<  std::endl; }
         if (sigvis < 0)                      { valid = false; if (print) Rcpp::Rcout << "error: invalid parameter sigvis = " << sigvis <<  std::endl; }
         if (svis <= 0)                        { valid = false; if (print) Rcpp::Rcout << "error: invalid parameter svis = " << svis <<  std::endl; }
+        if (omega < 0)                        { valid = false; if (print) Rcpp::Rcout << "error: invalid parameter omega = " << omega <<  std::endl; }
 
         return valid;
     }

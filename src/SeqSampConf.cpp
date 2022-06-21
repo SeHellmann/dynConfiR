@@ -53,7 +53,8 @@ NumericVector d_2DSD (NumericVector rts, NumericVector params, double precision=
 
 
 // [[Rcpp::export]]
-NumericVector d_WEVmu (NumericVector rts, NumericVector params, double precision=1e-5, int boundary=2, bool stop_on_error=true, int stop_on_zero=false)
+NumericVector d_WEVmu (NumericVector rts, NumericVector params, double precision=1e-5, int boundary=2,
+                       bool stop_on_error=true, int stop_on_zero=false)
 {
     int length = rts.length();
     if (length > MAX_INPUT_VALUES) { Rcpp::stop("Number of RT values passed in exceeds maximum of %d.\n", MAX_INPUT_VALUES); }
@@ -76,21 +77,34 @@ NumericVector d_WEVmu (NumericVector rts, NumericVector params, double precision
     return out;
 }
 
-
-
 // [[Rcpp::export]]
 NumericVector d_IRM (NumericVector rts, NumericVector params, int win=1,  double step_width = 0.0001)
 {
-    int length = rts.length();
+  int length = rts.length();
 
-    if (params.length()!= 12) {Rcpp::stop ("Wrong number of parameters given. (Must be 12)\n"); }
-    if ((win < 1) || (win > 2)) { Rcpp::stop ("Boundary must be either 2 (upper) or 1 (lower)\n"); }
+  if (params.length()!= 12) {Rcpp::stop ("Wrong number of parameters given. (Must be 12)\n"); }
+  if ((win < 1) || (win > 2)) { Rcpp::stop ("Boundary must be either 2 (upper) or 1 (lower)\n"); }
 
-    NumericVector out(length, 0.0);  // Should default to 0s when creating NumericVector, but just in case..
+  NumericVector out(length, 0.0);  // Should default to 0s when creating NumericVector, but just in case..
 
-    out = density_IRM (rts, params, win, step_width);
+  out = density_IRM (rts, params, win, step_width);
 
-    return out;
+  return out;
+}
+
+// [[Rcpp::export]]
+NumericVector d_IRM2 (NumericVector rts, NumericVector params, int win=1,  double step_width = 0.0001)
+{
+  int length = rts.length();
+
+  if (params.length()!= 16) {Rcpp::stop ("Wrong number of parameters given. (Must be 16)\n"); }
+  if ((win < 1) || (win > 2)) { Rcpp::stop ("Boundary must be either 2 (upper) or 1 (lower)\n"); }
+
+  NumericVector out(length, 0.0);  // Should default to 0s when creating NumericVector, but just in case..
+
+  out = density_IRM (rts, params, win, step_width);
+
+  return out;
 }
 
 
@@ -293,61 +307,73 @@ NumericVector dd_PCRM (NumericVector rts, NumericVector xj, NumericVector params
 // [[Rcpp::export]]
 NumericVector r_RM (int n, NumericVector params, double rho, double delta=0.01, double maxT=9)
 {
-    double sdu, sdv;
-    double muu = (params[0]+params[1])*delta;
-    double muv = (params[0]-params[1])*delta;
+  double sdu, sdv, muu, muv, noise1, noise2;
+  if (params[6] !=0 ) {
+    noise1 = R::rnorm(0, params[6]);
+  } else {
+    noise1 = 0;
+  }
+  if (params[7] !=0 ) {
+    noise2 = R::rnorm(0, params[7]);
+  } else {
+    noise2 = 0;
+  }
+  muu = (params[0]+params[1])*delta;
+  muv = (params[0]-params[1])*delta;
 
-    sdu = sqrt(2*(1+rho)*delta);
-    sdv = sqrt(2*(1-rho)*delta);
+  sdu = sqrt(2*(1+rho)*delta);
+  sdv = sqrt(2*(1-rho)*delta);
 
-    double x01, x02, u,v, t, xl;
-    int win;
+  double x01, x02, u,v, t, xl;
+  int win;
 
-    NumericMatrix out(n, 3);
-    for (int i=0; i < n; i++) {
-        x01 = params[2];
-        x02 = params[3];
-        t = 0;
-        while ((x01 < 0) && (x02 < 0) && (t < maxT)) {
-            u = R::rnorm(0, sdu);
-            v = R::rnorm(0, sdv);
-            x01 = x01+0.5*((muu+muv)+params[4]*(u+v));
-            x02 = x02+0.5*((muu-muv)+params[5]*(u-v));
-            t += delta;
-        }
-        if (x01 > 0) {
-            if (x02 < x01) {
-                win = 1;
-                if (x02 < 0) {
-                    xl = x02;
-                } else {
-                    xl = -1e-24;
-                }
-            } else {
-                win = 2;
-                xl = -1e-24;
-            }
-        } else {
-            if (x02 > 0) {
-                win = 2;
-                xl = x01;
-            } else {
-                win = 0;
-                xl = std::min(x01, x02);
-            }
-        }
-        out( i , 0 ) = t ;
-        out( i , 1 ) = win;
-        out( i , 2 ) = xl;
-        if (i % 200 == 0 ) Rcpp::checkUserInterrupt();
-
+  NumericMatrix out(n, 3);
+  for (int i=0; i < n; i++) {
+    x01 = params[2]+R::runif(0, params[8]);
+    x02 = params[3]+R::runif(0, params[9]);
+    t = 0;
+    while ((x01 < 0) && (x02 < 0) && (t < maxT)) {
+      u = R::rnorm(0, sdu);
+      v = R::rnorm(0, sdv);
+      x01 = x01 + delta*noise1 + 0.5*((muu+muv)+params[4]*(u+v));
+      x02 = x02 + delta*noise2 + 0.5*((muu-muv)+params[5]*(u-v));
+      t += delta;
     }
-    return out;
+    if (x01 > 0) {
+      if (x02 < x01) {
+        win = 1;
+        if (x02 < 0) {
+          xl = x02;
+        } else {
+          xl = -1e-24;
+        }
+      } else {
+        win = 2;
+        xl = -1e-24;
+      }
+    } else {
+      if (x02 > 0) {
+        win = 2;
+        xl = x01;
+      } else {
+        win = 0;
+        xl = std::min(x01, x02);
+      }
+    }
+    out( i , 0 ) = t ;
+    out( i , 1 ) = win;
+    out( i , 2 ) = xl;
+    if (i % 200 == 0 ) Rcpp::checkUserInterrupt();
+
+  }
+  return out;
 }
 
 
 // [[Rcpp::export]]
-NumericVector r_WEV (int n, NumericVector params, int model, double delta=0.01, double maxT=9, bool stop_on_error=true)
+NumericMatrix r_WEV (int n, NumericVector params, int model,
+                     double delta=0.01, double maxT=9,
+                     bool stop_on_error=true)
 {
   g_Params = new Parameters (params, 1e-3);
 
@@ -356,67 +382,21 @@ NumericVector r_WEV (int n, NumericVector params, int model, double delta=0.01, 
   if (!g_Params->ValidateParams_2DSD(stop_on_error))
   {
     if (stop_on_error) { Rcpp::stop("Error validating parameters.\n"); }
-    else { return out; }
+    else { return out;  }
   }
-    // model codes: 1: 2DSD, 2: dynWEV
-    double a   = params[0];
-    double v   = params[1];
-    double t0  = params[2];
-    double d   = params[3];
-    double szr = params[4];
-    double sv  = params[5];
-    double st0 = params[6];
-    double zr  = params[7];
-    double tau = params[8];
-    double w = 0;   // they are set to default values, that are not used; just to ommit warning at compiling
-    double svis = 0;
-    double sigvis = 0;
-    double muvis = 0;
-    if (model > 1) {
-        w   = params[11];
-        muvis = params[12];
-        sigvis = params[13];
-        svis = params[14];
-    }
 
-    double mu, x0, t, conf, evid, vis;
-    int resp;
+  // model codes: 1: 2DSD, 2: dynWEV
+  if (model == 1) {
+      params[12] = 1; // w
+      params[13] = 0; // muvis (arbitrary value)
+      params[14] = 1; // sigvis(arbitrary value)
+      params[15] = 1; // svis  (arbitrary value)
+  }
 
-    for (int i=0; i < n; i++) {
-        mu = R::rnorm(v, sv);
-        x0 = a* R::runif(zr-szr/2, zr+szr/2);
-        t = 0;
-        while ((x0 > 0) && (x0 < a) && (t < maxT)) {
-            x0 = x0 + R::rnorm(delta*mu, sqrt(delta));
-            t = t + delta;
-        }
-        if (x0 >= a) {
-            resp = 1;
-            t = std::max(0.0, t - d/2);
-        } else {
-            if (x0 <= 0) {
-                resp = -1;
-                t = std::max(0.0, t + d/2);
-            } else {
-                resp = 0;
-            }
-        }
-        if (model == 1) {
-            conf = x0 + R::rnorm(tau*mu, sqrt(tau));
-        } else {
-            evid = R::rnorm(tau*mu*resp, sqrt(tau));
-            vis = R::rnorm((tau+t)*muvis, sqrt(svis*svis*(tau+t)+(t+tau)*(t+tau)*sigvis*sigvis));
-            conf = w*evid + (1-w)*vis;
-        }
-        t = t  + R::runif(t0, t0+st0);
-        out( i , 0 ) = t;
-        out( i , 1 ) = resp;
-        out( i , 2 ) = conf;
-        if (i % 200 ==0 ) Rcpp::checkUserInterrupt();
+  out = RNG_WEV(n,  params, delta, maxT, stop_on_error);
 
-    }
-
-    return out;
+  delete g_Params;
+  return out;
 }
 
 
@@ -506,7 +486,7 @@ NumericVector r_LCA (int n, NumericVector params, double delta=0.01, double maxT
     int win;
     double sig1 = sqrt(delta)*sqrt(sig*sig + pi*pi*mu1*mu1);
     double sig2 = sqrt(delta)*sqrt(sig*sig + pi*pi*mu2*mu2);
-        NumericMatrix out(n, 5);
+    NumericMatrix out(n, 5);
     for (int i=0; i < n; i++) {
         x1 = R::runif(0, SPV);
         x2 = R::runif(0, SPV);
@@ -623,3 +603,86 @@ NumericVector r_LCA (int n, NumericVector params, double delta=0.01, double maxT
 //   return out;
 // }
 //
+
+
+
+// R-callable PDF for DDMConf - pass boundary to retrieve (1 = lower, 2 = upper)
+// [[Rcpp::export]]
+NumericVector d_DDMConf (NumericVector rts, NumericVector params, double precision=1e-5, int boundary=2,
+                         bool stop_on_error=true, bool stop_on_zero=false,
+                         double st0precision=0.01)
+{
+  int length = rts.length();
+  if (length > MAX_INPUT_VALUES) { Rcpp::stop("Number of RT values passed in exceeds maximum of %d.\n", MAX_INPUT_VALUES); }
+
+  if ((boundary < 1) || (boundary > 2)) { Rcpp::stop ("Boundary must be either 2 (upper) or 1 (lower)\n"); }
+
+  g_Params = new Parameters (params, precision);
+
+  NumericVector out(length, 0.0);  // Should default to 0s when creating NumericVector, but just in case..
+
+  if (!g_Params->ValidateParams_2DSD(stop_on_error))
+  {
+    if (stop_on_error) { Rcpp::stop("Error validating parameters.\n"); }
+    else { return out; }
+  }
+
+  out = density_DDMConf (rts, boundary-1, stop_on_zero, st0precision);
+
+  delete g_Params;
+  return out;
+}
+
+
+
+
+
+// [[Rcpp::export]]
+NumericVector r_DDMConf (int n, NumericVector params, double delta=0.01, double maxT=9, bool stop_on_error=true)
+{
+  double a   = params[0];
+  double v   = params[1];
+  double t0  = params[2];
+  double d   = params[3];
+  double szr = params[4];
+  double sv  = params[5];
+  double st0 = params[6];
+  double zr  = params[7];
+  NumericMatrix out(n, 3);
+  double mu, x0, t, decisiont; //conf
+  int resp;
+
+  for (int i=0; i < n; i++) {
+    mu = R::rnorm(v, sv);
+    x0 = a* R::runif(zr-szr/2, zr+szr/2);
+    t = 0;
+    while ((x0 > 0) && (x0 < a) && (t < maxT)) {
+      x0 = x0 + R::rnorm(delta*mu, sqrt(delta));
+      t = t + delta;
+    }
+    if (x0 >= a) {
+      resp = 1;
+      t = std::max(0.0, t - d/2);
+    } else {
+      if (x0 <= 0) {
+        resp = -1;
+        t = std::max(0.0, t + d/2);
+      } else {
+        resp = 0;
+      }
+    }
+    //conf = 1/sqrt(t);
+    decisiont = t;
+    t = t  + R::runif(t0-st0/2, t0+st0/2);
+    out( i , 0 ) = t;
+    out( i , 1 ) = resp;
+    out( i , 2 ) = decisiont;
+    if (i % 200 ==0 ) Rcpp::checkUserInterrupt();
+
+  }
+
+  return out;
+
+}
+
+// End CPP

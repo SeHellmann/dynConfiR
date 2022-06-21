@@ -1,7 +1,7 @@
 #' Log-Likelihood functions for the dWEV and 2DSD models of confidence
 #'
 #' Computes the Log-likelihood for given data and parameters in the
-#' dynWEV model (Hellmann et al., preprint) and the 2DSD model
+#' dynWEV model (Hellmann et al., in press) and the 2DSD model
 #' (Pleskac & Busemeyer, 2010). It is a wrapped version of the
 #' respective densities \code{\link{dWEV}} and \code{\link{d2DSD}},
 #' where one can find more information about the parameters

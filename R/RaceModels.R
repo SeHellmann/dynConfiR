@@ -5,7 +5,7 @@
 #' (`dIRM`/`rIRM`) or partially (anti-)correlated Race Model (`dPCRM`/`rPCRM`),
 #' i.e. the probability of a given response (response: winning accumulator
 #' (1 or 2)) at a given time (rt) and the confidence measure in the interval
-#' between th1 and th2 (Hellmann et al., preprint). The definition of the
+#' between th1 and th2 (Hellmann et al., in press). The definition of the
 #' confidence measure depends on the argument \code{time_scaled} (see Details).
 #' The computations are based on Moreno-Bote (2010).
 #' The parameters for the models are \code{mu1} and \code{mu2} for the drift
@@ -45,6 +45,10 @@
 #' purposes as it scales other parameters (see Details). Range: s2>0, Default: s2=1.
 #' @param s numeric. Alternative way to specify diffusion constants, if both are assumed to be equal.
 #' If both (s1, s2 and s) are given, only s1 and s2 will be used.
+#' @param smu1 numeric. Between-trial variability in the drift rate of the first accumulator.
+#' @param smu2 numeric. Between-trial variability in the drift rate of the second accumulator.
+#' @param sza numeric. Between-trial variability in starting point of the first accumulator.
+#' @param szb numeric. Between-trial variability in starting point of the second accumulator.
 #'
 #' @param time_scaled logical. Whether the confidence measure should be time-dependent. See Details.
 #' @param step_width numeric. Step size for the integration in t0 (motor time). Default: 1e-6.
@@ -102,8 +106,7 @@
 #' assumed (Moreno-Bote, 2010), that both noise terms are equal, then they should definitely be
 #' fixed for fitting.
 #'
-#' @references Hellmann, S., Zehetleitner, M., & Rausch, M. (preprint). Simultaneous modeling of choice,
-#' confidence and response time in visual perception. https://osf.io/9jfqr/
+#' @references Hellmann, S., Zehetleitner, M., & Rausch, M. (in press). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review}. https://osf.io/9jfqr/
 #'
 #' Moreno-Bote, R. (2010). Decision confidence and uncertainty in diffusion models with partially
 #' correlated neuronal integrators. Neural Computation, 22(7), 1786–1811. https://doi.org/10.1162/neco.2010.12-08-930
@@ -136,8 +139,10 @@
 #' head(df1)
 #'
 #' # Compute density with rt and response as separate arguments
-#' dPCRM(seq(0, 2, by =0.4), response= 2, mu1=0.2, mu2=-0.2, a=1, b=1, th1=0.5, th2=2, wx = 0.3, wint=0.4, wrt=0.1, t0=0.1)
+#' dPCRM(seq(0, 2, by =0.4), response= 2, mu1=0.2, mu2=-0.2, a=1, b=1, th1=0.5,
+#'          th2=2, wx = 0.3, wint=0.4, wrt=0.1, t0=0.1)
 #' # Compute density with rt and response in data.frame argument
+#' df1 <- subset(df1, response !=0) # drop trials where no accumulation hit its boundary
 #' dPCRM(df1[1:5,], mu1=0.2, mu2=-0.2, a=1, b=1, th1=0, th2=Inf, t0=0.1)
 #' # s1 and s2 scale other decision relevant parameters
 #'  s <- 2  # common (equal) standard deviation
@@ -154,9 +159,9 @@
 #' dPCRM(df1[1:5,], mu1=0.2, mu2=-0.2, a=1, b=1,
 #'      th1=0.5, th2=2, wx = 0.3, wint=0.4, wrt=0.1, t0=0.1)
 #' dPCRM(df1[1:5,], mu1=0.2*s1, mu2=-0.2*s2, a=1*s1, b=1*s2,
-#'       th1=0.5, th2=2, wx = wx/s1, wint = wint/s1, wrt = wrt, t0=0.1, s1=s1, s2=s2)
+#'       th1=0.5, th2=2, wx = 0.3/s1, wint = 0.4/s1, wrt = 0.1, t0=0.1, s1=s1, s2=s2)
 #' dPCRM(df1[1:5,], mu1=0.2*s1, mu2=-0.2*s2, a=1*s1, b=1*s2,
-#'       th1=0.5*s1, th2=2*s1, wx = wx, wint = wint, wrt = wrt*s1, t0=0.1, s1=s1, s2=s2)
+#'       th1=0.5*s1, th2=2*s1, wx = 0.3, wint = 0.4, wrt = 0.1*s1, t0=0.1, s1=s1, s2=s2)
 #'
 #' two_samples <- rbind(cbind(df1, ws="BoE"),
 #'                    cbind(df2, ws="RT"))
@@ -237,6 +242,83 @@ dIRM <- function (rt,response=1, mu1, mu2, a, b,
   abs(densities)
 }
 
+
+
+
+
+#' @rdname RaceModels
+#' @export
+dIRM2 <- function (rt,response=1, mu1, mu2, a, b,
+                  th1, th2, wx=1, wrt=0, wint=0,
+                  t0=0, st0=0, s1=1, s2=1,
+                  smu1 = 0, smu2 = 0, sza=0, szb=0,
+                   s=NULL,
+                  time_scaled = TRUE, step_width=NULL)
+{
+  # for convenience accept data.frame as first argument.
+  if (is.data.frame(rt)) {
+    response <- rt$response
+    rt <- rt$rt
+  }
+  if (is.null(step_width)) {
+    step_width = 0.089045 * exp(-1.037580*4)
+  } else if (step_width>1) {
+    step_width = 0.089045 * exp(-1.037580*step_width)
+  }
+  if (any(c(a<=0, b<=0))) {stop("Both thresholds (a  and b) must be positive")}
+  if (any(c(s1<=0,s2<=0) )) {stop("s1 and s2 must be positive")}
+  if (any(c(smu1<0,smu2<0) )) {stop("smu1 and smu2 must be non-negative")}
+  if (any(c(sza<0,szb<0) )) {stop("sza and szb must be non-negative")}
+  if (any(t0<0)) {stop("Non-decision time, t0, has to be non-negative")}
+  if (any(st0<0)) {stop("Non-decision time range, st0, has to be non-negative")}
+  if (!missing(s)) {
+    if (s<=0) stop("s must be positive")
+    s1 <- s
+    s2 <- s
+    if (xor(missing(s1), missing(s2))) {
+      warning("Argument s and s1 (or s2) provided. Only s is used! Maybe check for spelling mistakes")
+      s1 <- s
+      s2 <- s
+    }
+  }
+
+  nn <- length(rt)
+  if (!time_scaled) {
+    wrt <- 0
+    wint <- 0
+    wx <- 1
+  }
+
+  pars <- prepare_RaceModel_parameter2(response = response,
+                                      mu1, mu2,
+                                      a, b,
+                                      s1, s2, th1, th2,
+                                      t0, st0,
+                                      wx, wrt, wint,
+                                      smu1, smu2,
+                                      sza, szb,
+                                      nn)
+  densities <- vector("numeric",length=nn)
+  for (i in seq_len(length(pars$parameter_indices))) {
+    ok_rows <- pars$parameter_indices[[i]]
+
+    densities[ok_rows] <- d_IRM2 (rt[ok_rows]-pars$params[ok_rows[1],17],
+                                 pars$params[ok_rows[1],1:16],
+                                 pars$params[ok_rows[1],18],
+                                 step_width)
+  }
+  abs(densities)
+}
+
+
+
+
+
+
+
+
+
+
 #' @rdname RaceModels
 #' @export
 dPCRM <- function (rt,response=1, mu1, mu2, a, b,
@@ -301,6 +383,8 @@ dPCRM <- function (rt,response=1, mu1, mu2, a, b,
 rIRM <- function (n, mu1, mu2, a, b,
                  wx=1, wrt=0, wint=0,
                  t0=0, st0=0, s1=1, s2=1, s=NULL,
+                 smu1 = 0, smu2=0,
+                 sza = 0, szb=0,
                  time_scaled = TRUE, step_width=NULL,
                  delta=0.01, maxrt=15)
 {
@@ -308,7 +392,9 @@ rIRM <- function (n, mu1, mu2, a, b,
           missing(a), missing(b))) stop("mu1, mu2, a, and b must be supplied")
   if (any(c(a<=0, b<=0))) {stop("Both thresholds (a  and b) must be positive")}
   if (any(c(s1<=0,s2<=0) )) {stop("s1 and s2 must be positive")}
-  if (!missing(s)) {
+  if (any(c(smu1<0,smu2<0) )) {stop("smu1 and smu2 must be non-negative")}
+  if (any(c(sza<0,szb<0) )) {stop("sza and szb must be non-negative")}
+  if (!is.null(s)) {
     if (s<=0) stop("s must be positive")
     s1 <- s
     s2 <- s
@@ -327,18 +413,19 @@ rIRM <- function (n, mu1, mu2, a, b,
     wx <- 1
   }
 
-  pars <- prepare_RaceModel_parameter(response = 1,
+  pars <- prepare_RaceModel_parameter2(response = 1,
                                       mu1, mu2,
                                       a, b,
                                       s1, s2, 0, 1,
                                       t0, st0,
                                       wx, wrt, wint,
+                                      smu1, smu2, sza, szb,
                                       n)
   res <- matrix(NA, nrow=n, ncol=4)
   for (i in seq_len(length(pars$parameter_indices))) {
     ok_rows <- pars$parameter_indices[[i]]
     current_n <- length(ok_rows)
-    out <- r_RM(current_n, pars$params[ok_rows[1],1:6], rho=0, delta = delta, maxT = maxrt)
+    out <- r_RM(current_n, pars$params[ok_rows[1],c(1:6, 13:16)], rho=0, delta = delta, maxT = maxrt)
 
     ws <- pars$params[ok_rows[1],10:12]
 
@@ -354,7 +441,7 @@ rIRM <- function (n, mu1, mu2, a, b,
     # "state"
     out[,3] <- out[,3] - ifelse(out[,2]==1, pars$params[ok_rows[1],4], pars$params[ok_rows[1],3])
     ## Add the non-decision time to the rt-outcome
-    out[,1] <- out[,1] + pars$params[ok_rows[1],13] + runif(current_n, 0, pars$params[ok_rows[1],9])
+    out[,1] <- out[,1] + pars$params[ok_rows[1],17] + runif(current_n, 0, pars$params[ok_rows[1],9])
     res[ok_rows,1:3] <- out
 
   }
@@ -369,7 +456,9 @@ rIRM <- function (n, mu1, mu2, a, b,
 #' @export
 rPCRM <- function (n, mu1, mu2, a, b,
                   wx=1, wrt=0, wint=0,
-                  t0=0, st0=0, s1=1, s2=1, s,
+                  t0=0, st0=0, s1=1, s2=1, s=NULL,
+                  smu1 = 0, smu2=0,
+                  sza = 0, szb=0,
                   time_scaled = TRUE, step_width=NULL,
                   delta=0.01, maxrt=15)
 {
@@ -378,6 +467,8 @@ rPCRM <- function (n, mu1, mu2, a, b,
   if (any(c(a<=0, b<=0))) {stop("Both thresholds (a  and b) must be positive")}
   if (any(c(s1<=0,s2<=0) )) {stop("s1 and s2 must be positive")}
   if (any(t0<0)) {stop("Non-decision time, t0, has to be non-negative")}
+  if (any(c(smu1<0,smu2<0) )) {stop("smu1 and smu2 must be non-negative")}
+  if (any(c(sza<0,szb<0) )) {stop("sza and szb must be non-negative")}
   if (any(st0<0)) {stop("Non-decision time range, st0, has to be non-negative")}
   if (!missing(s)) {
     if (s<=0) stop("s must be positive")
@@ -395,18 +486,19 @@ rPCRM <- function (n, mu1, mu2, a, b,
     wx <- 1
   }
 
-  pars <- prepare_RaceModel_parameter(response = 1,
+  pars <- prepare_RaceModel_parameter2(response = 1,
                                       mu1, mu2,
                                       a, b,
                                       s1, s2, 0, 1,
                                       t0, st0,
                                       wx, wrt, wint,
+                                      smu1, smu2, sza, szb,
                                       n)
   res <- matrix(NA, nrow=n, ncol=4)
   for (i in seq_len(length(pars$parameter_indices))) {
     ok_rows <- pars$parameter_indices[[i]]
     current_n <- length(ok_rows)
-    out <- r_RM(current_n, pars$params[ok_rows[1],1:6], rho=-.5, delta = delta, maxT = maxrt)
+    out <- r_RM(current_n, pars$params[ok_rows[1],c(1:6, 13:16)], rho=-.5, delta = delta, maxT = maxrt)
 
     ws <- pars$params[ok_rows[1],10:12]
 
@@ -422,7 +514,7 @@ rPCRM <- function (n, mu1, mu2, a, b,
     # "state"
     out[,3] <- out[,3] - ifelse(out[,2]==1, pars$params[ok_rows[1],4], pars$params[ok_rows[1],3])
     ## Add the non-decision time to the rt-outcome
-    out[,1] <- out[,1] + pars$params[ok_rows[1],13] + runif(current_n, 0, pars$params[ok_rows[1],9])
+    out[,1] <- out[,1] + pars$params[ok_rows[1],17] + runif(current_n, 0, pars$params[ok_rows[1],9])
     res[ok_rows,1:3] <- out
 
   }
@@ -487,6 +579,102 @@ prepare_RaceModel_parameter <- function(response,mu1, mu2,
 
   # Check for illegal parameter values
   if(ncol(params)<14) stop("Not enough parameters supplied: probable attempt to pass NULL values?")
+  if(!is.numeric(params)) stop("Parameters need to be numeric.")
+  if (any(is.na(params)) || !all(is.finite(params))) {
+    stop("Parameters need to be numeric and finite.")
+  }
+
+
+  if (!skip_checks) {
+    parameter_char <- apply(params, 1, paste0, collapse = "\t")
+    parameter_factor <- factor(parameter_char, levels = unique(parameter_char))
+    parameter_indices <- split(seq_len(nn), f = parameter_factor)
+  } else {
+    if (all(numeric_bounds == 2L) | all(numeric_bounds == 1L)) {
+      parameter_indices <- list(
+        seq_len(nn)
+      )
+    } else {
+      parameter_indices <- list(
+        seq_len(nn)[numeric_bounds == 2L],
+        seq_len(nn)[numeric_bounds == 1L]
+      )
+    }
+  }
+  list(
+    params = params
+    , parameter_indices = parameter_indices
+  )
+}
+
+
+
+
+
+
+
+
+prepare_RaceModel_parameter2 <- function(response,mu1, mu2,
+                                        a, b, s1, s2, th1, th2,t0, st0, wx, wrt, wint,
+                                        smu1, smu2, sza, szb, nn) {
+
+  if ( (length(mu1) == 1) &
+       (length(mu2) == 1) &
+       (length(a) == 1) &
+       (length(b) == 1) &
+       (length(s1) == 1) &
+       (length(s2) == 1) &
+       (length(th1) == 1) &
+       (length(th2) == 1) &
+       (length(t0) == 1) &
+       (length(st0) == 1) &
+       (length(wx) == 1) &
+       (length(wrt) == 1) &
+       (length(wint) == 1)&
+       (length(smu1) == 1)&
+       (length(smu2) == 1)&
+       (length(sza) == 1)&
+       (length(szb) == 1)) {
+    skip_checks <- TRUE
+  } else {
+    skip_checks <- FALSE
+  }
+
+  response <- as.numeric(response)
+  if (any(!(response %in% 1:2)))
+    stop("response needs to be  %in% 1:2!")
+  numeric_bounds <- as.integer(response)
+
+  numeric_bounds <- rep(numeric_bounds, length.out = nn)
+  if (!skip_checks) {
+    # all parameters brought to length of rt
+    mu1 <- rep(mu1, length.out = nn)
+    mu2 <- rep(mu2, length.out = nn)
+    b <- rep(b, length.out = nn)
+    s1 <- rep(s1, length.out = nn)
+    s2 <- rep(s2, length.out = nn)
+    a <- rep(a, length.out = nn)
+    th1 <- rep(th1, length.out = nn)
+    th2 <- rep(th2, length.out = nn)
+    t0 <- rep(t0, length.out = nn)
+    st0 <- rep(st0, length.out = nn)
+    wx <- rep(wx, length.out = nn)
+    wrt <- rep(wrt, length.out = nn)
+    wint <- rep(wint, length.out = nn)
+    smu1 <- rep(smu1, length.out = nn)
+    smu2 <- rep(smu2, length.out = nn)
+    sza <- rep(sza, length.out = nn)
+    szb <- rep(szb, length.out = nn)
+  }
+  th1[th1==-Inf] <- 0
+  th2[th2==Inf] <- .Machine$double.xmax
+  # Build parameter matrix (and divide a, v, and sv, by s)
+  params <- cbind (mu1, mu2, -a, -b, s1, s2, th1, th2, st0, wx, wrt, wint,
+                   smu1, smu2, sza, szb,
+                   t0, numeric_bounds)
+
+  # Check for illegal parameter values
+  if(ncol(params)<18) stop("Not enough parameters supplied: probable attempt to pass NULL values?")
   if(!is.numeric(params)) stop("Parameters need to be numeric.")
   if (any(is.na(params)) || !all(is.finite(params))) {
     stop("Parameters need to be numeric and finite.")

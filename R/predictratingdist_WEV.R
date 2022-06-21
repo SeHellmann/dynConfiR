@@ -4,7 +4,7 @@
 #' \code{predictWEV_Conf} predicts the categorical response distribution of
 #' decision and confidence ratings, \code{predictWEV_RT} computes the predicted
 #' RT distribution (density) in the 2DSD Model (Pleskac & Busemeyer, 2010) and the
-#' dynWEV model (Hellmann et al., preprint), given specific parameter constellations.
+#' dynWEV model (Hellmann et al., in press), given specific parameter constellations.
 #' See \code{\link{dWEV}} and \code{\link{d2DSD}} for more information about parameters.
 #'
 #' @param paramDf a list or dataframe with one row. Column names should match the names
@@ -63,8 +63,7 @@
 #' not required in `paramDf` but set to 1 by default. All other parameters are used for all
 #' conditions.
 #'
-#' @references Hellmann, S., Zehetleitner, M., & Rausch, M. (preprint). Simultaneous modeling of choice,
-#' confidence and response time in visual perception. https://osf.io/9jfqr/
+#' @references Hellmann, S., Zehetleitner, M., & Rausch, M. (in press). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review}. https://osf.io/9jfqr/
 #'
 #' Pleskac, T. J., & Busemeyer, J. R. (2010). Two-Stage Dynamic Signal Detection:
 #' A Theory of Choice, Decision Time, and Confidence, \emph{Psychological Review}, 117(3),
@@ -138,10 +137,10 @@
 #' @rdname predictWEV
 #' @export
 predictWEV_Conf <- function(paramDf, model="dynWEV",
-                                precision=1e-5,
-                                maxrt=15, subdivisions = 100L, simult_conf = FALSE,
+                            maxrt=15, subdivisions = 100L, simult_conf = FALSE,
                             stop.on.error = FALSE,
-                                .progress=TRUE){
+                            precision=1e-5,
+                            .progress=TRUE){
   if (model =="WEVmu") model <- "dynWEV"
   nConds <- length(grep(pattern = "^v[0-9]", names(paramDf), value = T))
   symmetric_confidence_thresholds <- length(grep(pattern = "thetaUpper", names(paramDf), value = T))<1
@@ -184,6 +183,7 @@ predictWEV_Conf <- function(paramDf, model="dynWEV",
   # but add the constant to maxrt
   maxrt <- maxrt + paramDf$st0
   paramDf$st0 <- 0
+  if (!("omega" %in% names(paramDf))) paramDf$omega <- 0
   if (.progress) {
     pb <- progress_bar$new(total = nConds*nRatings*4)
   }
@@ -211,14 +211,18 @@ predictWEV_Conf <- function(paramDf, model="dynWEV",
 ### Predict RT-distribution
 #' @rdname predictWEV
 #' @export
-predictWEV_RT <- function(paramDf, model="dynWEV", precision=1e-5,
+predictWEV_RT <- function(paramDf, model=NULL,
                                  maxrt=9, subdivisions = 100L, minrt=NULL,
                                   simult_conf = FALSE,
-                                 scaled = FALSE, DistConf=NULL,
+                                 scaled = FALSE, DistConf=NULL, precision=1e-5,
                                 .progress = TRUE) {
   if (scaled && is.null(DistConf)) {
     message(paste("scaled is TRUE and DistConf is NULL. The rating distribution will",
     " be computed, which will take additional time.", sep=""))
+  }
+  if (is.null(model)) {
+    if (!("model" %in% names(paramDf))) stop("Either supply model argument or model entry in paramDf argument.")
+    model <- paramDf$model
   }
   if (model =="WEVmu") model <- "dynWEV"
   nConds <- length(grep(pattern = "^v[0-9]", names(paramDf), value = T))
@@ -266,39 +270,38 @@ predictWEV_RT <- function(paramDf, model="dynWEV", precision=1e-5,
       thetas_lower <- paramDf$a- rev(thetas_upper)
     }
   }
-
+  if (!("omega" %in% names(paramDf))) paramDf$omega <- 0
   if (is.null(minrt)) minrt <- paramDf$t0
   df <- expand.grid(rt = seq(minrt, maxrt, length.out = subdivisions),
                     rating = 1:nRatings,
                     response=c("lower", "upper"),
                     stimulus=c(-1, 1),
                     condition = 1:nConds) %>%
-    mutate(vth1 = switch(1+as.numeric(model=="2DSD"),
-                         if_else(.data$response =="upper", thetas_upper[.data$rating], thetas_lower[(.data$rating)]),
-                         if_else(.data$response =="upper", thetas_upper[.data$rating], rev(thetas_lower)[(.data$rating+1)])),
-           vth2 = switch(1+as.numeric(model=="2DSD"),
-                         if_else(.data$response =="upper", thetas_upper[(.data$rating+1)], thetas_lower[(.data$rating+1)]),
-                         if_else(.data$response =="upper", thetas_upper[(.data$rating+1)], rev(thetas_lower)[(.data$rating)])))
+    mutate(vth1 = if_else(.data$response =="upper", thetas_upper[.data$rating], thetas_lower[(.data$rating)]),
+           vth2 = if_else(.data$response =="upper", thetas_upper[(.data$rating+1)], thetas_lower[(.data$rating+1)]))
   if (model=="dynWEV") {
     dens <- function(df) {
-      res <- with(paramDf, dWEV(df$rt, df$vth1,df$vth2,
-                    response=as.character(df$response), tau=tau, a=a,
-                    v = df$stimulus*V[df$condition],
-                    t0 = t0, z = z, sz = sz, st0=st0,
-                    sv = SV[df$condition], w=w, svis=svis, sigvis=sigvis,
-                    s = S[df$condition],
-                    simult_conf = simult_conf, z_absolute = FALSE, precision = precision))
+      res <- with(paramDf, dWEV(df$rt, response=as.character(df$response),
+                                df$vth1,df$vth2,
+                                a=a,
+                                v = df$stimulus*V[df$condition],
+                                t0 = t0, z = z, sz = sz, sv = SV[df$condition],
+                                st0=st0,tau=tau,
+                                 w=w, svis=svis, sigvis=sigvis, omega=omega,
+                                s = S[df$condition],
+                                simult_conf = simult_conf, z_absolute = FALSE, precision = precision))
       if (.progress) pb$tick()
       return(data.frame(rt=df$rt, dens=res))
     }
   } else if (model=="2DSD") {
     dens <- function(df) {
-      res <- with(paramDf, d2DSD(df$rt, df$vth1,df$vth2,
-                   response=as.character(df$response), tau=tau, a=a,
-                   v = df$stimulus*V[df$condition],
-                   t0 = t0, z = z, sz = sz, st0=st0,
-                   sv = SV[df$condition], s = S[df$condition],
-                   simult_conf = simult_conf, z_absolute = FALSE, precision = precision))
+      res <- with(paramDf, d2DSD(df$rt, response=as.character(df$response),
+                                 df$vth1,df$vth2,
+                                 tau=tau, a=a,
+                                 v = df$stimulus*V[df$condition],
+                                 t0 = t0, z = z, sz = sz, st0=st0,
+                                 sv = SV[df$condition], omega=omega,s = S[df$condition],
+                                 simult_conf = simult_conf, z_absolute = FALSE, precision = precision))
       if (.progress) pb$tick()
       return(data.frame(rt=df$rt, dens=res))
     }

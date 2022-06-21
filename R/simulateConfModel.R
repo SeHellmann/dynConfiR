@@ -101,6 +101,7 @@ simulateRTConf <- function (paramDf, n=1e+4,  model = NULL,
                  gamma = FALSE, agg_simus=FALSE, simult_conf = FALSE,
                  stimulus = c(1,2), delta=0.01, maxrt=15, seed=NULL)
 {
+  gc(verbose = FALSE, full=FALSE)
   if (nrow(paramDf)>1) stop("paramDf must have one row. For more than one parameter set, please use a split-apply method,
                             like group_by, summarise (from the dplyr package).")
   paramDf <- paramDf[,c(!is.na(paramDf))]

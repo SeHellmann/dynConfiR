@@ -9,23 +9,28 @@
 \alias{rIRM}
 \alias{rPCRM}
 \alias{racemodels}
+\alias{dIRM2}
 \title{Independent and partially anti-correlated Race Model for Decision Confidence}
 \usage{
 dIRM(rt, response = 1, mu1, mu2, a, b, th1, th2, wx = 1, wrt = 0,
-  wint = 0, t0 = 0, st0 = 0, s1 = 1, s2 = 1, time_scaled = TRUE,
-  step_width = NULL)
+  wint = 0, t0 = 0, st0 = 0, s1 = 1, s2 = 1, s = NULL,
+  time_scaled = TRUE, step_width = NULL)
+
+dIRM2(rt, response = 1, mu1, mu2, a, b, th1, th2, wx = 1, wrt = 0,
+  wint = 0, t0 = 0, st0 = 0, s1 = 1, s2 = 1, smu1 = 0, smu2 = 0,
+  sza = 0, szb = 0, s = NULL, time_scaled = TRUE, step_width = NULL)
 
 dPCRM(rt, response = 1, mu1, mu2, a, b, th1, th2, wx = 1, wrt = 0,
-  wint = 0, t0 = 0, st0 = 0, s1 = 1, s2 = 1, time_scaled = TRUE,
-  step_width = NULL)
+  wint = 0, t0 = 0, st0 = 0, s1 = 1, s2 = 1, s = NULL,
+  time_scaled = TRUE, step_width = NULL)
 
 rIRM(n, mu1, mu2, a, b, wx = 1, wrt = 0, wint = 0, t0 = 0, st0 = 0,
-  s1 = 1, s2 = 1, time_scaled = TRUE, step_width = NULL,
-  delta = 0.01, maxrt = 15)
+  s1 = 1, s2 = 1, s = NULL, smu1 = 0, smu2 = 0, sza = 0, szb = 0,
+  time_scaled = TRUE, step_width = NULL, delta = 0.01, maxrt = 15)
 
 rPCRM(n, mu1, mu2, a, b, wx = 1, wrt = 0, wint = 0, t0 = 0, st0 = 0,
-  s1 = 1, s2 = 1, time_scaled = TRUE, step_width = NULL,
-  delta = 0.01, maxrt = 15)
+  s1 = 1, s2 = 1, s = NULL, smu1 = 0, smu2 = 0, sza = 0, szb = 0,
+  time_scaled = TRUE, step_width = NULL, delta = 0.01, maxrt = 15)
 }
 \arguments{
 \item{rt}{a numeric vector of RTs. For convenience also a \code{data.frame} with
@@ -68,9 +73,20 @@ purposes as it scales other parameters (see Details). Range: s1>0, Default: s1=1
 \item{s2}{numeric. Diffusion constant of the second accumulator.  Usually fixed to 1 for most
 purposes as it scales other parameters (see Details). Range: s2>0, Default: s2=1.}
 
+\item{s}{numeric. Alternative way to specify diffusion constants, if both are assumed to be equal.
+If both (s1, s2 and s) are given, only s1 and s2 will be used.}
+
 \item{time_scaled}{logical. Whether the confidence measure should be time-dependent. See Details.}
 
 \item{step_width}{numeric. Step size for the integration in t0 (motor time). Default: 1e-6.}
+
+\item{smu1}{numeric. Between-trial variability in the drift rate of the first accumulator.}
+
+\item{smu2}{numeric. Between-trial variability in the drift rate of the second accumulator.}
+
+\item{sza}{numeric. Between-trial variability in starting point of the first accumulator.}
+
+\item{szb}{numeric. Between-trial variability in starting point of the second accumulator.}
 
 \item{n}{integer. The number of samples generated.}
 
@@ -100,7 +116,7 @@ decisions and confidence judgments in the independent Race Model
 (\code{dIRM}/\code{rIRM}) or partially (anti-)correlated Race Model (\code{dPCRM}/\code{rPCRM}),
 i.e. the probability of a given response (response: winning accumulator
 (1 or 2)) at a given time (rt) and the confidence measure in the interval
-between th1 and th2 (Hellmann et al., preprint). The definition of the
+between th1 and th2 (Hellmann et al., in press). The definition of the
 confidence measure depends on the argument \code{time_scaled} (see Details).
 The computations are based on Moreno-Bote (2010).
 The parameters for the models are \code{mu1} and \code{mu2} for the drift
@@ -167,8 +183,10 @@ df2 <- rPCRM(5000,  mu1=0.2, mu2=-0.2, a=1, b=1, t0=0.1,
 head(df1)
 
 # Compute density with rt and response as separate arguments
-dPCRM(seq(0, 2, by =0.4), response= 2, mu1=0.2, mu2=-0.2, a=1, b=1, th1=0.5, th2=2, wx = 0.3, wint=0.4, wrt=0.1, t0=0.1)
+dPCRM(seq(0, 2, by =0.4), response= 2, mu1=0.2, mu2=-0.2, a=1, b=1, th1=0.5,
+         th2=2, wx = 0.3, wint=0.4, wrt=0.1, t0=0.1)
 # Compute density with rt and response in data.frame argument
+df1 <- subset(df1, response !=0) # drop trials where no accumulation hit its boundary
 dPCRM(df1[1:5,], mu1=0.2, mu2=-0.2, a=1, b=1, th1=0, th2=Inf, t0=0.1)
 # s1 and s2 scale other decision relevant parameters
  s <- 2  # common (equal) standard deviation
@@ -185,9 +203,9 @@ df1[1:5,]$response <- 2   # set response to 2
 dPCRM(df1[1:5,], mu1=0.2, mu2=-0.2, a=1, b=1,
      th1=0.5, th2=2, wx = 0.3, wint=0.4, wrt=0.1, t0=0.1)
 dPCRM(df1[1:5,], mu1=0.2*s1, mu2=-0.2*s2, a=1*s1, b=1*s2,
-      th1=0.5, th2=2, wx = wx/s1, wint = wint/s1, wrt = wrt, t0=0.1, s1=s1, s2=s2)
+      th1=0.5, th2=2, wx = 0.3/s1, wint = 0.4/s1, wrt = 0.1, t0=0.1, s1=s1, s2=s2)
 dPCRM(df1[1:5,], mu1=0.2*s1, mu2=-0.2*s2, a=1*s1, b=1*s2,
-      th1=0.5*s1, th2=2*s1, wx = wx, wint = wint, wrt = wrt*s1, t0=0.1, s1=s1, s2=s2)
+      th1=0.5*s1, th2=2*s1, wx = 0.3, wint = 0.4, wrt = 0.1*s1, t0=0.1, s1=s1, s2=s2)
 
 two_samples <- rbind(cbind(df1, ws="BoE"),
                    cbind(df2, ws="RT"))
@@ -210,8 +228,7 @@ dPCRM(df1[1:5,], th1=0, th2=1,mu1=0.2, mu2=-0.2, a=1, b=1, t0=0.1,wx = 1 )
 
 }
 \references{
-Hellmann, S., Zehetleitner, M., & Rausch, M. (preprint). Simultaneous modeling of choice,
-confidence and response time in visual perception. https://osf.io/9jfqr/
+Hellmann, S., Zehetleitner, M., & Rausch, M. (in press). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review}. https://osf.io/9jfqr/
 
 Moreno-Bote, R. (2010). Decision confidence and uncertainty in diffusion models with partially
 correlated neuronal integrators. Neural Computation, 22(7), 1786–1811. https://doi.org/10.1162/neco.2010.12-08-930

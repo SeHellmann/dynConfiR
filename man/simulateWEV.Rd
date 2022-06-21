@@ -80,7 +80,7 @@ information).
 \description{
 Simulates the decision responses and reaction times together with a
 discrete confidence judgment in the 2DSD model (Pleskac & Busemeyer, 2010)
-and the dynWEV model (Hellmann et al., preprint), given specific parameter constellations.
+and the dynWEV model (Hellmann et al., in press), given specific parameter constellations.
 See \code{\link{dWEV}} and \code{\link{d2DSD}} for more information about parameters.
 Also computes the Gamma rank correlation between the confidence ratings and condition
 (task difficulty), reaction times and accuracy in the simulated output.
@@ -152,8 +152,7 @@ head(agg_simus)
 }
 }
 \references{
-Hellmann, S., Zehetleitner, M., & Rausch, M. (preprint). Simultaneous modeling of choice,
-confidence and response time in visual perception. https://osf.io/9jfqr/
+Hellmann, S., Zehetleitner, M., & Rausch, M. (in press). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review}. https://osf.io/9jfqr/
 }
 \author{
 Sebastian Hellmann.

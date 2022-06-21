@@ -8,7 +8,7 @@
 fitRTConfModels(data, models = c("dynWEV", "2DSD"), nRatings = NULL,
   fixed = list(sym_thetas = FALSE), restr_tau = Inf, grid_search = TRUE,
   opts = list(), optim_method = "bobyqa", logging = FALSE,
-  parallel = TRUE, n.cores = NULL, ...)
+  precision = 1e-05, parallel = TRUE, n.cores = NULL, ...)
 }
 \arguments{
 \item{data}{a \code{data.frame} where each row is one trial, containing following
@@ -60,6 +60,9 @@ messages about the process are printed in a logging file and to console (dependi
 on OS). Additionally intermediate results are saved in a .RData file with the
 participant ID in the name.}
 
+\item{precision}{numerical scalar. For 2DSD and dynWEV only. Precision of calculation.
+(in the respective models) for the density functions (see \code{\link{dWEV}} for more information).}
+
 \item{parallel}{"models", "single", "both" or FALSE. If FALSE no parallelization
 is used in the fitting process. If "models" the fitting process is parallelized over
 participants and models (i.e. over the calls for fitting functions). If "single"
@@ -68,7 +71,7 @@ optimization processes for different start points, but see \code{\link{fitRTConf
 If "both", parallelization is done hierarchical. For small number of
 models and participants "single" or "both" is preferable. Otherwise, you may use "models".}
 
-\item{n.cores}{integer vector or NULL. If \code{parallel} is "models" or "both", a single
+\item{n.cores}{integer vector or NULL. If \code{parallel} is "models" or "single", a single
 integer for the number of cores used for parallelization is required. If
 \code{parallel} is "both", two values are required. The first for the number of parallel
 model-participant combinations and the second for the parallel processes within the
@@ -90,7 +93,8 @@ k (number of parameters), N (number of data rows), BIC, AICc and AIC)
 This function is a wrapper of the function \code{\link{fitConfModel}} (see
 there for more information). It calls the function for every possible combination
 of model and participant in \code{model} and \code{data} respectively.
-Also, see \code{\link{dWEV}}, \code{\link{d2DSD}}, and \code{\link{dRM}} for more
+Also, see \code{\link{dWEV}}, \code{\link{d2DSD}}, \code{\link{dDDMConf}},
+and \code{\link{dRM}} for more
 information about the parameters.
 }
 \details{
@@ -165,8 +169,7 @@ head(data)
 
 }
 \references{
-Hellmann, S., Zehetleitner, M., & Rausch, M. (preprint). Simultaneous modeling of choice,
-confidence and response time in visual perception. https://osf.io/9jfqr#'
+Hellmann, S., Zehetleitner, M., & Rausch, M. (in press). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review}. https://osf.io/9jfqr/
 }
 \author{
 Sebastian Hellmann.

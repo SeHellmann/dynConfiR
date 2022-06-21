@@ -9,13 +9,13 @@
 \title{Prediction of Confidence Rating and Response Time Distribution in dynWEV
 and 2DSD confidence models}
 \usage{
-predictWEV_Conf(paramDf, model = "dynWEV", precision = 1e-05, maxrt = 15,
+predictWEV_Conf(paramDf, model = "dynWEV", maxrt = 15,
   subdivisions = 100L, simult_conf = FALSE, stop.on.error = FALSE,
-  .progress = TRUE)
+  precision = 1e-05, .progress = TRUE)
 
-predictWEV_RT(paramDf, model = "dynWEV", precision = 1e-05, maxrt = 9,
-  subdivisions = 100L, minrt = NULL, simult_conf = FALSE,
-  scaled = FALSE, DistConf = NULL, .progress = TRUE)
+predictWEV_RT(paramDf, model = NULL, maxrt = 9, subdivisions = 100L,
+  minrt = NULL, simult_conf = FALSE, scaled = FALSE, DistConf = NULL,
+  precision = 1e-05, .progress = TRUE)
 }
 \arguments{
 \item{paramDf}{a list or dataframe with one row. Column names should match the names
@@ -27,9 +27,6 @@ thresholds should be given by names with thetaUpper1, thetaUpper2,..., thetaLowe
 for symmetric thresholds only by theta1, theta2,....}
 
 \item{model}{character scalar. One of "dynWEV" or "2DSD".}
-
-\item{precision}{numerical scalar value. Precision of calculation. Corresponds to the
-step size of integration w.r.t. \code{z} and \code{t0}. Default is 1e-5.}
 
 \item{maxrt}{numeric. The maximum RT for the integration/density computation.
 Default: 15 (for \code{predictWEV_Conf} (integration)), 9 (for \code{predictWEV_RT}).}
@@ -46,6 +43,9 @@ interjudgment time (then \code{simult_conf} should be FALSE).}
 \item{stop.on.error}{logical. Argument directly passed on to integrate. Default is FALSE,
 since the densities invoked may lead to slow convergence of the integrals (which are still
 quite accurate) which causes R to throw an error.}
+
+\item{precision}{numerical scalar value. Precision of calculation. Corresponds to the
+step size of integration w.r.t. \code{z} and \code{t0}. Default is 1e-5.}
 
 \item{.progress}{logical. if TRUE (default) a progress bar is drawn to the console.}
 
@@ -76,7 +76,7 @@ response, rating, correct, rt and dens (and densscaled, if \code{scaled=TRUE}).
 \code{predictWEV_Conf} predicts the categorical response distribution of
 decision and confidence ratings, \code{predictWEV_RT} computes the predicted
 RT distribution (density) in the 2DSD Model (Pleskac & Busemeyer, 2010) and the
-dynWEV model (Hellmann et al., preprint), given specific parameter constellations.
+dynWEV model (Hellmann et al., in press), given specific parameter constellations.
 See \code{\link{dWEV}} and \code{\link{d2DSD}} for more information about parameters.
 }
 \details{
@@ -145,8 +145,7 @@ head(PDFtoQuantiles(preds_RT, scaled = FALSE))
 
 }
 \references{
-Hellmann, S., Zehetleitner, M., & Rausch, M. (preprint). Simultaneous modeling of choice,
-confidence and response time in visual perception. https://osf.io/9jfqr/
+Hellmann, S., Zehetleitner, M., & Rausch, M. (in press). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review}. https://osf.io/9jfqr/
 
 Pleskac, T. J., & Busemeyer, J. R. (2010). Two-Stage Dynamic Signal Detection:
 A Theory of Choice, Decision Time, and Confidence, \emph{Psychological Review}, 117(3),

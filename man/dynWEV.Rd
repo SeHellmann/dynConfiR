@@ -10,14 +10,14 @@
 \usage{
 dWEV(rt, response = "upper", th1, th2, a, v, t0 = 0, z = 0.5, d = 0,
   sz = 0, sv = 0, st0 = 0, tau = 1, w = 0.5, muvis = NULL,
-  sigvis = 0, svis = 1, s = 1, simult_conf = FALSE,
+  sigvis = 0, svis = 1, omega = 0, s = 1, simult_conf = FALSE,
   precision = 1e-05, z_absolute = FALSE, stop_on_error = TRUE,
   stop_on_zero = FALSE)
 
 rWEV(n, a, v, t0 = 0, z = 0.5, d = 0, sz = 0, sv = 0, st0 = 0,
-  tau = 1, w = 0.5, muvis = NULL, sigvis = 0, svis = 1, s = 1,
-  delta = 0.01, maxrt = 15, simult_conf = FALSE, z_absolute = FALSE,
-  stop_on_error = TRUE)
+  tau = 1, w = 0.5, muvis = NULL, sigvis = 0, svis = 1, omega = 0,
+  s = 1, delta = 0.01, maxrt = 15, simult_conf = FALSE,
+  z_absolute = FALSE, stop_on_error = TRUE)
 }
 \arguments{
 \item{rt}{a vector of RTs. Or for convenience also a \code{data.frame} with columns \code{rt}
@@ -86,6 +86,10 @@ from the drift rate in decision process). Range: \code{sigvis}>=0. Default: \cod
 
 \item{svis}{diffusion constant of visibility process. Range: \code{svis}>0. Default: \code{svis}=1.}
 
+\item{omega}{power for judgement time in the division of the confidence measure
+by the judgment time (Default: 0, i.e. no division which is the version of
+dynWEV proposed by Hellmann et al.)}
+
 \item{s}{diffusion constant of decision process; standard deviation of the random noise of the
 diffusion process (i.e., within-trial variability), scales other parameters (see Note). Needs to
 be fixed to a constant in most applications. Default is 1. Note that the default used by Ratcliff
@@ -132,7 +136,7 @@ are completely vectorized for all parameters and even the response boundary.
 }
 \description{
 Likelihood function and random number generator for the dynWEV model
-(Hellmann et al., preprint).
+(Hellmann et al., in press).
 It includes following parameters from the drift diffusion model:
 \code{a} (threshold separation),
 \code{z} (starting point; relative),
@@ -148,7 +152,8 @@ For the computation of confidence following parameters were added:
 \code{w} (weight on the decision evidence (weight on visibility is (1-w))),
 \code{muvis} (mean drift rate of visibility process),
 \code{svis} (diffusion constant of visibility process),
-\code{sigvis} (variability in drift rate of visibility accumulator), and
+\code{sigvis} (variability in drift rate of visibility accumulator),
+\code{omega} the exponent of judgment time for the division by judgment time in the confidence measure, and
 \code{th1} and \code{th2} (lower and upper thresholds for confidence interval).
 \strong{Note that the parametrization or defaults of non-decision time variability
 \code{st0} and diffusion constant \code{s} differ from what is often found in the literature.}
@@ -159,7 +164,7 @@ for decision confidence (see \code{\link{d2DSD}}). It assumes that the decision 
 diffusion model with two additional assumptions to account for confidence. First, there is a
 post-decisional period of further evidence accumulation \code{tau}. Second, another accumulation process
 accrues information about stimulus reliability (the visibility process) including also evidence
-about decision irrelevant features. See Hellmann et al. (preprint) for more information.
+about decision irrelevant features. See Hellmann et al. (in press) for more information.
 The measure for confidence is then a weighted sum of the final state of the decision process X
 and the visibility process V, i.e. for a decision time T (which is not the response time),
 the confidence measure is
@@ -236,8 +241,7 @@ dWEV(df1[1:5,], th1=1, th2=0, a=2, v=0.5, stop_on_error = FALSE)
 
 }
 \references{
-Hellmann, S., Zehetleitner, M., & Rausch, M. (preprint). Simultaneous modeling of choice,
-confidence and response time in visual perception. https://osf.io/9jfqr/
+Hellmann, S., Zehetleitner, M., & Rausch, M. (in press). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review}. https://osf.io/9jfqr/
 }
 \author{
 Sebastian Hellmann

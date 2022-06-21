@@ -2,7 +2,7 @@
 #'
 #' Simulates the decision responses and reaction times together with a
 #' discrete confidence judgment in the 2DSD model (Pleskac & Busemeyer, 2010)
-#' and the dynWEV model (Hellmann et al., preprint), given specific parameter constellations.
+#' and the dynWEV model (Hellmann et al., in press), given specific parameter constellations.
 #' See \code{\link{dWEV}} and \code{\link{d2DSD}} for more information about parameters.
 #' Also computes the Gamma rank correlation between the confidence ratings and condition
 #' (task difficulty), reaction times and accuracy in the simulated output.
@@ -30,6 +30,7 @@
 #' returned response time will only be decision time plus non-judgment time component.
 #' @param gamma logical. If TRUE, the gamma correlation between confidence ratings, rt
 #' and accuracy is computed.
+#'
 #' @param agg_simus logical. Simulation is done on a trial basis with rts outcome.
 #' If TRUE, the simulations will be aggregated over RTs to return only the distribution
 #' of response and confidence ratings. Default: FALSE.
@@ -87,8 +88,7 @@
 #' \code{v}, drift rate variability, \code{sv} and diffusion constant `s`.
 #' All other parameters are used for all conditions.
 #'
-#' @references Hellmann, S., Zehetleitner, M., & Rausch, M. (preprint). Simultaneous modeling of choice,
-#' confidence and response time in visual perception. https://osf.io/9jfqr/
+#' @references Hellmann, S., Zehetleitner, M., & Rausch, M. (in press). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review}. https://osf.io/9jfqr/
 #'
 #'
 #' @author Sebastian Hellmann.
@@ -154,6 +154,7 @@ simulateWEV <- function (paramDf, n=1e+4,  model = "dynWEV", simult_conf = FALSE
     set.seed(seed)
   }
   if (model=="WEVmu") model <- "dynWEV"
+
   if (!(model %in% c("dynWEV", "2DSD"))) stop("Only models dynWEV (alias: WEVmu) and 2DSD are allowed!")
 
   if (!(all(stimulus %in% c(-1, 1)))) {
@@ -165,13 +166,18 @@ simulateWEV <- function (paramDf, n=1e+4,  model = "dynWEV", simult_conf = FALSE
   a <- paramDf$a
   z <- paramDf$z
   sz <- paramDf$sz
-  t0 <- paramDf$t0
+  t0 <- paramDf$t0  # recalc_t0 (see e.g. dWEV)
   st0 <- paramDf$st0
   tau = paramDf$tau
   if ("d" %in% names(paramDf)) {
     d <- paramDf$d
   } else {
     d <- 0
+  }
+  if ("omega" %in% names(paramDf)) {
+    omega <- paramDf$omega
+  } else {
+    omega <- 0
   }
   nConds <- length(grep(pattern = "^v[0-9]", names(paramDf), value = T))
   if (nConds > 0 ) {
@@ -284,63 +290,40 @@ simulateWEV <- function (paramDf, n=1e+4,  model = "dynWEV", simult_conf = FALSE
              muvis = muvis[.data$condition]) %>%
       group_by(.data$condition, .data$stimulus) %>%
       summarise(as.data.frame(r_WEV(n=n, params=c(a/as.numeric(cur_data()[3]),as.numeric(cur_data()[1])/as.numeric(cur_data()[3]),
-                                                  t0, d, sz, as.numeric(cur_data()[2])/as.numeric(cur_data()[3]),
-                                                  st0, z, tau, 0, 1, w, as.numeric(cur_data()[4])/as.numeric(cur_data()[3]),
+                                                  t0+st0/2, d, sz, as.numeric(cur_data()[2])/as.numeric(cur_data()[3]),
+                                                  st0, z, tau, 0, 1,
+                                                  omega,
+                                                  rep(c(w, as.numeric(cur_data()[4])/as.numeric(cur_data()[3]),
                                                   sigvis/as.numeric(cur_data()[3]), svis/as.numeric(cur_data()[3])),
+                                                  as.numeric(model=="dynWEV"))),
                                     model=which(model == c("2DSD", "dynWEV")),
-                                    delta = delta, maxT =maxrt, TRUE), c("rt", "response", "conf"))) %>%
+                                    delta = delta, maxT =maxrt, TRUE),
+                              c("rt", "response", "conf"))) %>%
       rename(rt=3, response=4, conf=5) %>%
       mutate(conf = .data$conf * S[.data$condition])
   }
 
-  ### Bin confidence measure for discrete ratings:
-  symmetric_confidence_thresholds <- length(grep(pattern = "thetaUpper", names(paramDf), value = T))<1
   if (symmetric_confidence_thresholds) {
-    nRatings <- length(grep(pattern = "^theta[0-9]", names(paramDf)))+1
+    thetas_upper <- c(-Inf, t(paramDf[,paste("theta",1:(nRatings-1), sep = "")]), Inf)
+    thetas_lower <- c(-Inf, t(paramDf[,paste("theta",1:(nRatings-1), sep = "")]), Inf)
   } else {
-    nRatings <- length(grep(pattern = "^thetaUpper[0-9]", names(paramDf)))+1
+    thetas_upper <- c(-Inf, t(paramDf[,paste("thetaUpper",1:(nRatings-1), sep = "")]), Inf)
+    thetas_lower <- c(-Inf, t(paramDf[,paste("thetaLower",1:(nRatings-1), sep="")]), Inf)
   }
-  if (model =="2DSD") {
-    if (symmetric_confidence_thresholds) {
-      thetas_upper <- c(-Inf, t(paramDf[,paste("theta",1:(nRatings-1), sep = "")]), Inf)
-      thetas_lower <- a - thetas_upper
-    } else {
-      thetas_upper <- c(-Inf, t(paramDf[,paste("thetaUpper",1:(nRatings-1), sep = "")]), Inf)
-      thetas_lower <- c(-Inf, t(paramDf[,paste("thetaLower",1:(nRatings-1), sep="")]), Inf)
-    }
-    levels_lower <- 6-cumsum(as.numeric(table(thetas_lower)))
-    levels_lower <- levels_lower[-length(levels_lower)]
-    levels_upper <- cumsum(as.numeric(table(thetas_upper)))
-    levels_upper <- levels_upper[-length(levels_upper)]
-    thetas_lower <- unique(thetas_lower)
-    thetas_upper <- unique(thetas_upper)
 
-    simus$rating <- 1
-    simus$rating[simus$response==1] <- as.numeric(as.character(cut(simus$conf[simus$response==1],
-                                                                          breaks=thetas_upper, labels = levels_upper)))
-    simus$rating[simus$response==-1] <- as.numeric(as.character(cut(simus$conf[simus$response==-1],
-                                                                             breaks=thetas_lower, labels=levels_lower)))
-  } else {
-    if (symmetric_confidence_thresholds) {
-      thetas_upper <- c(-Inf, t(paramDf[,paste("theta",1:(nRatings-1), sep = "")]), Inf)
-      thetas_lower <- c(-Inf, t(paramDf[,paste("theta",1:(nRatings-1), sep = "")]), Inf)
-    } else {
-      thetas_upper <- c(-Inf, t(paramDf[,paste("thetaUpper",1:(nRatings-1), sep = "")]), Inf)
-      thetas_lower <- c(-Inf, t(paramDf[,paste("thetaLower",1:(nRatings-1), sep="")]), Inf)
-    }
-    levels_lower <- cumsum(as.numeric(table(thetas_lower)))
-    levels_lower <- levels_lower[-length(levels_lower)]
-    levels_upper <- cumsum(as.numeric(table(thetas_upper)))
-    levels_upper <- levels_upper[-length(levels_upper)]
-    thetas_lower <- unique(thetas_lower)
-    thetas_upper <- unique(thetas_upper)
+  levels_lower <- cumsum(as.numeric(table(thetas_lower)))
+  levels_lower <- levels_lower[-length(levels_lower)]
+  levels_upper <- cumsum(as.numeric(table(thetas_upper)))
+  levels_upper <- levels_upper[-length(levels_upper)]
+  thetas_lower <- unique(thetas_lower)
+  thetas_upper <- unique(thetas_upper)
 
-    simus$rating <- 1
-    simus$rating[simus$response==1] <- as.numeric(as.character(cut(simus$conf[simus$response==1],
-                                                              breaks=thetas_upper, labels = levels_upper)))
-    simus$rating[simus$response==-1] <- as.numeric(as.character(cut(simus$conf[simus$response==-1],
-                                                              breaks=thetas_lower, labels = levels_lower)))
-  }
+  simus$rating <- 1
+  simus$rating[simus$response==1] <- as.numeric(as.character(cut(simus$conf[simus$response==1],
+                                                            breaks=thetas_upper, labels = levels_upper)))
+  simus$rating[simus$response==-1] <- as.numeric(as.character(cut(simus$conf[simus$response==-1],
+                                                            breaks=thetas_lower, labels = levels_lower)))
+
   simus$correct <- as.numeric(simus$response == simus$stimulus)
   if (simult_conf) {
     simus$rt <- simus$rt + tau

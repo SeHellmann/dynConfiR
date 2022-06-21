@@ -1,15 +1,14 @@
 test_that("2DSD works", {
   expect_equal(d2DSD(seq(0, 3, by=0.5), "lower", 0.4, 2.5, tau=1, a=2, v=0.5, t0=0, z =0.5, sv=0.2),
-               c(0, 0.0482531449209958, 0.0253553462532125, 0.0130607877622106,
-                 0.00673690205356166, 0.00347996213935378, 0.00180003697951979
-               ))
+               c(0, 0.127923586525416, 0.0668243025079862, 0.0342270990259822,
+                 0.0175585010435632, 0.0090222312746275, 0.00464316676344542))
   ## test for z (relative) out of range
   expect_equal(d2DSD(seq(0, 3, by=0.5), "lower", 0.4, 2.5, tau=1, a=2, v=0.5, t0=0, z =1.1, sv=0.2, s=1, stop_on_error = FALSE),
                rep(0, 7))
   ## test for absolute z working (if as relative it would be out of range)
   expect_equal(d2DSD(seq(0, 3, by=0.5), "lower", 0.4, 2.5, tau=1, a=2, v=0.5, t0=0, z =1.1, sv=0.2, s=1, stop_on_error = TRUE, z_absolute = TRUE),
-               c(0, 0.0413138942270009, 0.0237164820019255, 0.0123868633188137,
-                 0.00640678790772112, 0.00331269788978975, 0.0017147001618022))
+               c(0, 0.115664728481645, 0.0659737402126581, 0.0342454229147437,
+                 0.0176076118813728, 0.00905219904467997, 0.00465973138080759))
   ## test for relative z giving same results as transformed absolute z
   expect_equal(d2DSD(seq(0, 3, by=0.5),  "lower", 0.4, 2.5,tau=1, a=2, v=0.5, t0=0, z =0.5, sv=0.2),
                d2DSD(seq(0, 3, by=0.5), "lower", 0.4, 2.5, tau=1, a=2, v=0.5, t0=0, z =1, sv=0.2, s=1, z_absolute = TRUE))
@@ -19,13 +18,16 @@ test_that("2DSD works", {
   ## test for scaling effect of s (diffusion constant)
   expect_equal(d2DSD(seq(0, 3, by=0.5), "lower", 0.5*2, 2.5*2, tau=1, a=2*2, v=0.5*2, t0=0, z =0.2, sv=0.2*2, s=1*2, stop_on_error = TRUE),
                d2DSD(seq(0, 3, by=0.5), "lower", 0.5, 2.5, tau=1, a=2, v=0.5, t0=0, z =0.2, sv=0.2, s=1, stop_on_error = TRUE))
+  ## test for response symmetry
+  expect_equal(d2DSD(seq(0, 3, by=0.5), "lower", -1, 1, tau=1, a=2, v=0.5, t0=0, z =0.2, sv=0.2, s=1, stop_on_error = TRUE),
+               d2DSD(seq(0, 3, by=0.5), "upper", -1, 1, tau=1, a=2, v=-0.5, t0=0, z =1-0.2, sv=0.2, s=1, stop_on_error = TRUE))
 })
 
 
 test_that("dynWEV works", {
   expect_equal(dWEV(seq(0, 3, by=0.5), "lower", 0.4, 2.5, tau=1, a=2, v=0.5, t0=0, z =0.5, sv=0.2, w=0.5, sigvis=0.2, svis=1, s=1),
-               c(0, 0.0908978179389572, 0.0550995232517664, 0.0311348051585375,
-                 0.0169991265817032, 0.00905129165888973, 0.00472961405062421))
+               c(0, 0.147064426866004, 0.0798344162131249, 0.0414020207786117,
+                 0.0210877315338026, 0.0106006919740067, 0.00527825242394075))
   ## test for scaling effect of s (diffusion constant)
   expect_equal(dWEV(seq(0, 3, by=0.5), "lower", 0.4*2, 2.5*2, tau=1, a=2*2, v=0.5*2, t0=0, z =0.5, sv=0.2*2, w=0.5, sigvis=0.2*2, svis=1*2, s=1*2, precision = 10),
                dWEV(seq(0, 3, by=0.5), "lower", 0.4, 2.5, tau=1, a=2, v=0.5, t0=0, z =0.5, sv=0.2, w=0.5, sigvis=0.2, svis=1, s=1, precision = 10))

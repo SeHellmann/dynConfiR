@@ -33,9 +33,9 @@ if unique the ID is used in autosave files and logging messages;
 if non-unique or missing AND logging ==TRUE, 999 will be used then)
 }}
 
-\item{model}{character scalar. One of "dynWEV", "2DSD", "IRM", "PCRM", "IRMt", "PCRMt" for the model to be fit.}
+\item{model}{character scalar. One of "dynWEV", "2DSD", "IRM", "PCRM", "IRMt", "PCRMt", or "DDMConf" for the model to be fit.}
 
-\item{fixed}{list. List with parameter value pairs for parameters that should not be fitted. See Details.}
+\item{fixed}{list. List with parameter-value pairs for parameters that should not be fitted. See Details.}
 
 \item{init_grid}{data.frame or \code{NULL}. Grid for the initial parameter search. Each row is one parameter constellation.
 See details for more information. If \code{NULL} a default grid will be used.}
@@ -94,13 +94,12 @@ about fixed and not fitted parameters.
 }
 \description{
 Fits the parameters of different models of response time and confidence, including
-the 2DSD model (Pleskac & Busemeyer, 2010), dynWEV, and various
-flavors of race models (Hellmann et al., preprint). Which model to fit is
+the 2DSD model (Pleskac & Busemeyer, 2010), dynWEV, DDMConf, and various
+flavors of race models (Hellmann et al., in press). Which model to fit is
 specified by the argument \code{model}.
-So far, only a ML method is implemented (a quantile-Chi square method may be
-implemented in the future, too).
+Only a ML method is implemented.
 See \code{\link{dWEV}}, \code{\link{d2DSD}}, and \code{\link{dRM}} for more
-information about the parameters.
+information about the parameters and Details for not-fitted parameters.
 }
 \details{
 The fitting involves a first grid search through computation of the
@@ -131,7 +130,15 @@ Includes the possibility for symmetric confidence thresholds for both alternativ
 \code{z =.5}, \code{sv=0}, \code{st0=0}, \code{sz=0}. For race models, the possibility
 of setting \code{a='b'} (or vice versa)
 leads to identical upper bounds on the decision processes, which is the equivalence for
-\code{z=.5} in a diffusion process
+\code{z=.5} in a diffusion process.
+
+\strong{Parameters not fitted}. The models get developed continuously and not
+all changes are adopted in the fitting function instantly. Following parameters
+are currently not included in the fitting routine:
+\itemize{
+\item \code{omega} only relevant for 2DSD and dynWEV
+\item in race models: \code{sza}, \code{szb}, \code{smu1}, and \code{smu2}
+}
 
 \strong{init_grid}. Each row should be one parameter set to check. The column names
 should include the parameters of the desired model, which are the following for 2DSD:
@@ -193,8 +200,7 @@ head(data)
 
 }
 \references{
-Hellmann, S., Zehetleitner, M., & Rausch, M. (preprint). Simultaneous modeling of choice,
-confidence and response time in visual perception. https://osf.io/9jfqr/
+Hellmann, S., Zehetleitner, M., & Rausch, M. (in press). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review}. https://osf.io/9jfqr/
 
 https://nashjc.wordpress.com/2016/11/10/why-optim-is-out-of-date/
 

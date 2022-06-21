@@ -29,7 +29,7 @@ static double integral_t0_g_minus_2DSD (double t, Parameters *params);
 static double integral_z_g_minus_2DSD  (double t, Parameters *params);
 static double integral_v_g_minus_2DSD  (double t, double zr, Parameters *params);
 
-static double g_minus_no_var_2DSD     (double t, double a, double zr, double v, double tau, double th1, double th2, double thD);
+static double g_minus_no_var_2DSD     (double t, double a, double zr, double v, double tau, double th1, double th2, double omega);
 static double g_minus_small_time_2DSD (double t, double zr, int N);
 static double g_minus_large_time_2DSD (double t, double zr, int N);
 
@@ -77,9 +77,8 @@ double g_plus_2DSD(double t)
     Parameters new_params(*g_Params);
     new_params.zr = 1 - g_Params->zr;
     new_params.v = -g_Params->v;
-    // new_params.thD = -g_Params->a;  // Change state of process at decision to a, if upper boundary was hit first
-    new_params.th1 =  g_Params->th1;
-    new_params.th2 =  g_Params->th2;
+    //new_params.th1 =  -g_Params->th2;
+    //new_params.th2 =  -g_Params->th1;
 
     return integral_t0_g_minus_2DSD (t - new_params.t0 + 0.5*new_params.d, &new_params);
 }
@@ -130,13 +129,13 @@ static double integral_v_g_minus_2DSD (double t, double zr, Parameters *params)
     double v = params->v;
     double sv = params->sv;
     double tau = params->tau;
-    double th2 = -params->th1;
-    double th1 = -params->th2;
-    double thD = params->thD;
+    double th2 = params->th2;
+    double th1 = params->th1;
+    double omega = params->omega;
 
     if (params->sv == 0)
     {
-        return g_minus_no_var_2DSD(t, a, zr, v, tau, th1, th2, thD);
+        return g_minus_no_var_2DSD(t, a, zr, v, tau, th1, th2, omega);
     }
 
     int N_small, N_large;
@@ -145,22 +144,18 @@ static double integral_v_g_minus_2DSD (double t, double zr, Parameters *params)
     double ta = t/(a*a);
 
     sv2t = sv*sv*t + 1;
-    factor = 1 / (a*a * sqrt(sv2t)) * exp(-0.5 * (v*v*t + 2*a*zr*v - a*a * zr*zr*sv*sv  ) / (sv2t));
-    /* if (std::isinf(factor))
-    {
-      return 0;
-    }
-    */
+    factor = 1 / (a*a * sqrt(sv2t)) * exp(-0.5 * (v*v*t + 2*a*zr*v - a*a * zr*zr*sv*sv  ) / (sv2t)); //sqrt(t+tau)
 
-    mean_conf = thD + ((v - sv*sv*a*zr)*tau) / sv2t;
-    sd_conf = sqrt(tau*(sv*sv*tau+sv*sv*t+1)/sv2t);
-    diff_normal = 0.5*(erf((th2 - mean_conf) / (M_SQRT2 * sd_conf)) - erf((th1 - mean_conf) / (M_SQRT2 * sd_conf)));
+    mean_conf = - (tau*v - a*zr*(sv*sv*(tau+t)+1)) / (sv2t); // ((v - sv*sv*a*zr)*tau) / sv2t;
+    sd_conf = sqrt( tau*(sv*sv*tau+sv2t)/(sv2t));
+    diff_normal = 0.5*(erf((th2*pow(t+tau, omega) - mean_conf) / (M_SQRT2 * sd_conf)) -
+                        erf((th1*pow(t+tau, omega) - mean_conf) / (M_SQRT2 * sd_conf)));
 
-   /* if (diff_normal == 0)
-    {
-      return 0;
-    }  */
-
+    // factor = exp(-a*zr*v - 0.5*v*v*t) / (a*a); //sqrt(t+tau)
+    // diff_normal = 0.5*(erf((th2*pow(t+tau, omega) + (tau*v - a*zr)) / (M_SQRT2 * sqrt(tau))) -
+    //   erf((th1*pow(t+tau, omega) + (tau*v - a*zr)) / (M_SQRT2 * sqrt(tau))));
+    //
+    //
 
     eps = EPSILON / factor;
 
@@ -192,14 +187,16 @@ static double integral_v_g_minus_2DSD (double t, double zr, Parameters *params)
 }
 
 
-static double g_minus_no_var_2DSD(double t, double a, double zr, double v, double tau, double th1, double th2, double thD)
+static double g_minus_no_var_2DSD(double t, double a, double zr, double v,
+                                   double tau, double th1, double th2, double omega)
 {
     int N_small, N_large;
     double diff_normal, simple, factor, eps;
     double ta = t/(a*a);
 
-    factor = exp(-a*zr*v - 0.5*v*v*t) / (a*a);
-    diff_normal = 0.5*(erf((th2 - tau*v - thD) / (M_SQRT2 * sqrt(tau))) - erf((th1 - tau*v - thD) / (M_SQRT2 * sqrt(tau))));
+    factor = exp(-a*zr*v - 0.5*v*v*t) / (a*a); //sqrt(t+tau)
+    diff_normal = 0.5*(erf((th2*pow(t+tau, omega) + (tau*v - a*zr)) / (M_SQRT2 * sqrt(tau))) -
+      erf((th1*pow(t+tau, omega) + (tau*v - a*zr)) / (M_SQRT2 * sqrt(tau))));
 
     /*
     if (std::isinf(factor))

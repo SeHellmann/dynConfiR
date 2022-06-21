@@ -146,7 +146,9 @@ predictConfModels <- function(paramDf,
   models <- unique(paramDf$model)
   if (is.null(models)) stop("model column missing in paramDf")
   if (!is.numeric(maxrt)) stop("maxrt must be numeric")
-  if (!all(models %in% c("IRM", "PCRM", "IRMt", "PCRMt", "dynWEV", "2DSD"))) stop("model must be 'dynWEV', '2DSD', 'IRM', 'PCRM', 'IRMt', or 'PCRMt'")
+  if (!all(models %in% c("IRM", "PCRM", "IRMt", "PCRMt", "dynWEV", "2DSD",  "DDMConf"))) {
+    stop("model must be 'dynWEV', '2DSD', 'DDMConf', 'IRM', 'PCRM', 'IRMt', or 'PCRMt'")
+  }
   sbjcol <- c("subject", "participant", "sbj")[which(c("subject", "participant", "sbj") %in% names(paramDf))]
   if (length(sbjcol)==0) {
     paramDf$sbj <- 1
@@ -223,7 +225,9 @@ predictRTModels <- function(paramDf,
   if (!is.numeric(maxrt)) stop("maxrt must be numeric")
   models <- unique(paramDf$model)
   if (is.null(models)) stop("model column missing in paramDf")
-  if (!all(models %in% c("IRM", "PCRM", "IRMt", "PCRMt", "dynWEV", "2DSD"))) stop("model must be 'dynWEV', '2DSD', 'IRM', 'PCRM', 'IRMt', or 'PCRMt'")
+  if (!all(models %in% c("IRM", "PCRM", "IRMt", "PCRMt", "dynWEV", "2DSD", "DDMConf"))) {
+    stop("model must be 'dynWEV',  '2DSD',  'DDMConf', 'IRM', 'PCRM', 'IRMt', or 'PCRMt'")
+  }
   sbjcol <- c("subject", "participant", "sbj")[which(c("subject", "participant", "sbj") %in% names(paramDf))]
   if (length(sbjcol)==0) {
     paramDf$sbj <- 1

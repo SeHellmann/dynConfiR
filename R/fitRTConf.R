@@ -1,13 +1,12 @@
 #' Function for fitting sequential sampling confidence models
 #'
 #' Fits the parameters of different models of response time and confidence, including
-#' the 2DSD model (Pleskac & Busemeyer, 2010), dynWEV, and various
-#' flavors of race models (Hellmann et al., preprint). Which model to fit is
+#' the 2DSD model (Pleskac & Busemeyer, 2010), dynWEV, DDMConf, and various
+#' flavors of race models (Hellmann et al., in press). Which model to fit is
 #' specified by the argument \code{model}.
-#' So far, only a ML method is implemented (a quantile-Chi square method may be
-#' implemented in the future, too).
+#' Only a ML method is implemented.
 #' See \code{\link{dWEV}}, \code{\link{d2DSD}}, and \code{\link{dRM}} for more
-#' information about the parameters.
+#' information about the parameters and Details for not-fitted parameters.
 #'
 #' @param data a `data.frame` where each row is one trial, containing following
 #' variables (column names can be changed by passing additional arguments of
@@ -22,8 +21,8 @@
 #' * \code{sbj} or \code{participant} (optional; giving the subject ID; only relevant if logging == TRUE;
 #'                                                       if unique the ID is used in autosave files and logging messages;
 #'                                                       if non-unique or missing AND logging ==TRUE, 999 will be used then)
-#' @param model character scalar. One of "dynWEV", "2DSD", "IRM", "PCRM", "IRMt", "PCRMt" for the model to be fit.
-#' @param fixed list. List with parameter value pairs for parameters that should not be fitted. See Details.
+#' @param model character scalar. One of "dynWEV", "2DSD", "IRM", "PCRM", "IRMt", "PCRMt", or "DDMConf" for the model to be fit.
+#' @param fixed list. List with parameter-value pairs for parameters that should not be fitted. See Details.
 #' @param init_grid data.frame or `NULL`. Grid for the initial parameter search. Each row is one parameter constellation.
 #' See details for more information. If \code{NULL} a default grid will be used.
 #' @param grid_search logical. If `FALSE`, the grid search before the optimization
@@ -95,7 +94,13 @@
 #' \code{z =.5}, \code{sv=0}, \code{st0=0}, \code{sz=0}. For race models, the possibility
 #' of setting \code{a='b'} (or vice versa)
 #' leads to identical upper bounds on the decision processes, which is the equivalence for
-#'  \code{z=.5} in a diffusion process
+#'  \code{z=.5} in a diffusion process.
+#'
+#'  \strong{Parameters not fitted}. The models get developed continuously and not
+#'  all changes are adopted in the fitting function instantly. Following parameters
+#'  are currently not included in the fitting routine:
+#'  - \code{omega} only relevant for 2DSD and dynWEV
+#'  - in race models: \code{sza}, \code{szb}, \code{smu1}, and \code{smu2}
 #'
 #' \strong{init_grid}. Each row should be one parameter set to check. The column names
 #' should include the parameters of the desired model, which are the following for 2DSD:
@@ -128,8 +133,7 @@
 #'
 #' @md
 #'
-#' @references Hellmann, S., Zehetleitner, M., & Rausch, M. (preprint). Simultaneous modeling of choice,
-#' confidence and response time in visual perception. https://osf.io/9jfqr/
+#' @references Hellmann, S., Zehetleitner, M., & Rausch, M. (in press). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review}. https://osf.io/9jfqr/
 #'
 #' https://nashjc.wordpress.com/2016/11/10/why-optim-is-out-of-date/
 #'
@@ -140,7 +144,7 @@
 #' @author Sebastian Hellmann.
 #'
 #' @name fitRTConf
-#' @importFrom stats setNames aggregate optim qnorm pnorm
+#' @importFrom stats setNames aggregate optim qnorm pnorm optimize
 #' @importFrom minqa bobyqa
 #' @importFrom dplyr if_else case_when rename
 #' @import logger
@@ -193,8 +197,8 @@ fitRTConf <- function(data, model = "dynWEV",
   if (model == "WEVmu") {  ## Old name for dynWEV model
     model <- "dynWEV"
   }
-  if (!model %in% c("IRM", "PCRM", "IRMt", "PCRMt", "dynWEV", "2DSD")) {
-    stop("model must be 'dynWEV', '2DSD', 'IRM', 'PCRM', 'IRMt', or 'PCRMt'")
+  if (!model %in% c("IRM", "PCRM", "IRMt", "PCRMt", "dynWEV", "2DSD", "DDMConf")) {
+    stop("model must be 'dynWEV', '2DSD', 'DDMConf', 'IRM', 'PCRM', 'IRMt', or 'PCRMt'")
   }
 
   #### Check argument types ###
@@ -391,6 +395,13 @@ fitRTConf <- function(data, model = "dynWEV",
                                           logging, filename,
                                           useparallel, n.cores,
                                           used_cats, actual_nRatings)
+  if (model == "DDMConf") res <- fittingDDMConf(df, nConds, nRatings, fixed, sym_thetas,
+                                          grid_search, init_grid, opts,
+                                          logging, filename,
+                                          useparallel, n.cores,
+                                          precision,
+                                          used_cats, actual_nRatings, precision)
+
 
   return(res)
 }

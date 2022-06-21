@@ -1,8 +1,7 @@
-#' Pleskac and Busemeyer's 2DSD Model for Decision Confidence
+#' Drift Diffusion Model with time-dependent confidence
 #'
-#' Likelihood function and random number generator for a generalization of the
-#' 2DSD Model presented by Pleskac & Busemeyer (2010). It includes following
-#' parameters:
+#' Likelihood function and random number generator for the Drift Diffusion Model
+#' with confidence computet as decision time. It includes following parameters:
 #' DDM parameters: \code{a} (threshold separation), \code{z}
 #' (starting point; relative), \code{v} (drift rate), \code{t0} (non-decision time/
 #' response time constant), \code{d} (differences in speed of response execution),
@@ -10,9 +9,8 @@
 #' of non-decisional components), \code{sz} (inter-trial-variability of relative
 #' starting point), \code{s} (diffusion constant).
 #'
-#' For confidence: \code{tau} (post-decisional accumulation time), \code{omega}
-#' the exponent of judgment time for the division by judgment time in the confidence measure,
-#' \code{th1} and \code{th2} (lower and upper thresholds for confidence interval).
+#' For the confidence part: \code{th1} and \code{th2} (lower and upper
+#' thresholds for decition time interval).
 #'
 #' \strong{Note that the parameterization or defaults of non-decision time variability
 #' \code{st0} and diffusion constant \code{s} differ from what is often found in the
@@ -68,19 +66,10 @@
 #' process (i.e., within-trial variability), scales \code{a}, \code{v}, \code{sv},
 #' and \code{th}'s. Needs to be fixed to a constant in most applications. Default is 1.
 #' Note that the default used by Ratcliff and in other applications is often 0.1.
-#' @param tau post-decisional accumulation time. The length of the time period after the
-#' decision was made until the confidence judgment is made. Range: \code{tau}>0.
-#' Default: \code{tau}=1.
-#' @param omega power for judgement time in the division of the confidence measure
-#' by the judgment time (Default: 0, i.e. no division which is the version of
-#' 2DSD proposed by Pleskac and Busemeyer)
 #'
-#' @param  simult_conf logical. Whether in the experiment confidence was reported
-#' simultaneously with the decision, as then decision and confidence judgment are
-#' assumed to have happened subsequent before response and computations are different,
-#' when there is an observable interjudgment time (then simult_conf should be FALSE).
 #' @param precision \code{numerical} scalar value. Precision of calculation. Corresponds
-#' to the stepsize of integration w.r.t. z and t0. Default is 1e-5.
+#' to the stepsize of integration w.r.t. z. Default is 1e-5.
+#' @param st0stepsize numerical scalar value. Stepsize for integration over t0.
 #' @param z_absolute logical. Determines whether z is treated as absolute start point
 #' (TRUE) or relative (FALSE; default) to a.
 #' @param stop_on_error Should the diffusion functions return 0 if the parameters values
@@ -95,36 +84,33 @@
 #' process exceeds a decision time of `maxrt`, the `response` will be set to 0 and the `maxrt`
 #' will be returned as `rt`.
 #'
-#' @return \code{d2DSD} gives the density/likelihood/probability of the diffusion process
+#' @return \code{dDDMConf} gives the density/likelihood/probability of the diffusion process
 #' producing a decision of \code{response} at time \code{rt} and a confidence
 #' judgment corresponding to the interval \[ \code{th1}, \code{th2}\].
 #' The value will be a numeric vector of the same length as \code{rt}.
 #'
-#' \code{r2DSD} returns a `data.frame` with three columns and `n` rows. Column names are `rt` (response
-#' time), `response` (-1 (lower) or 1 (upper), indicating which bound was hit), and `conf` (the
-#' value of the confidence measure; not discretized!).
+#' \code{rDDMConf} returns a `data.frame` with three columns and `n` rows. Column names are `rt` (response
+#' time), `response` (-1 (lower) or 1 (upper), indicating which bound was hit),
+#' `conf` for the decision time (without non-decision time component; not discretized!).
 #'
-#' The distribution parameters (as well as \code{response}, \code{tau}, \code{th1}
+#' The distribution parameters (as well as \code{response}, \code{th1}
 #' and \code{th2}) are recycled to the length of the result. In other words, the functions
 #' are completely vectorized for all parameters and even the response boundary.
 #'
-#' @details The drift diffusion model (DDM; Ratcliff
+#' @details The Ratcliff diffusion model (Ratcliff
 #' and McKoon, 2008) is a mathematical model for two-choice discrimination tasks. It is
 #' based on the assumption that information is accumulated continuously until one of two
 #' decision thresholds is hit. For introduction see Ratcliff and McKoon (2008).
 #'
-#' The 2DSD is an extension of the DDM to explain confidence judgments based
-#' on the preceding decision. It assumes a post decisional period where the process
-#' continues the accumulation of information. At the end of the period a confidence
-#' judgment (i.e. a judgment of the probability that the decision was correct) is made
-#' based on the state of the process. Here, we use a given interval, given by \code{th1}
+#' This model incorporates the idea, that the decision time is informative for
+#' stimulus difficulty and thus confidence is computed as a monotone function
+#' of 1/sqrt(DecisionTime). In this implementation, confidence is the decision
+#' time, directly. Here, we use an interval, given by \code{th1}
 #' and \code{th2}, assuming that the data is given with discrete judgments and
 #' preprocessed, s.t. these discrete ratings are translated to the respective intervals.
-#' The 2DSD Model was proposed by Pleskac and Busemeyer (2010).
 #'
-#' All functions are fully vectorized across all parameters
-#' as well as the response to match the length or \code{rt} (i.e., the output
-#' is always of length equal to \code{rt}).
+#' All functions are fully vectorized across all parameters as well as the response to
+#' match the length or \code{rt} (i.e., the output is always of length equal to \code{rt}).
 #' This allows for trial wise parameters for each model parameter.
 #'
 #' For convenience, the function allows that the first argument is a \code{data.frame}
@@ -146,35 +132,34 @@
 #' The function code is basically an extension of the \code{ddiffusion} function from the
 #' package \code{rtdists} for the Ratcliff diffusion model.
 #'
-#' @references Pleskac, T. J., & Busemeyer, J. R. (2010). Two-Stage Dynamic Signal Detection: A Theory of Choice, Decision Time, and Confidence, \emph{Psychological Review}, 117(3), 864-901. doi:10.1037/a0019737
+#' @references Ratcliff, R., & McKoon, G. (2008). The diffusion decision model: Theory and data for two-choice decision tasks. \emph{Neural Computation}, 20(4), 873-922.
 #'
-#' Ratcliff, R., & McKoon, G. (2008). The diffusion decision model: Theory and data for two-choice decision tasks. \emph{Neural Computation}, 20(4), 873-922.
+#' Hellmann, S., Zehetleitner, M., & Rausch, M. (in press). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review}.
 #'
-#'
-#' @author For the original rtdists package: Underlying C code by Jochen Voss and Andreas Voss. Porting and R wrapping by Matthew Gretton, Andrew Heathcote, Scott Brown, and Henrik Singmann. \code{qdiffusion} by Henrik Singmann. For the d2DSD function the C code was extended by Sebastian Hellmann.
+#' @author For the original rtdists package: Underlying C code by Jochen Voss and Andreas Voss. Porting and R wrapping by Matthew Gretton, Andrew Heathcote, Scott Brown, and Henrik Singmann. \code{qdiffusion} by Henrik Singmann. For the dDDMConf function the C code was extended by Sebastian Hellmann.
 #'
 #' @useDynLib dynConfiR, .registration = TRUE
 #'
-#' @name d2DSD
-#' @aliases 2DSD two-stage r2DSD
+#' @name dDDMConf
+#' @aliases DDMConf rDDMConf
 #' @importFrom Rcpp evalCpp
 #'
 #' @examples
 #' # Plot rt distribution ignoring confidence
-#' curve(d2DSD(x, "upper", -Inf, Inf, tau=1, a=2, v=0.4, sz=0.2, sv=0.9), xlim=c(0, 2), lty=2)
-#' curve(d2DSD(x, "lower", -Inf, Inf, tau=1, a=2, v=0.4, sz=0.2, sv=0.9), col="red", lty=2, add=TRUE)
-#' curve(d2DSD(x, "upper", -Inf, Inf, tau=1, a=2, v=0.4),add=TRUE)
-#' curve(d2DSD(x, "lower", -Inf, Inf, tau=1, a=2, v=0.4), col="red", add=TRUE)
+#' curve(dDDMConf(x, "upper", 0, Inf, a=2, v=0.4, sz=0.2, sv=0.9), xlim=c(0, 2), lty=2)
+#' curve(dDDMConf(x, "lower", 0, Inf, a=2, v=0.4, sz=0.2, sv=0.9), col="red", lty=2, add=TRUE)
+#' curve(dDDMConf(x, "upper", 0, Inf, a=2, v=0.4),add=TRUE)
+#' curve(dDDMConf(x, "lower", 0, Inf, a=2, v=0.4), col="red", add=TRUE)
 #' # Generate a random sample
-#' dfu <- r2DSD(5000, a=2,v=0.5,t0=0,z=0.5,d=0,sz=0,sv=0, st0=0,  tau=1, s=1)
+#' dfu <- rDDMConf(5000, a=2,v=0.5,t0=0,z=0.5,d=0,sz=0,sv=0, st0=2, s=1)
 #' # Same RT distribution but upper and lower responses changed
-#' dfl <- r2DSD(50, a=2,v=-0.5,t0=0,z=0.5,d=0,sz=0,sv=0, st0=0,  tau=1, s=1)
+#' dfl <- rDDMConf(50, a=2,v=-0.5,t0=0,z=0.5,d=0,sz=0,sv=0, st0=2, s=1)
 #' head(dfu)
 #'
-#' d2DSD(dfu, th1=-Inf, th2=Inf, a=2, v=.5)[1:5]
+#' dDDMConf(dfu, th1=0.5, th2=2.5, a=2, v=.5, st0=2)[1:5]
 #' # Scaling diffusion parameters leads do same density values
 #' s <- 2
-#' d2DSD(dfu, th1=-Inf, th2=Inf, a=2*s, v=.5*s, s=2)[1:5]
+#' dDDMConf(dfu, th1=0.5, th2=2.5, a=2*s, v=.5*s, s=2, st0=2)[1:5]
 #' if (requireNamespace("ggplot2", quietly = TRUE)) {
 #'   require(ggplot2)
 #'   ggplot(dfu, aes(x=rt, y=conf))+
@@ -185,22 +170,21 @@
 #'
 #' # Restricting to specific confidence region
 #' dfu <- dfu[dfu$conf >0 & dfu$conf <1,]
-#' d2DSD(dfu, th1=0, th2=1, a=2, v=0.5)[1:5]
+#' dDDMConf(dfu, th1=0, th2=1, a=2, v=0.5, st0=2)[1:5]
 #'
 #' # If lower confidence threshold is higher than the upper, the function throws an error,
 #' # except when stop_on_error is FALSE
-#' d2DSD(dfu[1:5,], th1=1, th2=0, a=2, v=0.5, stop_on_error = FALSE)
+#' dDDMConf(dfu[1:5,], th1=1, th2=0, a=2, v=0.5, stop_on_error = FALSE)
 #'
 
 
 
 
-#' @rdname d2DSD
+#' @rdname dDDMConf
 #' @export
-d2DSD <- function (rt, response="upper", th1,th2,tau=1,a,v,t0=0,z=0.5,
-                   d=0,sz=0,sv=0, st0=0,omega=0, s=1,
-                   simult_conf=FALSE, precision=1e-5, z_absolute = FALSE,
-                   stop_on_error=TRUE, stop_on_zero = FALSE)
+dDDMConf <- function (rt, response="upper", th1,th2, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, st0=1,s=1,
+                   precision=1e-5, z_absolute = FALSE,
+                   stop_on_error=TRUE, stop_on_zero = FALSE, st0stepsize=0.001)
 {
   # for convenience accept data.frame as first argument.
   if (is.data.frame(rt)) {
@@ -210,56 +194,50 @@ d2DSD <- function (rt, response="upper", th1,th2,tau=1,a,v,t0=0,z=0.5,
 
   nn <- length(rt)
 
-  pars <- prepare_2DSD_parameter(response = response,
+  pars <- prepare_DDMConf_parameter(response = response,
                                  a = a, v = v, t0 = t0, z = z,
                                  d = d, sz = sz, sv = sv, st0 = st0,
-                                 tau=tau, th1=th1, th2=th2,
-                                 omega=omega, s = s, nn = nn, z_absolute = z_absolute,
+                                 th1=th1, th2=th2,
+                                 s = s, nn = nn, z_absolute = z_absolute,
                                  stop_on_error = stop_on_error)
 
   densities <- vector("numeric",length=nn)
   for (i in seq_len(length(pars$parameter_indices))) {
     ok_rows <- pars$parameter_indices[[i]]
-    if (simult_conf) {
-      # if confidence and decision are given simultaneously, subtract tau from rt
-      # because both processes are assumed to happen subsequentially and therefore
-      # observable response time is the sum of decision time, inter-judgment time
-      # and non-decision component
-      rt[ok_rows] <- rt[ok_rows]-pars$params[ok_rows[1],9]
-    }
-    densities[ok_rows] <- d_2DSD (rt[ok_rows],
-                                  pars$params[ok_rows[1],1:12],
+
+    densities[ok_rows] <- d_DDMConf (rt[ok_rows],
+                                  pars$params[ok_rows[1],1:10],
                                   precision,
-                                  pars$params[ok_rows[1],13],
-                                  stop_on_error, as.numeric(stop_on_zero))
+                                  pars$params[ok_rows[1],11],
+                                  stop_on_error, stop_on_zero,
+                                  st0stepsize)
+    if (stop_on_zero) {
+      if (densities[ok_rows[length(ok_rows)]] == 0) return(abs(densities))
+    }
   }
   abs(densities)
 }
 
-#' @rdname d2DSD
+#' @rdname dDDMConf
 #' @export
-r2DSD <- function (n, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, st0=0,
-                   tau=1, omega=0, s=1, delta=0.01, maxrt=15, simult_conf = FALSE,
+rDDMConf <- function (n, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, st0=2,
+                    s=1, delta=0.01, maxrt=15,
                    z_absolute = FALSE,  stop_on_error=TRUE)
 {
   if (any(missing(a), missing(v))) stop("a and v must be supplied")
 
-  pars <- prepare_2DSD_parameter(response = 1L,
+  pars <- prepare_DDMConf_parameter(response = 1L,
                                  a = a, v = v, t0 = t0, z = z,
                                  d = d, sz = sz, sv = sv, st0 = st0,
-                                 tau=tau, th1=0, th2=1,
-                                 omega=omega,
+                                 th1=0, th2=1,
                                  s = s, nn = n, z_absolute = z_absolute,
                                  stop_on_error = stop_on_error)
   res <- matrix(NA, nrow=n, ncol=3)
   for (i in seq_len(length(pars$parameter_indices))) {
     ok_rows <- pars$parameter_indices[[i]]
     current_n <- length(ok_rows)
-    out <- r_WEV(current_n, pars$params[ok_rows[1], 1:12],
-                 model=1, delta = delta, maxT =maxrt, stop_on_error)
-    if (simult_conf) {
-      out[1,] <- out[1,] + pars$params[ok_rows[1], 9]
-    }
+    out <- r_DDMConf(current_n, pars$params[ok_rows[1], 1:8],
+                delta = delta, maxT =maxrt, stop_on_error)
     res[ok_rows,] <- out
   }
 
@@ -270,18 +248,17 @@ r2DSD <- function (n, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, st0=0,
 
 
 
-
-
 ## Function to dynamical unload the .dll file
 .onUnload <- function (libpath) {
   library.dynam.unload("dynConfiR", libpath)
 }
 
 
-prepare_2DSD_parameter <- function(response,
+
+prepare_DDMConf_parameter <- function(response,
                                    a, v, t0, z, d,
-                                   sz, sv, st0, tau, th1, th2, omega,s,
-                                    nn,
+                                   sz, sv, st0, th1, th2, s,
+                                   nn,
                                    z_absolute = FALSE,
                                    stop_on_error) {
   if(any(missing(a), missing(v))) stop("a and v must be supplied")
@@ -294,10 +271,8 @@ prepare_2DSD_parameter <- function(response,
        (length(sz) == 1) &
        (length(sv) == 1) &
        (length(st0) == 1)&
-       (length(tau) ==1) &
        (length(th1) ==1) &
-       (length(th2) ==1)&
-       (length(omega) == 1)) {
+       (length(th2) ==1)) {
     skip_checks <- TRUE
   } else {
     skip_checks <- FALSE
@@ -311,8 +286,7 @@ prepare_2DSD_parameter <- function(response,
   if (is.character(response)) {
     response <- match.arg(response, choices=c("upper", "lower"),several.ok = TRUE)
     numeric_bounds <- ifelse(response == "upper", 2L, 1L)
-  }
-  else {
+  } else {
     response <- as.numeric(response)
     if (any(!(response %in% 1:2)))
       stop("response needs to be either 'upper', 'lower', or as.numeric(response) %in% 1:2!")
@@ -331,12 +305,10 @@ prepare_2DSD_parameter <- function(response,
     sz <- rep(sz, length.out = nn)
     sv <- rep(sv, length.out = nn)
     st0 <- rep(st0, length.out = nn)
-    tau <- rep(tau, length.out = nn)
     th1 <- rep(th1, length.out = nn)
     th2 <- rep(th2, length.out = nn)
-    omega <- rep(omega, length.out = nn)
   }
-  th1[th1==-Inf] <- - .Machine$double.xmax
+  th1[th1<0] <- 0
   th2[th2==Inf] <- .Machine$double.xmax
 
   if (z_absolute) {
@@ -346,10 +318,10 @@ prepare_2DSD_parameter <- function(response,
   t0 <- recalc_t0 (t0, st0)
 
   # Build parameter matrix (and divide a, v, sv, and th's by s)
-  params <- cbind (a/s, v/s, t0, d, sz, sv/s, st0, z, tau, th1/s, th2/s, omega, numeric_bounds)
+  params <- cbind (a/s, v/s, t0, d, sz, sv/s, st0, z, th1, th2, numeric_bounds)
 
   # Check for illegal parameter values
-  if(ncol(params)<13) stop("Not enough parameters supplied: probable attempt to pass NULL values?")
+  if(ncol(params)<11) stop("Not enough parameters supplied: probable attempt to pass NULL values?")
   if(!is.numeric(params)) stop("Parameters need to be numeric.")
   if (any(is.na(params)) || !all(is.finite(params))) {
     if (stop_on_error) stop("Parameters need to be numeric and finite.")
@@ -378,3 +350,4 @@ prepare_2DSD_parameter <- function(response,
     , parameter_indices = parameter_indices
   )
 }
+

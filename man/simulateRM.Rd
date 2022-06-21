@@ -69,7 +69,7 @@ information).
 \description{
 Simulates the decision responses, reaction times and state of the loosing accumulator
 together with a discrete confidence judgment  in the independent and partially anti-correlated
-race model (IRM and PCRM) (Hellmann et al., preprint), given specific parameter constellations.
+race model (IRM and PCRM) (Hellmann et al., in press), given specific parameter constellations.
 See \link{RaceModels} for more information about
 parameters. Also computes the Gamma rank correlation between the confidence
 ratings and condition (task difficulty), reaction times and accuracy in the
@@ -138,8 +138,7 @@ head(agg_simus)
 
 }
 \references{
-Hellmann, S., Zehetleitner, M., & Rausch, M. (preprint). Simultaneous modeling of choice,
-confidence and response time in visual perception. https://osf.io/9jfqr/
+Hellmann, S., Zehetleitner, M., & Rausch, M. (in press). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review}. https://osf.io/9jfqr/
 
 Kiani, R., Corthell, L., & Shadlen, M.N. (2014) Choice certainty is informed
 by both evidence and decision time.

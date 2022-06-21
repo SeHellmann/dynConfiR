@@ -4,7 +4,7 @@ fitting2DSD <- function(df, nConds, nRatings, fixed, sym_thetas,
                         useparallel, n.cores,
                         restr_tau, precision,
                         used_cats, actual_nRatings){
-  ## Be sure that the parallel cluster is stopped if anything happens (error or user interupt)
+  ## Be sure that the parallel cluster is stopped if anything happens (error or user interrupt)
   on.exit(try(stopCluster(cl), silent = TRUE))
   ## Set restrictions on tau
   mint0 <-  min(df$rt)
@@ -33,12 +33,12 @@ fitting2DSD <- function(df, nConds, nRatings, fixed, sym_thetas,
                              vmin = c(0.01, 0.1),
                              vmax = c(1.4, 2.5, 3.7, 5),
                              sv = c(0.01, 0.8, 1.5),
-                             z = c(0.3,0.5, 0.7),
+                             z = sum((df$response==1)*df$n)/sum(df$n),
                              sz = c(0.01, 0.4),
                              t0 = c(max(mint0-0.2, 0.05), max(min(mint0-0.1,0.2),mint0/2)),
                              st0 = c(0.1, 0.3, 0.7),
-                             theta0 = seq(-5,  3,length.out = 6), #theta0 = seq(0.2, 1.5,length.out = 3),
-                             thetamax = seq(-1, 5,length.out = 6), #thetamax = seq(1.6, 2.5,length.out = 3),
+                             # theta0 = seq(-5,  3,length.out = 6), #theta0 = seq(0.2, 1.5,length.out = 3),
+                             # thetamax = seq(-1, 5,length.out = 6), #thetamax = seq(1.6, 2.5,length.out = 3),
                              tau = tau)
   }
   if (simult_conf) {
@@ -46,9 +46,9 @@ fitting2DSD <- function(df, nConds, nRatings, fixed, sym_thetas,
   }
   # Remove columns for fixed parameters
   init_grid <- init_grid[setdiff(names(init_grid), names(fixed))]
-  thetamax <- NULL # to omit a note because of an unbound variable
-  theta0 <- NULL # to omit a note because of an unbound variable
-  init_grid <- subset(init_grid, thetamax > theta0)
+  # thetamax <- NULL # to omit a note because of an unbound variable
+  # theta0 <- NULL # to omit a note because of an unbound variable
+  # init_grid <- filter(init_grid, thetamax > theta0)
   init_grid <- unique(init_grid)
 
   ### If no grid-search is desired use mean of possible parameters #
@@ -56,19 +56,64 @@ fitting2DSD <- function(df, nConds, nRatings, fixed, sym_thetas,
     init_grid <- as.data.frame(as.list(colMeans(init_grid)))
   }
 
-  #### 1.1. For Nelder-Mead transform all parameters to real values ####
+  ##### span drifts with quadratic distance
+  ###  We assume a different V (mean drift rate) for the different conditions --> nConds parameters
+  if (nConds==1) {
+    init_grid$v1 <- (init_grid$vmin+init_grid$vmax)/2
+  } else {
+    for (i in 0:(nConds-1)){
+      init_grid[paste("v", i+1, sep="")] <- init_grid$vmin+(i/(nConds-1))^2*(init_grid$vmax-init_grid$vmin)
+    }
+  }
+  ## Guess suitable confidence thresholds from theoretical distribution of
+  ## the confidence measure and proportion of ratings in the data
+
+  conf_probs <- cumsum(table(df$rating))
+  conf_probs <- conf_probs[1:(nRatings-1)]/conf_probs[nRatings]
+  df$correct <- as.numeric(df$stimulus == df$response)
+  MRT <- aggregate(rt~condition+correct, df, mean)
+  p_corrects <- aggregate(correct~condition, df, mean)[['correct']]
+
+  get_start_thetas <- function(paramRow) {
+    paramRow <- c(paramRow, unlist(fixed, use.names = TRUE))
+    v <- c(t(paramRow[paste("v", 1:nConds, sep="")]))
+    MRT_corr <- (filter(MRT, .data$correct==1)$rt-paramRow['t0']-paramRow['st0']/2)
+    MRT_false <- (filter(MRT, .data$correct==0)$rt-paramRow['t0']-paramRow['st0']/2)
+
+    if (simult_conf) {
+      MRT_corr <- MRT_corr -paramRow['tau']
+      MRT_false <- MRT_false -paramRow['tau']
+    }
+    Mconf_corr = -(paramRow['tau']*(-paramRow['a']*paramRow['z']*paramRow['sv']^2-v)/
+      (1+paramRow['sv']^2*MRT_corr) - paramRow['a']*paramRow['z'])
+    Mconf_false = paramRow['tau']*(-paramRow['a']*(1-paramRow['z'])*paramRow['sv']^2+v)/
+      (1+paramRow['sv']^2*MRT_false) - paramRow['a']*(1-paramRow['z'])
+    VRconf = paramRow['tau'] + (paramRow['sv']^2*paramRow['tau']^2)/
+      (1+paramRow['sv']^2*sum(p_corrects*MRT_corr+(1-p_corrects)*MRT_false)/nConds)
+    mixcdf <- function(conf) 1/nConds * sum(p_corrects* pnorm(conf, mean=Mconf_corr, sd=sqrt(VRconf))+
+                                              (1-p_corrects)*pnorm(conf, mean=Mconf_false, sd=sqrt(VRconf)))
+    thetas <- NULL
+    for (i in 1:length(conf_probs)) {
+      thetas[i] <- stats::optimize(function(conf) (mixcdf(conf)-conf_probs[i])^2,
+                            lower=min(Mconf_false,Mconf_corr)- 4*VRconf,
+                            upper=max(Mconf_false,Mconf_corr)+ 4*VRconf)$minimum
+    }
+    c(thetas[1],diff(thetas))
+  }
+  init_thetas <- apply(init_grid, FUN=get_start_thetas, MARGIN=1) #, simplify = TRUE
+  init_thetas <- t(init_thetas)
+
+
+
+  #### For Nelder-Mead transform all parameters to real values ####
   if (optim_method=="Nelder-Mead") {
     ## change parametrization (should be on the whole real line) and
-    #  span V-parameters between vmin and vmax equidistantly for all conditions
     inits <- data.frame(matrix(data=NA, nrow= nrow(init_grid),
                                ncol = nConds))
-    for (i in 0:(nConds-1)){
-      if (nConds == 1) {
-        inits[,1] <- log((init_grid$vmin+init_grid$vmax)/2)
-      } else {
-        inits[,1+i] <- log(init_grid$vmin+(i/(nConds-1))^2*(init_grid$vmax-init_grid$vmin)) ###  We assume a different V (mean drift rate) for the different conditions --> nConds parameters
-      }
+    for (i in 1:nConds){
+        inits[,i] <- log(init_grid[[paste("v", i, sep="")]])
     }
+
     if (!("a" %in% names(fixed))) inits <- cbind(inits, log(init_grid$a))
     if (!("sv" %in% names(fixed))) inits <-  cbind(inits, log(init_grid$sv)) # one SV (SD of drift rate) for all the different conditions
     if (!("z" %in% names(fixed))) inits <- cbind(inits, qnorm(init_grid$z))
@@ -82,18 +127,15 @@ fitting2DSD <- function(df, nConds, nRatings, fixed, sym_thetas,
         inits <- cbind(inits, qnorm(init_grid$tau / restr_tau))
       }
     }
-    inits <- cbind(inits, init_grid$theta0)
+
+    inits <- cbind(inits, init_thetas[,1])
     if (nRatings > 2) {
-      for (i in 1:(nRatings-2)) {
-        inits <- cbind(inits, log((init_grid$thetamax-init_grid$theta0)/(nRatings-2)))
-      }
+      inits <- cbind(inits, log(init_thetas[,-1]))
     }
     if (!sym_thetas) {
       inits <- cbind(inits, init_grid$theta0)
       if (nRatings > 2) {
-        for (i in 1:(nRatings-2)) {
-          inits <- cbind(inits, log((init_grid$thetamax-init_grid$theta0)/(nRatings-2)))
-        }
+        inits <- cbind(inits, log(init_thetas[,-1]))
       }
       cols_theta <- c('thetaLower1', rep(paste("dthetaLower", 2:(nRatings-1), sep=""), times=nRatings>2),
                       'thetaUpper1', rep(paste("dthetaUpper", 2:(nRatings-1), sep=""), times=nRatings>2))
@@ -107,30 +149,21 @@ fitting2DSD <- function(df, nConds, nRatings, fixed, sym_thetas,
     names(inits) <- setdiff(parnames, names(fixed))
 
   } else {
-    ##### 1.2. For box-constraint optimisation algorithm span drifts and thresholds equidistantly
-    if (nConds==1) {
-      init_grid$v1 <- (init_grid$vmin+init_grid$vmax)/2
-    } else {
-      for (i in 0:(nConds-1)){
-        init_grid[paste("v", i+1, sep="")] <- init_grid$vmin+(i/(nConds-1))^2*(init_grid$vmax-init_grid$vmin)
-      }
-    }
-
     if (sym_thetas) {
-      init_grid["theta1"] <- init_grid$theta0
+      init_grid["theta1"] <- init_thetas[,1]
       if (nRatings > 2) {
         for (i in 2:(nRatings-1)) {
-          init_grid[paste("dtheta", i, sep="")] <- (init_grid$thetamax-init_grid$theta0)/(nRatings-2)
+          init_grid[paste("dtheta", i, sep="")] <- init_thetas[,i]
         }
         cols_theta <- c("theta1", paste("dtheta", 2:(nRatings-1), sep=""))
       } else {
         cols_theta <- c("theta1")
       }
     } else {
-      init_grid[c("thetaUpper1", "thetaLower1")] <- init_grid$theta0
+      init_grid[c("thetaUpper1", "thetaLower1")] <- init_thetas[,1]
       if (nRatings > 2) {
         for (i in 2:(nRatings-1)) {
-          init_grid[paste(c("dthetaUpper", "dthetaLower"), i, sep="")] <- (init_grid$thetamax-init_grid$theta0)/(nRatings-2)
+          init_grid[paste(c("dthetaUpper", "dthetaLower"), i, sep="")] <-  init_thetas[,i]
         }
         cols_theta <- c('thetaLower1', paste("dthetaLower", 2:(nRatings-1), sep=""),
                         'thetaUpper1', paste("dthetaUpper", 2:(nRatings-1), sep=""))

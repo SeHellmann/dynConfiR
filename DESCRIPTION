@@ -1,5 +1,5 @@
-Package: dynConfiR
 Type: Package
+Package: dynConfiR
 Title: Dynamic Models for Confidence and Response Time Distributions
 Depends: R (>= 4.0)
 Encoding: UTF-8
@@ -29,16 +29,16 @@ Authors@R: c(person(given="Sebastian", family="Hellmann",
        email="sebastian.hellmann@ku.de", role=c("aut", "cre"), 
        comment=c(ORCID="0000-0002-3621-6343")),
        person(given="Manuel", family="Rausch", 
-       email="manuel.rausch@ku.de", role=c("ctb", "fnd"),
+       email="manuel.rausch@ku.de", role=c("aut", "fnd"),
        comment=c(ORCID="0000-0002-5805-5544")))
-Version: 0.0.1
+Version: 0.0.2
 NeedsCompilation: yes
-Packaged: 2022-05-13
+Packaged: 2022-12-01
 Maintainer: Sebastian Hellmann <sebastian.hellmann@ku.de>
 Repository: CRAN
 Date/Publication: 2022-05-16 
 Roxygen: list(old_usage = TRUE, markdown=TRUE)
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.0
 Config/testthat/edition: 3
 LazyData: true
 VignetteBuilder: knitr

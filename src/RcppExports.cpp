@@ -56,6 +56,20 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// d_IRM2
+NumericVector d_IRM2(NumericVector rts, NumericVector params, int win, double step_width);
+RcppExport SEXP _dynConfiR_d_IRM2(SEXP rtsSEXP, SEXP paramsSEXP, SEXP winSEXP, SEXP step_widthSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type rts(rtsSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< int >::type win(winSEXP);
+    Rcpp::traits::input_parameter< double >::type step_width(step_widthSEXP);
+    rcpp_result_gen = Rcpp::wrap(d_IRM2(rts, params, win, step_width));
+    return rcpp_result_gen;
+END_RCPP
+}
 // d_PCRM
 NumericVector d_PCRM(NumericVector rts, NumericVector params, int win, double step_width);
 RcppExport SEXP _dynConfiR_d_PCRM(SEXP rtsSEXP, SEXP paramsSEXP, SEXP winSEXP, SEXP step_widthSEXP) {
@@ -115,7 +129,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // r_WEV
-NumericVector r_WEV(int n, NumericVector params, int model, double delta, double maxT, bool stop_on_error);
+NumericMatrix r_WEV(int n, NumericVector params, int model, double delta, double maxT, bool stop_on_error);
 RcppExport SEXP _dynConfiR_r_WEV(SEXP nSEXP, SEXP paramsSEXP, SEXP modelSEXP, SEXP deltaSEXP, SEXP maxTSEXP, SEXP stop_on_errorSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -160,11 +174,44 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// d_DDMConf
+NumericVector d_DDMConf(NumericVector rts, NumericVector params, double precision, int boundary, bool stop_on_error, bool stop_on_zero, double st0precision);
+RcppExport SEXP _dynConfiR_d_DDMConf(SEXP rtsSEXP, SEXP paramsSEXP, SEXP precisionSEXP, SEXP boundarySEXP, SEXP stop_on_errorSEXP, SEXP stop_on_zeroSEXP, SEXP st0precisionSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type rts(rtsSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< double >::type precision(precisionSEXP);
+    Rcpp::traits::input_parameter< int >::type boundary(boundarySEXP);
+    Rcpp::traits::input_parameter< bool >::type stop_on_error(stop_on_errorSEXP);
+    Rcpp::traits::input_parameter< bool >::type stop_on_zero(stop_on_zeroSEXP);
+    Rcpp::traits::input_parameter< double >::type st0precision(st0precisionSEXP);
+    rcpp_result_gen = Rcpp::wrap(d_DDMConf(rts, params, precision, boundary, stop_on_error, stop_on_zero, st0precision));
+    return rcpp_result_gen;
+END_RCPP
+}
+// r_DDMConf
+NumericVector r_DDMConf(int n, NumericVector params, double delta, double maxT, bool stop_on_error);
+RcppExport SEXP _dynConfiR_r_DDMConf(SEXP nSEXP, SEXP paramsSEXP, SEXP deltaSEXP, SEXP maxTSEXP, SEXP stop_on_errorSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< double >::type delta(deltaSEXP);
+    Rcpp::traits::input_parameter< double >::type maxT(maxTSEXP);
+    Rcpp::traits::input_parameter< bool >::type stop_on_error(stop_on_errorSEXP);
+    rcpp_result_gen = Rcpp::wrap(r_DDMConf(n, params, delta, maxT, stop_on_error));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_dynConfiR_d_2DSD", (DL_FUNC) &_dynConfiR_d_2DSD, 6},
     {"_dynConfiR_d_WEVmu", (DL_FUNC) &_dynConfiR_d_WEVmu, 6},
     {"_dynConfiR_d_IRM", (DL_FUNC) &_dynConfiR_d_IRM, 4},
+    {"_dynConfiR_d_IRM2", (DL_FUNC) &_dynConfiR_d_IRM2, 4},
     {"_dynConfiR_d_PCRM", (DL_FUNC) &_dynConfiR_d_PCRM, 4},
     {"_dynConfiR_dd_IRM", (DL_FUNC) &_dynConfiR_dd_IRM, 5},
     {"_dynConfiR_dd_PCRM", (DL_FUNC) &_dynConfiR_dd_PCRM, 4},
@@ -172,6 +219,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_dynConfiR_r_WEV", (DL_FUNC) &_dynConfiR_r_WEV, 6},
     {"_dynConfiR_r_RM_Kiani", (DL_FUNC) &_dynConfiR_r_RM_Kiani, 6},
     {"_dynConfiR_r_LCA", (DL_FUNC) &_dynConfiR_r_LCA, 4},
+    {"_dynConfiR_d_DDMConf", (DL_FUNC) &_dynConfiR_d_DDMConf, 7},
+    {"_dynConfiR_r_DDMConf", (DL_FUNC) &_dynConfiR_r_DDMConf, 5},
     {NULL, NULL, 0}
 };
 

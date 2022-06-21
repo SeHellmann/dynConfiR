@@ -23,3 +23,5 @@ CRAN_Checks.RData
 ^CRAN-SUBMISSION$
 cran_prep.RData
 tests/testthat/comparePackageRaceModelsToSimus.R
+tests/testthat/comparePackageDDMModelsToSimus.R
+Spielplatz

@@ -1,7 +1,7 @@
 #' Dynamical weighted evidence and visibility model (dynWEV)
 #'
 #' Likelihood function and random number generator for the dynWEV model
-#' (Hellmann et al., preprint).
+#' (Hellmann et al., in press).
 #' It includes following parameters from the drift diffusion model:
 #' \code{a} (threshold separation),
 #' \code{z} (starting point; relative),
@@ -17,7 +17,8 @@
 #' \code{w} (weight on the decision evidence (weight on visibility is (1-w))),
 #' \code{muvis} (mean drift rate of visibility process),
 #' \code{svis} (diffusion constant of visibility process),
-#' \code{sigvis} (variability in drift rate of visibility accumulator), and
+#' \code{sigvis} (variability in drift rate of visibility accumulator),
+#' \code{omega} the exponent of judgment time for the division by judgment time in the confidence measure, and
 #' \code{th1} and \code{th2} (lower and upper thresholds for confidence interval).
 #'  \strong{Note that the parametrization or defaults of non-decision time variability
 #'  \code{st0} and diffusion constant \code{s} differ from what is often found in the literature.}
@@ -76,6 +77,9 @@
 #' @param svis diffusion constant of visibility process. Range: \code{svis}>0. Default: \code{svis}=1.
 #' @param sigvis the variability in drift rate of the visibility process (which varies independently
 #' from the drift rate in decision process). Range: \code{sigvis}>=0. Default: \code{sigvis}=0.
+#' @param omega power for judgement time in the division of the confidence measure
+#' by the judgment time (Default: 0, i.e. no division which is the version of
+#' dynWEV proposed by Hellmann et al.)
 #'
 #' @param  simult_conf logical. Whether in the experiment confidence was reported simultaneously
 #' with the decision. If that is the case decision and confidence judgment are assumed to have happened
@@ -114,7 +118,7 @@
 #' diffusion model with two additional assumptions to account for confidence. First, there is a
 #' post-decisional period of further evidence accumulation `tau`. Second, another accumulation process
 #' accrues information about stimulus reliability (the visibility process) including also evidence
-#' about decision irrelevant features. See Hellmann et al. (preprint) for more information.
+#' about decision irrelevant features. See Hellmann et al. (in press) for more information.
 #' The measure for confidence is then a weighted sum of the final state of the decision process X
 #' and the visibility process V, i.e. for a decision time T (which is not the response time),
 #' the confidence measure is
@@ -142,8 +146,7 @@
 #' The function code is basically an extension of the \code{ddiffusion} function from the
 #' package \code{rtdists} for the Ratcliff diffusion model.
 #'
-#' @references Hellmann, S., Zehetleitner, M., & Rausch, M. (preprint). Simultaneous modeling of choice,
-#' confidence and response time in visual perception. https://osf.io/9jfqr/
+#' @references Hellmann, S., Zehetleitner, M., & Rausch, M. (in press). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review}. https://osf.io/9jfqr/
 #'
 #' @author Sebastian Hellmann
 #'
@@ -204,7 +207,7 @@
 #' @export
 dWEV <- function (rt, response="upper", th1,th2, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, st0=0,
                   tau=1, w=0.5, muvis=NULL, sigvis=0, svis=1,
-                  s=1, simult_conf = FALSE, precision=1e-5, z_absolute = FALSE,
+                  omega = 0, s=1,  simult_conf = FALSE, precision=1e-5, z_absolute = FALSE,
                   stop_on_error=TRUE, stop_on_zero=FALSE)
 {
   # for convenience accept data.frame as first argument.
@@ -222,6 +225,7 @@ dWEV <- function (rt, response="upper", th1,th2, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, s
                                 d = d, sz = sz, sv = sv, st0 = st0,
                                 tau=tau, th1=th1, th2=th2,
                                 w=w, muvis=muvis, svis=svis,sigvis=sigvis,
+                                omega=omega,
                                 s = s, nn = nn, z_absolute = z_absolute,
                                 stop_on_error = stop_on_error)
 
@@ -236,9 +240,9 @@ dWEV <- function (rt, response="upper", th1,th2, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, s
       rt[ok_rows] <- rt[ok_rows]-pars$params[ok_rows[1],9]
     }
     densities[ok_rows] <- d_WEVmu (rt[ok_rows],
-                                   pars$params[ok_rows[1],1:15],
+                                   pars$params[ok_rows[1],1:16],
                                    precision,
-                                   pars$params[ok_rows[1],16],
+                                   pars$params[ok_rows[1],17],
                                    stop_on_error, as.numeric(stop_on_zero))
   }
   abs(densities)
@@ -249,7 +253,7 @@ dWEV <- function (rt, response="upper", th1,th2, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, s
 #' @export
 rWEV <- function (n, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, st0=0,
                   tau=1, w=0.5, muvis=NULL, sigvis=0, svis=1,
-                  s=1, delta=0.01, maxrt=15, simult_conf = FALSE,
+                  omega=0, s=1, delta=0.01, maxrt=15, simult_conf = FALSE,
                   z_absolute = FALSE,  stop_on_error=TRUE)
 {
   if (is.null(muvis)) muvis <- abs(v)
@@ -260,13 +264,14 @@ rWEV <- function (n, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, st0=0,
                                 d = d, sz = sz, sv = sv, st0 = st0,
                                 tau=tau, th1=0, th2=1,
                                 w=w, muvis=muvis, svis=svis,sigvis=sigvis,
+                                omega=omega,
                                 s = s, nn = n, z_absolute = z_absolute,
                                 stop_on_error = stop_on_error)
   res <- matrix(NA, nrow=n, ncol=3)
   for (i in seq_len(length(pars$parameter_indices))) {
     ok_rows <- pars$parameter_indices[[i]]
     current_n <- length(ok_rows)
-    out <- r_WEV(current_n, pars$params[ok_rows[1], 1:15],
+    out <- r_WEV(current_n, pars$params[ok_rows[1], 1:16],
                  model=2, delta = delta, maxT =maxrt, stop_on_error)
     out[,3] <- out[,3]/pars$params[ok_rows[1], 11]  # multiply by s (diffusion constant)
     if (simult_conf) {
@@ -281,14 +286,13 @@ rWEV <- function (n, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, st0=0,
 }
 
 
-
-
-
 recalc_t0 <- function (t0, st0) { t0 <- t0 + st0/2 }
 
 prepare_WEV_parameter <- function(response,
                                   a, v, t0, z, d,
-                                  sz, sv, st0, tau, th1, th2, w, muvis, svis, sigvis,
+                                  sz, sv, st0, tau, th1, th2,
+                                  w, muvis, svis, sigvis,
+                                  omega,
                                   s, nn,
                                   z_absolute = FALSE,
                                   stop_on_error) {
@@ -308,7 +312,8 @@ prepare_WEV_parameter <- function(response,
        (length(muvis) ==1) &
        (length(svis) ==1) &
        (length(w) == 1) &
-       (length(sigvis) == 1)) {
+       (length(sigvis) == 1)&
+       (length(omega) == 1)) {
     skip_checks <- TRUE
   } else {
     skip_checks <- FALSE
@@ -349,6 +354,7 @@ prepare_WEV_parameter <- function(response,
     svis <- rep(svis, length.out = nn)
     muvis <- rep(muvis, length.out = nn)
     sigvis <- rep(sigvis, length.out = nn)
+    omega <- rep(omega, length.out = nn)
   }
   th1[th1==-Inf] <- - .Machine$double.xmax
   th2[th2==Inf] <- .Machine$double.xmax
@@ -362,10 +368,10 @@ prepare_WEV_parameter <- function(response,
   # Build parameter matrix (and divide a, v, sv, sigvis and by s )
 
   params <- cbind (a/s, v/s, t0, d, sz, sv/s, st0, z,
-                   tau, th1/s, th2/s, w, muvis/s, sigvis/s, svis/s, numeric_bounds)
+                   tau, th1/s, th2/s, omega, w, muvis/s, sigvis/s, svis/s, numeric_bounds)
 
   # Check for illegal parameter values
-  if(ncol(params)<16) stop("Not enough parameters supplied: probable attempt to pass NULL values?")
+  if(ncol(params)<17) stop("Not enough parameters supplied: probable attempt to pass NULL values?")
   if(!is.numeric(params)) stop("Parameters need to be numeric.")
   if (any(is.na(params)) || !all(is.finite(params))) {
     if (stop_on_error) stop("Parameters need to be numeric and finite.")

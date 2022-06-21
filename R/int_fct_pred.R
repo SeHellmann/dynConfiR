@@ -13,12 +13,13 @@ preddist <- function(row, thetas_lower, thetas_upper, paramDf,V, SV, model, simu
   # }
 
 
-  integrand <- with(paramDf, switch(which(model== c("dynWEV", "2DSD")),
+  integrand <- with(paramDf, switch(which(model== c("dynWEV",  "2DSD")),
                                     function(t) return(dWEV(t, vth1,vth2,
                                                                   response=as.character(row$response), tau=tau, a=a,
                                                                   v = (-1)^(row$stimulus=="lower")*V[row$condition],
                                                                   t0 = t0, z = z, sz = sz, st0=st0,
                                                                   sv = SV[row$condition], w=w, svis=svis, sigvis=sigvis,
+                                                            omega=omega,
                                                             simult_conf = simult_conf,
                                                             z_absolute = FALSE, precision = precision)),
                                     function(t) return(d2DSD(t, vth1,vth2,
@@ -26,6 +27,7 @@ preddist <- function(row, thetas_lower, thetas_upper, paramDf,V, SV, model, simu
                                                              v = (-1)^(row$stimulus=="lower")*V[row$condition],
                                                              t0 = t0, z = z, sz = sz, st0=st0,
                                                              sv = SV[row$condition],
+                                                             omega=omega,
                                                              simult_conf = simult_conf,
                                                              z_absolute = FALSE, precision = precision))))
 

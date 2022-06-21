@@ -121,7 +121,9 @@ fittingIRM <- function(df, nConds, nRatings, fixed, sym_thetas, time_scaled,
     inits[inits==-Inf]<- -1e6
     parnames <- c(paste("v", 1:nConds, sep=""), 'a', 'b', 't0', 'st0', fitted_weights, cols_theta)
     names(inits) <- setdiff(parnames, names(fixed))
+
   } else {
+
     ##### 1.2. For box-constraint optimisation algorithm span drifts and thresholds equidistantly
     if (nConds==1) {
       init_grid$v1 <- (init_grid$vmin+init_grid$vmax)/2
