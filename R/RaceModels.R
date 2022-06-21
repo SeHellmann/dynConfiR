@@ -43,7 +43,8 @@
 #' purposes as it scales other parameters (see Details). Range: s1>0, Default: s1=1.
 #' @param s2 numeric. Diffusion constant of the second accumulator.  Usually fixed to 1 for most
 #' purposes as it scales other parameters (see Details). Range: s2>0, Default: s2=1.
-#'
+#' @param s numeric. Alternative way to specify diffusion constants, if both are assumed to be equal.
+#' If both (s1, s2 and s) are given, only s1 and s2 will be used.
 #'
 #' @param time_scaled logical. Whether the confidence measure should be time-dependent. See Details.
 #' @param step_width numeric. Step size for the integration in t0 (motor time). Default: 1e-6.
@@ -182,7 +183,7 @@
 #' @export
 dIRM <- function (rt,response=1, mu1, mu2, a, b,
                   th1, th2, wx=1, wrt=0, wint=0,
-                  t0=0, st0=0, s1=1, s2=1,
+                  t0=0, st0=0, s1=1, s2=1, s=NULL,
                   time_scaled = TRUE, step_width=NULL)
 {
   # for convenience accept data.frame as first argument.
@@ -199,7 +200,16 @@ dIRM <- function (rt,response=1, mu1, mu2, a, b,
   if (any(c(s1<=0,s2<=0) )) {stop("s1 and s2 must be positive")}
   if (any(t0<0)) {stop("Non-decision time, t0, has to be non-negative")}
   if (any(st0<0)) {stop("Non-decision time range, st0, has to be non-negative")}
-
+  if (!missing(s)) {
+    if (s<=0) stop("s must be positive")
+    s1 <- s
+    s2 <- s
+    if (xor(missing(s1), missing(s2))) {
+      warning("Argument s and s1 (or s2) provided. Only s is used! Maybe check for spelling mistakes")
+      s1 <- s
+      s2 <- s
+    }
+  }
 
   nn <- length(rt)
   if (!time_scaled) {
@@ -231,7 +241,7 @@ dIRM <- function (rt,response=1, mu1, mu2, a, b,
 #' @export
 dPCRM <- function (rt,response=1, mu1, mu2, a, b,
                    th1, th2, wx=1, wrt=0, wint=0,
-                   t0=0, st0=0, s1=1, s2=1,
+                   t0=0, st0=0, s1=1, s2=1, s=NULL,
                    time_scaled = TRUE, step_width=NULL)
 {
   # for convenience accept data.frame as first argument.
@@ -246,6 +256,16 @@ dPCRM <- function (rt,response=1, mu1, mu2, a, b,
   }
   if (any(c(a<=0, b<=0))) {stop("Both thresholds (a  and b) must be positive")}
   if (any(c(s1<=0,s2<=0) )) {stop("s must be positive")}
+  if (!missing(s)) {
+    if (s<=0) stop("s must be positive")
+    s1 <- s
+    s2 <- s
+    if (xor(missing(s1), missing(s2))) {
+      warning("Argument s and s1 (or s2) provided. Only s is used! Maybe check for spelling mistakes")
+      s1 <- s
+      s2 <- s
+    }
+  }
   if (any(t0<0)) {stop("Non-decision time, t0, has to be non-negative")}
   if (any(st0<0)) {stop("Non-decision time range, st0, has to be non-negative")}
 
@@ -280,7 +300,7 @@ dPCRM <- function (rt,response=1, mu1, mu2, a, b,
 #' @export
 rIRM <- function (n, mu1, mu2, a, b,
                  wx=1, wrt=0, wint=0,
-                 t0=0, st0=0, s1=1, s2=1,
+                 t0=0, st0=0, s1=1, s2=1, s=NULL,
                  time_scaled = TRUE, step_width=NULL,
                  delta=0.01, maxrt=15)
 {
@@ -288,6 +308,16 @@ rIRM <- function (n, mu1, mu2, a, b,
           missing(a), missing(b))) stop("mu1, mu2, a, and b must be supplied")
   if (any(c(a<=0, b<=0))) {stop("Both thresholds (a  and b) must be positive")}
   if (any(c(s1<=0,s2<=0) )) {stop("s1 and s2 must be positive")}
+  if (!missing(s)) {
+    if (s<=0) stop("s must be positive")
+    s1 <- s
+    s2 <- s
+    if (xor(missing(s1), missing(s2))) {
+      warning("Argument s and s1 (or s2) provided. Only s is used! Maybe check for spelling mistakes")
+      s1 <- s
+      s2 <- s
+    }
+  }
   if (any(t0<0)) {stop("Non-decision time, t0, has to be non-negative")}
   if (any(st0<0)) {stop("Non-decision time range, st0, has to be non-negative")}
 
@@ -339,7 +369,7 @@ rIRM <- function (n, mu1, mu2, a, b,
 #' @export
 rPCRM <- function (n, mu1, mu2, a, b,
                   wx=1, wrt=0, wint=0,
-                  t0=0, st0=0, s1=1, s2=1,
+                  t0=0, st0=0, s1=1, s2=1, s,
                   time_scaled = TRUE, step_width=NULL,
                   delta=0.01, maxrt=15)
 {
@@ -349,7 +379,16 @@ rPCRM <- function (n, mu1, mu2, a, b,
   if (any(c(s1<=0,s2<=0) )) {stop("s1 and s2 must be positive")}
   if (any(t0<0)) {stop("Non-decision time, t0, has to be non-negative")}
   if (any(st0<0)) {stop("Non-decision time range, st0, has to be non-negative")}
-
+  if (!missing(s)) {
+    if (s<=0) stop("s must be positive")
+    s1 <- s
+    s2 <- s
+    if (xor(missing(s1), missing(s2))) {
+      warning("Argument s and s1 (or s2) provided. Only s is used! Maybe check for spelling mistakes")
+      s1 <- s
+      s2 <- s
+    }
+  }
   if (!time_scaled) {
     wrt <- 0
     wint <- 0
@@ -475,4 +514,8 @@ prepare_RaceModel_parameter <- function(response,mu1, mu2,
     , parameter_indices = parameter_indices
   )
 }
+
+
+
+
 

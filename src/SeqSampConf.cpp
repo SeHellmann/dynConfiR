@@ -309,10 +309,10 @@ NumericVector r_RM (int n, NumericVector params, double rho, double delta=0.01, 
         x02 = params[3];
         t = 0;
         while ((x01 < 0) && (x02 < 0) && (t < maxT)) {
-            u = R::rnorm(muu, sdu);
-            v = R::rnorm(muv, sdv);
-            x01 = x01+0.5*params[4]*(u+v);
-            x02 = x02+0.5*params[5]*(u-v);
+            u = R::rnorm(0, sdu);
+            v = R::rnorm(0, sdv);
+            x01 = x01+0.5*((muu+muv)+params[4]*(u+v));
+            x02 = x02+0.5*((muu-muv)+params[5]*(u-v));
             t += delta;
         }
         if (x01 > 0) {
@@ -561,3 +561,65 @@ NumericVector r_LCA (int n, NumericVector params, double delta=0.01, double maxT
     return out;
 }
 
+
+//
+// // [[Rcpp::export]]
+// NumericVector r_RM2 (int n, NumericVector params, double rho, double delta=0.01, double maxT=9)
+// {
+//   double sdu, sdv;
+//   double mu1 = params[0]*delta;
+//   double mu2 = params[1]*delta;
+//
+//   sdu = sqrt(2*(1+rho)*delta);
+//   sdv = sqrt(2*(1-rho)*delta);
+//
+//   double x01, x02, u1,u2, v, t, xl;
+//   int win;
+//   double sigrho = 1.0 ;
+//   if (rho < 0 ) {
+//     rho = -rho;
+//     sigrho = -1.0;
+//   }
+//   NumericMatrix out(n, 3);
+//   for (int i=0; i < n; i++) {
+//     x01 = params[2];
+//     x02 = params[3];
+//     t = 0;
+//     while ((x01 < 0) && (x02 < 0) && (t < maxT)) {
+//       u1 = R::rnorm(0, 1);
+//       u2 = R::rnorm(0, 1);
+//       v = R::rnorm(0, 1);
+//       x01 = x01+mu1+ params[4]*sqrt(delta)*(sqrt((1-rho))*u1+sqrt(rho)*v);
+//       x02 = x02+mu2+ params[5]*sqrt(delta)*(sqrt((1-rho))*u2+sqrt(rho)*sigrho*v);
+//       t += delta;
+//     }
+//     if (x01 > 0) {
+//       if (x02 < x01) {
+//         win = 1;
+//         if (x02 < 0) {
+//           xl = x02;
+//         } else {
+//           xl = -1e-24;
+//         }
+//       } else {
+//         win = 2;
+//         xl = -1e-24;
+//       }
+//     } else {
+//       if (x02 > 0) {
+//         win = 2;
+//         xl = x01;
+//       } else {
+//         win = 0;
+//         xl = std::min(x01, x02);
+//       }
+//     }
+//     out( i , 0 ) = t ;
+//     out( i , 1 ) = win;
+//     out( i , 2 ) = xl;
+//     if (i % 200 == 0 ) Rcpp::checkUserInterrupt();
+//
+//   }
+//   return out;
+// }
+//
