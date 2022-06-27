@@ -87,6 +87,8 @@
 #' relative (FALSE; default) to `a`.
 #' @param stop_on_error Should the diffusion functions return 0 if the parameters values are
 #' outside the allowed range (= \code{FALSE}) or produce an error in this case (= \code{TRUE}).
+#' @param stop_on_zero Should the computation of densities stop as soon as a density value of 0 occurs.
+#' This may save a lot of time if the function is used for a likelihood function. Default: FALSE
 #'
 #' @param n integer. The number of samples generated.
 #' @param delta numeric. Discretization step size for simulations in the stochastic process
@@ -202,7 +204,8 @@
 #' @export
 dWEV <- function (rt, response="upper", th1,th2, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, st0=0,
                   tau=1, w=0.5, muvis=NULL, sigvis=0, svis=1,
-                  s=1, simult_conf = FALSE, precision=1e-5, z_absolute = FALSE,  stop_on_error=TRUE)
+                  s=1, simult_conf = FALSE, precision=1e-5, z_absolute = FALSE,
+                  stop_on_error=TRUE, stop_on_zero=FALSE)
 {
   # for convenience accept data.frame as first argument.
   if (is.data.frame(rt)) {
@@ -236,7 +239,7 @@ dWEV <- function (rt, response="upper", th1,th2, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, s
                                    pars$params[ok_rows[1],1:15],
                                    precision,
                                    pars$params[ok_rows[1],16],
-                                   stop_on_error)
+                                   stop_on_error, as.numeric(stop_on_zero))
   }
   abs(densities)
 }

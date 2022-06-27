@@ -9,7 +9,8 @@
 \usage{
 d2DSD(rt, response = "upper", th1, th2, tau = 1, a, v, t0 = 0, z = 0.5,
   d = 0, sz = 0, sv = 0, st0 = 0, s = 1, simult_conf = FALSE,
-  precision = 1e-05, z_absolute = FALSE, stop_on_error = TRUE)
+  precision = 1e-05, z_absolute = FALSE, stop_on_error = TRUE,
+  stop_on_zero = FALSE)
 
 r2DSD(n, a, v, t0 = 0, z = 0.5, d = 0, sz = 0, sv = 0, st0 = 0,
   tau = 1, s = 1, delta = 0.01, maxrt = 15, simult_conf = FALSE,
@@ -96,6 +97,9 @@ to the stepsize of integration w.r.t. z and t0. Default is 1e-5.}
 \item{stop_on_error}{Should the diffusion functions return 0 if the parameters values
 are outside the allowed range (= \code{FALSE}) or produce an error in this case
 (= \code{TRUE}).}
+
+\item{stop_on_zero}{Should the computation of densities stop as soon as a density value of 0 occurs.
+This may save a lot of time if the function is used for a likelihood function. Default: FALSE}
 
 \item{n}{integer. The number of samples generated.}
 

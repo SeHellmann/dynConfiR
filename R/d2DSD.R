@@ -81,6 +81,8 @@
 #' @param stop_on_error Should the diffusion functions return 0 if the parameters values
 #' are outside the allowed range (= \code{FALSE}) or produce an error in this case
 #' (= \code{TRUE}).
+#' @param stop_on_zero Should the computation of densities stop as soon as a density value of 0 occurs.
+#' This may save a lot of time if the function is used for a likelihood function. Default: FALSE
 #'
 #' @param n integer. The number of samples generated.
 #' @param delta numeric. Discretization step size for simulations in the stochastic process
@@ -190,7 +192,8 @@
 #' @rdname d2DSD
 #' @export
 d2DSD <- function (rt, response="upper", th1,th2,tau=1,a,v,t0=0,z=0.5,d=0,sz=0,sv=0, st0=0,s=1,
-                   simult_conf=FALSE, precision=1e-5, z_absolute = FALSE, stop_on_error=TRUE)
+                   simult_conf=FALSE, precision=1e-5, z_absolute = FALSE,
+                   stop_on_error=TRUE, stop_on_zero = FALSE)
 {
   # for convenience accept data.frame as first argument.
   if (is.data.frame(rt)) {
@@ -201,11 +204,11 @@ d2DSD <- function (rt, response="upper", th1,th2,tau=1,a,v,t0=0,z=0.5,d=0,sz=0,s
   nn <- length(rt)
 
   pars <- prepare_2DSD_parameter(response = response,
-                                      a = a, v = v, t0 = t0, z = z,
-                                      d = d, sz = sz, sv = sv, st0 = st0,
-                                      tau=tau, th1=th1, th2=th2,
-                                      s = s, nn = nn, z_absolute = z_absolute,
-                                      stop_on_error = stop_on_error)
+                                 a = a, v = v, t0 = t0, z = z,
+                                 d = d, sz = sz, sv = sv, st0 = st0,
+                                 tau=tau, th1=th1, th2=th2,
+                                 s = s, nn = nn, z_absolute = z_absolute,
+                                 stop_on_error = stop_on_error)
 
   densities <- vector("numeric",length=nn)
   for (i in seq_len(length(pars$parameter_indices))) {
@@ -218,10 +221,10 @@ d2DSD <- function (rt, response="upper", th1,th2,tau=1,a,v,t0=0,z=0.5,d=0,sz=0,s
       rt[ok_rows] <- rt[ok_rows]-pars$params[ok_rows[1],9]
     }
     densities[ok_rows] <- d_2DSD (rt[ok_rows],
-                                    pars$params[ok_rows[1],1:11],
-                                    precision,
-                                    pars$params[ok_rows[1],12],
-                                    stop_on_error)
+                                  pars$params[ok_rows[1],1:11],
+                                  precision,
+                                  pars$params[ok_rows[1],12],
+                                  stop_on_error, as.numeric(stop_on_zero))
   }
   abs(densities)
 }
@@ -229,17 +232,17 @@ d2DSD <- function (rt, response="upper", th1,th2,tau=1,a,v,t0=0,z=0.5,d=0,sz=0,s
 #' @rdname d2DSD
 #' @export
 r2DSD <- function (n, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, st0=0,
-                  tau=1, s=1, delta=0.01, maxrt=15, simult_conf = FALSE,
-                  z_absolute = FALSE,  stop_on_error=TRUE)
+                   tau=1, s=1, delta=0.01, maxrt=15, simult_conf = FALSE,
+                   z_absolute = FALSE,  stop_on_error=TRUE)
 {
   if (any(missing(a), missing(v))) stop("a and v must be supplied")
 
   pars <- prepare_2DSD_parameter(response = 1L,
-                                a = a, v = v, t0 = t0, z = z,
-                                d = d, sz = sz, sv = sv, st0 = st0,
-                                tau=tau, th1=0, th2=1,
-                                s = s, nn = n, z_absolute = z_absolute,
-                                stop_on_error = stop_on_error)
+                                 a = a, v = v, t0 = t0, z = z,
+                                 d = d, sz = sz, sv = sv, st0 = st0,
+                                 tau=tau, th1=0, th2=1,
+                                 s = s, nn = n, z_absolute = z_absolute,
+                                 stop_on_error = stop_on_error)
   res <- matrix(NA, nrow=n, ncol=3)
   for (i in seq_len(length(pars$parameter_indices))) {
     ok_rows <- pars$parameter_indices[[i]]
@@ -266,11 +269,11 @@ r2DSD <- function (n, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, st0=0,
 
 
 prepare_2DSD_parameter <- function(response,
-                                        a, v, t0, z, d,
-                                        sz, sv, st0, tau, th1, th2, s,
-                                        nn,
-                                        z_absolute = FALSE,
-                                        stop_on_error) {
+                                   a, v, t0, z, d,
+                                   sz, sv, st0, tau, th1, th2, s,
+                                   nn,
+                                   z_absolute = FALSE,
+                                   stop_on_error) {
   if(any(missing(a), missing(v))) stop("a and v must be supplied")
   if ( (length(s) == 1) &
        (length(a) == 1) &

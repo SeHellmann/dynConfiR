@@ -1,51 +1,51 @@
 test_that("2DSD works", {
-  expect_equal(d2DSD(seq(0, 3, by=0.5), 0.4, 2.5, "lower", tau=1, a=2, v=0.5, t0=0, z =0.5, sv=0.2),
+  expect_equal(d2DSD(seq(0, 3, by=0.5), "lower", 0.4, 2.5, tau=1, a=2, v=0.5, t0=0, z =0.5, sv=0.2),
                c(0, 0.0482531449209958, 0.0253553462532125, 0.0130607877622106,
                  0.00673690205356166, 0.00347996213935378, 0.00180003697951979
                ))
   ## test for z (relative) out of range
-  expect_equal(d2DSD(seq(0, 3, by=0.5), 0.4, 2.5, "lower", tau=1, a=2, v=0.5, t0=0, z =1.1, sv=0.2, s=1, stop_on_error = FALSE),
+  expect_equal(d2DSD(seq(0, 3, by=0.5), "lower", 0.4, 2.5, tau=1, a=2, v=0.5, t0=0, z =1.1, sv=0.2, s=1, stop_on_error = FALSE),
                rep(0, 7))
   ## test for absolute z working (if as relative it would be out of range)
-  expect_equal(d2DSD(seq(0, 3, by=0.5), 0.4, 2.5, "lower", tau=1, a=2, v=0.5, t0=0, z =1.1, sv=0.2, s=1, stop_on_error = TRUE, z_absolute = TRUE),
+  expect_equal(d2DSD(seq(0, 3, by=0.5), "lower", 0.4, 2.5, tau=1, a=2, v=0.5, t0=0, z =1.1, sv=0.2, s=1, stop_on_error = TRUE, z_absolute = TRUE),
                c(0, 0.0413138942270009, 0.0237164820019255, 0.0123868633188137,
                  0.00640678790772112, 0.00331269788978975, 0.0017147001618022))
   ## test for relative z giving same results as transformed absolute z
-  expect_equal(d2DSD(seq(0, 3, by=0.5), 0.4, 2.5, "lower", tau=1, a=2, v=0.5, t0=0, z =0.5, sv=0.2),
-               d2DSD(seq(0, 3, by=0.5), 0.4, 2.5, "lower", tau=1, a=2, v=0.5, t0=0, z =1, sv=0.2, s=1, z_absolute = TRUE))
+  expect_equal(d2DSD(seq(0, 3, by=0.5),  "lower", 0.4, 2.5,tau=1, a=2, v=0.5, t0=0, z =0.5, sv=0.2),
+               d2DSD(seq(0, 3, by=0.5), "lower", 0.4, 2.5, tau=1, a=2, v=0.5, t0=0, z =1, sv=0.2, s=1, z_absolute = TRUE))
   ## test for effect of t0
-  expect_equal(d2DSD(seq(0, 3, by=0.5), -100, 2.5, "lower", tau=1, a=2, v=0.5, t0=0, z =0.2, sv=0.2, s=1, stop_on_error = TRUE),
-               d2DSD(seq(0, 3, by=0.5)+0.3, -100, 2.5, "lower", tau=1, a=2, v=0.5, t0=0.3, z =0.2, sv=0.2, s=1, stop_on_error = TRUE))
+  expect_equal(d2DSD(seq(0, 3, by=0.5), "lower", -100, 2.5, tau=1, a=2, v=0.5, t0=0, z =0.2, sv=0.2, s=1, stop_on_error = TRUE),
+               d2DSD(seq(0, 3, by=0.5)+0.3, "lower", -100, 2.5, tau=1, a=2, v=0.5, t0=0.3, z =0.2, sv=0.2, s=1, stop_on_error = TRUE))
   ## test for scaling effect of s (diffusion constant)
-  expect_equal(d2DSD(seq(0, 3, by=0.5), 0.5*2, 2.5*2, "lower", tau=1, a=2*2, v=0.5*2, t0=0, z =0.2, sv=0.2*2, s=1*2, stop_on_error = TRUE),
-               d2DSD(seq(0, 3, by=0.5), 0.5, 2.5, "lower", tau=1, a=2, v=0.5, t0=0, z =0.2, sv=0.2, s=1, stop_on_error = TRUE))
+  expect_equal(d2DSD(seq(0, 3, by=0.5), "lower", 0.5*2, 2.5*2, tau=1, a=2*2, v=0.5*2, t0=0, z =0.2, sv=0.2*2, s=1*2, stop_on_error = TRUE),
+               d2DSD(seq(0, 3, by=0.5), "lower", 0.5, 2.5, tau=1, a=2, v=0.5, t0=0, z =0.2, sv=0.2, s=1, stop_on_error = TRUE))
 })
 
 
 test_that("dynWEV works", {
-  expect_equal(dWEV(seq(0, 3, by=0.5), 0.4, 2.5, "lower", tau=1, a=2, v=0.5, t0=0, z =0.5, sv=0.2, w=0.5, sigvis=0.2, svis=1, s=1),
+  expect_equal(dWEV(seq(0, 3, by=0.5), "lower", 0.4, 2.5, tau=1, a=2, v=0.5, t0=0, z =0.5, sv=0.2, w=0.5, sigvis=0.2, svis=1, s=1),
                c(0, 0.0908978179389572, 0.0550995232517664, 0.0311348051585375,
                  0.0169991265817032, 0.00905129165888973, 0.00472961405062421))
   ## test for scaling effect of s (diffusion constant)
-  expect_equal(dWEV(seq(0, 3, by=0.5), 0.4*2, 2.5*2, "lower", tau=1, a=2*2, v=0.5*2, t0=0, z =0.5, sv=0.2*2, w=0.5, sigvis=0.2*2, svis=1*2, s=1*2, precision = 10),
-               dWEV(seq(0, 3, by=0.5), 0.4, 2.5, "lower", tau=1, a=2, v=0.5, t0=0, z =0.5, sv=0.2, w=0.5, sigvis=0.2, svis=1, s=1, precision = 10))
+  expect_equal(dWEV(seq(0, 3, by=0.5), "lower", 0.4*2, 2.5*2, tau=1, a=2*2, v=0.5*2, t0=0, z =0.5, sv=0.2*2, w=0.5, sigvis=0.2*2, svis=1*2, s=1*2, precision = 10),
+               dWEV(seq(0, 3, by=0.5), "lower", 0.4, 2.5, tau=1, a=2, v=0.5, t0=0, z =0.5, sv=0.2, w=0.5, sigvis=0.2, svis=1, s=1, precision = 10))
   ## test for effect of t0
-  expect_equal(dWEV(seq(0, 3, by=0.5), 0.4, 2.5, "lower", tau=1, a=2, v=0.5, t0=0, z =0.5, sv=0.2, w=0.5, sigvis=0.2, svis=1, s=1),
-               dWEV(seq(0, 3, by=0.5)+0.4, 0.4, 2.5, "lower", tau=1, a=2, v=0.5, t0=0.4, z =0.5, sv=0.2, w=0.5, sigvis=0.2, svis=1, s=1))
+  expect_equal(dWEV(seq(0, 3, by=0.5), "lower", 0.4, 2.5, tau=1, a=2, v=0.5, t0=0, z =0.5, sv=0.2, w=0.5, sigvis=0.2, svis=1, s=1),
+               dWEV(seq(0, 3, by=0.5)+0.4, "lower", 0.4, 2.5, tau=1, a=2, v=0.5, t0=0.4, z =0.5, sv=0.2, w=0.5, sigvis=0.2, svis=1, s=1))
   ## test with negative lower confidence threshold and different parameters
-  expect_equal(dWEV(seq(0, 3, by=0.5), -100, 100, "lower", tau=1, a=2, v=-0.5, t0=0, z =0.2, sv=0.2, w=0.001, sigvis=0.4, svis=1, s=1),
+  expect_equal(dWEV(seq(0, 3, by=0.5), "lower", -100, 100, tau=1, a=2, v=-0.5, t0=0, z =0.2, sv=0.2, w=0.001, sigvis=0.4, svis=1, s=1),
                c(0, 0.43714364613092, 0.153514811046022, 0.0724144673283747,
                  0.0361455558387259, 0.0182440173062963, 0.00924134169763999))
   ## test with explicitly giving parameter muvis
-  expect_equal(dWEV(seq(0, 3, by=0.5), -100, 100, "lower", tau=1, a=2, v=-0.5, t0=0, z =0.2, sv=0.2, w=0.001, sigvis=0.4, svis=1, s=1),
-               dWEV(seq(0, 3, by=0.5), -100, 100, "lower", tau=1, a=2, v=-0.5, t0=0, z =0.2, sv=0.2, w=0.001, muvis = 0.5, sigvis=0.4, svis=1, s=1))
+  expect_equal(dWEV(seq(0, 3, by=0.5), "lower", -100, 100, tau=1, a=2, v=-0.5, t0=0, z =0.2, sv=0.2, w=0.001, sigvis=0.4, svis=1, s=1),
+               dWEV(seq(0, 3, by=0.5), "lower", -100, 100, tau=1, a=2, v=-0.5, t0=0, z =0.2, sv=0.2, w=0.001, muvis = 0.5, sigvis=0.4, svis=1, s=1))
 })
 
 test_that("dynWEV with w=0 equals 2DSD", {
-  expect_equal(dWEV(seq(0, 3, by=0.5), 0.4, 2.5, "upper", tau=1, a=2, v=0.5, t0=0, z =0.5, sv=0.2, st0=0, sz=0,w=1-.Machine$double.eps, sigvis=0.2, svis=1, s=1, precision = 3),
-               d2DSD(seq(0, 3, by=0.5), 0.4, 2.5, "upper", tau=1, a=2, v=0.5, t0=0, z =0.5, sv=0.2, s=1, st0=0, sz=0, precision = 3))
-  expect_equal(dWEV(seq(0, 3, by=0.5), 0.4, 2.5, "lower", tau=1, a=2, v=-0.5, t0=0, z =0.5, sv=0.2, st0=0, sz=0,w=1-.Machine$double.eps, sigvis=0.2, svis=1, s=1, precision = 3),
-               d2DSD(seq(0, 3, by=0.5), 0.4, 2.5, "lower", tau=1, a=2, v=-0.5, t0=0, z =0.5, sv=0.2, s=1, st0=0, sz=0, precision = 3))
+  expect_equal(dWEV(seq(0, 3, by=0.5), "upper", 0.4, 2.5, tau=1, a=2, v=0.5, t0=0, z =0.5, sv=0.2, st0=0, sz=0,w=1-.Machine$double.eps, sigvis=0.2, svis=1, s=1, precision = 3),
+               d2DSD(seq(0, 3, by=0.5), "upper", 0.4, 2.5, tau=1, a=2, v=0.5, t0=0, z =0.5, sv=0.2, s=1, st0=0, sz=0, precision = 3))
+  expect_equal(dWEV(seq(0, 3, by=0.5), "lower", 0.4, 2.5, tau=1, a=2, v=-0.5, t0=0, z =0.5, sv=0.2, st0=0, sz=0,w=1-.Machine$double.eps, sigvis=0.2, svis=1, s=1, precision = 3),
+               d2DSD(seq(0, 3, by=0.5), "lower", 0.4, 2.5, tau=1, a=2, v=-0.5, t0=0, z =0.5, sv=0.2, s=1, st0=0, sz=0, precision = 3))
 })
 
 
@@ -108,3 +108,4 @@ test_that("PCRM works", {
   expect_error(dPCRM(1.5, response=1, mu1=0.5, mu2=0.8, a=2.5, b=2.5,
                      th1=1, th2=10, wx=0.5, wrt=0.1, wint=0.4, t0=0.4, st0=0.2, s=-1.8), "positive")
 })
+

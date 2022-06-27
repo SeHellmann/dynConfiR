@@ -39,13 +39,28 @@ static double integrate_v_over_zr_2DSD (Parameters *params, double a, double b, 
 
 
 // Main calls
-NumericVector density_2DSD (NumericVector rts, int boundary)
+NumericVector density_2DSD (NumericVector rts, int boundary, int stopon0)
 {
     int length = rts.length();
     NumericVector out(length);
+    if (stopon0==1) {
+      if (boundary == 1) {
+        for (int i = 0; i < length; i++) {
+          out[i] =  g_plus_2DSD(rts[i]);
+          if (out[i]==0) break;
+          }
+        } // Calc upper
+      else {
+        for (int i = 0; i < length; i++) {
+          out[i] = -g_minus_2DSD(rts[i]);
+          if (out[i]==0) break;
+          }
+        } // Calc lower
+    } else {
+      if (boundary == 1) { for (int i = 0; i < length; i++) { out[i] =  g_plus_2DSD(rts[i]);  } } // Calc upper
+      else { for (int i = 0; i < length; i++) { out[i] = -g_minus_2DSD(rts[i]); } } // Calc lower
+    }
 
-    if (boundary == 1) { for (int i = 0; i < length; i++) { out[i] =  g_plus_2DSD(rts[i]);  } } // Calc upper
-                  else { for (int i = 0; i < length; i++) { out[i] = -g_minus_2DSD(rts[i]); } } // Calc lower
 
     return out;
 }

@@ -28,7 +28,7 @@ using namespace Rcpp;
 
 // R-callable PDF for 2DSD - pass boundary to retrieve (1 = lower, 2 = upper)
 // [[Rcpp::export]]
-NumericVector d_2DSD (NumericVector rts, NumericVector params, double precision=1e-5, int boundary=2, bool stop_on_error=true)
+NumericVector d_2DSD (NumericVector rts, NumericVector params, double precision=1e-5, int boundary=2, bool stop_on_error=true, int stop_on_zero=false)
 {
     int length = rts.length();
     if (length > MAX_INPUT_VALUES) { Rcpp::stop("Number of RT values passed in exceeds maximum of %d.\n", MAX_INPUT_VALUES); }
@@ -45,7 +45,7 @@ NumericVector d_2DSD (NumericVector rts, NumericVector params, double precision=
                       else { return out; }
     }
 
-    out = density_2DSD (rts, boundary-1);
+    out = density_2DSD (rts, boundary-1, stop_on_zero);
 
     delete g_Params;
     return out;
@@ -53,7 +53,7 @@ NumericVector d_2DSD (NumericVector rts, NumericVector params, double precision=
 
 
 // [[Rcpp::export]]
-NumericVector d_WEVmu (NumericVector rts, NumericVector params, double precision=1e-5, int boundary=2, bool stop_on_error=true)
+NumericVector d_WEVmu (NumericVector rts, NumericVector params, double precision=1e-5, int boundary=2, bool stop_on_error=true, int stop_on_zero=false)
 {
     int length = rts.length();
     if (length > MAX_INPUT_VALUES) { Rcpp::stop("Number of RT values passed in exceeds maximum of %d.\n", MAX_INPUT_VALUES); }
@@ -70,7 +70,7 @@ NumericVector d_WEVmu (NumericVector rts, NumericVector params, double precision
         else { return out; }
     }
 
-    out = density_WEVmu (rts, boundary-1);
+    out = density_WEVmu (rts, boundary-1, stop_on_zero);
 
     delete g_Params;
     return out;
