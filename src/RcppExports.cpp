@@ -11,8 +11,8 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // d_2DSD
-NumericVector d_2DSD(NumericVector rts, NumericVector params, double precision, int boundary, bool stop_on_error);
-RcppExport SEXP _dynConfiR_d_2DSD(SEXP rtsSEXP, SEXP paramsSEXP, SEXP precisionSEXP, SEXP boundarySEXP, SEXP stop_on_errorSEXP) {
+NumericVector d_2DSD(NumericVector rts, NumericVector params, double precision, int boundary, bool stop_on_error, int stop_on_zero);
+RcppExport SEXP _dynConfiR_d_2DSD(SEXP rtsSEXP, SEXP paramsSEXP, SEXP precisionSEXP, SEXP boundarySEXP, SEXP stop_on_errorSEXP, SEXP stop_on_zeroSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -21,13 +21,14 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type precision(precisionSEXP);
     Rcpp::traits::input_parameter< int >::type boundary(boundarySEXP);
     Rcpp::traits::input_parameter< bool >::type stop_on_error(stop_on_errorSEXP);
-    rcpp_result_gen = Rcpp::wrap(d_2DSD(rts, params, precision, boundary, stop_on_error));
+    Rcpp::traits::input_parameter< int >::type stop_on_zero(stop_on_zeroSEXP);
+    rcpp_result_gen = Rcpp::wrap(d_2DSD(rts, params, precision, boundary, stop_on_error, stop_on_zero));
     return rcpp_result_gen;
 END_RCPP
 }
 // d_WEVmu
-NumericVector d_WEVmu(NumericVector rts, NumericVector params, double precision, int boundary, bool stop_on_error);
-RcppExport SEXP _dynConfiR_d_WEVmu(SEXP rtsSEXP, SEXP paramsSEXP, SEXP precisionSEXP, SEXP boundarySEXP, SEXP stop_on_errorSEXP) {
+NumericVector d_WEVmu(NumericVector rts, NumericVector params, double precision, int boundary, bool stop_on_error, int stop_on_zero);
+RcppExport SEXP _dynConfiR_d_WEVmu(SEXP rtsSEXP, SEXP paramsSEXP, SEXP precisionSEXP, SEXP boundarySEXP, SEXP stop_on_errorSEXP, SEXP stop_on_zeroSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -36,7 +37,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type precision(precisionSEXP);
     Rcpp::traits::input_parameter< int >::type boundary(boundarySEXP);
     Rcpp::traits::input_parameter< bool >::type stop_on_error(stop_on_errorSEXP);
-    rcpp_result_gen = Rcpp::wrap(d_WEVmu(rts, params, precision, boundary, stop_on_error));
+    Rcpp::traits::input_parameter< int >::type stop_on_zero(stop_on_zeroSEXP);
+    rcpp_result_gen = Rcpp::wrap(d_WEVmu(rts, params, precision, boundary, stop_on_error, stop_on_zero));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -160,8 +162,8 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_dynConfiR_d_2DSD", (DL_FUNC) &_dynConfiR_d_2DSD, 5},
-    {"_dynConfiR_d_WEVmu", (DL_FUNC) &_dynConfiR_d_WEVmu, 5},
+    {"_dynConfiR_d_2DSD", (DL_FUNC) &_dynConfiR_d_2DSD, 6},
+    {"_dynConfiR_d_WEVmu", (DL_FUNC) &_dynConfiR_d_WEVmu, 6},
     {"_dynConfiR_d_IRM", (DL_FUNC) &_dynConfiR_d_IRM, 4},
     {"_dynConfiR_d_PCRM", (DL_FUNC) &_dynConfiR_d_PCRM, 4},
     {"_dynConfiR_dd_IRM", (DL_FUNC) &_dynConfiR_dd_IRM, 5},

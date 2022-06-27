@@ -39,13 +39,27 @@ static double integrate_v_over_zr_WEVmu (Parameters *params, double a, double b,
 
 
 // Main calls
-NumericVector density_WEVmu (NumericVector rts, int boundary)
+NumericVector density_WEVmu (NumericVector rts, int boundary, int stopon0)
 {
     int length = rts.length();
     NumericVector out(length);
-    if (boundary == 1) { for (int i = 0; i < length; i++) { out[i] =  g_plus_WEVmu(rts[i]);  } } // Calc upper
-                  else { for (int i = 0; i < length; i++) { out[i] = -g_minus_WEVmu(rts[i]); } } // Calc lower
-
+    if (stopon0 == 1) {
+      if (boundary == 1) {
+        for (int i = 0; i < length; i++) {
+          out[i] =  g_plus_WEVmu(rts[i]);
+          if (out[i]==0) break;
+        }
+      } // Calc upper
+      else {
+        for (int i = 0; i < length; i++) {
+          out[i] = -g_minus_WEVmu(rts[i]);
+          if (out[i]==0) break;
+        }
+      } // Calc lower
+    } else {
+      if (boundary == 1) { for (int i = 0; i < length; i++) { out[i] =  g_plus_WEVmu(rts[i]); } } // Calc upper
+      else { for (int i = 0; i < length; i++) { out[i] = -g_minus_WEVmu(rts[i]); } } // Calc lower
+    }
     return out;
 }
 
