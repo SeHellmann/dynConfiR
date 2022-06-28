@@ -165,7 +165,7 @@ simulateWEV <- function (paramDf, n=1e+4,  model = "dynWEV", simult_conf = FALSE
   a <- paramDf$a
   z <- paramDf$z
   sz <- paramDf$sz
-  t0 <- paramDf$t0
+  t0 <- paramDf$t0+paramDf$st0/2  # recalc_t0 (see e.g. dWEV)
   st0 <- paramDf$st0
   tau = paramDf$tau
   if ("d" %in% names(paramDf)) {

@@ -408,7 +408,7 @@ NumericVector r_WEV (int n, NumericVector params, int model, double delta=0.01, 
             vis = R::rnorm((tau+t)*muvis, sqrt(svis*svis*(tau+t)+(t+tau)*(t+tau)*sigvis*sigvis));
             conf = w*evid + (1-w)*vis;
         }
-        t = t  + R::runif(t0, t0+st0);
+        t = t  + R::runif(t0-st0/2, t0+st0/2);
         out( i , 0 ) = t;
         out( i , 1 ) = resp;
         out( i , 2 ) = conf;
