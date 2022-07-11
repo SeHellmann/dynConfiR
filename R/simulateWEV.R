@@ -295,12 +295,6 @@ simulateWEV <- function (paramDf, n=1e+4,  model = "dynWEV", simult_conf = FALSE
   }
 
   ### Bin confidence measure for discrete ratings:
-  symmetric_confidence_thresholds <- length(grep(pattern = "thetaUpper", names(paramDf), value = T))<1
-  if (symmetric_confidence_thresholds) {
-    nRatings <- length(grep(pattern = "^theta[0-9]", names(paramDf)))+1
-  } else {
-    nRatings <- length(grep(pattern = "^thetaUpper[0-9]", names(paramDf)))+1
-  }
   if (model =="2DSD") {
     if (symmetric_confidence_thresholds) {
       thetas_upper <- c(-Inf, t(paramDf[,paste("theta",1:(nRatings-1), sep = "")]), Inf)
@@ -309,7 +303,12 @@ simulateWEV <- function (paramDf, n=1e+4,  model = "dynWEV", simult_conf = FALSE
       thetas_upper <- c(-Inf, t(paramDf[,paste("thetaUpper",1:(nRatings-1), sep = "")]), Inf)
       thetas_lower <- c(-Inf, t(paramDf[,paste("thetaLower",1:(nRatings-1), sep="")]), Inf)
     }
-    levels_lower <- 6-cumsum(as.numeric(table(thetas_lower)))
+    if (thetas_lower[2]>thetas_lower[3]) {
+      # For 2DSD the parametrization for lower thetas is different (different confidence scale)
+      thetas_lower <- c(-1e+32, rev(thetas_lower[2:(nRatings)]), 1e+32)
+    }
+
+    levels_lower <- cumsum(as.numeric(table(thetas_lower)))
     levels_lower <- levels_lower[-length(levels_lower)]
     levels_upper <- cumsum(as.numeric(table(thetas_upper)))
     levels_upper <- levels_upper[-length(levels_upper)]
@@ -329,6 +328,7 @@ simulateWEV <- function (paramDf, n=1e+4,  model = "dynWEV", simult_conf = FALSE
       thetas_upper <- c(-Inf, t(paramDf[,paste("thetaUpper",1:(nRatings-1), sep = "")]), Inf)
       thetas_lower <- c(-Inf, t(paramDf[,paste("thetaLower",1:(nRatings-1), sep="")]), Inf)
     }
+
     levels_lower <- cumsum(as.numeric(table(thetas_lower)))
     levels_lower <- levels_lower[-length(levels_lower)]
     levels_upper <- cumsum(as.numeric(table(thetas_upper)))
