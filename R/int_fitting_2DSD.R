@@ -100,7 +100,7 @@ fitting2DSD <- function(df, nConds, nRatings, fixed, sym_thetas,
     }
     c(thetas[1],diff(thetas))
   }
-  init_thetas <- apply(init_grid, FUN=get_start_thetas, MARGIN=1, simplify = TRUE)
+  init_thetas <- apply(init_grid, FUN=get_start_thetas, MARGIN=1) #, simplify = TRUE
   init_thetas <- t(init_thetas)
 
 

@@ -12,19 +12,19 @@
 \title{Independent and partially anti-correlated Race Model for Decision Confidence}
 \usage{
 dIRM(rt, response = 1, mu1, mu2, a, b, th1, th2, wx = 1, wrt = 0,
-  wint = 0, t0 = 0, st0 = 0, s1 = 1, s2 = 1, time_scaled = TRUE,
-  step_width = NULL)
+  wint = 0, t0 = 0, st0 = 0, s1 = 1, s2 = 1, s = NULL,
+  time_scaled = TRUE, step_width = NULL)
 
 dPCRM(rt, response = 1, mu1, mu2, a, b, th1, th2, wx = 1, wrt = 0,
-  wint = 0, t0 = 0, st0 = 0, s1 = 1, s2 = 1, time_scaled = TRUE,
-  step_width = NULL)
+  wint = 0, t0 = 0, st0 = 0, s1 = 1, s2 = 1, s = NULL,
+  time_scaled = TRUE, step_width = NULL)
 
 rIRM(n, mu1, mu2, a, b, wx = 1, wrt = 0, wint = 0, t0 = 0, st0 = 0,
-  s1 = 1, s2 = 1, time_scaled = TRUE, step_width = NULL,
+  s1 = 1, s2 = 1, s = NULL, time_scaled = TRUE, step_width = NULL,
   delta = 0.01, maxrt = 15)
 
 rPCRM(n, mu1, mu2, a, b, wx = 1, wrt = 0, wint = 0, t0 = 0, st0 = 0,
-  s1 = 1, s2 = 1, time_scaled = TRUE, step_width = NULL,
+  s1 = 1, s2 = 1, s, time_scaled = TRUE, step_width = NULL,
   delta = 0.01, maxrt = 15)
 }
 \arguments{
@@ -67,6 +67,9 @@ purposes as it scales other parameters (see Details). Range: s1>0, Default: s1=1
 
 \item{s2}{numeric. Diffusion constant of the second accumulator.  Usually fixed to 1 for most
 purposes as it scales other parameters (see Details). Range: s2>0, Default: s2=1.}
+
+\item{s}{numeric. Alternative way to specify diffusion constants, if both are assumed to be equal.
+If both (s1, s2 and s) are given, only s1 and s2 will be used.}
 
 \item{time_scaled}{logical. Whether the confidence measure should be time-dependent. See Details.}
 
