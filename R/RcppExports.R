@@ -41,3 +41,11 @@ r_LCA <- function(n, params, delta = 0.01, maxT = 9.0) {
     .Call(`_dynConfiR_r_LCA`, n, params, delta, maxT)
 }
 
+d_DDMConf <- function(rts, params, precision = 1e-5, boundary = 2L, stop_on_error = TRUE, stop_on_zero = FALSE) {
+    .Call(`_dynConfiR_d_DDMConf`, rts, params, precision, boundary, stop_on_error, stop_on_zero)
+}
+
+r_DDMConf <- function(n, params, delta = 0.01, maxT = 9, stop_on_error = TRUE) {
+    .Call(`_dynConfiR_r_DDMConf`, n, params, delta, maxT, stop_on_error)
+}
+

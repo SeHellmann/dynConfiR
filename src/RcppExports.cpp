@@ -160,6 +160,37 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// d_DDMConf
+NumericVector d_DDMConf(NumericVector rts, NumericVector params, double precision, int boundary, bool stop_on_error, int stop_on_zero);
+RcppExport SEXP _dynConfiR_d_DDMConf(SEXP rtsSEXP, SEXP paramsSEXP, SEXP precisionSEXP, SEXP boundarySEXP, SEXP stop_on_errorSEXP, SEXP stop_on_zeroSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type rts(rtsSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< double >::type precision(precisionSEXP);
+    Rcpp::traits::input_parameter< int >::type boundary(boundarySEXP);
+    Rcpp::traits::input_parameter< bool >::type stop_on_error(stop_on_errorSEXP);
+    Rcpp::traits::input_parameter< int >::type stop_on_zero(stop_on_zeroSEXP);
+    rcpp_result_gen = Rcpp::wrap(d_DDMConf(rts, params, precision, boundary, stop_on_error, stop_on_zero));
+    return rcpp_result_gen;
+END_RCPP
+}
+// r_DDMConf
+NumericVector r_DDMConf(int n, NumericVector params, double delta, double maxT, bool stop_on_error);
+RcppExport SEXP _dynConfiR_r_DDMConf(SEXP nSEXP, SEXP paramsSEXP, SEXP deltaSEXP, SEXP maxTSEXP, SEXP stop_on_errorSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< double >::type delta(deltaSEXP);
+    Rcpp::traits::input_parameter< double >::type maxT(maxTSEXP);
+    Rcpp::traits::input_parameter< bool >::type stop_on_error(stop_on_errorSEXP);
+    rcpp_result_gen = Rcpp::wrap(r_DDMConf(n, params, delta, maxT, stop_on_error));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_dynConfiR_d_2DSD", (DL_FUNC) &_dynConfiR_d_2DSD, 6},
@@ -172,6 +203,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_dynConfiR_r_WEV", (DL_FUNC) &_dynConfiR_r_WEV, 6},
     {"_dynConfiR_r_RM_Kiani", (DL_FUNC) &_dynConfiR_r_RM_Kiani, 6},
     {"_dynConfiR_r_LCA", (DL_FUNC) &_dynConfiR_r_LCA, 4},
+    {"_dynConfiR_d_DDMConf", (DL_FUNC) &_dynConfiR_d_DDMConf, 6},
+    {"_dynConfiR_r_DDMConf", (DL_FUNC) &_dynConfiR_r_DDMConf, 5},
     {NULL, NULL, 0}
 };
 

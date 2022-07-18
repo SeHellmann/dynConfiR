@@ -623,3 +623,82 @@ NumericVector r_LCA (int n, NumericVector params, double delta=0.01, double maxT
 //   return out;
 // }
 //
+
+
+
+// R-callable PDF for DDMConf - pass boundary to retrieve (1 = lower, 2 = upper)
+// [[Rcpp::export]]
+NumericVector d_DDMConf (NumericVector rts, NumericVector params, double precision=1e-5, int boundary=2, bool stop_on_error=true, int stop_on_zero=false)
+{
+  int length = rts.length();
+  if (length > MAX_INPUT_VALUES) { Rcpp::stop("Number of RT values passed in exceeds maximum of %d.\n", MAX_INPUT_VALUES); }
+
+  if ((boundary < 1) || (boundary > 2)) { Rcpp::stop ("Boundary must be either 2 (upper) or 1 (lower)\n"); }
+
+  g_Params = new Parameters (params, precision);
+
+  NumericVector out(length, 0.0);  // Should default to 0s when creating NumericVector, but just in case..
+
+  if (!g_Params->ValidateParams_2DSD(stop_on_error))
+  {
+    if (stop_on_error) { Rcpp::stop("Error validating parameters.\n"); }
+    else { return out; }
+  }
+
+  out = density_DDMConf (rts, boundary-1, stop_on_zero);
+
+  delete g_Params;
+  return out;
+}
+
+
+
+
+
+// [[Rcpp::export]]
+NumericVector r_DDMConf (int n, NumericVector params, double delta=0.01, double maxT=9, bool stop_on_error=true)
+{
+  double a   = params[0];
+  double v   = params[1];
+  double t0  = params[2];
+  double d   = params[3];
+  double szr = params[4];
+  double sv  = params[5];
+  double st0 = params[6];
+  double zr  = params[7];
+  NumericMatrix out(n, 3);
+  double mu, x0, t, conf;
+  int resp;
+
+  for (int i=0; i < n; i++) {
+    mu = R::rnorm(v, sv);
+    x0 = a* R::runif(zr-szr/2, zr+szr/2);
+    t = 0;
+    while ((x0 > 0) && (x0 < a) && (t < maxT)) {
+      x0 = x0 + R::rnorm(delta*mu, sqrt(delta));
+      t = t + delta;
+    }
+    if (x0 >= a) {
+      resp = 1;
+      t = std::max(0.0, t - d/2);
+    } else {
+      if (x0 <= 0) {
+        resp = -1;
+        t = std::max(0.0, t + d/2);
+      } else {
+        resp = 0;
+      }
+    }
+    conf = 1/sqrt(t);
+    t = t  + R::runif(t0-st0/2, t0+st0/2);
+    out( i , 0 ) = t;
+    out( i , 1 ) = resp;
+    out( i , 2 ) = conf;
+    if (i % 200 ==0 ) Rcpp::checkUserInterrupt();
+
+  }
+
+  return out;
+
+}
+
