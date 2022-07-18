@@ -176,7 +176,7 @@ simulateRM <- function (paramDf, n=1e+4,  model = "IRM", time_scaled=FALSE,
   df <- expand.grid(condition = 1:nConds, stimulus=stimulus)
   help_fct <- function(row) {
     res <- as.data.frame(r_RM(n,c(row$mu1, row$mu2, -paramDf$a, -paramDf$b, row$s, paramDf$t0, paramDf$st0),
-                              indep = (model=="IRM"),
+                              rho = ifelse(model=="IRM", 0, -.5),
                               delta=delta, maxT=maxrt))
     names(res) <- c("rt", "response", "xl")
     res
