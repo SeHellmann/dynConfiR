@@ -115,7 +115,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // r_WEV
-NumericVector r_WEV(int n, NumericVector params, int model, double delta, double maxT, bool stop_on_error);
+NumericMatrix r_WEV(int n, NumericVector params, int model, double delta, double maxT, bool stop_on_error);
 RcppExport SEXP _dynConfiR_r_WEV(SEXP nSEXP, SEXP paramsSEXP, SEXP modelSEXP, SEXP deltaSEXP, SEXP maxTSEXP, SEXP stop_on_errorSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;

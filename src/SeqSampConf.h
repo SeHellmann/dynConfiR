@@ -44,14 +44,14 @@ static double Phi(double x); //CDF of standard normal distribution
 
 // PDF for 2DSD
 #include "Density_2DSD.h"
-
-// PDF for WEV version 1
+// PDF and RNG for WEV version 1
 #include "Density_WEVmu.h"
-// PDF for IRM
-#include "Density_IRM.h"
-// PDF for PCRM
-#include "Density_PCRM.h"
+#include "RNG_WEV.h"
 
+// PDF and RNG for IRM
+#include "Density_IRM.h"
+// PDF and RNG for PCRM
+#include "Density_PCRM.h"
 // PDF and RNG for DDMConf
 #include "Density_DDMConf.h"
 
