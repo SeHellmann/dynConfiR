@@ -418,6 +418,8 @@ NumericVector r_WEV (int n, NumericVector params, int model, double delta=0.01, 
         if (i % 200 ==0 ) Rcpp::checkUserInterrupt();
 
     }
+    delete g_Params;
+
 
     return out;
 }

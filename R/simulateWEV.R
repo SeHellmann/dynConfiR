@@ -284,7 +284,7 @@ simulateWEV <- function (paramDf, n=1e+4,  model = "dynWEV", simult_conf = FALSE
              muvis = muvis[.data$condition]) %>%
       group_by(.data$condition, .data$stimulus) %>%
       summarise(as.data.frame(r_WEV(n=n, params=c(a/as.numeric(cur_data()[3]),as.numeric(cur_data()[1])/as.numeric(cur_data()[3]),
-                                                  t0, d, sz, as.numeric(cur_data()[2])/as.numeric(cur_data()[3]),
+                                                  t0+st0/2, d, sz, as.numeric(cur_data()[2])/as.numeric(cur_data()[3]),
                                                   st0, z, tau, 0, 1,
                                                   rep(c(w, as.numeric(cur_data()[4])/as.numeric(cur_data()[3]),
                                                   sigvis/as.numeric(cur_data()[3]), svis/as.numeric(cur_data()[3])),as.numeric(model=="dynWEV"))),
