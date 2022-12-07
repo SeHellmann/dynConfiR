@@ -27,12 +27,12 @@ and 2=upper or -1=lower and 1=upper, respectively. For convenience, \code{respon
 converted via \code{as.numeric} also
 allowing factors. Ignored if the first argument is a \code{data.frame}.}
 
-\item{th1}{together with th2: scalars or numerical vectors giving the lower and upper
+\item{th1}{together with \code{th2}: scalars or numerical vectors giving the lower and upper
 bound of the interval, in which the accumulator should end at the time of the
 confidence judgment (i.e. at time \code{rt}+\code{tau}). Only values with
 \code{th2}>=\code{th1} are accepted.}
 
-\item{th2}{(see th1)}
+\item{th2}{(see \code{th1})}
 
 \item{tau}{post-decisional accumulation time. The length of the time period after the
 decision was made until the confidence judgment is made. Range: \code{tau}>0.
@@ -78,7 +78,7 @@ distribution with mean \code{t0 + st0/2} describing the distribution of actual
 Reduces skew of predicted RT distributions. Values different from 0 can slow computation
 considerably. Typical range: 0 < \code{st0} < 0.2. Default is 0.}
 
-\item{omega}{power for judgement time in the division of the confidence measure
+\item{omega}{power for judgment time in the division of the confidence measure
 by the judgment time (Default: 0, i.e. no division which is the version of
 2DSD proposed by Pleskac and Busemeyer)}
 
@@ -90,13 +90,13 @@ Note that the default used by Ratcliff and in other applications is often 0.1.}
 \item{simult_conf}{logical. Whether in the experiment confidence was reported
 simultaneously with the decision, as then decision and confidence judgment are
 assumed to have happened subsequent before response and computations are different,
-when there is an observable interjudgment time (then simult_conf should be FALSE).}
+when there is an observable interjudgment time (then \code{simult_conf} should be \code{FALSE}).}
 
 \item{precision}{\code{numerical} scalar value. Precision of calculation. Corresponds
-to the stepsize of integration w.r.t. z and t0. Default is 1e-5.}
+to the stepsize of integration w.r.t. \code{z} and \code{t0}. Default is 1e-5.}
 
-\item{z_absolute}{logical. Determines whether z is treated as absolute start point
-(TRUE) or relative (FALSE; default) to a.}
+\item{z_absolute}{logical. Determines whether \code{z} is treated as absolute start point
+(\code{TRUE}) or relative (\code{FALSE}; default) to \code{a}.}
 
 \item{stop_on_error}{Should the diffusion functions return 0 if the parameters values
 are outside the allowed range (= \code{FALSE}) or produce an error in this case
@@ -158,7 +158,7 @@ continues the accumulation of information. At the end of the period a confidence
 judgment (i.e. a judgment of the probability that the decision was correct) is made
 based on the state of the process. Here, we use a given interval, given by \code{th1}
 and \code{th2}, assuming that the data is given with discrete judgments and
-preprocessed, s.t. these discrete ratings are translated to the respective intervals.
+pre-processed, s.t. these discrete ratings are translated to the respective intervals.
 The 2DSD Model was proposed by Pleskac and Busemeyer (2010).
 
 All functions are fully vectorized across all parameters
@@ -225,5 +225,5 @@ Pleskac, T. J., & Busemeyer, J. R. (2010). Two-Stage Dynamic Signal Detection: A
 Ratcliff, R., & McKoon, G. (2008). The diffusion decision model: Theory and data for two-choice decision tasks. \emph{Neural Computation}, 20(4), 873-922.
 }
 \author{
-For the original rtdists package: Underlying C code by Jochen Voss and Andreas Voss. Porting and R wrapping by Matthew Gretton, Andrew Heathcote, Scott Brown, and Henrik Singmann. \code{qdiffusion} by Henrik Singmann. For the d2DSD function the C code was extended by Sebastian Hellmann.
+For the original \code{rtdists} package: Underlying C code by Jochen Voss and Andreas Voss. Porting and R wrapping by Matthew Gretton, Andrew Heathcote, Scott Brown, and Henrik Singmann. \code{qdiffusion} by Henrik Singmann. For the \code{d2DSD} function the C code was extended by Sebastian Hellmann.
 }

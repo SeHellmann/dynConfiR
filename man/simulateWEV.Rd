@@ -6,18 +6,17 @@
 \title{Simulation of confidence ratings and RTs in dynWEV and 2DSD confidence models}
 \usage{
 simulateWEV(paramDf, n = 10000, model = "dynWEV", simult_conf = FALSE,
-  gamma = FALSE, agg_simus = FALSE, stimulus = c(-1, 1),
-  method = "Cpp", precision = 3, delta = 0.01, maxrt = 15,
-  seed = NULL)
+  gamma = FALSE, agg_simus = FALSE, stimulus = c(-1, 1), delta = 0.01,
+  maxrt = 15, seed = NULL)
 }
 \arguments{
 \item{paramDf}{a list or dataframe with one row. Column names should match the names
-of dynWEV and 2DSD model specific parameter names. For different stimulus quality/mean
-drift rates, names should be v1, v2, v3,....
-Different sv and/or s parameters are possible with sv1, sv2, sv3... (s1, s2, s3,...
+of \link{dynWEV} and \link{2DSD} model specific parameter names. For different stimulus quality/mean
+drift rates, names should be \code{v1}, \code{v2}, \code{v3},....
+Different \code{sv} and/or \code{s} parameters are possible with \code{sv1}, \code{sv2}, \code{sv3}... (\code{s1}, \code{s2}, \code{s3},...
 respectively) with equally many steps as for drift rates. Additionally, the confidence
-thresholds should be given by names with thetaUpper1, thetaUpper2,..., thetaLower1,... or,
-for symmetric thresholds only by theta1, theta2,....}
+thresholds should be given by names with \code{thetaUpper1}, \code{thetaUpper2},..., \code{thetaLower1},... or,
+for symmetric thresholds only by \code{theta1}, \code{theta2},....}
 
 \item{n}{integer. The number of samples (per condition and stimulus direction) generated.
 Total number of samples is \code{n*nConditions*length(stimulus)}.}
@@ -32,7 +31,7 @@ returned response time will only be decision time plus non-judgment time compone
 \item{gamma}{logical. If TRUE, the gamma correlation between confidence ratings, rt
 and accuracy is computed.}
 
-\item{agg_simus}{logical. Simulation is done on a trial basis with rts outcome.
+\item{agg_simus}{logical. Simulation is done on a trial basis with RTs outcome.
 If TRUE, the simulations will be aggregated over RTs to return only the distribution
 of response and confidence ratings. Default: FALSE.}
 
@@ -44,19 +43,9 @@ the stimulus coming from one category (1 for the category that is associated wit
 drift in the decision process where "upper"/1 responses are considered correct and -1
 correspondingly for negative drifts and "lower"/-1 correct decisions).}
 
-\item{method}{character. Method for the simulation. If "rtdists", simulations are done
-using the function \code{rdiffusion} from the \code{rtdists} package. For any other value (e.g. the
-default "Cpp") for each observation the stochastic process is simulated in discrete steps
-with a C++ routine.}
+\item{delta}{numeric. Discretization steps for simulations with the stochastic process.}
 
-\item{precision}{\code{numerical} scalar value. This argument is given directly to
-\code{\link[rtdists:Diffusion]{rdiffusion}} if it is used for generating samples in the
-decision process. Default is 3.}
-
-\item{delta}{numeric. Discretization steps for simulations with the stochastic process
-(used, if \code{method!="rtdists"})}
-
-\item{maxrt}{numeric. Maximum reaction time returned, if \code{method!="rtdists"}.
+\item{maxrt}{numeric. Maximum reaction time returned.
 If the simulation of the stochastic process exceeds a rt of \code{maxrt},
 the response will be set to 0 and \code{maxrt} will be returned as rt.}
 
@@ -88,21 +77,18 @@ Basically, this function is a wrapper for \code{\link{rWEV}} and \code{\link{r2D
 for application in confidence experiments with manipulation of specific parameters.
 }
 \details{
-By default the simulation is done by simulating normal variables in
-discretized steps until the lower or upper boundary is met (or the maximal rt
-is reached).
+Simulation of response and decision times is done by simulating
+normal variables in discretized steps until the lower or upper boundary
+is met (or the maximal rt is reached). Afterwards, a confidence measure
+is simulated according to the respective model.
 
-If \code{method="rtdistw"}, the function combines the random generator
-\code{\link[rtdists:Diffusion]{rdiffusion}}
-and \code{rnorm} to produce the confidence measure in the respective model.
-
-In any case, the confidence outputs are then binned according to the given thresholds.
+The confidence outputs are then binned according to the given thresholds.
 The output of the fitting function \code{\link{fitRTConf}} with the respective model
 fits the argument \code{paramDf} for simulation.
 The Gamma coefficients are computed separately for correct/incorrect responses for the
 correlation of confidence ratings with condition and rt and separately for conditions
 for the correlation of accuracy and confidence. The
-resulting tibbles in the output thus have two columns. One for the grouping variable
+resulting data frames in the output thus have two columns. One for the grouping variable
 and one for the Gamma coefficient.
 }
 \note{
@@ -152,7 +138,7 @@ head(agg_simus)
 }
 }
 \references{
-Hellmann, S., Zehetleitner, M., & Rausch, M. (in press). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review}. https://osf.io/9jfqr/
+Hellmann, S., Zehetleitner, M., & Rausch, M. (in press). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review}. \url{https://osf.io/9jfqr/}
 }
 \author{
 Sebastian Hellmann.

@@ -15,7 +15,7 @@
 #' @param model character scalar. One of "2DSD", "dynWEV", "IRM", "PCRM", "IRMt", or "PCRMt".
 #' @param gamma logical. If TRUE, the gamma correlation between confidence ratings, rt and accuracy is
 #' computed.
-#' @param agg_simus logical. Simulation is done on a trial basis with rts outcome. If TRUE,
+#' @param agg_simus logical. Simulation is done on a trial basis with RTs outcome. If TRUE,
 #' the simulations will be aggregated over RTs to return only the distribution of response and
 #' confidence ratings. Default: FALSE.
 #' @param  simult_conf logical. Whether in the experiment confidence was reported simultaneously
@@ -58,7 +58,7 @@
 #' \strong{Gamma correlations:} The Gamma coefficients are computed separately for
 #' correct/incorrect responses for the correlation of confidence ratings with condition and rt
 #' and separately for conditions for the correlation of accuracy and confidence. The resulting
-#' tibbles in the output thus have two columns. One for the grouping variable and one for the
+#' data frames in the output thus have two columns. One for the grouping variable and one for the
 #' Gamma coefficient.
 #'
 #'
@@ -67,7 +67,6 @@
 #' @name simulateRTConf
 #' @import dplyr
 #' @importFrom magrittr %>%
-#' @importFrom Hmisc rcorr.cens
 #' @importFrom rlang .data
 #' @importFrom stats runif
 # @importFrom pracma integral

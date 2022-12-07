@@ -17,15 +17,15 @@ predictRTModels(paramDf, maxrt = 9, subdivisions = 100L, minrt = NULL,
 }
 \arguments{
 \item{paramDf}{a dataframe with one row per combination of model and
-participant/parameter set. Columns may include a participant (sbj, or
-subject) column, and must include a model column and the names of the model parameters.
+participant/parameter set. Columns may include a \code{participant} (\code{sbj}, or
+\code{subject}) column, and must include a \code{model} column and the names of the model parameters.
 For different stimulus
-quality/mean drift rates, names should be v1, v2, v3,.... Different s parameters
-are possible with s1, s2, s3... with equally many steps as for drift rates (same
-for sv parameter in dynWEV and 2DSD).
+quality/mean drift rates, names should be \code{v1}, \code{v2}, \code{v3},.... Different \code{s} parameters
+are possible with \code{s1}, \code{s2}, \code{s3}... with equally many steps as for drift rates (same
+for \code{sv} parameter in dynWEV and 2DSD).
 Additionally, the confidence thresholds should be given by names with
-thetaUpper1, thetaUpper2,..., thetaLower1,... or,
-for symmetric thresholds only by theta1, theta2,....}
+\code{thetaUpper1}, \code{thetaUpper2},..., \code{thetaLower1},... or,
+for symmetric thresholds only by \code{theta1}, \code{theta2},....}
 
 \item{maxrt}{numeric. The maximum RT for the
 integration/density computation. Default: 15 (for \code{predictConfModels} (integration)) and
@@ -51,33 +51,34 @@ for some OS only when \code{parallel=FALSE}.)}
 (i.e. over the calls for the respective \code{\link{predictRTConf}} functions).}
 
 \item{n.cores}{integer. If \code{parallel} is TRUE, the number of cores used for
-parallelization is required. If NULL (default) the number of available cores -1 is used.}
+parallelization is required. If \code{NULL} (default) the number of available cores -1 is used.}
 
-\item{minrt}{numeric or NULL(default). The minimum rt for the density computation.
-If NULL, the minimal possible response time possible with given parameters will be used (min(t0)).}
+\item{minrt}{numeric or \code{NULL}(default). The minimum rt for the density computation.
+If \code{NULL}, the minimal possible response time possible with given parameters will be used (min(t0)).}
 
-\item{scaled}{logical. Whether the computed density should be scaled to integrate to one
-(additional column densscaled). Otherwise the output is a defective density (i.e. its
-integral is equal to the probability of a response and not 1). If TRUE, the argument
-\code{DistConf} should be given, if available. Default: FALSE.}
+\item{scaled}{logical. Whether the computed density
+should be scaled to integrate to one (additional column \code{densscaled}). Otherwise the output
+contains only the defective density (i.e. its integral is equal to the probability of a
+response and not 1). If \code{TRUE}, the argument \code{DistConf} should be given, if available.
+Default: \code{FALSE}.}
 
-\item{DistConf}{NULL or data.frame. A data.frame with participant
+\item{DistConf}{\code{NULL} or \code{data.frame}. A \code{data.frame} with participant
 and model columns and columns, giving the distribution of response and rating choices for
 different conditions and stimulus categories in the form of the output of
 \code{predictConfModels}. It is only necessary if \code{scaled=TRUE}, because these
 probabilities are used for scaling. If \code{scaled=TRUE} and \code{DistConf=NULL}, it will be computed
 with the function \code{predictConfModels}, which takes some time and the function will
-throw a message. Default: NULL}
+throw a message. Default: \code{NULL}}
 }
 \value{
-\code{predictConfModels} gives a data frame/tibble with columns: participant (or sbj,
-subject depending on the input), model,
-condition, stimulus, response, rating, correct, p, info, err. p is the predicted probability
-of a response and rating, given the stimulus category and condition. Message and error refer
-to the respective outputs of the integration routine used for computation.
-\code{predictRTModels} returns a data frame/tibble with columns: participant (or sbj,
-subject depending on the input), model,
-condition, stimulus, response, rating, correct, rt and dens (and densscaled, if \code{scaled=TRUE}).
+\code{predictConfModels} returns a \code{data.frame}/\code{tibble} with columns: \code{participant} (or \code{sbj},
+subject depending on the input), \code{model}, \code{condition}, \code{stimulus},
+\code{response}, \code{rating}, \code{correct}, \code{p}, \code{info}, \code{err}. \code{p} is the predicted probability of a response
+and \code{rating}, given the stimulus category and condition. \code{info} and \code{err} refer to the
+respective outputs of the integration routine used for the computation.
+\code{predictRTModels} returns a \code{data.frame}/\code{tibble} with columns: \code{participant} (or \code{sbj},
+subject depending on the input), \code{model}, \code{condition}, \code{stimulus},
+\code{response}, \code{rating}, \code{correct}, \code{rt} and \code{dens} (and \code{densscaled}, if \code{scaled=TRUE}).
 }
 \description{
 This function is a wrapper around the functions \code{\link{predictRTConf}} (see
@@ -98,7 +99,7 @@ respective models and participants may be used.
 
 The function \code{\link{predictConf}} (called by \code{predictConfModels})
 consists merely of an integration of the reaction time density or the given model,
-\code{{d*model*}}, over the reaction time in a reasonable interval (0 to maxrt).
+\code{{d*model*}}, over the reaction time in a reasonable interval (0 to \code{maxrt}).
 The function \code{\link{predictRT}} (called by \code{predictRTModels}) wraps these
 density functions to a parameter set input and a data.frame output. '
 Note, that the encoding for stimulus identity is different between diffusion based models

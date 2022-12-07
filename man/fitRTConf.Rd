@@ -28,9 +28,10 @@ the form \code{condition="contrast"}):
 \item \code{response} (encoding the decision response),
 \item \code{correct} (encoding whether the decision was correct; values in 0, 1)
 }
-\item \code{sbj} or \code{participant} (optional; giving the subject ID; only relevant if logging == TRUE;
-if unique the ID is used in autosave files and logging messages;
-if non-unique or missing AND logging ==TRUE, 999 will be used then)
+\item \code{sbj} or \code{participant} (optional; giving the subject ID; only relevant if \code{logging = TRUE};
+if unique the ID is used in saved files with interim results
+and logging messages;
+if non-unique or missing and \code{logging =TRUE}, 999 will be used then)
 }}
 
 \item{model}{character scalar. One of "dynWEV", "2DSD", "IRM", "PCRM", "IRMt", "PCRMt", or "DDMConf" for the model to be fit.}
@@ -43,7 +44,7 @@ See details for more information. If \code{NULL} a default grid will be used.}
 \item{grid_search}{logical. If \code{FALSE}, the grid search before the optimization
 algorithm is omitted. The fitting is then started with a mean parameter set
 from the default grid (if \code{init_grid=NULL}) or directly with the rows from
-\code{init_grid}, if not NULL. (Default: \code{TRUE})}
+\code{init_grid}, if not \code{NULL}. (Default: \code{TRUE})}
 
 \item{data_names}{named list (e.g. \code{c(rating="confidence")}). Alternative
 possibility of giving other column names for the variables in the data. By default
@@ -54,16 +55,16 @@ column names are identical to the ones given in the data argument description.}
 important for data sets where not the whole range of rating categories is realized.
 If given, ratings has to be given as factor or integer.}
 
-\item{restr_tau}{numerical or Inf or "simult_conf". For 2DSD and dynWEV only.
-Upper bound for tau. Fits will be in the interval (0,restr_tau). If FALSE tau will be unbound.
-For "simult_conf", see the documentation of \code{\link{d2DSD}} and \code{\link{dWEV}}}
+\item{restr_tau}{numerical or \code{Inf} or \code{"simult_conf"}. For 2DSD and dynWEV only.
+Upper bound for tau. Fits will be in the interval (0,\code{restr_tau}). If FALSE tau will be unbound.
+For \code{"simult_conf"}, see the documentation of \code{\link{d2DSD}} and \code{\link{dWEV}}}
 
 \item{precision}{numerical scalar. For 2DSD and dynWEV only. Precision of calculation.
 (in the respective models) for the density functions (see \code{\link{dWEV}} for more information).}
 
-\item{logging}{logical. If \code{TRUE}, a folder autosave/fit\strong{model} is created and
+\item{logging}{logical. If \code{TRUE}, a folder 'autosave/fit\strong{model}' is created and
 messages about the process are printed in a logging file and to console (depending
-on OS). Additionally intermediate results are saved in a .RData file with the
+on OS). Additionally intermediate results are saved in a \code{.RData} file with the
 participant ID in the name.}
 
 \item{opts}{list. A list for more control options in the optimization routines
@@ -115,9 +116,9 @@ best parameters from the previous routine.
 data. If all three are given, correct will have no effect (and will be not checked!).
 stimulus can always be given in numerical format with values -1 and 1. response
 can always be given as a character vector with "lower" and "upper" as values.
-Correct must always be given as a 0-1-vector. If stimulus is given together with
-response and they both do not match the above format, they need to have the same
-values/levels (if factor).
+Correct must always be given as a 0-1-vector. If the stimulus column is given
+together with a response column and they both do not match the above format,
+they need to have the same values/levels (if \code{factor}).
 In the case that only stimulus/response is given in any other format together with
 correct, the unique values will be sorted increasingly and
 the first value will be encoded as "lower"/-1 and the second as "upper"/+1.
@@ -140,31 +141,31 @@ are currently not included in the fitting routine:
 \item in race models: \code{sza}, \code{szb}, \code{smu1}, and \code{smu2}
 }
 
-\strong{init_grid}. Each row should be one parameter set to check. The column names
+\strong{\code{init_grid}}. Each row should be one parameter set to check. The column names
 should include the parameters of the desired model, which are the following for 2DSD:
-a, vmin and vmax (will be equidistantly spanned across conditions), sv, z (as the
-relative starting point between 0 and a), sz (also in relative terms), t0, st0, theta0
-(minimal threshold), thetamax (maximal threshold; the others will be equidistantly
-spanned symmetrically for both decisions), and tau. For dynWEV,
-additionally w , svis, and sigvis are required. For the race models the parameters
-are: vmin, vmax (will be equidistantly
-spanned across conditions), a and b (decision thresholds), t0, st0, theta0 (minimal
-threshold), thetamax (maximal threshold;
+\code{a}, \code{vmin} and \code{vmax} (will be equidistantly spanned across conditions), \code{sv}, \code{z} (as the
+relative starting point between 0 and \code{a}), \code{sz} (also in relative terms), \code{t0}, \code{st0}, \code{theta0}
+(minimal threshold), \code{thetamax} (maximal threshold; the others will be equidistantly
+spanned symmetrically for both decisions), and \code{tau}. For dynWEV,
+additionally \code{w} , \code{svis}, and \code{sigvis} are required. For the race models the parameters
+are: \code{vmin}, \code{vmax} (will be equidistantly
+spanned across conditions), \code{a} and \code{b} (decision thresholds), \code{t0}, \code{st0}, \code{theta0}
+(minimal threshold), \code{thetamax} (maximal threshold;
 the others will be equidistantly spanned symmetrically for both decisions), and for
 time-dependent confidence race models
-additionally wrt and wint (as weights compared to wx=1).
+additionally \code{wrt} and \code{wint} (as weights compared to \code{wx=1}).
 
 \strong{opts}. A list with numerical values. Possible options are listed below
 (together with the optimization method they are used for).
 \itemize{
 \item \code{nAttempts} (all) number of best performing initial parameter sets used for
-optimization; default 5, if grid_search is TRUE.
-If grid_search is FALSE and init_grid is NULL, then nAttempts will be set to 1 (and
+optimization; default 5, if \code{grid_search} is \code{TRUE}.
+If \code{grid_search} is \code{FALSE} and \code{init_grid} is \code{NULL}, then \code{nAttempts} will be set to 1 (and
 any input will be ignored).
-If grid_search is FALSE and init_grid is not NULL, the rows of init_grid will be used
+If \code{grid_search} is \code{FALSE} and \code{init_grid} is not \code{NULL}, the rows of \code{init_grid} will be used
 from top to bottom
-(since no initial grid search is done) with not more than nAttempts rows used.
-\item \code{nRestarts} (all) number of successive optim routines for each of the starting parameter sets; default 5,
+(since no initial grid search is done) with not more than \code{nAttempts} rows used.
+\item \code{nRestarts} (all) number of successive \code{optim} routines for each of the starting parameter sets; default 5,
 \item \code{maxfun} (\code{'bobyqa'}) maximum number of function evaluations; default: 5000,
 \item \code{maxit} (\code{'Nelder-Mead' and 'L-BFGS-B'}) maximum iterations; default: 2000,
 \item \code{reltol} (\code{'Nelder-Mead'}) relative tolerance; default:  1e-6),
@@ -200,11 +201,11 @@ head(data)
 
 }
 \references{
-Hellmann, S., Zehetleitner, M., & Rausch, M. (in press). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review}. https://osf.io/9jfqr/
+Hellmann, S., Zehetleitner, M., & Rausch, M. (in press). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review}. \url{https://osf.io/9jfqr/}
 
-https://nashjc.wordpress.com/2016/11/10/why-optim-is-out-of-date/
+\url{https://nashjc.wordpress.com/2016/11/10/why-optim-is-out-of-date/}
 
-https://www.damtp.cam.ac.uk/user/na/NA_papers/NA2009_06.pdf
+\url{https://www.damtp.cam.ac.uk/user/na/NA_papers/NA2009_06.pdf}
 }
 \author{
 Sebastian Hellmann.

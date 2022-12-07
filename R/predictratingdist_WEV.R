@@ -8,12 +8,12 @@
 #' See \code{\link{dWEV}} and \code{\link{d2DSD}} for more information about parameters.
 #'
 #' @param paramDf a list or dataframe with one row. Column names should match the names
-#' of dynWEV and 2DSD model specific parameter names. For different stimulus quality/mean
-#' drift rates, names should be v1, v2, v3,....
-#' Different sv and/or s parameters are possible with sv1, sv2, sv3... (s1, s2, s3,...
+#' of \link{dynWEV} and \link{2DSD} model specific parameter names.
+#' For different stimulus quality/mean drift rates, names should be `v1`, `v2`, `v3`,....
+#' Different `sv` and/or `s` parameters are possible with `sv1`, `sv2`, `sv3`... (`s1`, `s2`, `s3`,...
 #' respectively) with equally many steps as for drift rates. Additionally, the confidence
-#' thresholds should be given by names with thetaUpper1, thetaUpper2,..., thetaLower1,... or,
-#' for symmetric thresholds only by theta1, theta2,....
+#' thresholds should be given by names with `thetaUpper1`, `thetaUpper2`,..., `thetaLower1`,... or,
+#' for symmetric thresholds only by `theta1`, `theta2`,....
 #' @param model character scalar. One of "dynWEV" or "2DSD".
 #' @param precision numerical scalar value. Precision of calculation. Corresponds to the
 #' step size of integration w.r.t. `z` and `t0`. Default is 1e-5.
@@ -28,32 +28,33 @@
 #' subsequent before response and computations are different, when there is an observable
 #' interjudgment time (then `simult_conf` should be FALSE).
 #' @param scaled logical. For \code{predictWEV_RT}. Whether the computed density
-#' should be scaled to integrate to one (additional column densscaled). Otherwise the output
-#' is a defective density (i.e. its integral is equal to the probability of a response and
-#' not 1). If TRUE, the argument `DistConf` should be given, if available. Default: FALSE.
-#' @param DistConf NULL or data.frame. A data.frame or matrix with column names, giving
-#' the distribution of response and rating choices for different conditions and stimulus
-#' categories in the form of the output of \code{predictWEV_Conf}. It is only necessary,
-#' if `scaled=TRUE`, because these probabilities are used for scaling.
-#' If `scaled=TRUE` and `DistConf=NULL`, it will be computed
+#' should be scaled to integrate to one (additional column `densscaled`). Otherwise the output
+#' contains only the defective density (i.e. its integral is equal to the probability of a
+#' response and not 1). If `TRUE`, the argument `DistConf` should be given, if available.
+#' Default: `FALSE`.
+#' @param DistConf `NULL` or `data.frame`. A `data.frame` or `matrix` with column
+#' names, giving the distribution of response and rating choices for
+#' different conditions and stimulus categories in the form of the output of
+#' \code{predictWEV_Conf}. It is only necessary, if `scaled=TRUE`, because these
+#' probabilities are used for scaling. If `scaled=TRUE` and `DistConf=NULL`, it will be computed
 #' with the function \code{predictWEV_Conf}, which takes some time and the function will
-#' throw a message. Default: NULL
+#' throw a message. Default: `NULL`
 #' @param stop.on.error logical. Argument directly passed on to integrate. Default is FALSE,
 #' since the densities invoked may lead to slow convergence of the integrals (which are still
 #' quite accurate) which causes R to throw an error.
 #' @param .progress logical. if TRUE (default) a progress bar is drawn to the console.
 #'
-#' @return \code{predictWEV_Conf} returns a data frame/tibble with columns: condition, stimulus,
-#' response, rating, correct, p, info, err. p is the predicted probability of a response
-#' and rating, given the stimulus category and condition. Message and error refer to the
-#' respective outputs of the integration routine used for computation.
-#' \code{predictWEV_RT} returns a data frame/tibble with columns: condition, stimulus,
-#' response, rating, correct, rt and dens (and densscaled, if `scaled=TRUE`).
+#' @return \code{predictWEV_Conf} returns a `data.frame`/`tibble` with columns: `condition`, `stimulus`,
+#' `response`, `rating`, `correct`, `p`, `info`, `err`. `p` is the predicted probability of a response
+#' and `rating`, given the stimulus category and condition. `info` and `err` refer to the
+#' respective outputs of the integration routine used for the computation.
+#' \code{predictWEV_RT} returns a `data.frame`/`tibble` with columns: `condition`, `stimulus`,
+#' `response`, `rating`, `correct`, `rt` and `dens` (and `densscaled`, if `scaled=TRUE`).
 #'
 #'
 #' @details The function \code{predictWEV_Conf} consists merely of an integration of
 #' the response time density, \code{\link{dWEV}} and \code{\link{d2DSD}}, over the response time in a reasonable
-#' interval (\code{t0} to maxrt). The function \code{predictWEV_RT} wraps these density
+#' interval (\code{t0} to `maxrt`). The function \code{predictWEV_RT} wraps these density
 #' functions to a parameter set input and a data.frame output.
 #' For the argument \code{paramDf}, the output of the fitting function \code{\link{fitRTConf}}
 #' with the respective model may be used.
@@ -63,7 +64,7 @@
 #' not required in `paramDf` but set to 1 by default. All other parameters are used for all
 #' conditions.
 #'
-#' @references Hellmann, S., Zehetleitner, M., & Rausch, M. (in press). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review}. https://osf.io/9jfqr/
+#' @references Hellmann, S., Zehetleitner, M., & Rausch, M. (in press). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review}. <https://osf.io/9jfqr/>
 #'
 #' Pleskac, T. J., & Busemeyer, J. R. (2010). Two-Stage Dynamic Signal Detection:
 #' A Theory of Choice, Decision Time, and Confidence, \emph{Psychological Review}, 117(3),

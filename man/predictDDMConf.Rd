@@ -14,12 +14,12 @@ predictDDMConf_RT(paramDf, maxrt = 9, subdivisions = 100L, minrt = NULL,
 }
 \arguments{
 \item{paramDf}{a list or data frame with one row. Column names should match the names of
-DDMConf model parameter names. For different stimulus quality/mean drift rates,
-names should be v1, v2, v3,...
-Different sv and/or s parameters are possible with sv1, sv2, sv3... (s1, s2, s3,...
+\link{DDMConf} model parameter names. For different stimulus quality/mean
+drift rates, names should be \code{v1}, \code{v2}, \code{v3},....
+Different \code{sv} and/or \code{s} parameters are possible with \code{sv1}, \code{sv2}, \code{sv3}... (\code{s1}, \code{s2}, \code{s3},...
 respectively) with equally many steps as for drift rates. Additionally, the confidence
-thresholds should be given by names with thetaUpper1, thetaUpper2,..., thetaLower1,... or,
-for symmetric thresholds only by theta1, theta2,....}
+thresholds should be given by names with \code{thetaUpper1}, \code{thetaUpper2},..., \code{thetaLower1},... or,
+for symmetric thresholds only by \code{theta1}, \code{theta2},....}
 
 \item{maxrt}{numeric. The maximum RT for the
 integration/density computation. Default: 15 (for \code{predictDDMConf_Conf}
@@ -29,35 +29,35 @@ integration/density computation. Default: 15 (for \code{predictDDMConf_Conf}
 For \code{predictDDMConf_Conf} it is used as argument for the inner integral routine.
 For \code{predictDDMConf_RT} it is the number of points for which the density is computed.}
 
-\item{stop.on.error}{logical. Argument directly passed on to integrate. Default is FALSE,
+\item{stop.on.error}{logical. Argument directly passed on to integrate. Default is \code{FALSE},
 since the densities invoked may lead to slow convergence of the integrals (which are still
 quite accurate) which causes R to throw an error.}
 
-\item{.progress}{logical. If TRUE (default) a progress bar is drawn to the console.}
+\item{.progress}{logical. If \code{TRUE} (default) a progress bar is drawn to the console.}
 
-\item{minrt}{numeric or NULL(default). The minimum rt for the density computation.}
+\item{minrt}{numeric or \code{NULL}(default). The minimum rt for the density computation.}
 
 \item{scaled}{logical. For \code{predictDDMConf_RT}. Whether the computed density
-should be scaled to integrate to one (additional column densscaled). Otherwise the output
+should be scaled to integrate to one (additional column \code{densscaled}). Otherwise the output
 contains only the defective density (i.e. its integral is equal to the probability of a
-response and not 1). If TRUE, the argument \code{DistConf} should be given, if available.
-Default: FALSE.}
+response and not 1). If \code{TRUE}, the argument \code{DistConf} should be given, if available.
+Default: \code{FALSE}.}
 
-\item{DistConf}{NULL or data.frame. A data.frame or matrix with column
+\item{DistConf}{\code{NULL} or \code{data.frame}. A \code{data.frame} or \code{matrix} with column
 names, giving the distribution of response and rating choices for
 different conditions and stimulus categories in the form of the output of
 \code{predictDDMConf_Conf}. It is only necessary, if \code{scaled=TRUE}, because these
 probabilities are used for scaling. If \code{scaled=TRUE} and \code{DistConf=NULL}, it will be computed
 with the function \code{predictDDMConf_Conf}, which takes some time and the function will
-throw a message. Default: NULL}
+throw a message. Default: \code{NULL}}
 }
 \value{
-\code{predictDDMConf_Conf} returns a data frame/tibble with columns: condition, stimulus,
-response, rating, correct, p, info, err. p is the predicted probability of a response
-and rating, given the stimulus category and condition. Message and error refer to the
+\code{predictDDMConf_Conf} returns a \code{data.frame}/\code{tibble} with columns: \code{condition}, \code{stimulus},
+\code{response}, \code{rating}, \code{correct}, \code{p}, \code{info}, \code{err}. \code{p} is the predicted probability of a response
+and \code{rating}, given the stimulus category and condition. \code{info} and \code{err} refer to the
 respective outputs of the integration routine used for the computation.
-\code{predictDDMConf_RT} returns a data frame/tibble with columns: condition, stimulus,
-response, rating, correct, rt and dens (and densscaled, if \code{scaled=TRUE}).
+\code{predictDDMConf_RT} returns a \code{data.frame}/\code{tibble} with columns: \code{condition}, \code{stimulus},
+\code{response}, \code{rating}, \code{correct}, \code{rt} and \code{dens} (and \code{densscaled}, if \code{scaled=TRUE}).
 }
 \description{
 \code{predictDDMConf_Conf} predicts the categorical response distribution of
@@ -70,9 +70,9 @@ and parameters.
 \details{
 The function \code{predictDDMConf_Conf} consists merely of an integration of
 the response time density, \code{\link{dDDMConf}}, over the
-response time in a reasonable interval (0 to maxrt). The function
+response time in a reasonable interval (0 to \code{maxrt}). The function
 \code{predictDDMConf_RT} wraps these density
-functions to a parameter set input and a data.frame output.
+functions to a parameter set input and a \code{data.frame} output.
 For the argument \code{paramDf}, the output of the fitting function \code{\link{fitRTConf}}
 with the DDMConf model may be used.
 }

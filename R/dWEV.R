@@ -31,9 +31,9 @@
 #' and 2=upper or -1=lower and 1=upper, respectively. For convenience, \code{response} is
 #' converted via \code{as.numeric} also
 #' allowing factors. Ignored if the first argument is a \code{data.frame}.
-#' @param th1 together with th2: scalars or numerical vectors giving the lower and upper bound of the
+#' @param th1 together with `th2`: scalars or numerical vectors giving the lower and upper bound of the
 #' interval of the confidence measure (see Details). Only values with \code{th2}>=\code{th1} are accepted.
-#' @param th2 (see th1)
+#' @param th2 (see `th1`)
 #'
 #' @param a threshold separation. Amount of information that is considered for a decision. Large values
 #' indicate a conservative decisional style. Typical range: 0.5 < \code{a} < 2
@@ -77,7 +77,7 @@
 #' @param svis diffusion constant of visibility process. Range: \code{svis}>0. Default: \code{svis}=1.
 #' @param sigvis the variability in drift rate of the visibility process (which varies independently
 #' from the drift rate in decision process). Range: \code{sigvis}>=0. Default: \code{sigvis}=0.
-#' @param omega power for judgement time in the division of the confidence measure
+#' @param omega power for judgment time in the division of the confidence measure
 #' by the judgment time (Default: 0, i.e. no division which is the version of
 #' dynWEV proposed by Hellmann et al.)
 #'
@@ -87,8 +87,8 @@
 #' reported before the confidence report, `simul_conf` should be `FALSE`.
 #' @param precision numerical scalar value. Precision of calculation. Corresponds to the
 #' step size of integration w.r.t. `z` and `t0`. Default is 1e-5.
-#' @param z_absolute logical. Determines whether z is treated as absolute start point (TRUE) or
-#' relative (FALSE; default) to `a`.
+#' @param z_absolute logical. Determines whether `z` is treated as absolute start point
+#' (`TRUE`) or relative (`FALSE`; default) to `a`.
 #' @param stop_on_error Should the diffusion functions return 0 if the parameters values are
 #' outside the allowed range (= \code{FALSE}) or produce an error in this case (= \code{TRUE}).
 #' @param stop_on_zero Should the computation of densities stop as soon as a density value of 0 occurs.
@@ -146,7 +146,7 @@
 #' The function code is basically an extension of the \code{ddiffusion} function from the
 #' package \code{rtdists} for the Ratcliff diffusion model.
 #'
-#' @references Hellmann, S., Zehetleitner, M., & Rausch, M. (in press). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review}. https://osf.io/9jfqr/
+#' @references Hellmann, S., Zehetleitner, M., & Rausch, M. (in press). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review}. <https://osf.io/9jfqr/>
 #'
 #' @author Sebastian Hellmann
 #'
@@ -235,7 +235,7 @@ dWEV <- function (rt, response="upper", th1,th2, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, s
     if (simult_conf) {
       # if confidence and decision are given simultaneously, subtract tau from rt
       # because both processes are assumed to happen subsequentially and therefore
-      # observable response time is the sum of decision time, inter-judgment time
+      # observable response time is the sum of decision time, interjudgment time
       # and non-decision component
       rt[ok_rows] <- rt[ok_rows]-pars$params[ok_rows[1],9]
     }

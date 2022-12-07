@@ -39,11 +39,11 @@ Dataframe inputs are accepted. If a column \code{x} is available there, this wil
 \item{x}{numeric. A increasing vector of same length as \code{cdf}. Can also be specified as column of \code{cdf}.}
 }
 \value{
-\code{PDFtoQuantiles} returns a tibble with columns p and q indicating
+\code{PDFtoQuantiles} returns a \code{tibble} with columns p and q indicating
 probabilities and respective quantiles. Furthermore, the output has grouping columns
-identical to the additional columns in the input (without rt/x, dens and densscaled),
-but without the ones in the agg_over argument. \code{CDFtoQuantiles}
-returns only a data.frame with columns p and q.
+identical to the additional columns in the input (without \code{rt}/\code{x}, \code{dens} and \code{densscaled}),
+but without the ones in the \code{agg_over} argument. \code{CDFtoQuantiles}
+returns only a \code{data.frame} with columns \code{p} and \code{q}.
 }
 \description{
 \code{CDFtoQuantiles} computes quantiles for a given CDF.

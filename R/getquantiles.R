@@ -21,11 +21,11 @@
 #' Dataframe inputs are accepted. If a column `x` is available there, this will be used as support values.
 #' @param x numeric. A increasing vector of same length as `cdf`. Can also be specified as column of `cdf`.
 #'
-#' @return `PDFtoQuantiles` returns a tibble with columns p and q indicating
+#' @return `PDFtoQuantiles` returns a `tibble` with columns p and q indicating
 #' probabilities and respective quantiles. Furthermore, the output has grouping columns
-#' identical to the additional columns in the input (without rt/x, dens and densscaled),
-#' but without the ones in the agg_over argument. `CDFtoQuantiles`
-#' returns only a data.frame with columns p and q.
+#' identical to the additional columns in the input (without `rt`/`x`, `dens` and `densscaled`),
+#' but without the ones in the `agg_over` argument. `CDFtoQuantiles`
+#' returns only a `data.frame` with columns `p` and `q`.
 #'
 #' @details
 #' For a reasonable accuracy the number of steps in the support column (`rt`/`x`)

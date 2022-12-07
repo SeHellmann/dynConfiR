@@ -1,16 +1,16 @@
 #' Drift Diffusion Model with time-dependent confidence
 #'
 #' Likelihood function and random number generator for the Drift Diffusion Model
-#' with confidence computet as decision time. It includes following parameters:
+#' with confidence computed as decision time. It includes following parameters:
 #' DDM parameters: \code{a} (threshold separation), \code{z}
 #' (starting point; relative), \code{v} (drift rate), \code{t0} (non-decision time/
 #' response time constant), \code{d} (differences in speed of response execution),
 #' \code{sv} (inter-trial-variability of drift), \code{st0} (inter-trial-variability
-#' of non-decisional components), \code{sz} (inter-trial-variability of relative
+#' of non-decision components), \code{sz} (inter-trial-variability of relative
 #' starting point), \code{s} (diffusion constant).
 #'
 #' For the confidence part: \code{th1} and \code{th2} (lower and upper
-#' thresholds for decition time interval).
+#' thresholds for decision time interval).
 #'
 #' \strong{Note that the parameterization or defaults of non-decision time variability
 #' \code{st0} and diffusion constant \code{s} differ from what is often found in the
@@ -24,11 +24,11 @@
 #' and 2=upper or -1=lower and 1=upper, respectively. For convenience, \code{response} is
 #' converted via \code{as.numeric} also
 #' allowing factors. Ignored if the first argument is a \code{data.frame}.
-#' @param th1 together with th2: scalars or numerical vectors giving the lower and upper
+#' @param th1 together with `th2`: scalars or numerical vectors giving the lower and upper
 #' bound of the interval, in which the accumulator should end at the time of the
 #' confidence judgment (i.e. at time \code{rt}+\code{tau}). Only values with
 #' \code{th2}>=\code{th1} are accepted.
-#' @param th2 (see th1)
+#' @param th2 (see `th1`)
 #'
 #' @param a threshold separation. Amount of information that is considered for a decision.
 #' Large values indicate a conservative decisional style. Typical range: 0.5 < \code{a} < 2
@@ -68,15 +68,15 @@
 #' Note that the default used by Ratcliff and in other applications is often 0.1.
 #'
 #' @param precision \code{numerical} scalar value. Precision of calculation. Corresponds
-#' to the stepsize of integration w.r.t. z. Default is 1e-5.
-#' @param st0stepsize numerical scalar value. Stepsize for integration over t0.
-#' @param z_absolute logical. Determines whether z is treated as absolute start point
-#' (TRUE) or relative (FALSE; default) to a.
+#' to the stepsize of integration w.r.t. `z`. Default is 1e-5.
+#' @param st0stepsize numerical scalar value. Stepsize for integration over `t0`.
+#' @param z_absolute logical. Determines whether `z` is treated as absolute start point
+#' (`TRUE`) or relative (`FALSE`; default) to `a`.
 #' @param stop_on_error Should the diffusion functions return 0 if the parameters values
 #' are outside the allowed range (= \code{FALSE}) or produce an error in this case
 #' (= \code{TRUE}).
 #' @param stop_on_zero Should the computation of densities stop as soon as a density value of 0 occurs.
-#' This may save a lot of time if the function is used for a likelihood function. Default: FALSE
+#' This may save a lot of time if the function is used for a likelihood function. Default: `FALSE`
 #'
 #' @param n integer. The number of samples generated.
 #' @param delta numeric. Discretization step size for simulations in the stochastic process
@@ -102,12 +102,12 @@
 #' based on the assumption that information is accumulated continuously until one of two
 #' decision thresholds is hit. For introduction see Ratcliff and McKoon (2008).
 #'
-#' This model incorporates the idea, that the decision time is informative for
+#' This model incorporates the idea, that the decision time T is informative for
 #' stimulus difficulty and thus confidence is computed as a monotone function
-#' of 1/sqrt(DecisionTime). In this implementation, confidence is the decision
+#' of \eqn{\frac{1}{\sqrt{T}}}{1/\sqrt{T}}. In this implementation, confidence is the decision
 #' time, directly. Here, we use an interval, given by \code{th1}
 #' and \code{th2}, assuming that the data is given with discrete judgments and
-#' preprocessed, s.t. these discrete ratings are translated to the respective intervals.
+#' pre-processed, s.t. these discrete ratings are translated to the respective intervals.
 #'
 #' All functions are fully vectorized across all parameters as well as the response to
 #' match the length or \code{rt} (i.e., the output is always of length equal to \code{rt}).
@@ -136,7 +136,7 @@
 #'
 #' Hellmann, S., Zehetleitner, M., & Rausch, M. (in press). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review}.
 #'
-#' @author For the original rtdists package: Underlying C code by Jochen Voss and Andreas Voss. Porting and R wrapping by Matthew Gretton, Andrew Heathcote, Scott Brown, and Henrik Singmann. \code{qdiffusion} by Henrik Singmann. For the dDDMConf function the C code was extended by Sebastian Hellmann.
+#' @author For the original `rtdists` package: Underlying C code by Jochen Voss and Andreas Voss. Porting and R wrapping by Matthew Gretton, Andrew Heathcote, Scott Brown, and Henrik Singmann. \code{qdiffusion} by Henrik Singmann. For the `dDDMConf` function the C code was extended by Sebastian Hellmann.
 #'
 #' @useDynLib dynConfiR, .registration = TRUE
 #'

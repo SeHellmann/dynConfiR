@@ -17,12 +17,12 @@ predictRM_RT(paramDf, model = "IRM", time_scaled = FALSE, maxrt = 9,
 }
 \arguments{
 \item{paramDf}{a list or data frame with one row. Column names should match the names of
-IRM and PCRM model parameter names (only mu1 and mu2 are not used in this context but
-replaced by the parameter v). For different stimulus quality/mean drift rates,
-names should be v1, v2, v3,... The functions allow also the process noise to vary (using
-s1, s2, ...), which is otherwise not required and set to 1.
-Additionally, the confidence thresholds should be given by names with
-thetaUpper1, thetaUpper2,..., thetaLower1,... or, for symmetric thresholds only by theta1, theta2,....}
+\link{RaceModels} parameter names (only \code{mu1} and \code{mu2} are not used in this context but
+replaced by the parameter \code{v}). For different stimulus quality/mean
+drift rates, names should be \code{v1}, \code{v2}, \code{v3},....
+Different \code{s} parameters are possible with \code{s1}, \code{s2}, \code{s3},... with equally many steps as for drift rates. Additionally, the confidence
+thresholds should be given by names with \code{thetaUpper1}, \code{thetaUpper2},..., \code{thetaLower1},... or,
+for symmetric thresholds only by \code{theta1}, \code{theta2},....}
 
 \item{model}{character scalar. One of "IRM" or "PCRM". ("IRMt" and "PCRMt" will also be accepted. In that case,
 time_scaled is set to TRUE.)}
@@ -47,26 +47,26 @@ quite accurate) which causes R to throw an error.}
 \item{minrt}{numeric or NULL(default). The minimum rt for the density computation.}
 
 \item{scaled}{logical. For \code{predictRM_RT}. Whether the computed density
-should be scaled to integrate to one (additional column densscaled). Otherwise the output
+should be scaled to integrate to one (additional column \code{densscaled}). Otherwise the output
 contains only the defective density (i.e. its integral is equal to the probability of a
-response and not 1). If TRUE, the argument \code{DistConf} should be given, if available.
-Default: FALSE.}
+response and not 1). If \code{TRUE}, the argument \code{DistConf} should be given, if available.
+Default: \code{FALSE}.}
 
-\item{DistConf}{NULL or data.frame. A data.frame or matrix with column
+\item{DistConf}{\code{NULL} or \code{data.frame}. A \code{data.frame} or \code{matrix} with column
 names, giving the distribution of response and rating choices for
 different conditions and stimulus categories in the form of the output of
 \code{predictRM_Conf}. It is only necessary, if \code{scaled=TRUE}, because these
 probabilities are used for scaling. If \code{scaled=TRUE} and \code{DistConf=NULL}, it will be computed
 with the function \code{predictRM_Conf}, which takes some time and the function will
-throw a message. Default: NULL}
+throw a message. Default: \code{NULL}}
 }
 \value{
-\code{predictRM_Conf} returns a data frame/tibble with columns: condition, stimulus,
-response, rating, correct, p, info, err. p is the predicted probability of a response
-and rating, given the stimulus category and condition. Message and error refer to the
+\code{predictRM_Conf} returns a \code{data.frame}/\code{tibble} with columns: \code{condition}, \code{stimulus},
+\code{response}, \code{rating}, \code{correct}, \code{p}, \code{info}, \code{err}. \code{p} is the predicted probability of a response
+and \code{rating}, given the stimulus category and condition. \code{info} and \code{err} refer to the
 respective outputs of the integration routine used for the computation.
-\code{predictRM_RT} returns a data frame/tibble with columns: condition, stimulus,
-response, rating, correct, rt and dens (and densscaled, if \code{scaled=TRUE}).
+\code{predictRM_RT} returns a \code{data.frame}/\code{tibble} with columns: \code{condition}, \code{stimulus},
+\code{response}, \code{rating}, \code{correct}, \code{rt} and \code{dens} (and \code{densscaled}, if \code{scaled=TRUE}).
 }
 \description{
 \code{predictRM_Conf} predicts the categorical response distribution of
@@ -79,7 +79,7 @@ and parameters.
 \details{
 The function \code{predictRM_Conf} consists merely of an integration of
 the response time density, \code{\link{dIRM}} and \code{\link{dPCRM}}, over the
-response time in a reasonable interval (0 to maxrt). The function
+response time in a reasonable interval (0 to \code{maxrt}). The function
 \code{predictRM_RT} wraps these density
 functions to a parameter set input and a data.frame output.
 For the argument \code{paramDf}, the output of the fitting function \code{\link{fitRTConf}}

@@ -24,7 +24,8 @@ the form \code{condition="contrast"}):
 \item \code{response} (encoding the decision response),
 \item \code{correct} (encoding whether the decision was correct; values in 0, 1)
 \item \code{sbj} (giving the subject ID; the models given in the second argument are fitted for each
-subject individually. (Furthermore, logging == TRUE, the ID is used in autosave files and logging messages.))
+subject individually. (Furthermore, if \code{logging = TRUE}, the ID is used in files
+saved with interim results and logging messages.))
 }
 }}
 
@@ -37,8 +38,8 @@ If given, ratings has to be given as factor or integer.}
 
 \item{fixed}{list. List with parameter value pairs for parameters that should not be fitted. (see Details).}
 
-\item{restr_tau}{numerical or Inf or "simult_conf". Used for 2DSD and dynWEV only. Upper bound for tau.
-Fits will be in the interval (0,restr_tau). If FALSE tau will be unbound. For "simult_conf", see the documentation of
+\item{restr_tau}{numerical or \code{Inf} or \code{"simult_conf"}. Used for 2DSD and dynWEV only. Upper bound for tau.
+Fits will be in the interval (0,\code{restr_tau}). If \code{FALSE} tau will be unbound. For \code{"simult_conf"}, see the documentation of
 \code{\link{d2DSD}} and \code{\link{dWEV}}}
 
 \item{grid_search}{logical. If \code{FALSE}, the grid search before the optimization
@@ -55,15 +56,15 @@ the parameter estimation. Either \code{"bobyqa"} (default), \code{"L-BFGS-B"} or
 box-constraint optimization. For Nelder-Mead a transfinite function rescaling is used
 (i.e. the constrained arguments are suitably transformed to the whole real line).}
 
-\item{logging}{logical. If \code{TRUE}, a folder autosave/fit\strong{model} is created and
+\item{logging}{logical. If \code{TRUE}, a folder 'autosave/fit\strong{model}' is created and
 messages about the process are printed in a logging file and to console (depending
-on OS). Additionally intermediate results are saved in a .RData file with the
+on OS). Additionally intermediate results are saved in a \code{.RData} file with the
 participant ID in the name.}
 
 \item{precision}{numerical scalar. For 2DSD and dynWEV only. Precision of calculation.
 (in the respective models) for the density functions (see \code{\link{dWEV}} for more information).}
 
-\item{parallel}{"models", "single", "both" or FALSE. If FALSE no parallelization
+\item{parallel}{"models", "single", "both" or \code{FALSE}. If \code{FALSE} no parallelization
 is used in the fitting process. If "models" the fitting process is parallelized over
 participants and models (i.e. over the calls for fitting functions). If "single"
 parallelization is used within the fitting processes (over initial grid search and
@@ -71,14 +72,14 @@ optimization processes for different start points, but see \code{\link{fitRTConf
 If "both", parallelization is done hierarchical. For small number of
 models and participants "single" or "both" is preferable. Otherwise, you may use "models".}
 
-\item{n.cores}{integer vector or NULL. If \code{parallel} is "models" or "single", a single
+\item{n.cores}{integer vector or \code{NULL}. If \code{parallel} is "models" or "single", a single
 integer for the number of cores used for parallelization is required. If
 \code{parallel} is "both", two values are required. The first for the number of parallel
 model-participant combinations and the second for the parallel processes within the
 fitting procedures (this may be specified
-to match the \code{nAttemps}-Value in the \code{opts} argument. If NULL (default)
+to match the \code{nAttemps}-Value in the \code{opts} argument. If \code{NULL} (default)
 the number of available cores -1 is used.
-If NULL and \code{parallel} is "both", the cores will be used for
+If \code{NULL} and \code{parallel} is "both", the cores will be used for
 model-participant-parallelization, only.}
 
 \item{...}{Possibility of giving alternative variable names in data frame
@@ -86,8 +87,8 @@ model-participant-parallelization, only.}
 }
 \value{
 Gives data frame with rows for each model-participant combination and columns for the different parameters
-as fitted result as well as additional information about the fit (negLogLik (for final parameters),
-k (number of parameters), N (number of data rows), BIC, AICc and AIC)
+as fitted result as well as additional information about the fit (\code{negLogLik} (for final parameters),
+\code{k} (number of parameters), \code{N} (number of data rows), \code{BIC}, \code{AICc} and \code{AIC})
 }
 \description{
 This function is a wrapper of the function \code{\link{fitConfModel}} (see
@@ -119,7 +120,7 @@ leads to identical upper bounds on the decision processes, which is the equivale
 \strong{opts}. A list with numerical values. Possible options are listed below (together with the optimization method they are used for).
 \itemize{
 \item \code{nAttempts} (all) number of best performing initial parameter sets used for optimization; default 5
-\item \code{nRestarts} (all) number of successive optim routines for each of the starting parameter sets; default 5,
+\item \code{nRestarts} (all) number of successive \code{optim} routines for each of the starting parameter sets; default 5,
 \item \code{maxfun} (\code{'bobyqa'}) maximum number of function evaluations; default: 5000,
 \item \code{maxit} (\code{'Nelder-Mead' and 'L-BFGS-B'}) maximum iterations; default: 2000,
 \item \code{reltol} (\code{'Nelder-Mead'}) relative tolerance; default:  1e-6),
@@ -169,7 +170,7 @@ head(data)
 
 }
 \references{
-Hellmann, S., Zehetleitner, M., & Rausch, M. (in press). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review}. https://osf.io/9jfqr/
+Hellmann, S., Zehetleitner, M., & Rausch, M. (in press). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review}. \url{https://osf.io/9jfqr/}
 }
 \author{
 Sebastian Hellmann.

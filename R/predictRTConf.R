@@ -10,12 +10,12 @@
 #'
 #' @param paramDf a list or dataframe with one row. Column names should match the
 #' names of the respective model parameters. For different stimulus
-#' quality/mean drift rates, names should be v1, v2, v3,.... Different s parameters
-#' are possible with s1, s2, s3... with equally many steps as for drift rates (same
-#' for sv parameter in dynWEV and 2DSD).
+#' quality/mean drift rates, names should be `v1`, `v2`, `v3`,.... Different `s` parameters
+#' are possible with `s1`, `s2`, `s3`... with equally many steps as for drift rates (same
+#' for `sv` parameter in dynWEV and 2DSD).
 #' Additionally, the confidence thresholds should be given by names with
-#' thetaUpper1, thetaUpper2,..., thetaLower1,... or,
-#' for symmetric thresholds only by theta1, theta2,....
+#' `thetaUpper1`, `thetaUpper2`,..., `thetaLower1`,... or,
+#' for symmetric thresholds only by `theta1`, `theta2`,....
 #' @param model character scalar. One of "2DSD", "dynWEV", "IRM", "PCRM", "IRMt", or "PCRMt".
 #' @param maxrt numeric. The maximum RT for the
 #' integration/density computation. Default: 15 (for \code{predictConf} (integration)),
@@ -29,32 +29,33 @@
 #' judgment are assumed to have happened subsequent before response and computations are
 #' different, when there is an observable interjudgment time (then `simult_conf` should be FALSE).
 #' @param scaled logical. For \code{predictRT}. Whether the computed density
-#' should be scaled to integrate to one (additional column densscaled). Otherwise the output
-#' is a defective density (i.e. its integral is equal to the probability of a response and
-#' not 1). If TRUE, the argument `DistConf` should be given, if available. Default: FALSE.
-#' @param DistConf NULL or data.frame. For \code{predictRT}. A data.frame or matrix
-#' with column names, giving the distribution of response and rating choices for
+#' should be scaled to integrate to one (additional column `densscaled`). Otherwise the output
+#' contains only the defective density (i.e. its integral is equal to the probability of a
+#' response and not 1). If `TRUE`, the argument `DistConf` should be given, if available.
+#' Default: `FALSE`.
+#' @param DistConf `NULL` or `data.frame`. A `data.frame` or `matrix` with column
+#' names, giving the distribution of response and rating choices for
 #' different conditions and stimulus categories in the form of the output of
 #' \code{predictConf}. It is only necessary, if `scaled=TRUE`, because these
-#' probabilities are used for scaling. If `scaled=TRUE` and `DistConf=NULL`, it will be
-#' computed with the function \code{predictConf}, which takes some time and the function will
-#' throw a message. Default: NULL
+#' probabilities are used for scaling. If `scaled=TRUE` and `DistConf=NULL`, it will be computed
+#' with the function \code{predictRM_Conf}, which takes some time and the function will
+#' throw a message. Default: `NULL`
 #' @param stop.on.error logical. Argument directly passed on to integrate. Default is FALSE,
 #' since the densities invoked may lead to slow convergence of the integrals (which are still
 #' quite accurate) which causes R to throw an error.
 #' @param .progress logical. If TRUE (default) a progress bar is drawn to the console.
 #'
-#' @return \code{predictConf} gives a data frame/tibble with columns: condition, stimulus,
-#' response, rating, correct, p, info, err. p is the predicted probability of a response
-#' and rating, given the stimulus category and condition. Message and error refer to the
-#' respective outputs of the integration routine used for computation.
-#' \code{predictRT} returns a data frame/tibble with columns: condition, stimulus,
-#' response, rating, correct, rt and dens (and densscaled, if `scaled=TRUE`).
+#' @return \code{predictConf} returns a `data.frame`/`tibble` with columns: `condition`, `stimulus`,
+#' `response`, `rating`, `correct`, `p`, `info`, `err`. `p` is the predicted probability of a response
+#' and `rating`, given the stimulus category and condition. `info` and `err` refer to the
+#' respective outputs of the integration routine used for the computation.
+#' \code{predictRT} returns a `data.frame`/`tibble` with columns: `condition`, `stimulus`,
+#' `response`, `rating`, `correct`, `rt` and `dens` (and `densscaled`, if `scaled=TRUE`).
 #'
 #'
 #' @details The function \code{predictConf} consists merely of an integration of
 #' the reaction time density of the given model, \code{{d*model*}}, over the response
-#' time in a reasonable interval (0 to maxrt). The function \code{predictRT} wraps
+#' time in a reasonable interval (0 to `maxrt`). The function \code{predictRT} wraps
 #' these density functions to a parameter set input and a data.frame output.
 #' For the argument \code{paramDf}, the output of the fitting function \code{\link{fitRTConf}}
 #' with the respective model may be used.

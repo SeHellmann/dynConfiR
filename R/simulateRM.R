@@ -13,11 +13,12 @@
 #' Kiani et al. (2014), but without a confidence measure.
 #'
 #' @param paramDf a list or data frame with one row. Column names should match the names of
-#' IRM and PCRM model parameter names. For different stimulus quality/mean drift rates, names should
-#' be v1, v2, v3,.... The function allows also the process noise to vary (using
-#' s1, s2, ...), which is otherwise not required and set to 1.
-#' Additionally, the confidence thresholds should be given by names with
-#' thetaUpper1, thetaUpper2,..., thetaLower1,... or, for symmetric thresholds only by theta1, theta2,....
+#' \link{RaceModels} parameter names (only `mu1` and `mu2` are not used in this context but
+#' replaced by the parameter `v`). For different stimulus quality/mean
+#' drift rates, names should be `v1`, `v2`, `v3`,....
+#' Different `s` parameters are possible with `s1`, `s2`, `s3`,... with equally many steps as for drift rates. Additionally, the confidence
+#' thresholds should be given by names with `thetaUpper1`, `thetaUpper2`,..., `thetaLower1`,... or,
+#' for symmetric thresholds only by `theta1`, `theta2`,....
 #' @param n integer. The number of samples (per condition and stimulus direction) generated.
 #' Total number of samples is \code{n*nConditions*length(stimulus)}.
 #' @param model character scalar. One of "IRM" or "PCRM". ("IRMt" and "PCRMt" will also be accepted. In that case,
@@ -26,7 +27,7 @@
 #' be used.
 #' @param gamma logical. If TRUE, the gamma correlation between confidence ratings, rt and accuracy is
 #' computed.
-#' @param agg_simus logical. Simulation is done on a trial basis with rts outcome. If TRUE,
+#' @param agg_simus logical. Simulation is done on a trial basis with RTs outcome. If TRUE,
 #' the simulations will be aggregated over RTs to return only the distribution of response and
 #' confidence ratings. Default: FALSE.
 #' @param stimulus numeric vector. Either 1, 2 or c(1, 2) (default).
@@ -59,13 +60,13 @@
 #' fits the argument `paramDf` for simulation. The Gamma coefficients are computed separately for
 #' correct/incorrect responses for the correlation of confidence ratings with condition and rt
 #' and separately for conditions for the correlation of accuracy and confidence. The resulting
-#' tibbles in the output thus have two columns. One for the grouping variable and one for the
+#' data frames in the output thus have two columns. One for the grouping variable and one for the
 #' Gamma coefficient.
 #'
 #' @note Different parameters for different conditions are only allowed for drift rate, \code{v},
 #' and process variability, \code{s}. All other parameters are used for all conditions.
 #'
-#' @references Hellmann, S., Zehetleitner, M., & Rausch, M. (in press). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review}. https://osf.io/9jfqr/
+#' @references Hellmann, S., Zehetleitner, M., & Rausch, M. (in press). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review}. <https://osf.io/9jfqr/>
 #'
 #' Kiani, R., Corthell, L., & Shadlen, M.N. (2014) Choice certainty is informed
 #' by both evidence and decision time.
@@ -76,7 +77,6 @@
 #' @name simulateRM
 #' @import dplyr
 #' @importFrom magrittr %>%
-#' @importFrom Hmisc rcorr.cens
 #' @importFrom rlang .data
 #' @importFrom stats runif
 # @importFrom pracma integral
@@ -134,6 +134,14 @@ simulateRM <- function (paramDf, n=1e+4,  model = "IRM", time_scaled=FALSE,
                         gamma = FALSE, agg_simus=FALSE,
                         stimulus = c(1,2), delta=0.01, maxrt=15, seed=NULL)
 {
+  if (gamma && !requireNamespace("Hmisc", quietly = TRUE)) {
+    warning("Package 'Hmisc' is not installed, but required to computed Gamma correlations.
+    Please install 'Hmisc', if computation of Gamma is required.
+    Otherwise the function will continue without computation of Gamma.
+    (Computation of Gamma is still possible with the function output, if agg_simus = FALSE.)",
+    immediate.=TRUE)
+    gamma <- FALSE
+  }
   if (!is.null(seed)) {
     set.seed(seed)
   }
@@ -244,19 +252,19 @@ simulateRM <- function (paramDf, n=1e+4,  model = "IRM", time_scaled=FALSE,
 
   if (gamma==TRUE) {
     gamma_condition <- simus %>% group_by(.data$correct) %>%
-      summarise(data.frame(t(rcorr.cens(.data$rating,S=.data$condition, outx=TRUE)))) %>%
+      summarise(data.frame(t(Hmisc::rcorr.cens(.data$rating,S=.data$condition, outx=TRUE)))) %>%
       select(.data$correct, Gamma = .data$Dxy)
     gamma_rt <- simus %>% group_by(.data$correct) %>%
-      summarise(data.frame(t(rcorr.cens(.data$rating,S=.data$rt, outx=TRUE))))%>%
+      summarise(data.frame(t(Hmisc::rcorr.cens(.data$rating,S=.data$rt, outx=TRUE))))%>%
       select(.data$correct, Gamma = .data$Dxy)
     gamma_correct <- simus %>% group_by(.data$condition) %>%
-      summarise(data.frame(t(rcorr.cens(.data$rating,S=.data$correct, outx=TRUE))))%>%
+      summarise(data.frame(t(Hmisc::rcorr.cens(.data$rating,S=.data$correct, outx=TRUE))))%>%
       select(.data$condition, Gamma = .data$Dxy)
     gamma_rt_bycondition <- simus %>% group_by(.data$condition) %>%
-      summarise(data.frame(t(rcorr.cens(.data$rating,S=.data$rt, outx=TRUE))))%>%
+      summarise(data.frame(t(Hmisc::rcorr.cens(.data$rating,S=.data$rt, outx=TRUE))))%>%
       select(.data$condition, Gamma = .data$Dxy)
     gamma_rt_byconditionbycorrect <- simus %>% group_by(.data$condition, .data$correct) %>%
-      summarise(data.frame(t(rcorr.cens(.data$rating,S=.data$rt, outx=TRUE))))%>%
+      summarise(data.frame(t(Hmisc::rcorr.cens(.data$rating,S=.data$rt, outx=TRUE))))%>%
       select(.data$condition, Gamma = .data$Dxy)
   }
   if (agg_simus) {
@@ -288,6 +296,14 @@ rRM_Kiani <- function (paramDf, n=1e+4, time_scaled=FALSE,
                  gamma = FALSE, agg_simus=FALSE,
                  stimulus = c(1,2), delta=0.01, maxrt=15, seed=NULL)
 {
+  if (gamma && !requireNamespace("Hmisc", quietly = TRUE)) {
+    warning("Package 'Hmisc' is not installed, but required to computed Gamma correlations.
+    Please install 'Hmisc', if computation of Gamma is required.
+    Otherwise the function will continue without computation of Gamma.
+    (Computation of Gamma is still possible with the function output, if agg_simus = FALSE.)",
+            immediate.=TRUE)
+    gamma <- FALSE
+  }
   if (!is.null(seed)) {
     set.seed(seed)
   }
@@ -386,19 +402,19 @@ rRM_Kiani <- function (paramDf, n=1e+4, time_scaled=FALSE,
 
   if (gamma==TRUE) {
     gamma_condition <- simus %>% group_by(.data$correct) %>%
-      summarise(data.frame(t(rcorr.cens(.data$rating,S=.data$condition, outx=TRUE)))) %>%
+      summarise(data.frame(t(Hmisc::rcorr.cens(.data$rating,S=.data$condition, outx=TRUE)))) %>%
       select(.data$correct, Gamma = .data$Dxy)
     gamma_rt <- simus %>% group_by(.data$correct) %>%
-      summarise(data.frame(t(rcorr.cens(.data$rating,S=.data$rt, outx=TRUE))))%>%
+      summarise(data.frame(t(Hmisc::rcorr.cens(.data$rating,S=.data$rt, outx=TRUE))))%>%
       select(.data$correct, Gamma = .data$Dxy)
     gamma_correct <- simus %>% group_by(.data$condition) %>%
-      summarise(data.frame(t(rcorr.cens(.data$rating,S=.data$correct, outx=TRUE))))%>%
+      summarise(data.frame(t(Hmisc::rcorr.cens(.data$rating,S=.data$correct, outx=TRUE))))%>%
       select(.data$condition, Gamma = .data$Dxy)
     gamma_rt_bycondition <- simus %>% group_by(.data$condition) %>%
-      summarise(data.frame(t(rcorr.cens(.data$rating,S=.data$rt, outx=TRUE))))%>%
+      summarise(data.frame(t(Hmisc::rcorr.cens(.data$rating,S=.data$rt, outx=TRUE))))%>%
       select(.data$condition, Gamma = .data$Dxy)
     gamma_rt_byconditionbycorrect <- simus %>% group_by(.data$condition, .data$correct) %>%
-      summarise(data.frame(t(rcorr.cens(.data$rating,S=.data$rt, outx=TRUE))))%>%
+      summarise(data.frame(t(Hmisc::rcorr.cens(.data$rating,S=.data$rt, outx=TRUE))))%>%
       select(.data$condition, Gamma = .data$Dxy)
   }
   if (agg_simus) {

@@ -69,7 +69,7 @@ data <- data.frame(participant = c(1,1,1,1,1),
 head(data)
 ```
 
-where the task may have been to discriminate `direction` and `coherence` was manipulated for higher or lower accuracy. Fitting confidence models requires the data to be in a data.frame or tibble object with columns for following variables:
+where the task may have been to discriminate `direction` and `coherence` was manipulated for higher or lower accuracy. Fitting confidence models requires the data to be in a `data.frame` or `tibble` object with columns for following variables:
 
 -   stimulus: In a binary decision task the stimulus identity gives the correct response
 -   condition: The experimental manipulation that is expected to affect model parameters should be present
@@ -85,7 +85,7 @@ If there are several participants, for which the models should be fitted indepen
 
     fitted_pars <- fitRTConfModels(data, models=c("dynWEV","2DSD"), stimulus="direction", condition="coherence")
 
-By default, this parallelizes the fitting process over participant-model combinations. The output is then a data frame with one row for each participant-model combination and columns for parameters and measures for model performance (negative log likelihood, BIC, AIC and AICc). These may be used for quantitative model comparison.
+By default, this parallelizes the fitting process over participant-model combinations. The output is then a data frame with one row for each participant-model combination and columns for parameters and measures for model performance (negative log-likelihood, BIC, AIC and AICc). These may be used for quantitative model comparison.
 
 ```{r, echo=FALSE}
 fitted_pars <- structure(list(participant = c(1, 3, 4, 5, 6, 7), model = c("2DSD", 

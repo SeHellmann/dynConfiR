@@ -16,11 +16,13 @@
 #'   \item response     (values at least convertible to c(1,2); direction of decision; (index of accumulator reaching the boundary first))
 #'
 #' }
-#' @param paramDf list or dataframe with one row. Names should match the names of IRM and PCRM model specific parameter names (but with `v`
-#' instead of mu1 and mu2).
-#' For different stimulus quality/mean drift rates, names should be v1, v2, v3,.... Different s parameters are possible with s1, s2, s3...
-#' with equally many steps as for drift rates. Additionally, the confidence thresholds should be given by names with
-#' thetaUpper1, thetaUpper2,..., thetaLower1,... or, for symmetric thresholds only by theta1, theta2,.... (see Details for the correspondence to the data)
+#' @param paramDf a list or data frame with one row. Column names should match the names of
+#' \link{RaceModels} parameter names (only `mu1` and `mu2` are not used in this context but
+#' replaced by the parameter `v`). For different stimulus quality/mean
+#' drift rates, names should be `v1`, `v2`, `v3`,....
+#' Different `s` parameters are possible with `s1`, `s2`, `s3`,... with equally many steps as for drift rates. Additionally, the confidence
+#' thresholds should be given by names with `thetaUpper1`, `thetaUpper2`,..., `thetaLower1`,... or,
+#' for symmetric thresholds only by `theta1`, `theta2`,.... (see Details for the correspondence to the data)
 #' @param model character scalar. One of "IRM" or "PCRM". ("IRMt" and "PCRMt" will also be accepted. In that case,
 #' time_scaled is set to TRUE.)
 #' @param time_scaled logical. Whether the confidence measure should be scaled by 1/sqrt(rt). Default: TRUE.
@@ -40,11 +42,11 @@
 #'  the number of levels should be equal to number of possible
 #'  ratings/conditions. This should be consistent with the
 #'  parameter vector. The confidence thresholds should be named as
-#'  thetaUpper1, thetaLower1,.... (or theta1,... for symmetric
+#'  `thetaUpper1`, `thetaLower1`,.... (or `theta1`,... for symmetric
 #'  thresholds), with the number of ratings -1 and the mean drift rates
-#'  (and possibly the
-#'  standard deviation in drift rates) should be denoted as v1, v2,...
-#'  (and sv1, sv2,...) with the number equal to the number of conditions.
+#'  (and possibly the standard deviation in drift rates)
+#'  should be denoted as `v1`, `v2`,...
+#'  (and `s1`, `s2`,...) with the number equal to the number of conditions.
 #'  If only one condition is used \code{v} will be accepted as well as \code{v1}.
 #'
 #'  \strong{stimulus, response}. stimulus and response should always

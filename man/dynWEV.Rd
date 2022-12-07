@@ -30,10 +30,10 @@ and 2=upper or -1=lower and 1=upper, respectively. For convenience, \code{respon
 converted via \code{as.numeric} also
 allowing factors. Ignored if the first argument is a \code{data.frame}.}
 
-\item{th1}{together with th2: scalars or numerical vectors giving the lower and upper bound of the
+\item{th1}{together with \code{th2}: scalars or numerical vectors giving the lower and upper bound of the
 interval of the confidence measure (see Details). Only values with \code{th2}>=\code{th1} are accepted.}
 
-\item{th2}{(see th1)}
+\item{th2}{(see \code{th1})}
 
 \item{a}{threshold separation. Amount of information that is considered for a decision. Large values
 indicate a conservative decisional style. Typical range: 0.5 < \code{a} < 2}
@@ -86,7 +86,7 @@ from the drift rate in decision process). Range: \code{sigvis}>=0. Default: \cod
 
 \item{svis}{diffusion constant of visibility process. Range: \code{svis}>0. Default: \code{svis}=1.}
 
-\item{omega}{power for judgement time in the division of the confidence measure
+\item{omega}{power for judgment time in the division of the confidence measure
 by the judgment time (Default: 0, i.e. no division which is the version of
 dynWEV proposed by Hellmann et al.)}
 
@@ -103,8 +103,8 @@ reported before the confidence report, \code{simul_conf} should be \code{FALSE}.
 \item{precision}{numerical scalar value. Precision of calculation. Corresponds to the
 step size of integration w.r.t. \code{z} and \code{t0}. Default is 1e-5.}
 
-\item{z_absolute}{logical. Determines whether z is treated as absolute start point (TRUE) or
-relative (FALSE; default) to \code{a}.}
+\item{z_absolute}{logical. Determines whether \code{z} is treated as absolute start point
+(\code{TRUE}) or relative (\code{FALSE}; default) to \code{a}.}
 
 \item{stop_on_error}{Should the diffusion functions return 0 if the parameters values are
 outside the allowed range (= \code{FALSE}) or produce an error in this case (= \code{TRUE}).}
@@ -241,7 +241,7 @@ dWEV(df1[1:5,], th1=1, th2=0, a=2, v=0.5, stop_on_error = FALSE)
 
 }
 \references{
-Hellmann, S., Zehetleitner, M., & Rausch, M. (in press). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review}. https://osf.io/9jfqr/
+Hellmann, S., Zehetleitner, M., & Rausch, M. (in press). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review}. \url{https://osf.io/9jfqr/}
 }
 \author{
 Sebastian Hellmann

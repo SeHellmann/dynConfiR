@@ -46,7 +46,6 @@
 #' @author Sebastian Hellmann.
 #'
 #' @name rLCA
-#' @importFrom Hmisc rcorr.cens
 #' @importFrom stats runif
 # @importFrom pracma integral
 #' @aliases simulateLCA

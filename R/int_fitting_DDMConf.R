@@ -115,12 +115,12 @@ fittingDDMConf<- function(df, nConds, nRatings, fixed, sym_thetas,
   ### 2. Search initial grid before optimization  ####
   if (grid_search) {
     if (logging==TRUE) {
-      log_info(paste(length(inits[,1]), "...parameter sets to check"))
-      log_info(paste("data was compressed due to rounding rts by a factor of " , round(sum(df$n)/nrow(df), digits=2), "."))
-      log_info(paste("fitting data got ", nrow(df), " rows"))
+      logger::log_info(paste(length(inits[,1]), "...parameter sets to check"))
+      logger::log_info(paste("data was compressed due to rounding rts by a factor of " , round(sum(df$n)/nrow(df), digits=2), "."))
+      logger::log_info(paste("fitting data got ", nrow(df), " rows"))
 
       t00 <- Sys.time()
-      log_info("Searching initial values ...")
+      logger::log_info("Searching initial values ...")
     }
 
     if (useparallel) {
@@ -138,7 +138,7 @@ fittingDDMConf<- function(df, nConds, nRatings, fixed, sym_thetas,
     logL <- as.numeric(logL)
     inits <- inits[order(logL),]
     if (logging) {
-      log_success(paste("Initial grid search took...",as.character(round(as.double(difftime(Sys.time(),t00,units = "mins")), 2))," mins"))
+      logger::log_success(paste("Initial grid search took...",as.character(round(as.double(difftime(Sys.time(),t00,units = "mins")), 2))," mins"))
     }
   } else {
     logL <- NULL
@@ -152,7 +152,7 @@ fittingDDMConf<- function(df, nConds, nRatings, fixed, sym_thetas,
 
   #### 3. Optimization ####
   if (logging==TRUE) {
-    log_info("Start fitting ... ")
+    logger::log_info("Start fitting ... ")
   }
   if (!useparallel || (opts$nAttempts==1)) {
     noFitYet <- TRUE
@@ -179,12 +179,12 @@ fittingDDMConf<- function(df, nConds, nRatings, fixed, sym_thetas,
         }
 
         if (logging==TRUE) {
-          log_info(paste("Finished attempt No.", i, " restart no. ", l))
+          logger::log_info(paste("Finished attempt No.", i, " restart no. ", l))
         }
         if (!exists("m") || inherits(m, "try-error")){
           if (logging==TRUE) {
-            log_error(paste("No fit obtained at attempt No.", i))
-            log_error(paste("Used parameter set", paste(start, sep="", collapse=" "), sep=" ", collapse = ""))
+            logger::log_error(paste("No fit obtained at attempt No.", i))
+            logger::log_error(paste("Used parameter set", paste(start, sep="", collapse=" "), sep=" ", collapse = ""))
           }
           break
         }
@@ -193,7 +193,7 @@ fittingDDMConf<- function(df, nConds, nRatings, fixed, sym_thetas,
             fit <- m
             noFitYet <- FALSE
             if (logging==TRUE) {
-              log_info(paste("First fit obtained at attempt No.", i))
+              logger::log_info(paste("First fit obtained at attempt No.", i))
               attempt <- i
               save(logL, inits,  df,fit, attempt,file=filename)
             }
@@ -201,7 +201,7 @@ fittingDDMConf<- function(df, nConds, nRatings, fixed, sym_thetas,
           } else if (m$value < fit$value) {
             fit <- m
             if (logging==TRUE) {
-              log_info(paste("New fit at attempt No.", i, " restart no. ", l))
+              logger::log_info(paste("New fit at attempt No.", i, " restart no. ", l))
               attempt <- i
               save(logL, inits,  df,fit, attempt,file=filename)
             }
@@ -324,7 +324,7 @@ fittingDDMConf<- function(df, nConds, nRatings, fixed, sym_thetas,
     res$AICc <- 2 * fit$value + k * 2 + 2*k*(k-1)/(N-k-1)
     res$AIC <- 2 * fit$value + k * 2
     if (logging==TRUE) {
-      log_success("Done fitting and autosaved results")
+      logger::log_success("Done fitting and autosaved results")
       save(logL, df, res, file=filename)
     }
   }

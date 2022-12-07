@@ -26,11 +26,11 @@
 #' and 2=upper or -1=lower and 1=upper, respectively. For convenience, \code{response} is
 #' converted via \code{as.numeric} also
 #' allowing factors. Ignored if the first argument is a \code{data.frame}.
-#' @param th1 together with th2: scalars or numerical vectors giving the lower and upper
+#' @param th1 together with `th2`: scalars or numerical vectors giving the lower and upper
 #' bound of the interval, in which the accumulator should end at the time of the
 #' confidence judgment (i.e. at time \code{rt}+\code{tau}). Only values with
 #' \code{th2}>=\code{th1} are accepted.
-#' @param th2 (see th1)
+#' @param th2 (see `th1`)
 #'
 #' @param a threshold separation. Amount of information that is considered for a decision.
 #' Large values indicate a conservative decisional style. Typical range: 0.5 < \code{a} < 2
@@ -71,18 +71,18 @@
 #' @param tau post-decisional accumulation time. The length of the time period after the
 #' decision was made until the confidence judgment is made. Range: \code{tau}>0.
 #' Default: \code{tau}=1.
-#' @param omega power for judgement time in the division of the confidence measure
+#' @param omega power for judgment time in the division of the confidence measure
 #' by the judgment time (Default: 0, i.e. no division which is the version of
 #' 2DSD proposed by Pleskac and Busemeyer)
 #'
 #' @param  simult_conf logical. Whether in the experiment confidence was reported
 #' simultaneously with the decision, as then decision and confidence judgment are
 #' assumed to have happened subsequent before response and computations are different,
-#' when there is an observable interjudgment time (then simult_conf should be FALSE).
+#' when there is an observable interjudgment time (then `simult_conf` should be `FALSE`).
 #' @param precision \code{numerical} scalar value. Precision of calculation. Corresponds
-#' to the stepsize of integration w.r.t. z and t0. Default is 1e-5.
-#' @param z_absolute logical. Determines whether z is treated as absolute start point
-#' (TRUE) or relative (FALSE; default) to a.
+#' to the stepsize of integration w.r.t. `z` and `t0`. Default is 1e-5.
+#' @param z_absolute logical. Determines whether `z` is treated as absolute start point
+#' (`TRUE`) or relative (`FALSE`; default) to `a`.
 #' @param stop_on_error Should the diffusion functions return 0 if the parameters values
 #' are outside the allowed range (= \code{FALSE}) or produce an error in this case
 #' (= \code{TRUE}).
@@ -119,7 +119,7 @@
 #' judgment (i.e. a judgment of the probability that the decision was correct) is made
 #' based on the state of the process. Here, we use a given interval, given by \code{th1}
 #' and \code{th2}, assuming that the data is given with discrete judgments and
-#' preprocessed, s.t. these discrete ratings are translated to the respective intervals.
+#' pre-processed, s.t. these discrete ratings are translated to the respective intervals.
 #' The 2DSD Model was proposed by Pleskac and Busemeyer (2010).
 #'
 #' All functions are fully vectorized across all parameters
@@ -151,7 +151,7 @@
 #' Ratcliff, R., & McKoon, G. (2008). The diffusion decision model: Theory and data for two-choice decision tasks. \emph{Neural Computation}, 20(4), 873-922.
 #'
 #'
-#' @author For the original rtdists package: Underlying C code by Jochen Voss and Andreas Voss. Porting and R wrapping by Matthew Gretton, Andrew Heathcote, Scott Brown, and Henrik Singmann. \code{qdiffusion} by Henrik Singmann. For the d2DSD function the C code was extended by Sebastian Hellmann.
+#' @author For the original `rtdists` package: Underlying C code by Jochen Voss and Andreas Voss. Porting and R wrapping by Matthew Gretton, Andrew Heathcote, Scott Brown, and Henrik Singmann. \code{qdiffusion} by Henrik Singmann. For the `d2DSD` function the C code was extended by Sebastian Hellmann.
 #'
 #' @useDynLib dynConfiR, .registration = TRUE
 #'
@@ -223,7 +223,7 @@ d2DSD <- function (rt, response="upper", th1,th2,tau=1,a,v,t0=0,z=0.5,
     if (simult_conf) {
       # if confidence and decision are given simultaneously, subtract tau from rt
       # because both processes are assumed to happen subsequentially and therefore
-      # observable response time is the sum of decision time, inter-judgment time
+      # observable response time is the sum of decision time, interjudgment time
       # and non-decision component
       rt[ok_rows] <- rt[ok_rows]-pars$params[ok_rows[1],9]
     }

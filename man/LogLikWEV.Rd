@@ -7,7 +7,7 @@
 \alias{LL2DSD}
 \alias{LogLikdynWEV}
 \alias{LogLikWEV2DSD}
-\title{Log-Likelihood functions for the dWEV and 2DSD models of confidence}
+\title{Log-Likelihood functions for the dynWEV and 2DSD models of confidence}
 \usage{
 LogLikWEV(data, paramDf, model = "dynWEV", simult_conf = FALSE,
   precision = 1e-05, stop_on_error = TRUE, data_names = list(), ...)
@@ -19,25 +19,25 @@ LogLikWEV(data, paramDf, model = "dynWEV", simult_conf = FALSE,
 \item rating       (convertible to integer (e.g. factor); discrete confidence judgments),
 \item rt           (numeric; giving reaction times for decision task),
 \item stimulus     (values at least convertible to c(-1,1); stimulus category (direction of evidence accumulation))
-\item response     (characters in "upper", "lower" (or convertible to); direction of decision; correct answers are "lower" for stimulus=-1; and "upper" for stimulus=1),
+\item response     (characters in \code{"upper"}, \code{"lower"} (or convertible to); direction of decision; correct answers are "lower" for stimulus=-1; and "upper" for stimulus=1),
 
 }}
 
-\item{paramDf}{list or dataframe with one row. Names should match the names of
-dWEV and 2DSD model specific parameter names.
-For different stimulus quality/mean drift rates, names should be v1, v2, v3,....
-Different sv parameters an/or s parameters are possible with sv1, sv2, sv3...
-(s1, s2, ... respectively) with equally many steps as for drift rates.
-Additionally, the confidence thresholds should be given by names with
-thetaUpper1, thetaUpper2,..., thetaLower1,... or, for symmetric thresholds
-only by theta1, theta2,.... (see Details for the correspondence to the data)}
+\item{paramDf}{list or data.frame with one row. Names should match the names of
+\link{dynWEV} and \link{2DSD} model specific parameter names. For different
+stimulus quality/mean drift rates, names should be \code{v1}, \code{v2}, \code{v3},....
+Different \code{sv} and/or \code{s} parameters are possible with \code{sv1}, \code{sv2}, \code{sv3}... (\code{s1}, \code{s2}, \code{s3},...
+respectively) with equally many steps as for drift rates. Additionally, the confidence
+thresholds should be given by names with \code{thetaUpper1}, \code{thetaUpper2},..., \code{thetaLower1},... or,
+for symmetric thresholds only by \code{theta1}, \code{theta2},...
+(see Details for the correspondence to the data)}
 
 \item{model}{character scalar. One of "dynWEV" or "2DSD" for the model to fit.}
 
 \item{simult_conf}{logical. Whether in the experiment confidence was reported simultaneously
 with the decision, as then decision and confidence judgment are assumed to have happened
 subsequent before response and computations are different, when there is an observable
-interjudgment time (then simult_conf should be FALSE).}
+interjudgment time (then \code{simult_conf} should be \code{FALSE}).}
 
 \item{precision}{numerical scalar. Precision of calculation for integration over z and t0.}
 
@@ -73,20 +73,20 @@ fitting process and the preprocessing steps are
 therefore included in that function.
 
 \strong{rating, condition}. If integer, values should range from 1 to number of possible
-ratings/conditions. If factor, the number of levels should be
+ratings/conditions. If a factor, the number of levels should be
 equal to number of possible ratings/conditions. This should be consistent with the
 parameter vector. The confidence thresholds should be named
-as thetaUpper1, thetaLower1,.... (or theta1,... for symmetric thresholds), with the
+as \code{thetaUpper1}, \code{thetaLower1},.... (or \code{theta1},... for symmetric thresholds), with the
 number of ratings -1 and the mean drift rates (and possibly the
-standard deviation in drift rates) should be denoted as v1, v2,...
-(and sv1, sv2,.../s1, s2, ...) with the number equal to the number of conditions.
+standard deviation in drift rates) should be denoted as \code{v1}, \code{v2},...
+(and \code{sv1}, \code{sv2},.../\code{s1}, \code{s2}, ...) with the number equal to the number of conditions.
 If only one condition is used \code{v} will be accepted as well as \code{v1}.
 
 \strong{stimulus, response}. stimulus should always be given in numerical format with values -1 and 1.
-response should always be given as a character vector with "lower" and "upper" as values.
+response should always be given as a character vector with \code{"lower"} and \code{"upper"} as values.
 This corresponds to the situation of Ratcliff's diffusion model (Ratcliff, 1978), where stimulus is the sign of the mean drift direction and
-the response is the "upper" or "lower" boundary that is first hit by the evidence accumulation. A correct decision is therefore "lower",
-if stimulus is -1, and "upper", if stimulus is 1.
+the response is the \code{"upper"} or \code{"lower"} boundary that is first hit by the evidence accumulation. A correct decision is therefore \code{"lower"},
+if stimulus is -1, and \code{"upper"}, if stimulus is 1.
 }
 \examples{
 # 1. Generate data from an artificial participants
@@ -113,7 +113,7 @@ paramDf <- data.frame(a=2.5,v1=0.5, v2=1, t0=0.1,z=0.7,
 
 # 3. Compute log likelihood for parameter and data
 LogLikWEV(data, paramDf, model="dynWEV", condition="discriminability")
-# adding the hypothetical inter-judgment time to response times
+# adding the hypothetical interjudgment time to response times
 # results in the same log likelihood as before when simult_conf=TRUE
 data$rt <- data$rt + paramDf$tau
 LogLikWEV(data, paramDf, model="dynWEV", condition="discriminability", simult_conf=TRUE)

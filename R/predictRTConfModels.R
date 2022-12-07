@@ -10,56 +10,57 @@
 #' information about the parameters.
 #'
 #' @param paramDf a dataframe with one row per combination of model and
-#' participant/parameter set. Columns may include a participant (sbj, or
-#' subject) column, and must include a model column and the names of the model parameters.
+#' participant/parameter set. Columns may include a `participant` (`sbj`, or
+#' `subject`) column, and must include a `model` column and the names of the model parameters.
 #' For different stimulus
-#' quality/mean drift rates, names should be v1, v2, v3,.... Different s parameters
-#' are possible with s1, s2, s3... with equally many steps as for drift rates (same
-#' for sv parameter in dynWEV and 2DSD).
+#' quality/mean drift rates, names should be `v1`, `v2`, `v3`,.... Different `s` parameters
+#' are possible with `s1`, `s2`, `s3`... with equally many steps as for drift rates (same
+#' for `sv` parameter in dynWEV and 2DSD).
 #' Additionally, the confidence thresholds should be given by names with
-#' thetaUpper1, thetaUpper2,..., thetaLower1,... or,
-#' for symmetric thresholds only by theta1, theta2,....
+#' `thetaUpper1`, `thetaUpper2`,..., `thetaLower1`,... or,
+#' for symmetric thresholds only by `theta1`, `theta2`,....
 #' @param maxrt numeric. The maximum RT for the
 #' integration/density computation. Default: 15 (for \code{predictConfModels} (integration)) and
 #' 9 (for \code{predictRTModels}).
 #' @param subdivisions \code{integer} (default: 100).
 #' For \code{predictConfModels} it is used as argument for the inner integral routine.
 #' For \code{predictRTModels} it is the number of points for which the density is computed.
-#' @param minrt numeric or NULL(default). The minimum rt for the density computation.
-#' If NULL, the minimal possible response time possible with given parameters will be used (min(t0)).
+#' @param minrt numeric or `NULL`(default). The minimum rt for the density computation.
+#' If `NULL`, the minimal possible response time possible with given parameters will be used (min(t0)).
 #' @param  simult_conf logical, only relevant for dynWEV and 2DSD. Whether in the experiment
 #' confidence was reported simultaneously with the decision, as then decision and confidence
 #' judgment are assumed to have happened subsequent before response and computations are
 #' different, when there is an observable interjudgment time (then `simult_conf` should be FALSE).
-#' @param scaled logical. Whether the computed density should be scaled to integrate to one
-#' (additional column densscaled). Otherwise the output is a defective density (i.e. its
-#' integral is equal to the probability of a response and not 1). If TRUE, the argument
-#' `DistConf` should be given, if available. Default: FALSE.
-#' @param DistConf NULL or data.frame. A data.frame with participant
+#' @param scaled logical. Whether the computed density
+#' should be scaled to integrate to one (additional column `densscaled`). Otherwise the output
+#' contains only the defective density (i.e. its integral is equal to the probability of a
+#' response and not 1). If `TRUE`, the argument `DistConf` should be given, if available.
+#' Default: `FALSE`.
+#' @param DistConf `NULL` or `data.frame`. A `data.frame` with participant
 #' and model columns and columns, giving the distribution of response and rating choices for
 #' different conditions and stimulus categories in the form of the output of
 #' \code{predictConfModels}. It is only necessary if `scaled=TRUE`, because these
 #' probabilities are used for scaling. If `scaled=TRUE` and `DistConf=NULL`, it will be computed
 #' with the function \code{predictConfModels}, which takes some time and the function will
-#' throw a message. Default: NULL
+#' throw a message. Default: `NULL`
 #' @param stop.on.error logical. Argument directly passed on to integrate. Default is FALSE,
 #' since the densities invoked may lead to slow convergence of the integrals (which are still
 #' quite accurate) which causes R to throw an error.
 #' @param parallel logical. If TRUE, prediction is parallelized over participants and models
 #' (i.e. over the calls for the respective \code{\link{predictRTConf}} functions).
 #' @param n.cores integer. If \code{parallel} is TRUE, the number of cores used for
-#' parallelization is required. If NULL (default) the number of available cores -1 is used.
+#' parallelization is required. If `NULL` (default) the number of available cores -1 is used.
 #' @param .progress logical. If TRUE (default) a progress bar is drawn to the console. (Works
 #' for some OS only when `parallel=FALSE`.)
 #'
-#' @return \code{predictConfModels} gives a data frame/tibble with columns: participant (or sbj,
-#' subject depending on the input), model,
-#' condition, stimulus, response, rating, correct, p, info, err. p is the predicted probability
-#' of a response and rating, given the stimulus category and condition. Message and error refer
-#' to the respective outputs of the integration routine used for computation.
-#' \code{predictRTModels} returns a data frame/tibble with columns: participant (or sbj,
-#' subject depending on the input), model,
-#' condition, stimulus, response, rating, correct, rt and dens (and densscaled, if `scaled=TRUE`).
+#' @return \code{predictConfModels} returns a `data.frame`/`tibble` with columns: `participant` (or `sbj`,
+#' subject depending on the input), `model`, `condition`, `stimulus`,
+#' `response`, `rating`, `correct`, `p`, `info`, `err`. `p` is the predicted probability of a response
+#' and `rating`, given the stimulus category and condition. `info` and `err` refer to the
+#' respective outputs of the integration routine used for the computation.
+#' \code{predictRTModels} returns a `data.frame`/`tibble` with columns: `participant` (or `sbj`,
+#' subject depending on the input), `model`, `condition`, `stimulus`,
+#' `response`, `rating`, `correct`, `rt` and `dens` (and `densscaled`, if `scaled=TRUE`).
 #'
 #'
 #' @details These functions merely split the input data frame by model participants combinations,
@@ -71,7 +72,7 @@
 #'
 #' The function \code{\link{predictConf}} (called by \code{predictConfModels})
 #' consists merely of an integration of the reaction time density or the given model,
-#' \code{{d*model*}}, over the reaction time in a reasonable interval (0 to maxrt).
+#' \code{{d*model*}}, over the reaction time in a reasonable interval (0 to `maxrt`).
 #' The function \code{\link{predictRT}} (called by \code{predictRTModels}) wraps these
 #' density functions to a parameter set input and a data.frame output. '
 #' Note, that the encoding for stimulus identity is different between diffusion based models

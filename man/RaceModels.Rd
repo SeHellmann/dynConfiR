@@ -52,29 +52,29 @@ boundary first.}
 \item{th2}{numeric. Upper bound of interval range for the confidence measure.}
 
 \item{wx}{numeric. Weight on losing accumulator for the computation of the confidence measure.
-(Used only if time_scale==TRUE, Default = 1)}
+(Used only if \code{time_scale=TRUE},  1)}
 
 \item{wrt}{numeric. Weight on reaction time for the computation of the confidence measure.
-(Used only if time_scale==TRUE, Default wrt=0)}
+(Used only if \code{time_scale=TRUE}, Default 0)}
 
 \item{wint}{numeric. Weight on the interaction of losing accumulator and reaction time for
-the computation of the confidence measure. (Used only if time_scale==TRUE,
-Default wint=0)}
+the computation of the confidence measure. (Used only if \code{time_scale=TRUE},
+Default 0)}
 
 \item{t0}{numeric. Lower bound of non-decision time component in observable response times.
-Range: t0>=0. Default: t0=0.}
+Range: \code{t0>=0}. Default: 0.}
 
-\item{st0}{numeric. Range of a uniform distribution for non-decision time. Range: st0>=0.
-Default: st0=0.}
+\item{st0}{numeric. Range of a uniform distribution for non-decision time. Range: \code{st0>=0}.
+Default: 0.}
 
 \item{s1}{numeric. Diffusion constant of the first accumulator.  Usually fixed to 1 for most
-purposes as it scales other parameters (see Details). Range: s1>0, Default: s1=1.}
+purposes as it scales other parameters (see Details). Range: \code{s1>0}, Default: 1.}
 
 \item{s2}{numeric. Diffusion constant of the second accumulator.  Usually fixed to 1 for most
-purposes as it scales other parameters (see Details). Range: s2>0, Default: s2=1.}
+purposes as it scales other parameters (see Details). Range: \code{s2>0}, Default: 1.}
 
 \item{s}{numeric. Alternative way to specify diffusion constants, if both are assumed to be equal.
-If both (s1, s2 and s) are given, only s1 and s2 will be used.}
+If both (\code{s1}, \code{s2} and \code{s}) are given, only \code{s1} and \code{s2} will be used.}
 
 \item{time_scaled}{logical. Whether the confidence measure should be time-dependent. See Details.}
 
@@ -116,7 +116,7 @@ decisions and confidence judgments in the independent Race Model
 (\code{dIRM}/\code{rIRM}) or partially (anti-)correlated Race Model (\code{dPCRM}/\code{rPCRM}),
 i.e. the probability of a given response (response: winning accumulator
 (1 or 2)) at a given time (rt) and the confidence measure in the interval
-between th1 and th2 (Hellmann et al., in press). The definition of the
+between \code{th1} and \code{th2} (Hellmann et al., in press). The definition of the
 confidence measure depends on the argument \code{time_scaled} (see Details).
 The computations are based on Moreno-Bote (2010).
 The parameters for the models are \code{mu1} and \code{mu2} for the drift
@@ -140,7 +140,7 @@ Balance of Evidence hypothesis (if \code{time_scaled=FALSE}), i.e. if \code{resp
 \deqn{conf = b - X_2(T)}{conf = b - X2(T)}.
 Otherwise, if \code{time_scaled=TRUE} (default), confidence is computed as linear combination of
 Balance of Evidence, decision time, and an interaction term, i.e.
-\deqn{conf = wx (b-X_2 (T)) + wrt\frac{1}{\sqrt{T}} + wint\frac{b-X_2(T)}{\sqrt{T}}.}{conf = wx (b-X2(T)) + wrt/\sqrt{T} + wint (b-X2(T))\sqrt{T}.}
+\deqn{conf = wx (b-X_2 (T)) + wrt\frac{1}{\sqrt{T}} + wint\frac{b-X_2(T)}{\sqrt{T}}.}{conf = wx (b-X2(T)) + wrt/\sqrt{T} + wint (b-X2(T))/\sqrt{T}.}
 Usually the weights (\code{wx}, \code{wrt}, \code{wint}) should sum to 1, as the confidence thresholds
 (\code{th1} and \code{th2}) may be scaled according to their sum. If this is not the case, they will be scaled
 accordingly internally! Usually, this formula results in lower confidence when the reaction time is
@@ -228,10 +228,10 @@ dPCRM(df1[1:5,], th1=0, th2=1,mu1=0.2, mu2=-0.2, a=1, b=1, t0=0.1,wx = 1 )
 
 }
 \references{
-Hellmann, S., Zehetleitner, M., & Rausch, M. (in press). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review}. https://osf.io/9jfqr/
+Hellmann, S., Zehetleitner, M., & Rausch, M. (in press). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review}. \url{https://osf.io/9jfqr/}
 
 Moreno-Bote, R. (2010). Decision confidence and uncertainty in diffusion models with partially
-correlated neuronal integrators. Neural Computation, 22(7), 1786–1811. https://doi.org/10.1162/neco.2010.12-08-930
+correlated neuronal integrators. Neural Computation, 22(7), 1786–1811. doi:10.1162/neco.2010.12-08-930
 }
 \author{
 Sebastian Hellmann

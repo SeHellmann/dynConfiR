@@ -55,7 +55,7 @@ head(data)
 
 where the task may have been to discriminate `direction` and `coherence`
 was manipulated for higher or lower accuracy. Fitting confidence models
-requires the data to be in a data.frame or tibble object with columns
+requires the data to be in a `data.frame` or `tibble` object with columns
 for following variables:
 
 -   stimulus: In a binary decision task the stimulus identity gives the
@@ -83,7 +83,7 @@ fitting the models is done using the `fitRTConfModels` function:
 By default, this parallelizes the fitting process over participant-model
 combinations. The output is then a data frame with one row for each
 participant-model combination and columns for parameters and measures
-for model performance (negative log likelihood, BIC, AIC and AICc).
+for model performance (negative log-likelihood, BIC, AIC and AICc).
 These may be used for quantitative model comparison.
 
 ``` r

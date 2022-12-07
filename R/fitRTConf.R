@@ -18,9 +18,10 @@
 #'   * \code{stimulus} (encoding the stimulus category in a binary choice task),
 #'   * \code{response} (encoding the decision response),
 #'   * \code{correct} (encoding whether the decision was correct; values in 0, 1)
-#' * \code{sbj} or \code{participant} (optional; giving the subject ID; only relevant if logging == TRUE;
-#'                                                       if unique the ID is used in autosave files and logging messages;
-#'                                                       if non-unique or missing AND logging ==TRUE, 999 will be used then)
+#' * \code{sbj} or \code{participant} (optional; giving the subject ID; only relevant if `logging = TRUE`;
+#'                                                       if unique the ID is used in saved files with interim results
+#'                                                       and logging messages;
+#'                                                       if non-unique or missing and `logging =TRUE`, 999 will be used then)
 #' @param model character scalar. One of "dynWEV", "2DSD", "IRM", "PCRM", "IRMt", "PCRMt", or "DDMConf" for the model to be fit.
 #' @param fixed list. List with parameter-value pairs for parameters that should not be fitted. See Details.
 #' @param init_grid data.frame or `NULL`. Grid for the initial parameter search. Each row is one parameter constellation.
@@ -28,7 +29,7 @@
 #' @param grid_search logical. If `FALSE`, the grid search before the optimization
 #' algorithm is omitted. The fitting is then started with a mean parameter set
 #' from the default grid (if `init_grid=NULL`) or directly with the rows from
-#' `init_grid`, if not NULL. (Default: `TRUE`)
+#' `init_grid`, if not `NULL`. (Default: `TRUE`)
 #' @param data_names named list (e.g. `c(rating="confidence")`). Alternative
 #' possibility of giving other column names for the variables in the data. By default
 #' column names are identical to the ones given in the data argument description.
@@ -36,9 +37,9 @@
 #' `rating` and `length(unique(rating))` is used. This argument is especially
 #' important for data sets where not the whole range of rating categories is realized.
 #' If given, ratings has to be given as factor or integer.
-#' @param logging logical. If `TRUE`, a folder autosave/fit**model** is created and
+#' @param logging logical. If `TRUE`, a folder 'autosave/fit**model**' is created and
 #' messages about the process are printed in a logging file and to console (depending
-#' on OS). Additionally intermediate results are saved in a .RData file with the
+#' on OS). Additionally intermediate results are saved in a `.RData` file with the
 #' participant ID in the name.
 #' @param opts list. A list for more control options in the optimization routines
 #' (depending on the `optim_method`). See details for more information.
@@ -52,9 +53,9 @@
 #' parallel back-end, using the \code{parallel} package.
 #' @param n.cores integer or `NULL`. Number of cores used for parallelization. If `NULL`
 #' (default) the number of available cores -1 is used.
-#' @param restr_tau numerical or Inf or "simult_conf". For 2DSD and dynWEV only.
-#' Upper bound for tau. Fits will be in the interval (0,restr_tau). If FALSE tau will be unbound.
-#' For "simult_conf", see the documentation of \code{\link{d2DSD}} and \code{\link{dWEV}}
+#' @param restr_tau numerical or `Inf` or `"simult_conf"`. For 2DSD and dynWEV only.
+#' Upper bound for tau. Fits will be in the interval (0,`restr_tau`). If FALSE tau will be unbound.
+#' For `"simult_conf"`, see the documentation of \code{\link{d2DSD}} and \code{\link{dWEV}}
 #' @param precision numerical scalar. For 2DSD and dynWEV only. Precision of calculation.
 #' (in the respective models) for the density functions (see \code{\link{dWEV}} for more information).
 #' @param ... Possibility of giving alternative variable names in data frame
@@ -79,9 +80,9 @@
 #'  data. If all three are given, correct will have no effect (and will be not checked!).
 #'  stimulus can always be given in numerical format with values -1 and 1. response
 #'  can always be given as a character vector with "lower" and "upper" as values.
-#'  Correct must always be given as a 0-1-vector. If stimulus is given together with
-#'  response and they both do not match the above format, they need to have the same
-#'  values/levels (if factor).
+#'  Correct must always be given as a 0-1-vector. If the stimulus column is given
+#'  together with a response column and they both do not match the above format,
+#'  they need to have the same values/levels (if `factor`).
 #'  In the case that only stimulus/response is given in any other format together with
 #'  correct, the unique values will be sorted increasingly and
 #'  the first value will be encoded as "lower"/-1 and the second as "upper"/+1.
@@ -102,30 +103,30 @@
 #'  - \code{omega} only relevant for 2DSD and dynWEV
 #'  - in race models: \code{sza}, \code{szb}, \code{smu1}, and \code{smu2}
 #'
-#' \strong{init_grid}. Each row should be one parameter set to check. The column names
+#' \strong{`init_grid`}. Each row should be one parameter set to check. The column names
 #' should include the parameters of the desired model, which are the following for 2DSD:
-#' a, vmin and vmax (will be equidistantly spanned across conditions), sv, z (as the
-#' relative starting point between 0 and a), sz (also in relative terms), t0, st0, theta0
-#' (minimal threshold), thetamax (maximal threshold; the others will be equidistantly
-#' spanned symmetrically for both decisions), and tau. For dynWEV,
-#' additionally w , svis, and sigvis are required. For the race models the parameters
-#' are: vmin, vmax (will be equidistantly
-#' spanned across conditions), a and b (decision thresholds), t0, st0, theta0 (minimal
-#'  threshold), thetamax (maximal threshold;
+#' `a`, `vmin` and `vmax` (will be equidistantly spanned across conditions), `sv`, `z` (as the
+#' relative starting point between 0 and `a`), `sz` (also in relative terms), `t0`, `st0`, `theta0`
+#' (minimal threshold), `thetamax` (maximal threshold; the others will be equidistantly
+#' spanned symmetrically for both decisions), and `tau`. For dynWEV,
+#' additionally `w` , `svis`, and `sigvis` are required. For the race models the parameters
+#' are: `vmin`, `vmax` (will be equidistantly
+#' spanned across conditions), `a` and `b` (decision thresholds), `t0`, `st0`, `theta0`
+#' (minimal threshold), `thetamax` (maximal threshold;
 #' the others will be equidistantly spanned symmetrically for both decisions), and for
 #' time-dependent confidence race models
-#' additionally wrt and wint (as weights compared to wx=1).
+#' additionally `wrt` and `wint` (as weights compared to `wx=1`).
 #'
 #'  \strong{opts}. A list with numerical values. Possible options are listed below
 #'  (together with the optimization method they are used for).
 #'  * \code{nAttempts} (all) number of best performing initial parameter sets used for
-#'   optimization; default 5, if grid_search is TRUE.
-#'  If grid_search is FALSE and init_grid is NULL, then nAttempts will be set to 1 (and
+#'   optimization; default 5, if `grid_search` is `TRUE`.
+#'  If `grid_search` is `FALSE` and `init_grid` is `NULL`, then `nAttempts` will be set to 1 (and
 #'  any input will be ignored).
-#'  If grid_search is FALSE and init_grid is not NULL, the rows of init_grid will be used
+#'  If `grid_search` is `FALSE` and `init_grid` is not `NULL`, the rows of `init_grid` will be used
 #'  from top to bottom
-#'  (since no initial grid search is done) with not more than nAttempts rows used.
-#'  * \code{nRestarts} (all) number of successive optim routines for each of the starting parameter sets; default 5,
+#'  (since no initial grid search is done) with not more than `nAttempts` rows used.
+#'  * \code{nRestarts} (all) number of successive `optim` routines for each of the starting parameter sets; default 5,
 #'  * \code{maxfun} (\code{'bobyqa'}) maximum number of function evaluations; default: 5000,
 #'  * \code{maxit} (\code{'Nelder-Mead' and 'L-BFGS-B'}) maximum iterations; default: 2000,
 #'  * \code{reltol} (\code{'Nelder-Mead'}) relative tolerance; default:  1e-6),
@@ -133,11 +134,11 @@
 #'
 #' @md
 #'
-#' @references Hellmann, S., Zehetleitner, M., & Rausch, M. (in press). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review}. https://osf.io/9jfqr/
+#' @references Hellmann, S., Zehetleitner, M., & Rausch, M. (in press). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review}. <https://osf.io/9jfqr/>
 #'
-#' https://nashjc.wordpress.com/2016/11/10/why-optim-is-out-of-date/
+#' <https://nashjc.wordpress.com/2016/11/10/why-optim-is-out-of-date/>
 #'
-#' https://www.damtp.cam.ac.uk/user/na/NA_papers/NA2009_06.pdf
+#' <https://www.damtp.cam.ac.uk/user/na/NA_papers/NA2009_06.pdf>
 #'
 #'
 #'
@@ -147,7 +148,6 @@
 #' @importFrom stats setNames aggregate optim qnorm pnorm optimize
 #' @importFrom minqa bobyqa
 #' @importFrom dplyr if_else case_when rename
-#' @import logger
 #' @import parallel
 #' @importFrom magrittr %>%
 #' @importFrom rlang .data
@@ -193,6 +193,13 @@ fitRTConf <- function(data, model = "dynWEV",
                       data_names = list(), nRatings = NULL, restr_tau =Inf,
                       precision=1e-5,logging=FALSE, opts=list(), optim_method = "bobyqa",
                       useparallel = FALSE, n.cores=NULL, ...){ #  ?ToDO: vary_sv=FALSE, RRT=NULL, vary_tau=FALSE
+  # Check if package 'logger' is installed, if logging is wished
+  if (logging && !requireNamespace("logger", quietly = TRUE)) {
+    warning("Package 'logger' is not installed but needed to log fitting progress.
+            Process continues withouth logging.
+            Interrupt and install 'logger' if logging is needed.", immediate.=TRUE)
+    logging <- FALSE
+  }
   ### Check model argument
   if (model == "WEVmu") {  ## Old name for dynWEV model
     model <- "dynWEV"
@@ -355,12 +362,12 @@ fitRTConf <- function(data, model = "dynWEV",
     dir.create("autosave", showWarnings = FALSE)
     dir.create(paste("autosave/fit", model, sep=""), showWarnings = FALSE)
     filename = paste("autosave/fit", model,"/part_", participant,".RDATA", sep = "")
-    logger <- layout_glue_generator(format = paste('{level} [{time}] on process {pid} {fn} for participant ',participant,' and model ', model,': {msg}', sep=""))
-    log_layout(logger)
-    log_appender(appender_file(file=paste("autosave/fit", model,"/logging_", model, ".txt", sep="")), index=2)
-    log_threshold(DEBUG, index=2)
-    log_threshold(DEBUG)
-    log_layout(logger, index=2)
+    logger <- logger::layout_glue_generator(format = paste('{level} [{time}] on process {pid} {fn} for participant ',participant,' and model ', model,': {msg}', sep=""))
+    logger::log_layout(logger)
+    logger::log_appender(logger::appender_file(file=paste("autosave/fit", model,"/logging_", model, ".txt", sep="")), index=2)
+    logger::log_threshold(logger::DEBUG, index=2)
+    logger::log_threshold(logger::DEBUG)
+    logger::log_layout(logger, index=2)
   }
 
 

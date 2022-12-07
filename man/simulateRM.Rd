@@ -17,11 +17,12 @@ rRM_Kiani(paramDf, n = 10000, time_scaled = FALSE, gamma = FALSE,
 }
 \arguments{
 \item{paramDf}{a list or data frame with one row. Column names should match the names of
-IRM and PCRM model parameter names. For different stimulus quality/mean drift rates, names should
-be v1, v2, v3,.... The function allows also the process noise to vary (using
-s1, s2, ...), which is otherwise not required and set to 1.
-Additionally, the confidence thresholds should be given by names with
-thetaUpper1, thetaUpper2,..., thetaLower1,... or, for symmetric thresholds only by theta1, theta2,....}
+\link{RaceModels} parameter names (only \code{mu1} and \code{mu2} are not used in this context but
+replaced by the parameter \code{v}). For different stimulus quality/mean
+drift rates, names should be \code{v1}, \code{v2}, \code{v3},....
+Different \code{s} parameters are possible with \code{s1}, \code{s2}, \code{s3},... with equally many steps as for drift rates. Additionally, the confidence
+thresholds should be given by names with \code{thetaUpper1}, \code{thetaUpper2},..., \code{thetaLower1},... or,
+for symmetric thresholds only by \code{theta1}, \code{theta2},....}
 
 \item{n}{integer. The number of samples (per condition and stimulus direction) generated.
 Total number of samples is \code{n*nConditions*length(stimulus)}.}
@@ -35,7 +36,7 @@ be used.}
 \item{gamma}{logical. If TRUE, the gamma correlation between confidence ratings, rt and accuracy is
 computed.}
 
-\item{agg_simus}{logical. Simulation is done on a trial basis with rts outcome. If TRUE,
+\item{agg_simus}{logical. Simulation is done on a trial basis with RTs outcome. If TRUE,
 the simulations will be aggregated over RTs to return only the distribution of response and
 confidence ratings. Default: FALSE.}
 
@@ -86,7 +87,7 @@ set to 0. The output of the fitting function \code{\link{fitRTConf}} with the re
 fits the argument \code{paramDf} for simulation. The Gamma coefficients are computed separately for
 correct/incorrect responses for the correlation of confidence ratings with condition and rt
 and separately for conditions for the correlation of accuracy and confidence. The resulting
-tibbles in the output thus have two columns. One for the grouping variable and one for the
+data frames in the output thus have two columns. One for the grouping variable and one for the
 Gamma coefficient.
 }
 \note{
@@ -138,7 +139,7 @@ head(agg_simus)
 
 }
 \references{
-Hellmann, S., Zehetleitner, M., & Rausch, M. (in press). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review}. https://osf.io/9jfqr/
+Hellmann, S., Zehetleitner, M., & Rausch, M. (in press). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review}. \url{https://osf.io/9jfqr/}
 
 Kiani, R., Corthell, L., & Shadlen, M.N. (2014) Choice certainty is informed
 by both evidence and decision time.
