@@ -19,15 +19,18 @@ knitr::opts_knit$set(base.url=paste(gitrep,gitbranch, sep="/"))
 
 # dynConfiR: R package for sequential sampling models of decision confidence
 
-This package includes implementation for several sequential sampling models of decision making and confidence judgments. Functionality includes density functions for decision, confidence and response time outcomes as well as functions for parameter fitting, prediction and simulation.
+This package includes implementation for several sequential sampling models of decision making and confidence judgments. The package includes density functions for decision, confidence and response time outcomes for following models: Dynamic weighted evidence and visibility (dynWEV), two-stage signal detection (2DSD), inpedendent and partially-correlated race models (IRM/PCRM) (see [Hellmann et al. (in press)](https://osf.io/9jfqr) for details). In addition, the package includes functions for parameter fitting, prediction and simulation of data.
 
 ## Installation
 
-So far, the easiest way of installation is using `devtools` and install from GitHub:
+The latest released version of the package is available on CRAN via
+
+  `install.packages("dynConfiR")`
+
+For the current development version, the easiest way of installation is 
+using `devtools` and install from GitHub:
 
     devtools::install_github("SeHellmann/dynConfiR")
-
-Publication on the CRAN repository is in progress.
 
 ## Usage
 
@@ -35,10 +38,15 @@ Publication on the CRAN repository is in progress.
 
 ```{r}
 library(dynConfiR)
-d2DSD(rt=0.7, th1=2.4, th2=2.5, response="lower", 
+d2DSD(rt=0.7, th1=1, th2=2.5, response="lower", 
       tau=1, a=2, v=0.7, t0=0, z =0.5, sv=0, st0=0.1)
-dWEV(rt=0.7, th1=2.4, th2=2.5, response="lower", 
-      tau=1, a=2, v=0.7, t0=0, z =0.5, sv=0, st0=0.1)
+dWEV(rt=2.7, th1=1, th2=2.5, response="lower", 
+      tau=1, a=2, v=0.7, t0=0, z =0.5, sv=0, st0=0.1,
+     simult_conf = TRUE)
+dIRM(1.2, response=2, mu1=0.5, mu2=-0.5, a=0.8, b=0.5, th1=-0.5, th2=2, 
+     wx=0.5, wrt=0.2, wint=0.3, t0=0.3, st0=0.2)
+dPCRM(1.2, response=2, mu1=0.5, mu2=-0.5, a=0.8, b=0.5, th1=-0.5, th2=2, 
+     wx=0.5, wrt=0.2, wint=0.3, t0=0.3, st0=0.2)
 
 ```
 
