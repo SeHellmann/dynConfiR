@@ -1,19 +1,25 @@
 # dynConfiR: R package for sequential sampling models of decision confidence
 
 This package includes implementation for several sequential sampling
-models of decision making and confidence judgments. Functionality
-includes density functions for decision, confidence and response time
-outcomes as well as functions for parameter fitting, prediction and
-simulation.
+models of decision making and confidence judgments. The package includes
+density functions for decision, confidence and response time outcomes
+for following models: Dynamic weighted evidence and visibility (dynWEV),
+two-stage signal detection (2DSD), inpedendent and partially-correlated
+race models (IRM/PCRM) (see [Hellmann et al. (in
+press)](https://osf.io/9jfqr) for details). In addition, the package
+includes functions for parameter fitting, prediction and simulation of
+data.
 
 ## Installation
 
-So far, the easiest way of installation is using `devtools` and install
-from GitHub:
+The latest released version of the package is available on CRAN via
+
+`install.packages("dynConfiR")`
+
+For the current development version, the easiest way of installation is
+using `devtools` and install from GitHub:
 
     devtools::install_github("SeHellmann/dynConfiR")
-
-Publication on the CRAN repository is in progress.
 
 ## Usage
 
@@ -21,18 +27,33 @@ Publication on the CRAN repository is in progress.
 
 ``` r
 library(dynConfiR)
-d2DSD(rt=0.7, th1=2.4, th2=2.5, response="lower", 
+d2DSD(rt=0.7, th1=1, th2=2.5, response="lower", 
       tau=1, a=2, v=0.7, t0=0, z =0.5, sv=0, st0=0.1)
 ```
 
-    ## [1] 4.165619e-05
+    ## [1] 0.03387271
 
 ``` r
-dWEV(rt=0.7, th1=2.4, th2=2.5, response="lower", 
-      tau=1, a=2, v=0.7, t0=0, z =0.5, sv=0, st0=0.1)
+dWEV(rt=2.7, th1=1, th2=2.5, response="lower", 
+      tau=1, a=2, v=0.7, t0=0, z =0.5, sv=0, st0=0.1,
+     simult_conf = TRUE)
 ```
 
-    ## [1] 0.0001755048
+    ## [1] 0.01578955
+
+``` r
+dIRM(1.2, response=2, mu1=0.5, mu2=-0.5, a=0.8, b=0.5, th1=-0.5, th2=2, 
+     wx=0.5, wrt=0.2, wint=0.3, t0=0.3, st0=0.2)
+```
+
+    ## [1] 0.07616855
+
+``` r
+dPCRM(1.2, response=2, mu1=0.5, mu2=-0.5, a=0.8, b=0.5, th1=-0.5, th2=2, 
+     wx=0.5, wrt=0.2, wint=0.3, t0=0.3, st0=0.2)
+```
+
+    ## [1] 0.08346152
 
 ## Workflow for data analysis
 
@@ -55,17 +76,17 @@ head(data)
 
 where the task may have been to discriminate `direction` and `coherence`
 was manipulated for higher or lower accuracy. Fitting confidence models
-requires the data to be in a `data.frame` or `tibble` object with columns
-for following variables:
+requires the data to be in a `data.frame` or `tibble` object with
+columns for following variables:
 
--   stimulus: In a binary decision task the stimulus identity gives the
-    correct response
--   condition: The experimental manipulation that is expected to affect
-    model parameters should be present
--   response: The actual decision in the choice task
--   rt: The recorded response time.
--   rating: A discrete variable encoding the decision confidence (high:
-    very confident; low: less confident)
+- stimulus: In a binary decision task the stimulus identity gives the
+  correct response
+- condition: The experimental manipulation that is expected to affect
+  model parameters should be present
+- response: The actual decision in the choice task
+- rt: The recorded response time.
+- rating: A discrete variable encoding the decision confidence (high:
+  very confident; low: less confident)
 
 Alternatively to `stimulus` or `response` it is possible to use a
 column, `correct`, representing whether the decision was correct or
@@ -121,15 +142,15 @@ participants and models, the output data frame from the function
 `predictRTModels` to simultaneously (and in parallel) predict the
 distributions.
 
--   `predictConf`: This function predicts the distribution of decision
-    and rating responses (ignoring response times) for the different
-    stimulus conditions.
--   `predictRT`: This function computes the probability densities for
-    decision, confidence and response time outputs over a range of
-    response times for different stimulus conditions. If required, it
-    also returns a scaled density (i.e. the conditional probability of a
-    certain response time, given the decision and confidence response) -
-    for this the output of `predictConf` is required.
+- `predictConf`: This function predicts the distribution of decision and
+  rating responses (ignoring response times) for the different stimulus
+  conditions.
+- `predictRT`: This function computes the probability densities for
+  decision, confidence and response time outputs over a range of
+  response times for different stimulus conditions. If required, it also
+  returns a scaled density (i.e. the conditional probability of a
+  certain response time, given the decision and confidence response) -
+  for this the output of `predictConf` is required.
 
 **Usage example:**
 
