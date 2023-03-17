@@ -377,7 +377,7 @@ NumericMatrix r_WEV (int n, NumericVector params, int model,
 {
   g_Params = new Parameters (params, 1e-3);
 
-  NumericMatrix out(n, 3);
+  NumericMatrix out(n, 6);
 
   if (!g_Params->ValidateParams_2DSD(stop_on_error))
   {

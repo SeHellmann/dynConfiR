@@ -7,7 +7,7 @@
 \usage{
 simulateWEV(paramDf, n = 10000, model = "dynWEV", simult_conf = FALSE,
   gamma = FALSE, agg_simus = FALSE, stimulus = c(-1, 1), delta = 0.01,
-  maxrt = 15, seed = NULL)
+  maxrt = 15, seed = NULL, process_results = FALSE)
 }
 \arguments{
 \item{paramDf}{a list or dataframe with one row. Column names should match the names
@@ -50,13 +50,19 @@ If the simulation of the stochastic process exceeds a rt of \code{maxrt},
 the response will be set to 0 and \code{maxrt} will be returned as rt.}
 
 \item{seed}{numerical. Seeding for non-random data generation.}
+
+\item{process_results}{logical. Whether the output simulations should contain the final
+state of the decision (and visibility) process as additional column. Default is FALSE, meaning that
+no additional columns for the final process states are returned.}
 }
 \value{
 Depending on \code{gamma} and \code{agg_simus}.
 
 If \code{gamma} is \code{FALSE}, returns a \code{data.frame} with columns: \code{condition},
 \code{stimulus}, \code{response}, \code{correct}, \code{rt}, \code{conf} (the continuous confidence
-measure) and \code{rating} (the discrete confidence rating) or
+measure) and \code{rating} (the discrete confidence rating), and \code{dec} and \code{vis}
+(only if \code{process_results=TRUE}) for the final states of accumulators in the
+simulation or
 (if \code{agg_simus=TRUE}): \code{condition}, \code{stimulus},\code{response}, \code{correct},
 \code{rating} and \code{p} (for the probability of a response and rating, given
 the condition and stimulus).

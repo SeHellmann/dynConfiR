@@ -99,6 +99,9 @@
 #' @param maxrt numeric. Maximum decision time returned. If the simulation of the stochastic
 #' process exceeds a decision time of `maxrt`, the `response` will be set to 0 and the `maxrt`
 #' will be returned as `rt`.
+#' @param process_results logical. Whether the output simulations should contain the final
+#' state of the decision (and visibility) process as additional column. Default is FALSE, meaning that
+#' no additional columns for the final process states are returned.
 #'
 #' @return \code{dWEV} gives the density/likelihood/probability of the diffusion process producing
 #' a decision of \code{response} at time \code{rt} and a confidence judgment corresponding to the
@@ -254,7 +257,7 @@ dWEV <- function (rt, response="upper", th1,th2, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, s
 rWEV <- function (n, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, st0=0,
                   tau=1, w=0.5, muvis=NULL, sigvis=0, svis=1,
                   omega=0, s=1, delta=0.01, maxrt=15, simult_conf = FALSE,
-                  z_absolute = FALSE,  stop_on_error=TRUE)
+                  z_absolute = FALSE,  stop_on_error=TRUE, process_results=FALSE)
 {
   if (is.null(muvis)) muvis <- abs(v)
   if (any(missing(a), missing(v))) stop("a and v must be supplied")
@@ -267,13 +270,16 @@ rWEV <- function (n, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, st0=0,
                                 omega=omega,
                                 s = s, nn = n, z_absolute = z_absolute,
                                 stop_on_error = stop_on_error)
-  res <- matrix(NA, nrow=n, ncol=3)
+  res <- matrix(NA, nrow=n, ncol=6)
   for (i in seq_len(length(pars$parameter_indices))) {
     ok_rows <- pars$parameter_indices[[i]]
     current_n <- length(ok_rows)
     out <- r_WEV(current_n, pars$params[ok_rows[1], 1:16],
                  model=2, delta = delta, maxT =maxrt, stop_on_error)
+
     out[,3] <- out[,3]/pars$params[ok_rows[1], 11]  # multiply by s (diffusion constant)
+    out[,4] <- out[,4]/pars$params[ok_rows[1], 11]  # multiply by s (diffusion constant)
+    out[,5] <- out[,5]/pars$params[ok_rows[1], 11]  # multiply by s (diffusion constant)
     if (simult_conf) {
       out[1,] <- out[1,] + pars$params[ok_rows[1], 9]
     }
@@ -281,7 +287,9 @@ rWEV <- function (n, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, st0=0,
   }
 
   res <- as.data.frame(res)
-  names(res) <- c("rt", "response", "conf")
+
+  names(res) <- c("rt", "response", "conf", "dec", "vis", "mu")
+  if (!process_results) res <- res[,1:3]
   return(res)
 }
 

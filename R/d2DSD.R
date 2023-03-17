@@ -197,8 +197,8 @@
 
 #' @rdname d2DSD
 #' @export
-d2DSD <- function (rt, response="upper", th1,th2,tau=1,a,v,t0=0,z=0.5,
-                   d=0,sz=0,sv=0, st0=0,omega=0, s=1,
+d2DSD <- function (rt, response="upper", th1,th2,a,v,t0=0,z=0.5,
+                   d=0,sz=0,sv=0, st0=0,tau=1,omega=0, s=1,
                    simult_conf=FALSE, precision=1e-5, z_absolute = FALSE,
                    stop_on_error=TRUE, stop_on_zero = FALSE)
 {
@@ -256,7 +256,7 @@ r2DSD <- function (n, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, st0=0,
     ok_rows <- pars$parameter_indices[[i]]
     current_n <- length(ok_rows)
     out <- r_WEV(current_n, pars$params[ok_rows[1], 1:12],
-                 model=1, delta = delta, maxT =maxrt, stop_on_error)
+                 model=1, delta = delta, maxT =maxrt, stop_on_error)[,1:3]
     if (simult_conf) {
       out[1,] <- out[1,] + pars$params[ok_rows[1], 9]
     }

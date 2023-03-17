@@ -142,7 +142,14 @@ predictWEV_Conf <- function(paramDf, model="dynWEV",
                             stop.on.error = FALSE,
                             precision=1e-5,
                             .progress=TRUE){
+  if (is.null(model)) {
+    if (!("model" %in% names(paramDf))) stop("Either supply model argument or model entry in paramDf argument.")
+    model <- paramDf$model
+  }
   if (model =="WEVmu") model <- "dynWEV"
+  if (grepl("dynWEV",  model)) model <- "dynWEV"
+  if (grepl("2DSD", model)) model <- "2DSD"
+  if ("model" %in% names(paramDf)) paramDf$model <- NULL
   nConds <- length(grep(pattern = "^v[0-9]", names(paramDf), value = T))
   symmetric_confidence_thresholds <- length(grep(pattern = "thetaUpper", names(paramDf), value = T))<1
   if (symmetric_confidence_thresholds) {
@@ -163,7 +170,10 @@ predictWEV_Conf <- function(paramDf, model="dynWEV",
   } else {
     SV <- rep(paramDf$sv, nConds)
   }
-
+  if (!("omega" %in% names(paramDf))) {
+    warning("No omega specified in paramDf. omega=0 used")
+    paramDf$omega <- 0
+  }
   ## Recover confidence thresholds
   if (symmetric_confidence_thresholds) {
     thetas_upper <- c(-1e+32, t(paramDf[,paste("theta",1:(nRatings-1), sep = "")]), 1e+32)
@@ -226,6 +236,9 @@ predictWEV_RT <- function(paramDf, model=NULL,
     model <- paramDf$model
   }
   if (model =="WEVmu") model <- "dynWEV"
+  if (grepl("dynWEV",  model)) model <- "dynWEV"
+  if (grepl("2DSD", model)) model <- "2DSD"
+  if ("model" %in% names(paramDf)) paramDf$model <- NULL
   nConds <- length(grep(pattern = "^v[0-9]", names(paramDf), value = T))
   symmetric_confidence_thresholds <- length(grep(pattern = "thetaUpper", names(paramDf), value = T))<1
   if (symmetric_confidence_thresholds) {
@@ -255,6 +268,10 @@ predictWEV_RT <- function(paramDf, model=NULL,
     } else {
       S <- rep(1, nConds)
     }
+  }
+  if (!("omega" %in% names(paramDf))) {
+    warning("No omega specified in paramDf. omega=0 used")
+    paramDf$omega <- 0
   }
   ## Recover confidence thresholds
   if (symmetric_confidence_thresholds) {

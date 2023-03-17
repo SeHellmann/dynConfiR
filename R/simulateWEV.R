@@ -43,12 +43,17 @@
 #' correspondingly for negative drifts and "lower"/-1 correct decisions).
 #'
 #' @param seed numerical. Seeding for non-random data generation.
+#' @param process_results logical. Whether the output simulations should contain the final
+#' state of the decision (and visibility) process as additional column. Default is FALSE, meaning that
+#' no additional columns for the final process states are returned.
 #'
 #' @return Depending on `gamma` and `agg_simus`.
 #'
 #' If `gamma` is `FALSE`, returns a `data.frame` with columns: `condition`,
 #' `stimulus`, `response`, `correct`, `rt`, `conf` (the continuous confidence
-#' measure) and `rating` (the discrete confidence rating) or
+#' measure) and `rating` (the discrete confidence rating), and `dec` and `vis`
+#' (only if `process_results=TRUE`) for the final states of accumulators in the
+#' simulation or
 #' (if `agg_simus=TRUE`): `condition`, `stimulus`,`response`, `correct`,
 #' `rating` and `p` (for the probability of a response and rating, given
 #' the condition and stimulus).
@@ -134,7 +139,8 @@
 #' @rdname simulateWEV
 #' @export
 simulateWEV <- function (paramDf, n=1e+4,  model = "dynWEV", simult_conf = FALSE, gamma = FALSE, agg_simus=FALSE,
-                         stimulus = c(-1,1), delta=0.01, maxrt=15, seed=NULL)
+                         stimulus = c(-1,1), delta=0.01, maxrt=15, seed=NULL,
+                         process_results = FALSE)
 {
   if (gamma && !requireNamespace("Hmisc", quietly = TRUE)) {
     warning("Package 'Hmisc' is not installed, but required to computed Gamma correlations.
@@ -171,6 +177,7 @@ simulateWEV <- function (paramDf, n=1e+4,  model = "dynWEV", simult_conf = FALSE
   if ("omega" %in% names(paramDf)) {
     omega <- paramDf$omega
   } else {
+    warning("No omega specified in paramDf. omega=0 used")
     omega <- 0
   }
   nConds <- length(grep(pattern = "^v[0-9]", names(paramDf), value = T))
@@ -285,16 +292,21 @@ simulateWEV <- function (paramDf, n=1e+4,  model = "dynWEV", simult_conf = FALSE
     group_by(.data$condition, .data$stimulus) %>%
     summarise(as.data.frame(r_WEV(n=n, params=c(a/as.numeric(cur_data()[3]),as.numeric(cur_data()[1])/as.numeric(cur_data()[3]),
                                                 t0+st0/2, d, sz, as.numeric(cur_data()[2])/as.numeric(cur_data()[3]),
-                                                st0, z, tau, 0, 1,
+                                                st0, z, tau,
+                                                0, 1, # filler for thetas
                                                 omega,
                                                 rep(c(w, as.numeric(cur_data()[4])/as.numeric(cur_data()[3]),
                                                 sigvis/as.numeric(cur_data()[3]), svis/as.numeric(cur_data()[3])),
                                                 as.numeric(model=="dynWEV"))),
                                   model=which(model == c("2DSD", "dynWEV")),
                                   delta = delta, maxT =maxrt, TRUE),
-                            c("rt", "response", "conf"))) %>%
-    rename(rt=3, response=4, conf=5) %>%
-    mutate(conf = .data$conf * S[.data$condition])
+                            c("rt", "response", "conf", "dec", "vis", "mu"))) %>%
+    rename(rt=3, response=4, conf=5, dec=6, vis=7, mu=8) %>%
+    ungroup() %>%
+    mutate(conf = .data$conf * S[.data$condition],
+           dec = .data$dec * S[.data$condition],
+           vis = .data$vis * S[.data$condition])
+  if (!process_results) simus <- select(simus, -c("dec", "vis", "mu"))
 
   if (symmetric_confidence_thresholds) {
     thetas_upper <- c(-Inf, t(paramDf[,paste("theta",1:(nRatings-1), sep = "")]), Inf)
@@ -346,7 +358,11 @@ simulateWEV <- function (paramDf, n=1e+4,  model = "dynWEV", simult_conf = FALSE
                               correct=c(0,1))) %>%
       mutate(p = ifelse(is.na(.data$p), 0, .data$p))
   } else {
-    simus <- simus[c("condition", "stimulus", "response", "correct", "rt", "conf", "rating")]
+    if (process_results) {
+      simus <- simus[c("condition", "stimulus", "response", "correct", "rt", "dec", "vis", "mu", "conf", "rating")]
+    } else {
+      simus <- simus[c("condition", "stimulus", "response", "correct", "rt", "conf", "rating")]
+    }
   }
   if (gamma) {
     return(list("simus"=simus,

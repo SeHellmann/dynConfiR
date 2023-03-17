@@ -1,26 +1,31 @@
 test_that("2DSD works", {
-  expect_equal(d2DSD(seq(0, 3, by=0.5), "lower", 0.4, 2.5, tau=1, a=2, v=0.5, t0=0, z =0.5, sv=0.2),
+  expect_equal(d2DSD(seq(0, 3, by=0.5), "lower", 0.4, 2.5, a=2, v=0.5, t0=0, z =0.5, sv=0.2, tau=1),
                c(0, 0.127923586525416, 0.0668243025079862, 0.0342270990259822,
                  0.0175585010435632, 0.0090222312746275, 0.00464316676344542))
   ## test for z (relative) out of range
-  expect_equal(d2DSD(seq(0, 3, by=0.5), "lower", 0.4, 2.5, tau=1, a=2, v=0.5, t0=0, z =1.1, sv=0.2, s=1, stop_on_error = FALSE),
+  expect_equal(d2DSD(seq(0, 3, by=0.5), "lower", 0.4, 2.5, a=2, v=0.5, t0=0, z =1.1, sv=0.2, tau=1, s=1, stop_on_error = FALSE),
                rep(0, 7))
   ## test for absolute z working (if as relative it would be out of range)
-  expect_equal(d2DSD(seq(0, 3, by=0.5), "lower", 0.4, 2.5, tau=1, a=2, v=0.5, t0=0, z =1.1, sv=0.2, s=1, stop_on_error = TRUE, z_absolute = TRUE),
+  expect_equal(d2DSD(seq(0, 3, by=0.5), "lower", 0.4, 2.5, a=2, v=0.5, t0=0, z =1.1, sv=0.2, tau=1, s=1, stop_on_error = TRUE, z_absolute = TRUE),
                c(0, 0.115664728481645, 0.0659737402126581, 0.0342454229147437,
                  0.0176076118813728, 0.00905219904467997, 0.00465973138080759))
   ## test for relative z giving same results as transformed absolute z
-  expect_equal(d2DSD(seq(0, 3, by=0.5),  "lower", 0.4, 2.5,tau=1, a=2, v=0.5, t0=0, z =0.5, sv=0.2),
-               d2DSD(seq(0, 3, by=0.5), "lower", 0.4, 2.5, tau=1, a=2, v=0.5, t0=0, z =1, sv=0.2, s=1, z_absolute = TRUE))
+  expect_equal(d2DSD(seq(0, 3, by=0.5),  "lower", 0.4, 2.5, a=2, v=0.5, t0=0, z =0.5, sv=0.2,tau=1),
+               d2DSD(seq(0, 3, by=0.5), "lower", 0.4, 2.5, a=2, v=0.5, t0=0, z =1, sv=0.2, tau=1, s=1, z_absolute = TRUE))
   ## test for effect of t0
-  expect_equal(d2DSD(seq(0, 3, by=0.5), "lower", -100, 2.5, tau=1, a=2, v=0.5, t0=0, z =0.2, sv=0.2, s=1, stop_on_error = TRUE),
-               d2DSD(seq(0, 3, by=0.5)+0.3, "lower", -100, 2.5, tau=1, a=2, v=0.5, t0=0.3, z =0.2, sv=0.2, s=1, stop_on_error = TRUE))
+  expect_equal(d2DSD(seq(0, 3, by=0.5), "lower", -100, 2.5, a=2, v=0.5, t0=0, z =0.2, sv=0.2, tau=1, s=1, stop_on_error = TRUE),
+               d2DSD(seq(0, 3, by=0.5)+0.3, "lower", -100, 2.5, a=2, v=0.5, t0=0.3, z =0.2, sv=0.2, tau=1, s=1, stop_on_error = TRUE))
   ## test for scaling effect of s (diffusion constant)
-  expect_equal(d2DSD(seq(0, 3, by=0.5), "lower", 0.5*2, 2.5*2, tau=1, a=2*2, v=0.5*2, t0=0, z =0.2, sv=0.2*2, s=1*2, stop_on_error = TRUE),
-               d2DSD(seq(0, 3, by=0.5), "lower", 0.5, 2.5, tau=1, a=2, v=0.5, t0=0, z =0.2, sv=0.2, s=1, stop_on_error = TRUE))
+  expect_equal(d2DSD(seq(0, 3, by=0.5), "lower", 0.5*2, 2.5*2, a=2*2, v=0.5*2, t0=0, z =0.2, sv=0.2*2, tau=1, s=1*2, stop_on_error = TRUE),
+               d2DSD(seq(0, 3, by=0.5), "lower", 0.5, 2.5, a=2, v=0.5, t0=0, z =0.2, sv=0.2, tau=1, s=1, stop_on_error = TRUE))
   ## test for response symmetry
-  expect_equal(d2DSD(seq(0, 3, by=0.5), "lower", -1, 1, tau=1, a=2, v=0.5, t0=0, z =0.2, sv=0.2, s=1, stop_on_error = TRUE),
-               d2DSD(seq(0, 3, by=0.5), "upper", -1, 1, tau=1, a=2, v=-0.5, t0=0, z =1-0.2, sv=0.2, s=1, stop_on_error = TRUE))
+  expect_equal(d2DSD(seq(0, 3, by=0.5), "lower", -1, 1, a=2, v=0.5, t0=0, z =0.2, sv=0.2, tau=1, s=1, stop_on_error = TRUE),
+               d2DSD(seq(0, 3, by=0.5), "upper", -1, 1,  a=2, v=-0.5, t0=0, z =1-0.2, sv=0.2, tau=1, s=1, stop_on_error = TRUE))
+  ## test for equivalence wrt to omega
+  expect_equal(d2DSD(c(0.1, .3,.7,1.2), "upper", 0.5 /((c(0.1, .3,.7,1.2)+2)), 1/((c(0.1, .3,.7,1.2)+2)),  2, 0.5,  0,0.5, 0, 0, 0.3, 0, 2,1),
+               d2DSD(c(0.1, .3,.7,1.2), "upper", 0.5 /sqrt((c(0.1, .3,.7,1.2)+2)), 1/sqrt((c(0.1, .3,.7,1.2)+2)),  2, 0.5,  0,0.5, 0, 0, 0.3, 0, 2,0.5))
+  expect_equal(d2DSD(c(0.1, .3,.7,1.2), "lower", 0.5, 1, 2,  0.5,  0,0.5, 0, 0, 0.3, 0, 2), # default omega = 0
+               d2DSD(c(0.1, .3,.7,1.2), "lower", 0.5 /(c(0.1, .3,.7,1.2)+2)^2, 1/(c(0.1, .3,.7,1.2)+2)^2, 2, 0.5,  0,0.5, 0, 0, 0.3, 0, 2,2))
 })
 
 
@@ -41,6 +46,11 @@ test_that("dynWEV works", {
   ## test with explicitly giving parameter muvis
   expect_equal(dWEV(seq(0, 3, by=0.5), "lower", -100, 100, tau=1, a=2, v=-0.5, t0=0, z =0.2, sv=0.2, w=0.001, sigvis=0.4, svis=1, s=1),
                dWEV(seq(0, 3, by=0.5), "lower", -100, 100, tau=1, a=2, v=-0.5, t0=0, z =0.2, sv=0.2, w=0.001, muvis = 0.5, sigvis=0.4, svis=1, s=1))
+  ## test for equivalence wrt to omega
+  expect_equal(dWEV(c(0.1, .3,.7,1.2), "upper", 0.5 /((c(0.1, .3,.7,1.2)+2)), 1/((c(0.1, .3,.7,1.2)+2)), 2, 0.5,  0,0.5, 0, 0, 0.3, 0, 2, 0.5, omega=1),
+               dWEV(c(0.1, .3,.7,1.2), "upper", 0.5 /sqrt((c(0.1, .3,.7,1.2)+2)), 1/sqrt((c(0.1, .3,.7,1.2)+2)),  2, 0.5,  0,0.5, 0, 0, 0.3, 0, 2, 0.5, omega=0.5))
+  expect_equal(dWEV(c(0.1, .3,.7,1.2), "lower", 0.5, 1, 2, 0.5,  0,0.5, 0, 0, 0.3, 0, 2, 0.5), # default omega = 0
+               dWEV(c(0.1, .3,.7,1.2), "lower", 0.5 /(c(0.1, .3,.7,1.2)+2)^2, 1/(c(0.1, .3,.7,1.2)+2)^2, 2, 0.5,  0,0.5, 0, 0, 0.3, 0, 2,  0.5, omega=2))
 })
 
 test_that("dynWEV with w=0 equals 2DSD", {

@@ -17,7 +17,7 @@ dWEV(rt, response = "upper", th1, th2, a, v, t0 = 0, z = 0.5, d = 0,
 rWEV(n, a, v, t0 = 0, z = 0.5, d = 0, sz = 0, sv = 0, st0 = 0,
   tau = 1, w = 0.5, muvis = NULL, sigvis = 0, svis = 1, omega = 0,
   s = 1, delta = 0.01, maxrt = 15, simult_conf = FALSE,
-  z_absolute = FALSE, stop_on_error = TRUE)
+  z_absolute = FALSE, stop_on_error = TRUE, process_results = FALSE)
 }
 \arguments{
 \item{rt}{a vector of RTs. Or for convenience also a \code{data.frame} with columns \code{rt}
@@ -119,6 +119,10 @@ This may save a lot of time if the function is used for a likelihood function. D
 \item{maxrt}{numeric. Maximum decision time returned. If the simulation of the stochastic
 process exceeds a decision time of \code{maxrt}, the \code{response} will be set to 0 and the \code{maxrt}
 will be returned as \code{rt}.}
+
+\item{process_results}{logical. Whether the output simulations should contain the final
+state of the decision (and visibility) process as additional column. Default is FALSE, meaning that
+no additional columns for the final process states are returned.}
 }
 \value{
 \code{dWEV} gives the density/likelihood/probability of the diffusion process producing

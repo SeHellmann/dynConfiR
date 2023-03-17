@@ -185,8 +185,8 @@ predictRM_Conf <- function(paramDf, model="IRM", time_scaled = FALSE,
       thetas_2 <- c(1e-32, t(paramDf[,paste("theta",1:(nRatings-1), sep = "")]), 1e+64)
     }
   } else {
-    thetas_1 <- c(1e-32, t(paramDf[,paste("thetaUpper",1:(nRatings-1), sep = "")]), 1e+64)
-    thetas_2 <- c(1e-32, t(paramDf[,paste("thetaLower",1:(nRatings-1), sep="")]), 1e+64)
+    thetas_1 <- c(1e-32, t(paramDf[,paste("thetaLower",1:(nRatings-1), sep = "")]), 1e+64)
+    thetas_2 <- c(1e-32, t(paramDf[,paste("thetaUpper",1:(nRatings-1), sep="")]), 1e+64)
   }
   # Because we integrate over the response time, st0 does not matter
   # So, to speed up computations for high values of st0, we set it to 0
@@ -315,8 +315,8 @@ predictRM_RT <- function(paramDf, model="IRM", time_scaled = FALSE,
       thetas_2 <- c(1e-32, t(paramDf[,paste("theta",1:(nRatings-1), sep = "")]), 1e+64)
     }
   } else {
-    thetas_1 <- c(1e-32, t(paramDf[,paste("thetaUpper",1:(nRatings-1), sep = "")]), 1e+64)
-    thetas_2 <- c(1e-32, t(paramDf[,paste("thetaLower",1:(nRatings-1), sep="")]), 1e+64)
+    thetas_1 <- c(1e-32, t(paramDf[,paste("thetaLower",1:(nRatings-1), sep = "")]), 1e+64)
+    thetas_2 <- c(1e-32, t(paramDf[,paste("thetaUpper",1:(nRatings-1), sep="")]), 1e+64)
   }
 
   if (is.null(minrt)) minrt <- paramDf$t0

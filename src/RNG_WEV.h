@@ -23,7 +23,7 @@ NumericMatrix RNG_WEV (int n, NumericVector params, double delta=0.01,
                      double maxT=9, bool stop_on_error=true)
 {
 
-  NumericMatrix out(n, 3);
+  NumericMatrix out(n, 6);
 
   double a   =    params[0];
   double v   =    params[1];
@@ -64,29 +64,25 @@ NumericMatrix RNG_WEV (int n, NumericVector params, double delta=0.01,
     if (tau > 0) {
       conf = resp*(x0 + R::rnorm(tau*mu, sqrt(tau)) - a*zr);
     } else {
-    conf = resp*(x0 - a*zr);
+      conf = resp*(x0 - a*zr);
     }
-    if (omega > 0) {
-      conf = conf/pow(t+tau, omega);
-    }
-    // } else {
-    //   if (tau > 0) {
-    //     evid = R::rnorm(tau*mu, sqrt(tau));
-    //   } else {
-    //     evid = 0;
-    //   }
-    if (w < 1) {
-      vis = R::rnorm((tau+t)*muvis, sqrt(svis*svis*(tau+t)+(t+tau)*(t+tau)*sigvis*sigvis));
-      if (omega > 0) {
-        conf = w*conf + (1-w)*vis/pow(t+tau, omega);
-      } else {
-        conf = w*conf + (1-w)*vis;
-      }
-    }
-    t = std::max(0.0, t - resp*d/2)  + R::runif(t0-st0/2, t0+st0/2);
-    out( i , 0 ) = t;
+    // save response, response time and state of evidence accumulator
+    out( i , 0 ) = std::max(0.0, t - resp*d/2)  + R::runif(t0-st0/2, t0+st0/2);;
     out( i , 1 ) = resp;
+    out( i , 3 ) = conf; // evidence term
+
+    vis = R::rnorm((tau+t)*muvis, sqrt(svis*svis*(tau+t)+(t+tau)*(t+tau)*sigvis*sigvis));
+
+    if (omega >0) {
+      conf = (w*conf + (1-w)*vis)/pow(t+tau, omega);
+    } else {
+      conf = (w*conf + (1-w)*vis);
+    }
+    // save final confidence and value of visibility process
     out( i , 2 ) = conf;
+    out( i , 4 ) = vis;
+    out( i , 5 ) = mu;
+
     if (i % 200 ==0 ) Rcpp::checkUserInterrupt();
 
   }

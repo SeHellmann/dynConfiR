@@ -204,9 +204,6 @@ fitRTConf <- function(data, model = "dynWEV",
   if (model == "WEVmu") {  ## Old name for dynWEV model
     model <- "dynWEV"
   }
-  if (!model %in% c("IRM", "PCRM", "IRMt", "PCRMt", "dynWEV", "2DSD", "DDMConf")) {
-    stop("model must be 'dynWEV', '2DSD', 'DDMConf', 'IRM', 'PCRM', 'IRMt', or 'PCRMt'")
-  }
 
   #### Check argument types ###
   if (!is.logical(grid_search)) stop(paste("grid_search must be logical, but is ", typeof(grid_search), sep=""))
@@ -378,13 +375,13 @@ fitRTConf <- function(data, model = "dynWEV",
   fixed <- fixed[names(fixed)!="sym_thetas"]
 
   ### Now, call the specific fitting functions:
-  if (model == "2DSD") res <- fitting2DSD(df, nConds, nRatings, fixed, sym_thetas,
+  if (grepl("2DSD", model)) res <- fitting2DSD(df, nConds, nRatings, fixed, sym_thetas,
                                           grid_search, init_grid, optim_method, opts,
                                           logging, filename,
                                           useparallel, n.cores,
                                           restr_tau, precision,
                                           used_cats, actual_nRatings)
-  if (model == "dynWEV") res <- fittingdynWEV(df, nConds, nRatings, fixed, sym_thetas,
+  if (grepl("dynWEV",model)) res <- fittingdynWEV(df, nConds, nRatings, fixed, sym_thetas,
                                               grid_search, init_grid, optim_method, opts,
                                               logging, filename,
                                               useparallel, n.cores,
@@ -408,6 +405,7 @@ fitRTConf <- function(data, model = "dynWEV",
                                           useparallel, n.cores,
                                           precision,
                                           used_cats, actual_nRatings, precision)
+  if (!exists("res")) stop("model not known. model must contain one of: 'dynWEV', '2DSD', 'IRM', 'PCRM', or 'DDMConf'")
 
 
   return(res)

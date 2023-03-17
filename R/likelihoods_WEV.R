@@ -151,6 +151,7 @@ LogLikWEV <- function(data, paramDf, model="dynWEV", simult_conf = FALSE, precis
       S <- rep(1, nConds)
     }
   }
+  if (!("omega" %in% names(paramDf))) paramDf$omega <- 0
   ## Recover confidence thresholds
   if (symmetric_confidence_thresholds) {
     thetas_upper <- c(-1e+32, t(paramDf[,paste("theta",1:(nRatings-1), sep = "")]), 1e+32)
@@ -188,6 +189,29 @@ LogLikWEV <- function(data, paramDf, model="dynWEV", simult_conf = FALSE, precis
                          M_drift = V[.data$condition]*.data$stimulus,
                          SV = SV[.data$condition],
                          S = S[.data$condition])
+  # if (model=="dynWEV") {
+  #   probs <- with(data,
+  #                 dWEV(rt, vth1,vth2,
+  #                      response=response,
+  #                      tau=paramDf$tau, a=paramDf$a,
+  #                      v = M_drift,
+  #                      t0 = paramDf$t0, z = paramDf$z, sz = paramDf$sz, st0=paramDf$st0,
+  #                      sv = SV, w=paramDf$w, muvis=abs(M_drift), svis=paramDf$svis,
+  #                      sigvis=paramDf$sigvis, omega=paramDf$omega, s = S,
+  #                      simult_conf = simult_conf, z_absolute = FALSE,
+  #                      precision = precision, stop_on_error = stop_on_error,
+  #                      stop_on_zero=FALSE))
+  # } else {
+  #   probs <- with(data, d2DSD(rt, vth1,vth2,
+  #                             response=response, tau=paramDf$tau, a=paramDf$a,
+  #                             v = M_drift,
+  #                             t0 = paramDf$t0, z = paramDf$z, sz = paramDf$sz, st0=paramDf$st0,
+  #                             sv = SV, omega=paramDf$omega, s=S,
+  #                             simult_conf = simult_conf, z_absolute = FALSE,
+  #                             precision = precision, stop_on_error = stop_on_error,
+  #                             stop_on_zero=FALSE))
+  # }
+
   probs <- with(data, switch(which(model== c("dynWEV", "2DSD")),
                              dWEV(rt, vth1,vth2,
                                         response=response,
@@ -195,25 +219,27 @@ LogLikWEV <- function(data, paramDf, model="dynWEV", simult_conf = FALSE, precis
                                         v = M_drift,
                                         t0 = paramDf$t0, z = paramDf$z, sz = paramDf$sz, st0=paramDf$st0,
                                         sv = SV, w=paramDf$w, muvis=abs(M_drift), svis=paramDf$svis,
-                                        sigvis=paramDf$sigvis, s = S,
+                                        sigvis=paramDf$sigvis, omega=paramDf$omega, s = S,
                                         simult_conf = simult_conf, z_absolute = FALSE,
                                         precision = precision, stop_on_error = stop_on_error,
-                                        stop_on_zero=TRUE),
+                                        stop_on_zero=FALSE),
                              d2DSD(rt, vth1,vth2,
                                    response=response, tau=paramDf$tau, a=paramDf$a,
                                    v = M_drift,
                                    t0 = paramDf$t0, z = paramDf$z, sz = paramDf$sz, st0=paramDf$st0,
-                                   sv = SV, s=S, simult_conf = simult_conf, z_absolute = FALSE,
+                                   sv = SV, omega=paramDf$omega, s=S,
+                                   simult_conf = simult_conf, z_absolute = FALSE,
                                    precision = precision, stop_on_error = stop_on_error,
-                                   stop_on_zero=TRUE)))
+                                   stop_on_zero=FALSE)))
 
 
 
   ## Produce output as log-Likelihood
-  if (any(is.na(probs))) return(-1e12)
-  if (any(probs<=0)) {
-    return(-1e12)
-  }
+  # if (any(is.na(probs))) return(-1e12)
+  # if (any(probs<=0)) {
+  #   return(-1e12)
+  # }
+  probs[probs==0] <- .Machine$double.xmin
   if ("n" %in% names(data)) {
     logl <- sum(log(probs)*data$n)
   } else {

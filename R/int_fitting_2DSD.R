@@ -12,22 +12,22 @@ fitting2DSD <- function(df, nConds, nRatings, fixed, sym_thetas,
   simult_conf <- FALSE
   if (restr_tau == "simult_conf") {
     # If choice and confidence judgments are given simultaneously, we
-    # assume that all judgment processes ran sequentially and
+    # assume that all judgment processes run sequentially and
     # response time = decision time + interjudgment time (tau)
     #                  + non-judgment time (t0)
     simult_conf = TRUE
-    restr_tau = mint0
+    restr_tau = 1
   }
   ### 1. Generate initial grid for grid search over possible parameter sets ####
   #### Create grid ####
   if (is.null(init_grid)) {
     if (restr_tau == Inf) {
-      tau = seq(0.3, 1, length.out = 3)
+      tau = seq(0.3, 1.5, length.out = 3)
     } else if (simult_conf) {
-      tau = mint0*seq(0.1, 0.8, length.out = 3)
+      tau = seq(0.1, 0.8, length.out = 3)
     } else {
       if (!(is.numeric(restr_tau) && restr_tau >0)) {stop(paste("restr_tau must be numeric and positive, Inf or 'simult_conf'. But restr_tau=", restr_tau, sep=""))}
-      tau = seq(0.3*restr_tau,0.9*restr_tau, length.out = 2)
+      tau = seq(0.3*restr_tau,0.9*restr_tau, length.out = 3)
     }
     init_grid <- expand.grid(a = c(1.3,1.7, 2.5),
                              vmin = c(0.01, 0.1),
@@ -35,15 +35,18 @@ fitting2DSD <- function(df, nConds, nRatings, fixed, sym_thetas,
                              sv = c(0.01, 0.8, 1.5),
                              z = sum((df$response==1)*df$n)/sum(df$n),
                              sz = c(0.01, 0.4),
-                             t0 = c(max(mint0-0.2, 0.05), max(min(mint0-0.1,0.2),mint0/2)),
+                             t0 = c(0.4, 0.8),
                              st0 = c(0.1, 0.3, 0.7),
                              # theta0 = seq(-5,  3,length.out = 6), #theta0 = seq(0.2, 1.5,length.out = 3),
                              # thetamax = seq(-1, 5,length.out = 6), #thetamax = seq(1.6, 2.5,length.out = 3),
-                             tau = tau)
+                             tau = tau,
+                             omega=c(0, 0.5, 1, 2))
   }
-  if (simult_conf) {
-    init_grid <- init_grid[init_grid$t0+init_grid$tau <= mint0, ]
-  }
+
+  # if (simult_conf) {
+  #   init_grid <- init_grid[init_grid$t0+init_grid$tau <= mint0, ]
+  # }
+
   # Remove columns for fixed parameters
   init_grid <- init_grid[setdiff(names(init_grid), names(fixed))]
   # thetamax <- NULL # to omit a note because of an unbound variable
@@ -67,42 +70,8 @@ fitting2DSD <- function(df, nConds, nRatings, fixed, sym_thetas,
   }
   ## Guess suitable confidence thresholds from theoretical distribution of
   ## the confidence measure and proportion of ratings in the data
-
-  conf_probs <- cumsum(table(df$rating))
-  conf_probs <- conf_probs[1:(nRatings-1)]/conf_probs[nRatings]
-  df$correct <- as.numeric(df$stimulus == df$response)
-  MRT <- aggregate(rt~condition+correct, df, mean)
-  p_corrects <- aggregate(correct~condition, df, mean)[['correct']]
-
-  get_start_thetas <- function(paramRow) {
-    paramRow <- c(paramRow, unlist(fixed, use.names = TRUE))
-    v <- c(t(paramRow[paste("v", 1:nConds, sep="")]))
-    MRT_corr <- (filter(MRT, .data$correct==1)$rt-paramRow['t0']-paramRow['st0']/2)
-    MRT_false <- (filter(MRT, .data$correct==0)$rt-paramRow['t0']-paramRow['st0']/2)
-
-    if (simult_conf) {
-      MRT_corr <- MRT_corr -paramRow['tau']
-      MRT_false <- MRT_false -paramRow['tau']
-    }
-    Mconf_corr = -(paramRow['tau']*(-paramRow['a']*paramRow['z']*paramRow['sv']^2-v)/
-      (1+paramRow['sv']^2*MRT_corr) - paramRow['a']*paramRow['z'])
-    Mconf_false = paramRow['tau']*(-paramRow['a']*(1-paramRow['z'])*paramRow['sv']^2+v)/
-      (1+paramRow['sv']^2*MRT_false) - paramRow['a']*(1-paramRow['z'])
-    VRconf = paramRow['tau'] + (paramRow['sv']^2*paramRow['tau']^2)/
-      (1+paramRow['sv']^2*sum(p_corrects*MRT_corr+(1-p_corrects)*MRT_false)/nConds)
-    mixcdf <- function(conf) 1/nConds * sum(p_corrects* pnorm(conf, mean=Mconf_corr, sd=sqrt(VRconf))+
-                                              (1-p_corrects)*pnorm(conf, mean=Mconf_false, sd=sqrt(VRconf)))
-    thetas <- NULL
-    for (i in 1:length(conf_probs)) {
-      thetas[i] <- stats::optimize(function(conf) (mixcdf(conf)-conf_probs[i])^2,
-                            lower=min(Mconf_false,Mconf_corr)- 4*VRconf,
-                            upper=max(Mconf_false,Mconf_corr)+ 4*VRconf)$minimum
-    }
-    c(thetas[1],diff(thetas))
-  }
-  init_thetas <- apply(init_grid, FUN=get_start_thetas, MARGIN=1) #, simplify = TRUE
-  init_thetas <- t(init_thetas)
-
+  init_thetas <- get_thetas_for_init_grid_dynWEV(init_grid, df, nRatings, simult_conf,
+                                                 c(fixed, w=1, sigvis=1, svis=1))# 2DSD is dynWEV with w fixed to 1
 
 
   #### For Nelder-Mead transform all parameters to real values ####
@@ -118,7 +87,7 @@ fitting2DSD <- function(df, nConds, nRatings, fixed, sym_thetas,
     if (!("sv" %in% names(fixed))) inits <-  cbind(inits, log(init_grid$sv)) # one SV (SD of drift rate) for all the different conditions
     if (!("z" %in% names(fixed))) inits <- cbind(inits, qnorm(init_grid$z))
     if (!("sz" %in% names(fixed))) inits <- cbind(inits, qnorm(init_grid$sz))
-    if (!("t0" %in% names(fixed))) inits <- cbind(inits, log(init_grid$t0))
+    if (!("t0" %in% names(fixed))) inits <- cbind(inits, qnorm(init_grid$t0))
     if (!("st0" %in% names(fixed))) inits <- cbind(inits, log(init_grid$st0))
     if (!("tau" %in% names(fixed))) {
       if (restr_tau == Inf) {
@@ -127,7 +96,7 @@ fitting2DSD <- function(df, nConds, nRatings, fixed, sym_thetas,
         inits <- cbind(inits, qnorm(init_grid$tau / restr_tau))
       }
     }
-
+    if (!("omega" %in% names(fixed))) inits <- cbind(inits, log(init_grid$omega))
     inits <- cbind(inits, init_thetas[,1])
     if (nRatings > 2) {
       inits <- cbind(inits, log(init_thetas[,-1]))
@@ -145,7 +114,7 @@ fitting2DSD <- function(df, nConds, nRatings, fixed, sym_thetas,
     ##replace all +-Inf with big/tiny numbers
     inits[inits==Inf]<- 1e6
     inits[inits==-Inf]<- -1e6
-    parnames <- c(paste("v", 1:nConds, sep=""), 'a', 'sv', 'z', 'sz', 't0', 'st0', 'tau', cols_theta)
+    parnames <- c(paste("v", 1:nConds, sep=""), 'a', 'sv', 'z', 'sz', 't0', 'st0', 'tau', 'omega', cols_theta)
     names(inits) <- setdiff(parnames, names(fixed))
 
   } else {
@@ -172,7 +141,7 @@ fitting2DSD <- function(df, nConds, nRatings, fixed, sym_thetas,
       }
     }
     parnames <- c('a', 'z', 'sz', paste("v", 1:nConds, sep=""),
-                   'st0', 'sv', 't0', cols_theta,'tau')
+                   'st0', 'sv', 't0', cols_theta,'tau', 'omega')
     inits <- init_grid[, setdiff(parnames, names(fixed))]
 
   }
@@ -186,7 +155,7 @@ fitting2DSD <- function(df, nConds, nRatings, fixed, sym_thetas,
       n.cores <- detectCores()-1
     }
     cl <- makeCluster(type="SOCK", n.cores)
-    clusterExport(cl, c("df", "restr_tau", "fixed",
+    clusterExport(cl, c("df", "restr_tau", "fixed", "mint0",
                         "nConds","nRatings", "sym_thetas", "simult_conf", "precision"), envir = environment())
   }
 
@@ -206,26 +175,26 @@ fitting2DSD <- function(df, nConds, nRatings, fixed, sym_thetas,
         logL <-
           parApply(cl, inits, MARGIN=1,
                    function(p) try(neglikelihood_2DSD_free(p, df,
-                                                           restr_tau, nConds, nRatings, fixed, simult_conf, sym_thetas, precision),
+                                                           restr_tau, nConds, nRatings, fixed, mint0, simult_conf, sym_thetas, precision),
                                    silent=TRUE))
         #stopCluster(cl)
       } else {
         logL <-
           apply(inits, MARGIN = 1,
-                function(p) try(neglikelihood_2DSD_free(p, df, restr_tau, nConds, nRatings, fixed, simult_conf, sym_thetas, precision),
+                function(p) try(neglikelihood_2DSD_free(p, df, restr_tau, nConds, nRatings, fixed, mint0, simult_conf, sym_thetas, precision),
                                 silent = TRUE))
       }
     } else {
       if (useparallel) {
         logL <-
           parApply(cl, inits, MARGIN=1,
-                   function(p) try(neglikelihood_2DSD_bounded(p, df, restr_tau, nConds, nRatings, fixed, simult_conf, sym_thetas, precision),
+                   function(p) try(neglikelihood_2DSD_bounded(p, df, restr_tau, nConds, nRatings, fixed, mint0, simult_conf, sym_thetas, precision),
                                    silent=TRUE))
         #stopCluster(cl)
       } else {
         logL <-
           apply(inits, MARGIN = 1,
-                function(p) try(neglikelihood_2DSD_bounded(p, df, restr_tau, nConds, nRatings, fixed, simult_conf,sym_thetas, precision),
+                function(p) try(neglikelihood_2DSD_bounded(p, df, restr_tau, nConds, nRatings, fixed, mint0, simult_conf,sym_thetas, precision),
                                 silent=TRUE))
       }
     }
@@ -239,9 +208,9 @@ fitting2DSD <- function(df, nConds, nRatings, fixed, sym_thetas,
   }
 
   if (optim_method!="Nelder-Mead") {
-                      # a,  z, sz,  v1, v2,....,,   st0, sv, t0,  thetaLower1, dthetaLower2.., thetaUpper1... (or theta1,...),    tau
-    lower_optbound <- c(0,  0,  0,  rep(0, nConds), 0,   0,  0,   rep(c(-Inf,     rep(0, nRatings-2)), 2-as.numeric(sym_thetas)), 0)[!(parnames %in% names(fixed))]
-    upper_optbound <- c(Inf,1,  1,  rep(Inf,nConds),Inf, Inf,Inf, rep(Inf, (2-as.numeric(sym_thetas))*(nRatings-1)),              restr_tau)[!(parnames %in% names(fixed))]
+                      # a,  z, sz,  v1, v2,....,,   st0, sv, t0,thetaLower1, dthetaLower2.., thetaUpper1... (or theta1,...),    tau,      omega
+    lower_optbound <- c(0,  0,  0,  rep(0, nConds), 0,   0,  0, rep(c(-Inf,     rep(0, nRatings-2)), 2-as.numeric(sym_thetas)), 0,        0)[!(parnames %in% names(fixed))]
+    upper_optbound <- c(Inf,1,  1,  rep(Inf,nConds),Inf, Inf,1, rep(Inf, (2-as.numeric(sym_thetas))*(nRatings-1)),              restr_tau,Inf)[!(parnames %in% names(fixed))]
   }
 
 
@@ -256,19 +225,23 @@ fitting2DSD <- function(df, nConds, nRatings, fixed, sym_thetas,
       start <- c(t(inits[i,]))
       names(start) <- names(inits)
       for (l in 1:opts$nRestarts){
+        start <- start + rnorm(length(start), sd=pmax(0.001, abs(t(t(start))/20)))
         if (optim_method == "Nelder-Mead") {
           try(m <- optim(par = start,
                          fn = neglikelihood_2DSD_free,
                          data=df, restr_tau = restr_tau, nConds=nConds, nRatings=nRatings,
-                         fixed = fixed, simult_conf = simult_conf,sym_thetas=sym_thetas, precision=precision,
+                         fixed = fixed,  mint0 =mint0,
+                         simult_conf = simult_conf,sym_thetas=sym_thetas, precision=precision,
                          method="Nelder-Mead",
                          control = list(maxit = opts$maxit, reltol = opts$reltol)))
         } else if (optim_method =="bobyqa") {
+          start <- pmax(pmin(start, upper_optbound-1e-6), lower_optbound+1e-6)
           try(m <- bobyqa(par = start,
                           fn = neglikelihood_2DSD_bounded,
                           lower = lower_optbound, upper = upper_optbound,
                           data=df, restr_tau = restr_tau, nConds=nConds, nRatings=nRatings,
-                          fixed = fixed, simult_conf = simult_conf,sym_thetas=sym_thetas, precision=precision,
+                          fixed = fixed,  mint0 =mint0,
+                          simult_conf = simult_conf,sym_thetas=sym_thetas, precision=precision,
                           control = list(maxfun=opts$maxfun,
                                          rhobeg = min(0.2, 0.2*restr_tau, 0.2*max(abs(start))),
                                          npt = length(start)+5)))
@@ -281,11 +254,13 @@ fitting2DSD <- function(df, nConds, nRatings, fixed, sym_thetas,
             m$value <- m$fval
           }
         } else if (optim_method=="L-BFGS-B") {  ### ToDo: use dfoptim or pracma::grad as gradient!
+          start <- pmax(pmin(start, upper_optbound-1e-6), lower_optbound+1e-6)
           try(m <- optim(par = start,
                          fn = neglikelihood_2DSD_bounded,
                          lower = lower_optbound, upper = upper_optbound,
                          data=df,  restr_tau = restr_tau, nConds=nConds, nRatings=nRatings,
-                         fixed = fixed, simult_conf = simult_conf,sym_thetas=sym_thetas, precision=precision,
+                         fixed = fixed,  mint0 =mint0,
+                         simult_conf = simult_conf,sym_thetas=sym_thetas, precision=precision,
                          method="L-BFGS-B",
                          control = list(maxit = opts$maxit, factr = opts$factr)))
         } else {
@@ -332,19 +307,23 @@ fitting2DSD <- function(df, nConds, nRatings, fixed, sym_thetas,
       start <- c(t(start))
       names(start) <- parnames
       for (l in 1:opts$nRestarts){
+        start <- start + rnorm(length(start), sd=pmax(0.001, abs(t(t(start))/20)))
         if (optim_method == "Nelder-Mead") {
           try(m <- optim(par = start,
                          fn = neglikelihood_2DSD_free,
                          data=df,  restr_tau = restr_tau, nConds=nConds, nRatings=nRatings,
-                         fixed = fixed, simult_conf = simult_conf,sym_thetas=sym_thetas, precision=precision,
+                         fixed = fixed,  mint0 =mint0,
+                         simult_conf = simult_conf,sym_thetas=sym_thetas, precision=precision,
                          method="Nelder-Mead",
                          control = list(maxit = opts$maxit, reltol = opts$reltol)))
         } else if (optim_method =="bobyqa") {
+          start <- pmax(pmin(start, upper_optbound-1e-6), lower_optbound+1e-6)
           try(m <- bobyqa(par = start,
                           fn = neglikelihood_2DSD_bounded,
                           lower = lower_optbound, upper = upper_optbound,
                           data=df,  restr_tau = restr_tau, nConds=nConds, nRatings=nRatings,
-                          fixed = fixed, simult_conf = simult_conf,sym_thetas=sym_thetas, precision=precision,
+                          fixed = fixed, mint0 =mint0,
+                          simult_conf = simult_conf,sym_thetas=sym_thetas, precision=precision,
                           control = list(maxfun=opts$maxfun,
                                          rhobeg = min(0.2, 0.2*restr_tau, 0.2*max(abs(start))),
                                          npt = length(start)+5)),
@@ -358,11 +337,13 @@ fitting2DSD <- function(df, nConds, nRatings, fixed, sym_thetas,
             m$value <- m$fval
           }
         } else if (optim_method=="L-BFGS-B") {  ### ToDo: use dfoptim or pracma::grad as gradient!
+          start <- pmax(pmin(start, upper_optbound-1e-6), lower_optbound+1e-6)
           try(m <- optim(par = start,
                          fn = neglikelihood_2DSD_bounded,
                          lower = lower_optbound, upper = upper_optbound,
                          data=df,  restr_tau = restr_tau, nConds=nConds, nRatings=nRatings,
-                         fixed = fixed, simult_conf = simult_conf,sym_thetas=sym_thetas, precision=precision,
+                         fixed = fixed,  mint0 =mint0,
+                         simult_conf = simult_conf,sym_thetas=sym_thetas, precision=precision,
                          method="L-BFGS-B",
                          control = list(maxit = opts$maxit, factr = opts$factr)))
         } else {
@@ -388,7 +369,7 @@ fitting2DSD <- function(df, nConds, nRatings, fixed, sym_thetas,
         return(rep(NA, length(start)+1))
       } # end of node-function
     }
-    clusterExport(cl, c("parnames", "opts", "optim_method","optim_node" ), envir = environment())
+    clusterExport(cl, c("parnames", "opts", "optim_method","optim_node"), envir = environment())
     if (optim_method!="Nelder-Mead") {
       clusterExport(cl, c("lower_optbound", "upper_optbound"), envir = environment())
     }
@@ -408,25 +389,24 @@ fitting2DSD <- function(df, nConds, nRatings, fixed, sym_thetas,
 
     if (optim_method=="Nelder-Mead") {
       res[,paste("v",1:(nConds), sep="")] <- exp(p[1:(nConds)])
+      if (length(fixed)>=1) res <- cbind(res, as.data.frame(fixed))
+
       if (!("a" %in% names(fixed))) res$a <- exp(p[["a"]])
       if (!("sv" %in% names(fixed))) res$sv <- exp(p[["sv"]])
       if (!("z" %in% names(fixed))) res$z <- pnorm(p[["z"]]) ## relative mean starting point
-      if (!("sz" %in% names(fixed))) {
-        if (!("z" %in% names(fixed))) {
-          res$sz <- (min(res$z, (1-res$z))*2)*pnorm(p[["sz"]]) ##
-        } else {
-          res$sz <- (min(fixed[['z']], (1-fixed[['z']]))*2)*pnorm(p[["sz"]]) ##
-        }
-      }
-      if (!("t0" %in% names(fixed))) res$t0 <- exp(p[["t0"]])
+      if (!("sz" %in% names(fixed))) res$sz <- (min(res$z, (1-res$z))*2)*pnorm(p[["sz"]])
+      if (!("t0" %in% names(fixed))) res$t0 <- pnorm(p[["t0"]])*mint0
       if (!("st0" %in% names(fixed))) res$st0 <- exp(p[["st0"]])
       if (!("tau" %in% names(fixed))) {
         if (restr_tau == Inf) {
           res$tau <- exp(p[["tau"]])
+        } else if (simult_conf) {
+          res$tau <- pnorm(p[["tau"]])*(mint0-res$t0)
         } else {
           res$tau <- restr_tau * pnorm(p[["tau"]])
         }
       }
+      if (!("omega" %in% names(fixed))) res$omega <- exp(p[["omega"]])
       if (nRatings > 2) {
         if (sym_thetas) {
           res[,paste("theta",1:(nRatings-1), sep="")] <- cumsum(c(p[["theta1"]], exp(p[paste0("dtheta", 2:(nRatings-1))])))
@@ -454,13 +434,11 @@ fitting2DSD <- function(df, nConds, nRatings, fixed, sym_thetas,
         }
         p <- p[ -grep(names(p), pattern="dtheta")]
       }
-      if (!("sz" %in% names(fixed))) {
-        if (!("z" %in% names(fixed))) {
-          p['sz'] <- (min(p['z'], (1-p['z']))*2)*p["sz"] ##
-        } else {
-          p['sz'] <- (min(fixed[['z']], (1-fixed[['z']]))*2)*p["sz"] ##
-        }
-      }
+      if (length(fixed)>=1) p <- c(p, unlist(fixed))
+      if (!("t0" %in% names(fixed))) p['t0'] <- p['t0']*mint0
+      if (simult_conf & !("tau" %in% names(fixed))) p['tau'] <- p['tau']*(mint0-p[['t0']])
+      if (!("sz" %in% names(fixed))) p['sz'] <- (min(p['z'], (1-p['z']))*2)*p["sz"] ##
+
       res <-   data.frame(matrix(nrow=1, ncol=length(p)))
       res[1,] <- p
       names(res) <- names(p)      # a,  z, sz,v1, v2,....,,   st0, sv, t0, thetaLower1,dthetaLower2-4,   thetaUpper1,dthetaUpper2-4,    tau
@@ -475,14 +453,12 @@ fitting2DSD <- function(df, nConds, nRatings, fixed, sym_thetas,
     }
 
     if (sym_thetas) {
-      parnames <- c(paste("v", 1:nConds, sep=""), 'sv', 'a', 'z', 'sz', 't0','st0', paste("theta", 1:(nRatings-1), sep=""), 'tau')
+      parnames <- c(paste("v", 1:nConds, sep=""), 'sv', 'a', 'z', 'sz', 't0','st0', paste("theta", 1:(nRatings-1), sep=""), 'tau', 'omega')
     } else {
-      parnames <- c(paste("v", 1:nConds, sep=""), 'sv', 'a', 'z', 'sz', 't0','st0', paste("thetaLower", 1:(nRatings-1), sep=""), paste("thetaUpper", 1:(nRatings-1), sep=""), 'tau')
+      parnames <- c(paste("v", 1:nConds, sep=""), 'sv', 'a', 'z', 'sz', 't0','st0', paste("thetaLower", 1:(nRatings-1), sep=""), paste("thetaUpper", 1:(nRatings-1), sep=""), 'tau', 'omega')
     }
-    res <- res[,setdiff(parnames, names(fixed))]
-    if (length(fixed)>=1) {
-      res <- cbind(res, as.data.frame(fixed))
-    }
+    res <- res[, parnames]
+
     res$fixed <- paste(c("sym_thetas", names(fixed)), c(sym_thetas,fixed), sep="=", collapse = ", ")
     res$negLogLik <- fit$value
     res$N <- N
@@ -502,7 +478,7 @@ fitting2DSD <- function(df, nConds, nRatings, fixed, sym_thetas,
 
 
 neglikelihood_2DSD_free <-   function(p, data,
-                                      restr_tau, nConds, nRatings, fixed, simult_conf, sym_thetas, precision=1e-5)
+                                      restr_tau, nConds, nRatings, fixed, mint0, simult_conf, sym_thetas, precision=1e-5)
 {
   # get parameter vector back from real transformations
   paramDf <-  data.frame(matrix(nrow=1, ncol=0))
@@ -517,7 +493,7 @@ neglikelihood_2DSD_free <-   function(p, data,
       paramDf$sz <- (min(fixed[['z']], (1-fixed[['z']]))*2)*pnorm(p[["sz"]]) ##
     }
   }
-  if (!("t0" %in% names(fixed))) paramDf$t0 <- exp(p[["t0"]])
+  if (!("t0" %in% names(fixed))) paramDf$t0 <- pnorm(p[["t0"]])*mint0
   if (!("st0" %in% names(fixed))) paramDf$st0 <- exp(p[["st0"]])
   if (!("tau" %in% names(fixed))) {
     if (restr_tau == Inf) {
@@ -525,7 +501,15 @@ neglikelihood_2DSD_free <-   function(p, data,
     } else {
       paramDf$tau <- restr_tau * pnorm(p[["tau"]])
     }
+    if (simult_conf) {
+      if ("t0" %in% names(fixed)) {
+        res$tau <- pnorm(p[["tau"]])*(mint0-fixed[['t0']])
+      } else {
+        res$tau <- pnorm(p[["tau"]])*(mint0-paramDf$t0)
+      }
+    }
   }
+  if (!("omega" %in% names(fixed))) paramDf$omega <- exp(p[["omega"]])
   if (nRatings > 2) {
     if (sym_thetas) {
       paramDf[,paste("theta",1:(nRatings-1), sep="")] <- cumsum(c(p[["theta1"]], exp(p[paste0("dtheta", 2:(nRatings-1))])))
@@ -554,7 +538,7 @@ neglikelihood_2DSD_free <-   function(p, data,
 
 
 neglikelihood_2DSD_bounded <-   function(p, data,
-                                         restr_tau, nConds, nRatings, fixed, simult_conf, sym_thetas=FALSE, precision=1e-5)
+                                         restr_tau, nConds, nRatings, fixed, simult_conf, mint0, sym_thetas=FALSE, precision=1e-5)
 {
   # get parameter vector back from real transformations
   paramDf <-   data.frame(matrix(nrow=1, ncol=length(p)))
@@ -572,7 +556,11 @@ neglikelihood_2DSD_bounded <-   function(p, data,
   if (length(fixed)>=1) {
     paramDf <- cbind(paramDf, as.data.frame(fixed))
   }
-  paramDf['sz'] <- (min(paramDf['z'], 1-paramDf['z'])*2)*paramDf['sz']
+  if (!("t0" %in% names(fixed))) paramDf['t0'] <- paramDf['t0']*mint0
+  if (!("sz" %in% names(fixed))) paramDf['sz'] <- (min(paramDf['z'], 1-paramDf['z'])*2)*paramDf['sz']
+  if (simult_conf & !("tau" %in% names(fixed))) {
+    paramDf['tau'] <- paramDf['tau']*(mint0-paramDf['t0'])
+  }
   #paramDf[grep(names(paramDf), pattern = "thetaLower", value=TRUE)] <- paramDf$a - paramDf[grep(names(paramDf), pattern = "thetaLower", value=TRUE)]
   negloglik <- -LogLikWEV(data, paramDf, "2DSD", simult_conf, precision, stop_on_error=FALSE)
   return(negloglik)
