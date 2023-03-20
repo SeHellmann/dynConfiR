@@ -44,14 +44,6 @@
 #' `dynConfiR` package can be used. In the context of confidence models grouping factors
 #' often used are conditions, correct/incorrect answers and confidence ratings.
 #'
-#' @references Pleskac, T. J., & Busemeyer, J. R. (2010). Two-Stage Dynamic Signal Detection:
-#' A Theory of Choice, Decision Time, and Confidence, \emph{Psychological Review}, 117(3),
-#' 864-901. doi:10.1037/a0019737
-#'
-#' Rausch, M., Hellmann, S., & Zehetleitner, M. (2018). Confidence in masked orientation
-#' judgments is informed by both evidence and visibility. \emph{Attention, Perception, &
-#' Psychophysics}, 80(1), 134–154.  doi: 10.3758/s13414-017-1431-5
-#'
 #'
 #' @author Sebastian Hellmann.
 #'

@@ -72,7 +72,7 @@ respective outputs of the integration routine used for the computation.
 \code{predictRM_Conf} predicts the categorical response distribution of
 decision and confidence ratings, \code{predictRM_RT} computes the
 RT distribution (density) in the independent and partially anti-correlated
-race models  (Hellmann et al., preprint), given specific parameter
+race models  (Hellmann et al., 2023), given specific parameter
 constellations. See \link{RaceModels} for more information about the models
 and parameters.
 }
@@ -144,6 +144,9 @@ head(preds_RT)
   PDFtoQuantiles(preds_RT, scaled = FALSE)
 }
 
+}
+\references{
+Hellmann, S., Zehetleitner, M., & Rausch, M. (2023). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review} 2023 Mar 13. doi: 10.1037/rev0000411. Epub ahead of print. PMID: 36913292.
 }
 \author{
 Sebastian Hellmann.

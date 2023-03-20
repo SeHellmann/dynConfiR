@@ -97,7 +97,7 @@
 #'
 #' @md
 #'
-#' @references Hellmann, S., Zehetleitner, M., & Rausch, M. (in press). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review}. <https://osf.io/9jfqr/>
+#' @references  Hellmann, S., Zehetleitner, M., & Rausch, M. (2023). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review} 2023 Mar 13. doi: 10.1037/rev0000411. Epub ahead of print. PMID: 36913292.
 #'
 #' @author Sebastian Hellmann.
 #'
@@ -158,7 +158,7 @@ fitRTConfModels <- function(data, models = c("dynWEV", "2DSD"),
                       grid_search=TRUE,
                       opts=list(), optim_method = "bobyqa", logging=FALSE, precision=1e-5,
                       parallel = TRUE, n.cores=NULL, ...){ #  ?ToDO: vary_sv=FALSE, RRT=NULL, vary_tau=FALSE
-  if (any(!grepl("IRM|PCRM|IRMt|PCRMt|dynWEV|2DSD|DDMConf", models))) stop("all models must contain 'dynWEV', '2DSD', 'DDMConf', 'IRM', or 'PCRM'")
+  if (any(!grepl("dynaViTE|IRM|PCRM|IRMt|PCRMt|dynWEV|2DSD|DDMConf", models))) stop("all models must contain 'dynWEV', '2DSD', 'DDMConf', 'IRM', or 'PCRM'")
 
   ### Maybe later: use ...-argument für renaming data-columns and to pass other arguments
   # colrenames <- c(...)
@@ -247,7 +247,7 @@ fitRTConfModels <- function(data, models = c("dynWEV", "2DSD"),
                   paste("v", 1:nConds, sep=""),
                   paste("theta", 1:(nRatings-1), sep=""),
                   "wrt", "wint", "wx", "b", "a",
-                  "z", "sz", "sv", "tau", "w", "svis", "sigvis", "omega")
+                  "z", "sz", "sv", "tau", "w", "svis", "sigvis", "lambda")
     #outnames <- outnames[!(outnames %in% names(fixed))]
   } else {
     outnames <- c("model", "sbj", "negLogLik", "N", "k", "BIC", "AICc", "AIC", "fixed",
@@ -256,7 +256,7 @@ fitRTConfModels <- function(data, models = c("dynWEV", "2DSD"),
                   paste("thetaLower", 1:(nRatings-1), sep=""),
                   paste("thetaUpper", 1:(nRatings-1), sep=""),
                   "wrt", "wint", "wx", "b", "a",
-                  "z", "sz", "sv", "tau", "w", "svis", "sigvis", "omega")
+                  "z", "sz", "sv", "tau", "w", "svis", "sigvis", "lambda")
     #outnames <- outnames[!(outnames %in% names(fixed))]
   }
 

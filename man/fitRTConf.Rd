@@ -96,7 +96,7 @@ about fixed and not fitted parameters.
 \description{
 Fits the parameters of different models of response time and confidence, including
 the 2DSD model (Pleskac & Busemeyer, 2010), dynWEV, DDMConf, and various
-flavors of race models (Hellmann et al., in press). Which model to fit is
+flavors of race models (Hellmann et al., 2023). Which model to fit is
 specified by the argument \code{model}.
 Only a ML method is implemented.
 See \code{\link{dWEV}}, \code{\link{d2DSD}}, and \code{\link{dRM}} for more
@@ -137,7 +137,6 @@ leads to identical upper bounds on the decision processes, which is the equivale
 all changes are adopted in the fitting function instantly. Following parameters
 are currently not included in the fitting routine:
 \itemize{
-\item \code{omega} only relevant for 2DSD and dynWEV
 \item in race models: \code{sza}, \code{szb}, \code{smu1}, and \code{smu2}
 }
 
@@ -201,7 +200,7 @@ head(data)
 
 }
 \references{
-Hellmann, S., Zehetleitner, M., & Rausch, M. (in press). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review}. \url{https://osf.io/9jfqr/}
+Hellmann, S., Zehetleitner, M., & Rausch, M. (2023). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review} 2023 Mar 13. doi: 10.1037/rev0000411. Epub ahead of print. PMID: 36913292.
 
 \url{https://nashjc.wordpress.com/2016/11/10/why-optim-is-out-of-date/}
 

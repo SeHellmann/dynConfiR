@@ -21,10 +21,10 @@ test_that("2DSD works", {
   ## test for response symmetry
   expect_equal(d2DSD(seq(0, 3, by=0.5), "lower", -1, 1, a=2, v=0.5, t0=0, z =0.2, sv=0.2, tau=1, s=1, stop_on_error = TRUE),
                d2DSD(seq(0, 3, by=0.5), "upper", -1, 1,  a=2, v=-0.5, t0=0, z =1-0.2, sv=0.2, tau=1, s=1, stop_on_error = TRUE))
-  ## test for equivalence wrt to omega
+  ## test for equivalence wrt to lambda
   expect_equal(d2DSD(c(0.1, .3,.7,1.2), "upper", 0.5 /((c(0.1, .3,.7,1.2)+2)), 1/((c(0.1, .3,.7,1.2)+2)),  2, 0.5,  0,0.5, 0, 0, 0.3, 0, 2,1),
                d2DSD(c(0.1, .3,.7,1.2), "upper", 0.5 /sqrt((c(0.1, .3,.7,1.2)+2)), 1/sqrt((c(0.1, .3,.7,1.2)+2)),  2, 0.5,  0,0.5, 0, 0, 0.3, 0, 2,0.5))
-  expect_equal(d2DSD(c(0.1, .3,.7,1.2), "lower", 0.5, 1, 2,  0.5,  0,0.5, 0, 0, 0.3, 0, 2), # default omega = 0
+  expect_equal(d2DSD(c(0.1, .3,.7,1.2), "lower", 0.5, 1, 2,  0.5,  0,0.5, 0, 0, 0.3, 0, 2), # default lambda = 0
                d2DSD(c(0.1, .3,.7,1.2), "lower", 0.5 /(c(0.1, .3,.7,1.2)+2)^2, 1/(c(0.1, .3,.7,1.2)+2)^2, 2, 0.5,  0,0.5, 0, 0, 0.3, 0, 2,2))
 })
 
@@ -46,11 +46,11 @@ test_that("dynWEV works", {
   ## test with explicitly giving parameter muvis
   expect_equal(dWEV(seq(0, 3, by=0.5), "lower", -100, 100, tau=1, a=2, v=-0.5, t0=0, z =0.2, sv=0.2, w=0.001, sigvis=0.4, svis=1, s=1),
                dWEV(seq(0, 3, by=0.5), "lower", -100, 100, tau=1, a=2, v=-0.5, t0=0, z =0.2, sv=0.2, w=0.001, muvis = 0.5, sigvis=0.4, svis=1, s=1))
-  ## test for equivalence wrt to omega
-  expect_equal(dWEV(c(0.1, .3,.7,1.2), "upper", 0.5 /((c(0.1, .3,.7,1.2)+2)), 1/((c(0.1, .3,.7,1.2)+2)), 2, 0.5,  0,0.5, 0, 0, 0.3, 0, 2, 0.5, omega=1),
-               dWEV(c(0.1, .3,.7,1.2), "upper", 0.5 /sqrt((c(0.1, .3,.7,1.2)+2)), 1/sqrt((c(0.1, .3,.7,1.2)+2)),  2, 0.5,  0,0.5, 0, 0, 0.3, 0, 2, 0.5, omega=0.5))
-  expect_equal(dWEV(c(0.1, .3,.7,1.2), "lower", 0.5, 1, 2, 0.5,  0,0.5, 0, 0, 0.3, 0, 2, 0.5), # default omega = 0
-               dWEV(c(0.1, .3,.7,1.2), "lower", 0.5 /(c(0.1, .3,.7,1.2)+2)^2, 1/(c(0.1, .3,.7,1.2)+2)^2, 2, 0.5,  0,0.5, 0, 0, 0.3, 0, 2,  0.5, omega=2))
+  ## test for equivalence wrt to lambda
+  expect_equal(dWEV(c(0.1, .3,.7,1.2), "upper", 0.5 /((c(0.1, .3,.7,1.2)+2)), 1/((c(0.1, .3,.7,1.2)+2)), 2, 0.5,  0,0.5, 0, 0, 0.3, 0, 2, 0.5, lambda=1),
+               dWEV(c(0.1, .3,.7,1.2), "upper", 0.5 /sqrt((c(0.1, .3,.7,1.2)+2)), 1/sqrt((c(0.1, .3,.7,1.2)+2)),  2, 0.5,  0,0.5, 0, 0, 0.3, 0, 2, 0.5, lambda=0.5))
+  expect_equal(dWEV(c(0.1, .3,.7,1.2), "lower", 0.5, 1, 2, 0.5,  0,0.5, 0, 0, 0.3, 0, 2, 0.5), # default lambda = 0
+               dWEV(c(0.1, .3,.7,1.2), "lower", 0.5 /(c(0.1, .3,.7,1.2)+2)^2, 1/(c(0.1, .3,.7,1.2)+2)^2, 2, 0.5,  0,0.5, 0, 0, 0.3, 0, 2,  0.5, lambda=2))
 })
 
 test_that("dynWEV with w=0 equals 2DSD", {

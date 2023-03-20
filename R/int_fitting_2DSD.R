@@ -37,21 +37,12 @@ fitting2DSD <- function(df, nConds, nRatings, fixed, sym_thetas,
                              sz = c(0.01, 0.4),
                              t0 = c(0.4, 0.8),
                              st0 = c(0.1, 0.3, 0.7),
-                             # theta0 = seq(-5,  3,length.out = 6), #theta0 = seq(0.2, 1.5,length.out = 3),
-                             # thetamax = seq(-1, 5,length.out = 6), #thetamax = seq(1.6, 2.5,length.out = 3),
                              tau = tau,
-                             omega=c(0, 0.5, 1, 2))
+                             lambda=c(0, 0.5, 1, 2))
   }
-
-  # if (simult_conf) {
-  #   init_grid <- init_grid[init_grid$t0+init_grid$tau <= mint0, ]
-  # }
 
   # Remove columns for fixed parameters
   init_grid <- init_grid[setdiff(names(init_grid), names(fixed))]
-  # thetamax <- NULL # to omit a note because of an unbound variable
-  # theta0 <- NULL # to omit a note because of an unbound variable
-  # init_grid <- filter(init_grid, thetamax > theta0)
   init_grid <- unique(init_grid)
 
   ### If no grid-search is desired use mean of possible parameters #
@@ -70,8 +61,9 @@ fitting2DSD <- function(df, nConds, nRatings, fixed, sym_thetas,
   }
   ## Guess suitable confidence thresholds from theoretical distribution of
   ## the confidence measure and proportion of ratings in the data
-  init_thetas <- get_thetas_for_init_grid_dynWEV(init_grid, df, nRatings, simult_conf,
-                                                 c(fixed, w=1, sigvis=1, svis=1))# 2DSD is dynWEV with w fixed to 1
+  init_thetas <- get_thetas_for_init_grid_dynWEV_simulations(init_grid, df, nRatings, simult_conf,
+                                                 c(fixed, w=1, sigvis=1, svis=1), # 2DSD is dynWEV with w fixed to 1
+                                                 mint0 = mint0)
 
 
   #### For Nelder-Mead transform all parameters to real values ####
@@ -96,7 +88,7 @@ fitting2DSD <- function(df, nConds, nRatings, fixed, sym_thetas,
         inits <- cbind(inits, qnorm(init_grid$tau / restr_tau))
       }
     }
-    if (!("omega" %in% names(fixed))) inits <- cbind(inits, log(init_grid$omega))
+    if (!("lambda" %in% names(fixed))) inits <- cbind(inits, log(init_grid$lambda))
     inits <- cbind(inits, init_thetas[,1])
     if (nRatings > 2) {
       inits <- cbind(inits, log(init_thetas[,-1]))
@@ -114,7 +106,7 @@ fitting2DSD <- function(df, nConds, nRatings, fixed, sym_thetas,
     ##replace all +-Inf with big/tiny numbers
     inits[inits==Inf]<- 1e6
     inits[inits==-Inf]<- -1e6
-    parnames <- c(paste("v", 1:nConds, sep=""), 'a', 'sv', 'z', 'sz', 't0', 'st0', 'tau', 'omega', cols_theta)
+    parnames <- c(paste("v", 1:nConds, sep=""), 'a', 'sv', 'z', 'sz', 't0', 'st0', 'tau', 'lambda', cols_theta)
     names(inits) <- setdiff(parnames, names(fixed))
 
   } else {
@@ -141,7 +133,7 @@ fitting2DSD <- function(df, nConds, nRatings, fixed, sym_thetas,
       }
     }
     parnames <- c('a', 'z', 'sz', paste("v", 1:nConds, sep=""),
-                   'st0', 'sv', 't0', cols_theta,'tau', 'omega')
+                   'st0', 'sv', 't0', cols_theta,'tau', 'lambda')
     inits <- init_grid[, setdiff(parnames, names(fixed))]
 
   }
@@ -208,7 +200,7 @@ fitting2DSD <- function(df, nConds, nRatings, fixed, sym_thetas,
   }
 
   if (optim_method!="Nelder-Mead") {
-                      # a,  z, sz,  v1, v2,....,,   st0, sv, t0,thetaLower1, dthetaLower2.., thetaUpper1... (or theta1,...),    tau,      omega
+                      # a,  z, sz,  v1, v2,....,,   st0, sv, t0,thetaLower1, dthetaLower2.., thetaUpper1... (or theta1,...),    tau,      lambda
     lower_optbound <- c(0,  0,  0,  rep(0, nConds), 0,   0,  0, rep(c(-Inf,     rep(0, nRatings-2)), 2-as.numeric(sym_thetas)), 0,        0)[!(parnames %in% names(fixed))]
     upper_optbound <- c(Inf,1,  1,  rep(Inf,nConds),Inf, Inf,1, rep(Inf, (2-as.numeric(sym_thetas))*(nRatings-1)),              restr_tau,Inf)[!(parnames %in% names(fixed))]
   }
@@ -406,7 +398,7 @@ fitting2DSD <- function(df, nConds, nRatings, fixed, sym_thetas,
           res$tau <- restr_tau * pnorm(p[["tau"]])
         }
       }
-      if (!("omega" %in% names(fixed))) res$omega <- exp(p[["omega"]])
+      if (!("lambda" %in% names(fixed))) res$lambda <- exp(p[["lambda"]])
       if (nRatings > 2) {
         if (sym_thetas) {
           res[,paste("theta",1:(nRatings-1), sep="")] <- cumsum(c(p[["theta1"]], exp(p[paste0("dtheta", 2:(nRatings-1))])))
@@ -453,9 +445,9 @@ fitting2DSD <- function(df, nConds, nRatings, fixed, sym_thetas,
     }
 
     if (sym_thetas) {
-      parnames <- c(paste("v", 1:nConds, sep=""), 'sv', 'a', 'z', 'sz', 't0','st0', paste("theta", 1:(nRatings-1), sep=""), 'tau', 'omega')
+      parnames <- c(paste("v", 1:nConds, sep=""), 'sv', 'a', 'z', 'sz', 't0','st0', paste("theta", 1:(nRatings-1), sep=""), 'tau', 'lambda')
     } else {
-      parnames <- c(paste("v", 1:nConds, sep=""), 'sv', 'a', 'z', 'sz', 't0','st0', paste("thetaLower", 1:(nRatings-1), sep=""), paste("thetaUpper", 1:(nRatings-1), sep=""), 'tau', 'omega')
+      parnames <- c(paste("v", 1:nConds, sep=""), 'sv', 'a', 'z', 'sz', 't0','st0', paste("thetaLower", 1:(nRatings-1), sep=""), paste("thetaUpper", 1:(nRatings-1), sep=""), 'tau', 'lambda')
     }
     res <- res[, parnames]
 
@@ -509,7 +501,7 @@ neglikelihood_2DSD_free <-   function(p, data,
       }
     }
   }
-  if (!("omega" %in% names(fixed))) paramDf$omega <- exp(p[["omega"]])
+  if (!("lambda" %in% names(fixed))) paramDf$lambda <- exp(p[["lambda"]])
   if (nRatings > 2) {
     if (sym_thetas) {
       paramDf[,paste("theta",1:(nRatings-1), sep="")] <- cumsum(c(p[["theta1"]], exp(p[paste0("dtheta", 2:(nRatings-1))])))

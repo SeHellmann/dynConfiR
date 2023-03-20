@@ -34,7 +34,7 @@ NumericMatrix RNG_WEV (int n, NumericVector params, double delta=0.01,
   double st0 =    params[6];
   double zr  =    params[7];
   double tau =    params[8];
-  double omega =  params[11];
+  double lambda =  params[11];
   double w   =    params[12];
   double muvis =  params[13];
   double sigvis = params[14];
@@ -73,8 +73,8 @@ NumericMatrix RNG_WEV (int n, NumericVector params, double delta=0.01,
 
     vis = R::rnorm((tau+t)*muvis, sqrt(svis*svis*(tau+t)+(t+tau)*(t+tau)*sigvis*sigvis));
 
-    if (omega >0) {
-      conf = (w*conf + (1-w)*vis)/pow(t+tau, omega);
+    if (lambda >0) {
+      conf = (w*conf + (1-w)*vis)/pow(t+tau, lambda);
     } else {
       conf = (w*conf + (1-w)*vis);
     }

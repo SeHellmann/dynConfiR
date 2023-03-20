@@ -131,7 +131,7 @@ static double integral_v_g_minus_WEVmu (double t, double zr, Parameters *params)
     double svis2 = params->svis*params->svis;
     double sigvis2 = params->sigvis*params->sigvis;
     double w = params->w;
-    double omega = params->omega;
+    double lambda = params->lambda;
 
 
 
@@ -152,9 +152,9 @@ static double integral_v_g_minus_WEVmu (double t, double zr, Parameters *params)
     ttau = t+tau;
     Mu = (ttau*(1-w)*muvis - w*(tau*v-a*zr*(sv*sv*ttau+1))/(sv2t)) ;
     Sigma = sqrt(( w*w*tau* (1+ tau*sv*sv/sv2t) + (1-w)*(1-w)*(ttau*svis2 + ttau*ttau*sigvis2)));
-    if (omega > 0)
+    if (lambda > 0)
     {
-      int_c = Phi((th2*pow(ttau, omega)-Mu)/Sigma) - Phi((th1*pow(ttau, omega)-Mu)/Sigma);
+      int_c = Phi((th2*pow(ttau, lambda)-Mu)/Sigma) - Phi((th1*pow(ttau, lambda)-Mu)/Sigma);
     }
     else
     {

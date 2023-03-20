@@ -11,7 +11,7 @@ simulateWEV(paramDf, n = 10000, model = "dynWEV", simult_conf = FALSE,
 }
 \arguments{
 \item{paramDf}{a list or dataframe with one row. Column names should match the names
-of \link{dynWEV} and \link{2DSD} model specific parameter names. For different stimulus quality/mean
+of \link{dynaViTE} and \link{2DSD} model specific parameter names. For different stimulus quality/mean
 drift rates, names should be \code{v1}, \code{v2}, \code{v3},....
 Different \code{sv} and/or \code{s} parameters are possible with \code{sv1}, \code{sv2}, \code{sv3}... (\code{s1}, \code{s2}, \code{s3},...
 respectively) with equally many steps as for drift rates. Additionally, the confidence
@@ -21,7 +21,7 @@ for symmetric thresholds only by \code{theta1}, \code{theta2},....}
 \item{n}{integer. The number of samples (per condition and stimulus direction) generated.
 Total number of samples is \code{n*nConditions*length(stimulus)}.}
 
-\item{model}{character scalar. One of "dynWEV", or "2DSD".}
+\item{model}{character scalar. One of "dynaViTE", "dynWEV", or "2DSD".}
 
 \item{simult_conf}{logical. \code{TRUE}, if in the experiment confidence was reported simultaneously
 with the decision, as then decision and confidence judgment are assumed to have happened
@@ -74,8 +74,8 @@ information).
 }
 \description{
 Simulates the decision responses and reaction times together with a
-discrete confidence judgment in the 2DSD model (Pleskac & Busemeyer, 2010)
-and the dynWEV model (Hellmann et al., in press), given specific parameter constellations.
+discrete confidence judgment in the dynaViTE model, the 2DSD model (Pleskac & Busemeyer, 2010)
+and the dynWEV model (Hellmann et al., 2023), given specific parameter constellations.
 See \code{\link{dWEV}} and \code{\link{d2DSD}} for more information about parameters.
 Also computes the Gamma rank correlation between the confidence ratings and condition
 (task difficulty), reaction times and accuracy in the simulated output.
@@ -144,7 +144,7 @@ head(agg_simus)
 }
 }
 \references{
-Hellmann, S., Zehetleitner, M., & Rausch, M. (in press). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review}. \url{https://osf.io/9jfqr/}
+Hellmann, S., Zehetleitner, M., & Rausch, M. (2023). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review} 2023 Mar 13. doi: 10.1037/rev0000411. Epub ahead of print. PMID: 36913292.
 }
 \author{
 Sebastian Hellmann.

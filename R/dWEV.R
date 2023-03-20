@@ -1,7 +1,7 @@
-#' Dynamical weighted evidence and visibility model (dynWEV)
+#' Dynamical visibility, time, and evidence model (dynaViTE) and Dynamical weighted evidence and visibility model (dynWEV)
 #'
-#' Likelihood function and random number generator for the dynWEV model
-#' (Hellmann et al., in press).
+#' Likelihood function and random number generator for the dynaViTE and dynWEV model
+#' (Hellmann et al., 2023).
 #' It includes following parameters from the drift diffusion model:
 #' \code{a} (threshold separation),
 #' \code{z} (starting point; relative),
@@ -18,8 +18,8 @@
 #' \code{muvis} (mean drift rate of visibility process),
 #' \code{svis} (diffusion constant of visibility process),
 #' \code{sigvis} (variability in drift rate of visibility accumulator),
-#' \code{omega} the exponent of judgment time for the division by judgment time in the confidence measure, and
 #' \code{th1} and \code{th2} (lower and upper thresholds for confidence interval).
+#' \code{lambda} for dynaViTE only, the exponent of judgment time for the division by judgment time in the confidence measure, and
 #'  \strong{Note that the parametrization or defaults of non-decision time variability
 #'  \code{st0} and diffusion constant \code{s} differ from what is often found in the literature.}
 #'
@@ -77,9 +77,9 @@
 #' @param svis diffusion constant of visibility process. Range: \code{svis}>0. Default: \code{svis}=1.
 #' @param sigvis the variability in drift rate of the visibility process (which varies independently
 #' from the drift rate in decision process). Range: \code{sigvis}>=0. Default: \code{sigvis}=0.
-#' @param omega power for judgment time in the division of the confidence measure
+#' @param lambda power for judgment time in the division of the confidence measure
 #' by the judgment time (Default: 0, i.e. no division which is the version of
-#' dynWEV proposed by Hellmann et al.)
+#' dynWEV proposed by Hellmann et al., 2023)
 #'
 #' @param  simult_conf logical. Whether in the experiment confidence was reported simultaneously
 #' with the decision. If that is the case decision and confidence judgment are assumed to have happened
@@ -93,7 +93,6 @@
 #' outside the allowed range (= \code{FALSE}) or produce an error in this case (= \code{TRUE}).
 #' @param stop_on_zero Should the computation of densities stop as soon as a density value of 0 occurs.
 #' This may save a lot of time if the function is used for a likelihood function. Default: FALSE
-#'
 #' @param n integer. The number of samples generated.
 #' @param delta numeric. Discretization step size for simulations in the stochastic process
 #' @param maxrt numeric. Maximum decision time returned. If the simulation of the stochastic
@@ -116,16 +115,18 @@
 #' \code{w} and \code{sig}) are recycled to the length of the result. In other words, the functions
 #' are completely vectorized for all parameters and even the response boundary.
 #'
-#' @details The dynamical weighted evidence and visibility model is an extension of the 2DSD model
+#' @details The dynamical visibility, time, and evidence (dynaViTE) model
+#' and the weighted evidence and visibility model are extensions of the 2DSD model
 #' for decision confidence (see \code{\link{d2DSD}}). It assumes that the decision follows a drift
 #' diffusion model with two additional assumptions to account for confidence. First, there is a
 #' post-decisional period of further evidence accumulation `tau`. Second, another accumulation process
 #' accrues information about stimulus reliability (the visibility process) including also evidence
-#' about decision irrelevant features. See Hellmann et al. (in press) for more information.
+#' about decision irrelevant features. See Hellmann et al. (2023) for more information.
 #' The measure for confidence is then a weighted sum of the final state of the decision process X
-#' and the visibility process V, i.e. for a decision time T (which is not the response time),
-#' the confidence measure is
-#' \deqn{conf = wX(T+\tau) + (1-w) V(T+\tau).}
+#' and the visibility process V over a power-function of total accumulation time,
+#' i.e. for a decision time T (which is not the response time), the confidence variable is
+#' \deqn{conf = \frac{wX(T+\tau) + (1-w) V(T+\tau)}{(T+\tau)^\lambda}.}
+#' The dynWEV model is a special case of dynaViTE, with the parameter `lambda=0`.
 #'
 #' All functions are fully vectorized across all parameters as well as the response to match the
 #' length or \code{rt} (i.e., the output is always of length equal to \code{rt}). This allows for
@@ -149,14 +150,14 @@
 #' The function code is basically an extension of the \code{ddiffusion} function from the
 #' package \code{rtdists} for the Ratcliff diffusion model.
 #'
-#' @references Hellmann, S., Zehetleitner, M., & Rausch, M. (in press). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review}. <https://osf.io/9jfqr/>
+#' @references  Hellmann, S., Zehetleitner, M., & Rausch, M. (2023). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review} 2023 Mar 13. doi: 10.1037/rev0000411. Epub ahead of print. PMID: 36913292.
 #'
 #' @author Sebastian Hellmann
 #'
 #' @useDynLib dynConfiR, .registration = TRUE
 #'
-#' @name dynWEV
-#' @aliases WEVmodel dWEV ddynWEV rWEV
+#' @name dynaViTE
+#' @aliases WEVmodel dWEV ddynWEV rWEV dynWEV
 #' @importFrom Rcpp evalCpp
 #'
 #' @examples
@@ -206,11 +207,11 @@
 #' dWEV(df1[1:5,], th1=1, th2=0, a=2, v=0.5, stop_on_error = FALSE)
 #'
 
-#' @rdname dynWEV
+#' @rdname dynaViTE
 #' @export
 dWEV <- function (rt, response="upper", th1,th2, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, st0=0,
                   tau=1, w=0.5, muvis=NULL, sigvis=0, svis=1,
-                  omega = 0, s=1,  simult_conf = FALSE, precision=1e-5, z_absolute = FALSE,
+                  lambda = 0, s=1,  simult_conf = FALSE, precision=1e-5, z_absolute = FALSE,
                   stop_on_error=TRUE, stop_on_zero=FALSE)
 {
   # for convenience accept data.frame as first argument.
@@ -228,7 +229,7 @@ dWEV <- function (rt, response="upper", th1,th2, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, s
                                 d = d, sz = sz, sv = sv, st0 = st0,
                                 tau=tau, th1=th1, th2=th2,
                                 w=w, muvis=muvis, svis=svis,sigvis=sigvis,
-                                omega=omega,
+                                lambda=lambda,
                                 s = s, nn = nn, z_absolute = z_absolute,
                                 stop_on_error = stop_on_error)
 
@@ -252,11 +253,11 @@ dWEV <- function (rt, response="upper", th1,th2, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, s
 }
 
 
-#' @rdname dynWEV
+#' @rdname dynaViTE
 #' @export
 rWEV <- function (n, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, st0=0,
                   tau=1, w=0.5, muvis=NULL, sigvis=0, svis=1,
-                  omega=0, s=1, delta=0.01, maxrt=15, simult_conf = FALSE,
+                  lambda=0, s=1, delta=0.01, maxrt=15, simult_conf = FALSE,
                   z_absolute = FALSE,  stop_on_error=TRUE, process_results=FALSE)
 {
   if (is.null(muvis)) muvis <- abs(v)
@@ -267,7 +268,7 @@ rWEV <- function (n, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, st0=0,
                                 d = d, sz = sz, sv = sv, st0 = st0,
                                 tau=tau, th1=0, th2=1,
                                 w=w, muvis=muvis, svis=svis,sigvis=sigvis,
-                                omega=omega,
+                                lambda=lambda,
                                 s = s, nn = n, z_absolute = z_absolute,
                                 stop_on_error = stop_on_error)
   res <- matrix(NA, nrow=n, ncol=6)
@@ -281,6 +282,7 @@ rWEV <- function (n, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, st0=0,
     out[,4] <- out[,4]/pars$params[ok_rows[1], 11]  # multiply by s (diffusion constant)
     out[,5] <- out[,5]/pars$params[ok_rows[1], 11]  # multiply by s (diffusion constant)
     if (simult_conf) {
+      # add tau to response times, if choice and confidence given simultaneously
       out[1,] <- out[1,] + pars$params[ok_rows[1], 9]
     }
     res[ok_rows,] <- out
@@ -300,7 +302,7 @@ prepare_WEV_parameter <- function(response,
                                   a, v, t0, z, d,
                                   sz, sv, st0, tau, th1, th2,
                                   w, muvis, svis, sigvis,
-                                  omega,
+                                  lambda,
                                   s, nn,
                                   z_absolute = FALSE,
                                   stop_on_error) {
@@ -321,7 +323,7 @@ prepare_WEV_parameter <- function(response,
        (length(svis) ==1) &
        (length(w) == 1) &
        (length(sigvis) == 1)&
-       (length(omega) == 1)) {
+       (length(lambda) == 1)) {
     skip_checks <- TRUE
   } else {
     skip_checks <- FALSE
@@ -362,7 +364,7 @@ prepare_WEV_parameter <- function(response,
     svis <- rep(svis, length.out = nn)
     muvis <- rep(muvis, length.out = nn)
     sigvis <- rep(sigvis, length.out = nn)
-    omega <- rep(omega, length.out = nn)
+    lambda <- rep(lambda, length.out = nn)
   }
   th1[th1==-Inf] <- - .Machine$double.xmax
   th2[th2==Inf] <- .Machine$double.xmax
@@ -376,7 +378,7 @@ prepare_WEV_parameter <- function(response,
   # Build parameter matrix (and divide a, v, sv, sigvis and by s )
 
   params <- cbind (a/s, v/s, t0, d, sz, sv/s, st0, z,
-                   tau, th1/s, th2/s, omega, w, muvis/s, sigvis/s, svis/s, numeric_bounds)
+                   tau, th1/s, th2/s, lambda, w, muvis/s, sigvis/s, svis/s, numeric_bounds)
 
   # Check for illegal parameter values
   if(ncol(params)<17) stop("Not enough parameters supplied: probable attempt to pass NULL values?")

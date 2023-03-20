@@ -1,7 +1,7 @@
 #' Log-Likelihood functions for the dynWEV and 2DSD models of confidence
 #'
 #' Computes the Log-likelihood for given data and parameters in the
-#' dynWEV model (Hellmann et al., in press) and the 2DSD model
+#' dynWEV model (Hellmann et al., 2023) and the 2DSD model
 #' (Pleskac & Busemeyer, 2010). It is a wrapped version of the
 #' respective densities \code{\link{dWEV}} and \code{\link{d2DSD}},
 #' where one can find more information about the parameters
@@ -19,7 +19,7 @@
 #'
 #' }
 #' @param paramDf list or data.frame with one row. Names should match the names of
-#' \link{dynWEV} and \link{2DSD} model specific parameter names. For different
+#' \link{dynaViTE} and \link{2DSD} model specific parameter names. For different
 #' stimulus quality/mean drift rates, names should be `v1`, `v2`, `v3`,....
 #' Different `sv` and/or `s` parameters are possible with `sv1`, `sv2`, `sv3`... (`s1`, `s2`, `s3`,...
 #' respectively) with equally many steps as for drift rates. Additionally, the confidence
@@ -65,6 +65,7 @@
 #'  the response is the `"upper"` or `"lower"` boundary that is first hit by the evidence accumulation. A correct decision is therefore `"lower"`,
 #'  if stimulus is -1, and `"upper"`, if stimulus is 1.
 #'
+#' @references  Hellmann, S., Zehetleitner, M., & Rausch, M. (2023). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review} 2023 Mar 13. doi: 10.1037/rev0000411. Epub ahead of print. PMID: 36913292.
 #'
 #' @author Sebastian Hellmann.
 #'
@@ -116,9 +117,14 @@
 
 #' @rdname LogLikWEV
 #' @export
-LogLikWEV <- function(data, paramDf, model="dynWEV", simult_conf = FALSE, precision=1e-5, stop_on_error = TRUE, data_names = list(), ...) {
+LogLikWEV <- function(data, paramDf, model="dynaViTE", simult_conf = FALSE, precision=1e-5, stop_on_error = TRUE, data_names = list(), ...) {
   #### Check data formatting ####
   data <- rename(data, ...)
+  if ((model %in% c("dynWEV", "2DSD")) && !("lambda" %in% names(paramDf))) paramDf$lambda <- 0
+  if (model=="dynWEV") model <- "dynaViTE"
+  if (model=="2DSDT") model <- "2DSD"
+  if (!("lambda" %in% names(paramDf))) paramDf$lambda <- 0
+
 
   #### Get information from paramDf ####
   nConds <- length(grep(pattern = "^v[0-9]", names(paramDf), value = T))
@@ -151,7 +157,6 @@ LogLikWEV <- function(data, paramDf, model="dynWEV", simult_conf = FALSE, precis
       S <- rep(1, nConds)
     }
   }
-  if (!("omega" %in% names(paramDf))) paramDf$omega <- 0
   ## Recover confidence thresholds
   if (symmetric_confidence_thresholds) {
     thetas_upper <- c(-1e+32, t(paramDf[,paste("theta",1:(nRatings-1), sep = "")]), 1e+32)
@@ -189,37 +194,16 @@ LogLikWEV <- function(data, paramDf, model="dynWEV", simult_conf = FALSE, precis
                          M_drift = V[.data$condition]*.data$stimulus,
                          SV = SV[.data$condition],
                          S = S[.data$condition])
-  # if (model=="dynWEV") {
-  #   probs <- with(data,
-  #                 dWEV(rt, vth1,vth2,
-  #                      response=response,
-  #                      tau=paramDf$tau, a=paramDf$a,
-  #                      v = M_drift,
-  #                      t0 = paramDf$t0, z = paramDf$z, sz = paramDf$sz, st0=paramDf$st0,
-  #                      sv = SV, w=paramDf$w, muvis=abs(M_drift), svis=paramDf$svis,
-  #                      sigvis=paramDf$sigvis, omega=paramDf$omega, s = S,
-  #                      simult_conf = simult_conf, z_absolute = FALSE,
-  #                      precision = precision, stop_on_error = stop_on_error,
-  #                      stop_on_zero=FALSE))
-  # } else {
-  #   probs <- with(data, d2DSD(rt, vth1,vth2,
-  #                             response=response, tau=paramDf$tau, a=paramDf$a,
-  #                             v = M_drift,
-  #                             t0 = paramDf$t0, z = paramDf$z, sz = paramDf$sz, st0=paramDf$st0,
-  #                             sv = SV, omega=paramDf$omega, s=S,
-  #                             simult_conf = simult_conf, z_absolute = FALSE,
-  #                             precision = precision, stop_on_error = stop_on_error,
-  #                             stop_on_zero=FALSE))
-  # }
 
-  probs <- with(data, switch(which(model== c("dynWEV", "2DSD")),
+
+  probs <- with(data, switch(which(model== c("dynaViTE", "2DSD")),
                              dWEV(rt, vth1,vth2,
                                         response=response,
                                         tau=paramDf$tau, a=paramDf$a,
                                         v = M_drift,
                                         t0 = paramDf$t0, z = paramDf$z, sz = paramDf$sz, st0=paramDf$st0,
                                         sv = SV, w=paramDf$w, muvis=abs(M_drift), svis=paramDf$svis,
-                                        sigvis=paramDf$sigvis, omega=paramDf$omega, s = S,
+                                        sigvis=paramDf$sigvis, lambda=paramDf$lambda, s = S,
                                         simult_conf = simult_conf, z_absolute = FALSE,
                                         precision = precision, stop_on_error = stop_on_error,
                                         stop_on_zero=FALSE),
@@ -227,7 +211,7 @@ LogLikWEV <- function(data, paramDf, model="dynWEV", simult_conf = FALSE, precis
                                    response=response, tau=paramDf$tau, a=paramDf$a,
                                    v = M_drift,
                                    t0 = paramDf$t0, z = paramDf$z, sz = paramDf$sz, st0=paramDf$st0,
-                                   sv = SV, omega=paramDf$omega, s=S,
+                                   sv = SV, lambda=paramDf$lambda, s=S,
                                    simult_conf = simult_conf, z_absolute = FALSE,
                                    precision = precision, stop_on_error = stop_on_error,
                                    stop_on_zero=FALSE)))

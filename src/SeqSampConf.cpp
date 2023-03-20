@@ -385,7 +385,7 @@ NumericMatrix r_WEV (int n, NumericVector params, int model,
     else { return out;  }
   }
 
-  // model codes: 1: 2DSD, 2: dynWEV
+  // model codes: 1: 2DSD, 2: dynaViTE/dynWEV
   if (model == 1) {
       params[12] = 1; // w
       params[13] = 0; // muvis (arbitrary value)

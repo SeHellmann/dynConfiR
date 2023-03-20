@@ -9,7 +9,7 @@
 \alias{LogLikWEV2DSD}
 \title{Log-Likelihood functions for the dynWEV and 2DSD models of confidence}
 \usage{
-LogLikWEV(data, paramDf, model = "dynWEV", simult_conf = FALSE,
+LogLikWEV(data, paramDf, model = "dynaViTE", simult_conf = FALSE,
   precision = 1e-05, stop_on_error = TRUE, data_names = list(), ...)
 }
 \arguments{
@@ -24,7 +24,7 @@ LogLikWEV(data, paramDf, model = "dynWEV", simult_conf = FALSE,
 }}
 
 \item{paramDf}{list or data.frame with one row. Names should match the names of
-\link{dynWEV} and \link{2DSD} model specific parameter names. For different
+\link{dynaViTE} and \link{2DSD} model specific parameter names. For different
 stimulus quality/mean drift rates, names should be \code{v1}, \code{v2}, \code{v3},....
 Different \code{sv} and/or \code{s} parameters are possible with \code{sv1}, \code{sv2}, \code{sv3}... (\code{s1}, \code{s2}, \code{s3},...
 respectively) with equally many steps as for drift rates. Additionally, the confidence
@@ -57,7 +57,7 @@ the function returns -1e+12.
 }
 \description{
 Computes the Log-likelihood for given data and parameters in the
-dynWEV model (Hellmann et al., in press) and the 2DSD model
+dynWEV model (Hellmann et al., 2023) and the 2DSD model
 (Pleskac & Busemeyer, 2010). It is a wrapped version of the
 respective densities \code{\link{dWEV}} and \code{\link{d2DSD}},
 where one can find more information about the parameters
@@ -124,6 +124,9 @@ paramDf <- data.frame(a=2.5,v1=0.5, v2=1, t0=0.1,z=0.7,
 LogLikWEV(data, paramDf, model="2DSD", condition="discriminability", simult_conf=TRUE)
 # this results in the same log likelihood as before
 
+}
+\references{
+Hellmann, S., Zehetleitner, M., & Rausch, M. (2023). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review} 2023 Mar 13. doi: 10.1037/rev0000411. Epub ahead of print. PMID: 36913292.
 }
 \author{
 Sebastian Hellmann.

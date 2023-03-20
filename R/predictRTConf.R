@@ -138,7 +138,7 @@ predictConf <- function(paramDf, model=NULL,
   #### Check model argument
   if (grepl("RM", model)) {
     res <- predictRM_Conf(paramDf, model, FALSE, maxrt, subdivisions, stop.on.error, .progress)
-  } else if (grepl("dynWEV|2DSD", model)) {
+  } else if (grepl("dynWEV|2DSD|dynaViTE", model)) {
     res <- predictWEV_Conf(paramDf, model, maxrt, subdivisions,simult_conf, stop.on.error, .progress=.progress)
   } else if (grepl("DDMConf", model)) {
     res <- predictDDMConf_Conf(paramDf,  maxrt, subdivisions, stop.on.error, .progress)
@@ -162,7 +162,7 @@ predictRT <- function(paramDf, model=NULL,
   #### Check model argument
   if (grepl("RM", model)) {
     res <- predictRM_RT(paramDf, model, FALSE, maxrt, subdivisions, minrt, scaled, DistConf, .progress)
-  } else if (grepl("dynWEV|2DSD", model)) {
+  } else if (grepl("dynWEV|2DSD|dynaViTE", model)) {
     res <- predictWEV_RT(paramDf, model, maxrt, subdivisions, minrt, simult_conf, scaled, DistConf, .progress=.progress)
   } else if (grepl("DDMConf", model)) {
     res <- predictDDMConf_RT(paramDf, maxrt, subdivisions,  minrt, scaled, DistConf, .progress)

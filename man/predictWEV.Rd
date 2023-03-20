@@ -6,10 +6,10 @@
 \alias{predictdynWEV}
 \alias{predict2DSD}
 \alias{predictWEV_RT}
-\title{Prediction of Confidence Rating and Response Time Distribution in dynWEV
-and 2DSD confidence models}
+\title{Prediction of Confidence Rating and Response Time Distribution in dynaViTE,
+dynWEV, and 2DSD confidence models}
 \usage{
-predictWEV_Conf(paramDf, model = "dynWEV", maxrt = 15,
+predictWEV_Conf(paramDf, model = "dynaViTE", maxrt = 15,
   subdivisions = 100L, simult_conf = FALSE, stop.on.error = FALSE,
   precision = 1e-05, .progress = TRUE)
 
@@ -19,14 +19,14 @@ predictWEV_RT(paramDf, model = NULL, maxrt = 9, subdivisions = 100L,
 }
 \arguments{
 \item{paramDf}{a list or dataframe with one row. Column names should match the names
-of \link{dynWEV} and \link{2DSD} model specific parameter names.
+of \link{dynaViTE} and \link{2DSD} model specific parameter names.
 For different stimulus quality/mean drift rates, names should be \code{v1}, \code{v2}, \code{v3},....
 Different \code{sv} and/or \code{s} parameters are possible with \code{sv1}, \code{sv2}, \code{sv3}... (\code{s1}, \code{s2}, \code{s3},...
 respectively) with equally many steps as for drift rates. Additionally, the confidence
 thresholds should be given by names with \code{thetaUpper1}, \code{thetaUpper2},..., \code{thetaLower1},... or,
 for symmetric thresholds only by \code{theta1}, \code{theta2},....}
 
-\item{model}{character scalar. One of "dynWEV" or "2DSD".}
+\item{model}{character scalar. One of "dynaViTE", "dynWEV", or "2DSD".}
 
 \item{maxrt}{numeric. The maximum RT for the integration/density computation.
 Default: 15 (for \code{predictWEV_Conf} (integration)), 9 (for \code{predictWEV_RT}).}
@@ -77,7 +77,7 @@ respective outputs of the integration routine used for the computation.
 \code{predictWEV_Conf} predicts the categorical response distribution of
 decision and confidence ratings, \code{predictWEV_RT} computes the predicted
 RT distribution (density) in the 2DSD Model (Pleskac & Busemeyer, 2010) and the
-dynWEV model (Hellmann et al., in press), given specific parameter constellations.
+dynWEV model (Hellmann et al., 2023), given specific parameter constellations.
 See \code{\link{dWEV}} and \code{\link{d2DSD}} for more information about parameters.
 }
 \details{
@@ -146,7 +146,7 @@ head(PDFtoQuantiles(preds_RT, scaled = FALSE))
 
 }
 \references{
-Hellmann, S., Zehetleitner, M., & Rausch, M. (in press). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review}. \url{https://osf.io/9jfqr/}
+Hellmann, S., Zehetleitner, M., & Rausch, M. (2023). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review} 2023 Mar 13. doi: 10.1037/rev0000411. Epub ahead of print. PMID: 36913292.
 
 Pleskac, T. J., & Busemeyer, J. R. (2010). Two-Stage Dynamic Signal Detection:
 A Theory of Choice, Decision Time, and Confidence, \emph{Psychological Review}, 117(3),

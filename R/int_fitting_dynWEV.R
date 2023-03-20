@@ -29,27 +29,25 @@ fittingdynWEV <- function(df, nConds, nRatings, fixed, sym_thetas,
       if (!(is.numeric(restr_tau) && restr_tau >0)) {stop(paste("restr_tau must be numeric and positive, Inf or 'simult_conf'. But restr_tau=", restr_tau, sep=""))}
       tau = seq(0.2*restr_tau,0.9*restr_tau, length.out = 3)
     }
-    init_grid <- expand.grid(a = c(0.5, 1,1.7, 2.5),                         ### a = distance btw. upper and lower bound \in (0,\infty)]
-                             vmin = c(0.01, 0.1),                    ### vmin = mean drift rate in first condition \in (0,\infty)]
-                             vmax = c(1.4, 2.5, 3.7, 5),                     ### vmax = mean drift rate in last condition \in (\vmin,\infty)]
-                             sv = c(0.01, 0.8, 1.5),                      ### sv = SD of drift rate (normal distr.) \in (0,\infty)]
+    init_grid <- expand.grid(a = c(0.5, 1,1.7, 2.5),                  ### a = distance btw. upper and lower bound \in (0,\infty)]
+                             vmin = c(0.01, 0.1),                     ### vmin = mean drift rate in first condition \in (0,\infty)]
+                             vmax = c(1.4, 2.5, 3.7, 5),              ### vmax = mean drift rate in last condition \in (\vmin,\infty)]
+                             sv = c(0.01, 0.8, 1.5),                  ### sv = SD of drift rate (normal distr.) \in (0,\infty)]
                              z = sum((df$response==1)*df$n)/sum(df$n),### z = mean start point (bias) \in [0,1]
-                             sz = c(0.1),                            ### sz = range of possible start points (unif ditr.; in units of a-z) \in [0,1]
-                             t0 = c(0.05, 0.2), ### t0 = proportion of minimal motor time of minimal total response time \in [0,1)
-                             st0 = c(0.1,  0.2),                     ### st0 = range of possible motor times (unif. distr.) \in [0, t0/2]
-                             # theta0 = seq(-2.5, .45,length.out = 5),  ### theta0 = lowest threshold for confidence rating (in difference from threshold / a)
-                             # thetamax = seq(0.5, 5.5,length.out = 4),    ### thetamax = highest threshold for confidence rating (in distance from threshold / a)
-                             tau = tau,                              ### tau = confidence rating time
-                             svis = seq(0.01, 0.5, length.out = 2),      ### svis = variability in visibility accumulation process
-                             w = seq(0.3, 0.7, length.out = 3),      ### w = weight bewtween evidence and visibility for confidence judgement
-                             sigvis = seq(0.01, 1, length.out = 3),
-                             omega = c(0, 0.5, 1, 2))
+                             sz = c(0.1),                             ### sz = range of possible start points (unif ditr.; in units of a-z) \in [0,1]
+                             t0 = c(0.05, 0.2),                       ### t0 = proportion of minimal motor time of minimal total response time \in [0,1)
+                             st0 = c(0.1,  0.2),                      ### st0 = range of possible motor times (unif. distr.) \in [0, t0/2]
+                             tau = tau,                               ### tau = post-decisional accumulation time (between 0 and 1, if tau has an upper bound)
+                             svis = seq(0.01, 0.5, length.out = 2),   ### svis = variability in visibility accumulation process
+                             w = seq(0.3, 0.7, length.out = 3),       ### w = weight bewtween evidence and visibility for confidence judgement
+                             sigvis = seq(0.01, 1, length.out = 3),   ### sigivis = between trial variability in drift rate of the visibility process
+                             lambda = c(0, 0.5, 1, 2))                ### lambda = exponent of accumulation time in the denominator of the confidence variable
   }
   # Remove columns for fixed parameters
   init_grid <- init_grid[setdiff(names(init_grid), names(fixed))]
   init_grid <- unique(init_grid)
 
-  ### If no grid-search is desired use mean of possible parameters #
+  ### If no grid-search is desired use mean of possible parameters
   if (!grid_search) {
     init_grid <- as.data.frame(as.list(colMeans(init_grid)))
   }
@@ -95,7 +93,7 @@ fittingdynWEV <- function(df, nConds, nRatings, fixed, sym_thetas,
         inits <- cbind(inits, qnorm(init_grid$tau / restr_tau))
       }
     }
-    if (!("omega" %in% names(fixed))) inits <- cbind(inits, log(init_grid$omega))
+    if (!("lambda" %in% names(fixed))) inits <- cbind(inits, log(init_grid$lambda))
     inits <- cbind(inits, init_thetas[,1])
     if (nRatings > 2) {
       inits <- cbind(inits, log(init_thetas[,-1]))
@@ -115,7 +113,7 @@ fittingdynWEV <- function(df, nConds, nRatings, fixed, sym_thetas,
     inits[inits==Inf]<- 1e6
     inits[inits==-Inf]<- -1e6
     parnames <- c(paste("v", 1:nConds, sep=""), 'a', 'sv', 'z', 'sz', 't0', 'st0',
-                   'svis','sigvis', 'w', 'tau', 'omega', cols_theta)
+                   'svis','sigvis', 'w', 'tau', 'lambda', cols_theta)
     names(inits) <- setdiff(parnames, names(fixed))
 
   } else {
@@ -142,7 +140,7 @@ fittingdynWEV <- function(df, nConds, nRatings, fixed, sym_thetas,
       }
     }
     parnames <- c('a', 'z', 'sz', paste("v", 1:nConds, sep=""),
-                   'st0', 'sv', 't0', cols_theta,'tau', 'w', 'svis', 'sigvis', 'omega')
+                   'st0', 'sv', 't0', cols_theta,'tau', 'w', 'svis', 'sigvis', 'lambda')
     inits <- init_grid[, setdiff(parnames, names(fixed))]
 
   }
@@ -208,7 +206,7 @@ fittingdynWEV <- function(df, nConds, nRatings, fixed, sym_thetas,
   }
 
   if (optim_method!="Nelder-Mead") {
-                      # a,  z, sz,  v1, v2,....,,   st0, sv, t0,thetaLower1, dthetaLower2.., thetaUpper1... (or theta1,...),  tau, w, svis, sigvis, omega
+                      # a,  z, sz,  v1, v2,....,,   st0, sv, t0,thetaLower1, dthetaLower2.., thetaUpper1... (or theta1,...),  tau, w, svis, sigvis, lambda
     lower_optbound <- c(0,  0,  0,  rep(0, nConds), 0,   0,  0, rep(c(-Inf,  rep(0, nRatings-2)), 2-as.numeric(sym_thetas)),    0, 0,  0,   0,      0)[!(parnames %in% names(fixed))]
     upper_optbound <- c(Inf,1,  1,  rep(Inf,nConds),Inf, Inf,1, rep(Inf, (2-as.numeric(sym_thetas))*(nRatings-1)),      restr_tau, 1, Inf, Inf,     Inf)[!(parnames %in% names(fixed))]
   }
@@ -413,7 +411,7 @@ fittingdynWEV <- function(df, nConds, nRatings, fixed, sym_thetas,
       if (!("svis" %in% names(fixed))) res$svis <- exp(p[["svis"]])
       if (!("sigvis" %in% names(fixed))) res$sigvis <- exp(p[["sigvis"]])
       if (!("w" %in% names(fixed))) res$w <- pnorm(p[["w"]])
-      if (!("omega" %in% names(fixed))) res$omega <- exp(p[["omega"]])
+      if (!("lambda" %in% names(fixed))) res$lambda <- exp(p[["lambda"]])
       if (nRatings > 2) {
         if (sym_thetas) {
           res[,paste("theta",1:(nRatings-1), sep="")] <- cumsum(c(p[["theta1"]], exp(p[paste0("dtheta", 2:(nRatings-1))])))
@@ -459,9 +457,9 @@ fittingdynWEV <- function(df, nConds, nRatings, fixed, sym_thetas,
       k <- ncol(res)
     }
     if (sym_thetas) {
-      parnames <- c(paste("v", 1:nConds, sep=""), 'sv', 'a', 'z', 'sz', 't0','st0', paste("theta", 1:(nRatings-1), sep=""), 'tau', 'w', 'svis','sigvis', 'omega')
+      parnames <- c(paste("v", 1:nConds, sep=""), 'sv', 'a', 'z', 'sz', 't0','st0', paste("theta", 1:(nRatings-1), sep=""), 'tau', 'w', 'svis','sigvis', 'lambda')
     } else {
-      parnames <- c(paste("v", 1:nConds, sep=""), 'sv', 'a', 'z', 'sz', 't0','st0', paste("thetaLower", 1:(nRatings-1), sep=""), paste("thetaUpper", 1:(nRatings-1), sep=""), 'tau', 'w', 'svis','sigvis', 'omega')
+      parnames <- c(paste("v", 1:nConds, sep=""), 'sv', 'a', 'z', 'sz', 't0','st0', paste("thetaLower", 1:(nRatings-1), sep=""), paste("thetaUpper", 1:(nRatings-1), sep=""), 'tau', 'w', 'svis','sigvis', 'lambda')
     }
     res <- res[, parnames]
 
@@ -509,7 +507,7 @@ neglikelihood_dynWEV_free <-   function(p, data,
   if (!("svis" %in% names(fixed))) paramDf$svis <- exp(p[["svis"]])
   if (!("sigvis" %in% names(fixed))) paramDf$sigvis <- exp(p[["sigvis"]])
   if (!("w" %in% names(fixed))) paramDf$w <- pnorm(p[["w"]])
-  if (!("omega" %in% names(fixed))) paramDf$omega <- exp(p[["omega"]])
+  if (!("lambda" %in% names(fixed))) paramDf$lambda <- exp(p[["lambda"]])
 
 
   if (nRatings > 2) {

@@ -5,7 +5,7 @@
 #' (`dIRM`/`rIRM`) or partially (anti-)correlated Race Model (`dPCRM`/`rPCRM`),
 #' i.e. the probability of a given response (response: winning accumulator
 #' (1 or 2)) at a given time (rt) and the confidence measure in the interval
-#' between `th1` and `th2` (Hellmann et al., in press). The definition of the
+#' between `th1` and `th2` (Hellmann et al., 2023). The definition of the
 #' confidence measure depends on the argument \code{time_scaled} (see Details).
 #' The computations are based on Moreno-Bote (2010).
 #' The parameters for the models are \code{mu1} and \code{mu2} for the drift
@@ -106,7 +106,7 @@
 #' assumed (Moreno-Bote, 2010), that both noise terms are equal, then they should definitely be
 #' fixed for fitting.
 #'
-#' @references Hellmann, S., Zehetleitner, M., & Rausch, M. (in press). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review}. <https://osf.io/9jfqr/>
+#' @references  Hellmann, S., Zehetleitner, M., & Rausch, M. (2023). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review} 2023 Mar 13. doi: 10.1037/rev0000411. Epub ahead of print. PMID: 36913292.
 #'
 #' Moreno-Bote, R. (2010). Decision confidence and uncertainty in diffusion models with partially
 #' correlated neuronal integrators. Neural Computation, 22(7), 1786–1811. doi:10.1162/neco.2010.12-08-930

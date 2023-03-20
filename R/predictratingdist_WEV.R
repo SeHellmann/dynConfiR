@@ -1,20 +1,20 @@
-#' Prediction of Confidence Rating and Response Time Distribution in dynWEV
-#' and 2DSD confidence models
+#' Prediction of Confidence Rating and Response Time Distribution in dynaViTE,
+#' dynWEV, and 2DSD confidence models
 #'
 #' \code{predictWEV_Conf} predicts the categorical response distribution of
 #' decision and confidence ratings, \code{predictWEV_RT} computes the predicted
 #' RT distribution (density) in the 2DSD Model (Pleskac & Busemeyer, 2010) and the
-#' dynWEV model (Hellmann et al., in press), given specific parameter constellations.
+#' dynWEV model (Hellmann et al., 2023), given specific parameter constellations.
 #' See \code{\link{dWEV}} and \code{\link{d2DSD}} for more information about parameters.
 #'
 #' @param paramDf a list or dataframe with one row. Column names should match the names
-#' of \link{dynWEV} and \link{2DSD} model specific parameter names.
+#' of \link{dynaViTE} and \link{2DSD} model specific parameter names.
 #' For different stimulus quality/mean drift rates, names should be `v1`, `v2`, `v3`,....
 #' Different `sv` and/or `s` parameters are possible with `sv1`, `sv2`, `sv3`... (`s1`, `s2`, `s3`,...
 #' respectively) with equally many steps as for drift rates. Additionally, the confidence
 #' thresholds should be given by names with `thetaUpper1`, `thetaUpper2`,..., `thetaLower1`,... or,
 #' for symmetric thresholds only by `theta1`, `theta2`,....
-#' @param model character scalar. One of "dynWEV" or "2DSD".
+#' @param model character scalar. One of "dynaViTE", "dynWEV", or "2DSD".
 #' @param precision numerical scalar value. Precision of calculation. Corresponds to the
 #' step size of integration w.r.t. `z` and `t0`. Default is 1e-5.
 #' @param maxrt numeric. The maximum RT for the integration/density computation.
@@ -64,7 +64,7 @@
 #' not required in `paramDf` but set to 1 by default. All other parameters are used for all
 #' conditions.
 #'
-#' @references Hellmann, S., Zehetleitner, M., & Rausch, M. (in press). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review}. <https://osf.io/9jfqr/>
+#' @references  Hellmann, S., Zehetleitner, M., & Rausch, M. (2023). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review} 2023 Mar 13. doi: 10.1037/rev0000411. Epub ahead of print. PMID: 36913292.
 #'
 #' Pleskac, T. J., & Busemeyer, J. R. (2010). Two-Stage Dynamic Signal Detection:
 #' A Theory of Choice, Decision Time, and Confidence, \emph{Psychological Review}, 117(3),
@@ -137,7 +137,7 @@
 
 #' @rdname predictWEV
 #' @export
-predictWEV_Conf <- function(paramDf, model="dynWEV",
+predictWEV_Conf <- function(paramDf, model="dynaViTE",
                             maxrt=15, subdivisions = 100L, simult_conf = FALSE,
                             stop.on.error = FALSE,
                             precision=1e-5,
@@ -146,10 +146,14 @@ predictWEV_Conf <- function(paramDf, model="dynWEV",
     if (!("model" %in% names(paramDf))) stop("Either supply model argument or model entry in paramDf argument.")
     model <- paramDf$model
   }
-  if (model =="WEVmu") model <- "dynWEV"
-  if (grepl("dynWEV",  model)) model <- "dynWEV"
+  if (!("lambda" %in% names(paramDf))) {
+    if (model %in% c("dynaViTE", "2DSDT")) warning("No lambda specified in paramDf. lambda=0 used")
+    paramDf$lambda <- 0
+  }
+  if (model %in% c("WEVmu", "dynWEV")) model <- "dynaViTE"
   if (grepl("2DSD", model)) model <- "2DSD"
   if ("model" %in% names(paramDf)) paramDf$model <- NULL
+
   nConds <- length(grep(pattern = "^v[0-9]", names(paramDf), value = T))
   symmetric_confidence_thresholds <- length(grep(pattern = "thetaUpper", names(paramDf), value = T))<1
   if (symmetric_confidence_thresholds) {
@@ -169,10 +173,6 @@ predictWEV_Conf <- function(paramDf, model="dynWEV",
     SV <- c(t((paramDf[,paste("sv",1:(nConds), sep = "")])))
   } else {
     SV <- rep(paramDf$sv, nConds)
-  }
-  if (!("omega" %in% names(paramDf))) {
-    warning("No omega specified in paramDf. omega=0 used")
-    paramDf$omega <- 0
   }
   ## Recover confidence thresholds
   if (symmetric_confidence_thresholds) {
@@ -194,7 +194,6 @@ predictWEV_Conf <- function(paramDf, model="dynWEV",
   # but add the constant to maxrt
   maxrt <- maxrt + paramDf$st0
   paramDf$st0 <- 0
-  if (!("omega" %in% names(paramDf))) paramDf$omega <- 0
   if (.progress) {
     pb <- progress_bar$new(total = nConds*nRatings*4)
   }
@@ -235,10 +234,15 @@ predictWEV_RT <- function(paramDf, model=NULL,
     if (!("model" %in% names(paramDf))) stop("Either supply model argument or model entry in paramDf argument.")
     model <- paramDf$model
   }
-  if (model =="WEVmu") model <- "dynWEV"
-  if (grepl("dynWEV",  model)) model <- "dynWEV"
+  if (!("lambda" %in% names(paramDf))) {
+    if (model %in% c("dynaViTE", "2DSDT")) warning("No lambda specified in paramDf. lambda=0 used")
+    paramDf$lambda <- 0
+  }
+  if (model %in% c("WEVmu", "dynWEV")) model <- "dynaViTE"
   if (grepl("2DSD", model)) model <- "2DSD"
   if ("model" %in% names(paramDf)) paramDf$model <- NULL
+
+
   nConds <- length(grep(pattern = "^v[0-9]", names(paramDf), value = T))
   symmetric_confidence_thresholds <- length(grep(pattern = "thetaUpper", names(paramDf), value = T))<1
   if (symmetric_confidence_thresholds) {
@@ -269,10 +273,7 @@ predictWEV_RT <- function(paramDf, model=NULL,
       S <- rep(1, nConds)
     }
   }
-  if (!("omega" %in% names(paramDf))) {
-    warning("No omega specified in paramDf. omega=0 used")
-    paramDf$omega <- 0
-  }
+
   ## Recover confidence thresholds
   if (symmetric_confidence_thresholds) {
     thetas_upper <- c(-1e+32, t(paramDf[,paste("theta",1:(nRatings-1), sep = "")]), 1e+32)
@@ -288,7 +289,7 @@ predictWEV_RT <- function(paramDf, model=NULL,
       thetas_lower <- paramDf$a- rev(thetas_upper)
     }
   }
-  if (!("omega" %in% names(paramDf))) paramDf$omega <- 0
+  if (!("lambda" %in% names(paramDf))) paramDf$lambda <- 0
   if (is.null(minrt)) minrt <- paramDf$t0
   df <- expand.grid(rt = seq(minrt, maxrt, length.out = subdivisions),
                     rating = 1:nRatings,
@@ -297,7 +298,7 @@ predictWEV_RT <- function(paramDf, model=NULL,
                     condition = 1:nConds) %>%
     mutate(vth1 = if_else(.data$response =="upper", thetas_upper[.data$rating], thetas_lower[(.data$rating)]),
            vth2 = if_else(.data$response =="upper", thetas_upper[(.data$rating+1)], thetas_lower[(.data$rating+1)]))
-  if (model=="dynWEV") {
+  if (model=="dynaViTE") {
     dens <- function(df) {
       res <- with(paramDf, dWEV(df$rt, response=as.character(df$response),
                                 df$vth1,df$vth2,
@@ -305,7 +306,7 @@ predictWEV_RT <- function(paramDf, model=NULL,
                                 v = df$stimulus*V[df$condition],
                                 t0 = t0, z = z, sz = sz, sv = SV[df$condition],
                                 st0=st0,tau=tau,
-                                 w=w, svis=svis, sigvis=sigvis, omega=omega,
+                                 w=w, svis=svis, sigvis=sigvis, lambda=lambda,
                                 s = S[df$condition],
                                 simult_conf = simult_conf, z_absolute = FALSE, precision = precision))
       if (.progress) pb$tick()
@@ -318,7 +319,7 @@ predictWEV_RT <- function(paramDf, model=NULL,
                                  tau=tau, a=a,
                                  v = df$stimulus*V[df$condition],
                                  t0 = t0, z = z, sz = sz, st0=st0,
-                                 sv = SV[df$condition], omega=omega,s = S[df$condition],
+                                 sv = SV[df$condition], lambda=lambda,s = S[df$condition],
                                  simult_conf = simult_conf, z_absolute = FALSE, precision = precision))
       if (.progress) pb$tick()
       return(data.frame(rt=df$rt, dens=res))

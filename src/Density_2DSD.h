@@ -29,7 +29,7 @@ static double integral_t0_g_minus_2DSD (double t, Parameters *params);
 static double integral_z_g_minus_2DSD  (double t, Parameters *params);
 static double integral_v_g_minus_2DSD  (double t, double zr, Parameters *params);
 
-static double g_minus_no_var_2DSD     (double t, double a, double zr, double v, double tau, double th1, double th2, double omega);
+static double g_minus_no_var_2DSD     (double t, double a, double zr, double v, double tau, double th1, double th2, double lambda);
 static double g_minus_small_time_2DSD (double t, double zr, int N);
 static double g_minus_large_time_2DSD (double t, double zr, int N);
 
@@ -131,11 +131,11 @@ static double integral_v_g_minus_2DSD (double t, double zr, Parameters *params)
     double tau = params->tau;
     double th2 = params->th2;
     double th1 = params->th1;
-    double omega = params->omega;
+    double lambda = params->lambda;
 
     if (params->sv == 0)
     {
-        return g_minus_no_var_2DSD(t, a, zr, v, tau, th1, th2, omega);
+        return g_minus_no_var_2DSD(t, a, zr, v, tau, th1, th2, lambda);
     }
 
     int N_small, N_large;
@@ -148,12 +148,12 @@ static double integral_v_g_minus_2DSD (double t, double zr, Parameters *params)
 
     mean_conf = - (tau*v - a*zr*(sv*sv*(tau+t)+1)) / (sv2t); // ((v - sv*sv*a*zr)*tau) / sv2t;
     sd_conf = sqrt( tau*(sv*sv*tau+sv2t)/(sv2t));
-    diff_normal = 0.5*(erf((th2*pow(t+tau, omega) - mean_conf) / (M_SQRT2 * sd_conf)) -
-                        erf((th1*pow(t+tau, omega) - mean_conf) / (M_SQRT2 * sd_conf)));
+    diff_normal = 0.5*(erf((th2*pow(t+tau, lambda) - mean_conf) / (M_SQRT2 * sd_conf)) -
+                        erf((th1*pow(t+tau, lambda) - mean_conf) / (M_SQRT2 * sd_conf)));
 
     // factor = exp(-a*zr*v - 0.5*v*v*t) / (a*a); //sqrt(t+tau)
-    // diff_normal = 0.5*(erf((th2*pow(t+tau, omega) + (tau*v - a*zr)) / (M_SQRT2 * sqrt(tau))) -
-    //   erf((th1*pow(t+tau, omega) + (tau*v - a*zr)) / (M_SQRT2 * sqrt(tau))));
+    // diff_normal = 0.5*(erf((th2*pow(t+tau, lambda) + (tau*v - a*zr)) / (M_SQRT2 * sqrt(tau))) -
+    //   erf((th1*pow(t+tau, lambda) + (tau*v - a*zr)) / (M_SQRT2 * sqrt(tau))));
     //
     //
 
@@ -188,15 +188,15 @@ static double integral_v_g_minus_2DSD (double t, double zr, Parameters *params)
 
 
 static double g_minus_no_var_2DSD(double t, double a, double zr, double v,
-                                   double tau, double th1, double th2, double omega)
+                                   double tau, double th1, double th2, double lambda)
 {
     int N_small, N_large;
     double diff_normal, simple, factor, eps;
     double ta = t/(a*a);
 
     factor = exp(-a*zr*v - 0.5*v*v*t) / (a*a); //sqrt(t+tau)
-    diff_normal = 0.5*(erf((th2*pow(t+tau, omega) + (tau*v - a*zr)) / (M_SQRT2 * sqrt(tau))) -
-      erf((th1*pow(t+tau, omega) + (tau*v - a*zr)) / (M_SQRT2 * sqrt(tau))));
+    diff_normal = 0.5*(erf((th2*pow(t+tau, lambda) + (tau*v - a*zr)) / (M_SQRT2 * sqrt(tau))) -
+      erf((th1*pow(t+tau, lambda) + (tau*v - a*zr)) / (M_SQRT2 * sqrt(tau))));
 
     /*
     if (std::isinf(factor))

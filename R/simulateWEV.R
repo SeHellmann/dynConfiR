@@ -1,8 +1,8 @@
 #' Simulation of confidence ratings and RTs in dynWEV and 2DSD confidence models
 #'
 #' Simulates the decision responses and reaction times together with a
-#' discrete confidence judgment in the 2DSD model (Pleskac & Busemeyer, 2010)
-#' and the dynWEV model (Hellmann et al., in press), given specific parameter constellations.
+#' discrete confidence judgment in the dynaViTE model, the 2DSD model (Pleskac & Busemeyer, 2010)
+#' and the dynWEV model (Hellmann et al., 2023), given specific parameter constellations.
 #' See \code{\link{dWEV}} and \code{\link{d2DSD}} for more information about parameters.
 #' Also computes the Gamma rank correlation between the confidence ratings and condition
 #' (task difficulty), reaction times and accuracy in the simulated output.
@@ -10,7 +10,7 @@
 #' for application in confidence experiments with manipulation of specific parameters.
 #'
 #' @param paramDf a list or dataframe with one row. Column names should match the names
-#' of \link{dynWEV} and \link{2DSD} model specific parameter names. For different stimulus quality/mean
+#' of \link{dynaViTE} and \link{2DSD} model specific parameter names. For different stimulus quality/mean
 #' drift rates, names should be `v1`, `v2`, `v3`,....
 #' Different `sv` and/or `s` parameters are possible with `sv1`, `sv2`, `sv3`... (`s1`, `s2`, `s3`,...
 #' respectively) with equally many steps as for drift rates. Additionally, the confidence
@@ -18,7 +18,7 @@
 #' for symmetric thresholds only by `theta1`, `theta2`,....
 #' @param n integer. The number of samples (per condition and stimulus direction) generated.
 #' Total number of samples is \code{n*nConditions*length(stimulus)}.
-#' @param model character scalar. One of "dynWEV", or "2DSD".
+#' @param model character scalar. One of "dynaViTE", "dynWEV", or "2DSD".
 #' @param delta numeric. Discretization steps for simulations with the stochastic process.
 #' @param maxrt numeric. Maximum reaction time returned.
 #' If the simulation of the stochastic process exceeds a rt of `maxrt`,
@@ -82,7 +82,7 @@
 #' \code{v}, drift rate variability, \code{sv} and diffusion constant `s`.
 #' All other parameters are used for all conditions.
 #'
-#' @references Hellmann, S., Zehetleitner, M., & Rausch, M. (in press). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review}. <https://osf.io/9jfqr/>
+#' @references  Hellmann, S., Zehetleitner, M., & Rausch, M. (2023). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review} 2023 Mar 13. doi: 10.1037/rev0000411. Epub ahead of print. PMID: 36913292.
 #'
 #'
 #' @author Sebastian Hellmann.
@@ -153,9 +153,17 @@ simulateWEV <- function (paramDf, n=1e+4,  model = "dynWEV", simult_conf = FALSE
   if (!is.null(seed)) {
     set.seed(seed)
   }
-  if (model=="WEVmu") model <- "dynWEV"
+  if (!("lambda" %in% names(paramDf))) {
+    if (model %in% c("dynaViTE", "2DSDT")) warning("No lambda specified in paramDf. lambda=0 used")
+    lambda <- 0
+  } else {
+    lambda <- paramDf$lambda
+  }
+  if (model %in% c("WEVmu", "dynWEV")) model <- "dynaViTE"
+  if (grepl("2DSD", model)) model <- "2DSD"
+  if ("model" %in% names(paramDf)) paramDf$model <- NULL
 
-  if (!(model %in% c("dynWEV", "2DSD"))) stop("Only models dynWEV (alias: WEVmu) and 2DSD are allowed!")
+  if (!(model %in% c("dynaViTE", "2DSD"))) stop("Only models dynaViTE, dynWEV (alias: WEVmu), and 2DSD/2DSDT are allowed!")
 
   if (!(all(stimulus %in% c(-1, 1)))) {
     stop(paste("Not accepted value for stimulus: ", paste(stimulus, collapse=", "),". Must be either 1, -1 or c(-1,1).", sep=""))
@@ -174,12 +182,7 @@ simulateWEV <- function (paramDf, n=1e+4,  model = "dynWEV", simult_conf = FALSE
   } else {
     d <- 0
   }
-  if ("omega" %in% names(paramDf)) {
-    omega <- paramDf$omega
-  } else {
-    warning("No omega specified in paramDf. omega=0 used")
-    omega <- 0
-  }
+
   nConds <- length(grep(pattern = "^v[0-9]", names(paramDf), value = T))
   if (nConds > 0 ) {
     V <- c(t(paramDf[,paste("v",1:(nConds), sep = "")]))
@@ -294,11 +297,12 @@ simulateWEV <- function (paramDf, n=1e+4,  model = "dynWEV", simult_conf = FALSE
                                                 t0+st0/2, d, sz, as.numeric(cur_data()[2])/as.numeric(cur_data()[3]),
                                                 st0, z, tau,
                                                 0, 1, # filler for thetas
-                                                omega,
+                                                lambda,
+                                                # when dynaViTE, use w, sigvis, svis, else do not supply the parameters
                                                 rep(c(w, as.numeric(cur_data()[4])/as.numeric(cur_data()[3]),
                                                 sigvis/as.numeric(cur_data()[3]), svis/as.numeric(cur_data()[3])),
-                                                as.numeric(model=="dynWEV"))),
-                                  model=which(model == c("2DSD", "dynWEV")),
+                                                as.numeric(model=="dynaViTE"))),
+                                  model=which(model == c("2DSD", "dynaViTE")),
                                   delta = delta, maxT =maxrt, TRUE),
                             c("rt", "response", "conf", "dec", "vis", "mu"))) %>%
     rename(rt=3, response=4, conf=5, dec=6, vis=7, mu=8) %>%

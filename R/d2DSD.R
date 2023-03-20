@@ -10,7 +10,7 @@
 #' of non-decisional components), \code{sz} (inter-trial-variability of relative
 #' starting point), \code{s} (diffusion constant).
 #'
-#' For confidence: \code{tau} (post-decisional accumulation time), \code{omega}
+#' For confidence: \code{tau} (post-decisional accumulation time), \code{lambda}
 #' the exponent of judgment time for the division by judgment time in the confidence measure,
 #' \code{th1} and \code{th2} (lower and upper thresholds for confidence interval).
 #'
@@ -71,7 +71,7 @@
 #' @param tau post-decisional accumulation time. The length of the time period after the
 #' decision was made until the confidence judgment is made. Range: \code{tau}>0.
 #' Default: \code{tau}=1.
-#' @param omega power for judgment time in the division of the confidence measure
+#' @param lambda power for judgment time in the division of the confidence measure
 #' by the judgment time (Default: 0, i.e. no division which is the version of
 #' 2DSD proposed by Pleskac and Busemeyer)
 #'
@@ -198,7 +198,7 @@
 #' @rdname d2DSD
 #' @export
 d2DSD <- function (rt, response="upper", th1,th2,a,v,t0=0,z=0.5,
-                   d=0,sz=0,sv=0, st0=0,tau=1,omega=0, s=1,
+                   d=0,sz=0,sv=0, st0=0,tau=1,lambda=0, s=1,
                    simult_conf=FALSE, precision=1e-5, z_absolute = FALSE,
                    stop_on_error=TRUE, stop_on_zero = FALSE)
 {
@@ -214,7 +214,7 @@ d2DSD <- function (rt, response="upper", th1,th2,a,v,t0=0,z=0.5,
                                  a = a, v = v, t0 = t0, z = z,
                                  d = d, sz = sz, sv = sv, st0 = st0,
                                  tau=tau, th1=th1, th2=th2,
-                                 omega=omega, s = s, nn = nn, z_absolute = z_absolute,
+                                 lambda=lambda, s = s, nn = nn, z_absolute = z_absolute,
                                  stop_on_error = stop_on_error)
 
   densities <- vector("numeric",length=nn)
@@ -239,7 +239,7 @@ d2DSD <- function (rt, response="upper", th1,th2,a,v,t0=0,z=0.5,
 #' @rdname d2DSD
 #' @export
 r2DSD <- function (n, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, st0=0,
-                   tau=1, omega=0, s=1, delta=0.01, maxrt=15, simult_conf = FALSE,
+                   tau=1, lambda=0, s=1, delta=0.01, maxrt=15, simult_conf = FALSE,
                    z_absolute = FALSE,  stop_on_error=TRUE)
 {
   if (any(missing(a), missing(v))) stop("a and v must be supplied")
@@ -248,7 +248,7 @@ r2DSD <- function (n, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, st0=0,
                                  a = a, v = v, t0 = t0, z = z,
                                  d = d, sz = sz, sv = sv, st0 = st0,
                                  tau=tau, th1=0, th2=1,
-                                 omega=omega,
+                                 lambda=lambda,
                                  s = s, nn = n, z_absolute = z_absolute,
                                  stop_on_error = stop_on_error)
   res <- matrix(NA, nrow=n, ncol=3)
@@ -258,6 +258,7 @@ r2DSD <- function (n, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, st0=0,
     out <- r_WEV(current_n, pars$params[ok_rows[1], 1:12],
                  model=1, delta = delta, maxT =maxrt, stop_on_error)[,1:3]
     if (simult_conf) {
+      # add tau to response times, if choice and confidence given simultaneously
       out[1,] <- out[1,] + pars$params[ok_rows[1], 9]
     }
     res[ok_rows,] <- out
@@ -280,7 +281,7 @@ r2DSD <- function (n, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, st0=0,
 
 prepare_2DSD_parameter <- function(response,
                                    a, v, t0, z, d,
-                                   sz, sv, st0, tau, th1, th2, omega,s,
+                                   sz, sv, st0, tau, th1, th2, lambda,s,
                                     nn,
                                    z_absolute = FALSE,
                                    stop_on_error) {
@@ -297,7 +298,7 @@ prepare_2DSD_parameter <- function(response,
        (length(tau) ==1) &
        (length(th1) ==1) &
        (length(th2) ==1)&
-       (length(omega) == 1)) {
+       (length(lambda) == 1)) {
     skip_checks <- TRUE
   } else {
     skip_checks <- FALSE
@@ -334,7 +335,7 @@ prepare_2DSD_parameter <- function(response,
     tau <- rep(tau, length.out = nn)
     th1 <- rep(th1, length.out = nn)
     th2 <- rep(th2, length.out = nn)
-    omega <- rep(omega, length.out = nn)
+    lambda <- rep(lambda, length.out = nn)
   }
   th1[th1==-Inf] <- - .Machine$double.xmax
   th2[th2==Inf] <- .Machine$double.xmax
@@ -346,7 +347,7 @@ prepare_2DSD_parameter <- function(response,
   t0 <- recalc_t0 (t0, st0)
 
   # Build parameter matrix (and divide a, v, sv, and th's by s)
-  params <- cbind (a/s, v/s, t0, d, sz, sv/s, st0, z, tau, th1/s, th2/s, omega, numeric_bounds)
+  params <- cbind (a/s, v/s, t0, d, sz, sv/s, st0, z, tau, th1/s, th2/s, lambda, numeric_bounds)
 
   # Check for illegal parameter values
   if(ncol(params)<13) stop("Not enough parameters supplied: probable attempt to pass NULL values?")

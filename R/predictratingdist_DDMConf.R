@@ -3,7 +3,7 @@
 #' \code{predictDDMConf_Conf} predicts the categorical response distribution of
 #' decision and confidence ratings, \code{predictDDMConf_RT} computes the
 #' RT distribution (density) in the drift diffusion confidence model
-#' (Hellmann et al., preprint), given specific parameter
+#' (Hellmann et al., 2023), given specific parameter
 #' constellations. See \code{\link{dDDMConf}} for more information about the model
 #' and parameters.
 #'
@@ -58,6 +58,8 @@
 #' \code{v}, drift rate variability \code{sv}, and process variability `s`. Otherwise, `s` is
 #' not required in `paramDf` but set to 1 by default. All other parameters are used for all
 #' conditions.
+#'
+#' @references  Hellmann, S., Zehetleitner, M., & Rausch, M. (2023). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review} 2023 Mar 13. doi: 10.1037/rev0000411. Epub ahead of print. PMID: 36913292.
 #'
 #' @author Sebastian Hellmann.
 #'

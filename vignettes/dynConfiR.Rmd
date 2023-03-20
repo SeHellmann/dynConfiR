@@ -22,7 +22,7 @@ library(ggplot2)
 
 ```
 
-This vignette shows how to fit the model and use model parameters to predict and simulate new data. It covers only how to get a quick fit to a single participant (i.e. only one set of fitted parameters) for a single model. The wrapper function `fitRTConfModels` may be used to fit several models to several independent participants in parallel and with one command, which usually takes quite a while (around several days depending also on the number of trials per participant).
+This vignette shows how to fit the models and use model parameters to predict and simulate new data. It covers only how to get a quick fit to a single participant (i.e. only one set of fitted parameters) for a single model. The wrapper function `fitRTConfModels` may be used to fit several models to several independent participants in parallel and with one command, which usually takes quite a while (around several days depending also on the number of trials per participant).
 
 The dynamic weighted evidence and visibility model (dynWEV) is one possible model. See https://osf.io/9jfqr/ for the theoretical description of this and the other models. 
 

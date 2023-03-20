@@ -105,7 +105,7 @@ simulateRTConf <- function (paramDf, n=1e+4,  model = NULL,
                             like group_by, summarise (from the dplyr package).")
   paramDf <- paramDf[,c(!is.na(paramDf))]
   if (is.null(model) && ("model" %in% names(paramDf))) model <- paramDf$model
-  if ((model %in% c("dynWEV", "WEVmu", "2DSD")) && identical(stimulus, c(1,2))) stimulus <- c(-1,1)
+  if ((model %in% c("dynaViTE", "dynWEV", "WEVmu", "2DSD", "2DSDT")) && identical(stimulus, c(1,2))) stimulus <- c(-1,1)
   if (grepl("RM", model)) {
     res <- simulateRM(paramDf, n, model, FALSE, gamma, agg_simus, stimulus, delta, maxrt, seed)
     if (!agg_simus ) {
@@ -115,7 +115,7 @@ simulateRTConf <- function (paramDf, n=1e+4,  model = NULL,
         res <- res[c("condition", "stimulus", "response", "correct", "rt", "conf", "rating")]
       }
     }
-  } else if (model %in% c("dynWEV", "2DSD")) {
+  } else if (model %in% c("dynaViTE", "dynWEV", "2DSD", "2DSDT")) {
     res <- simulateWEV(paramDf, n, model, simult_conf, gamma, agg_simus, stimulus, delta=delta, maxrt=maxrt, seed=seed)
   } else {stop("model not known.")}
   return(res)

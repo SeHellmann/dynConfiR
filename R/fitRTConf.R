@@ -2,7 +2,7 @@
 #'
 #' Fits the parameters of different models of response time and confidence, including
 #' the 2DSD model (Pleskac & Busemeyer, 2010), dynWEV, DDMConf, and various
-#' flavors of race models (Hellmann et al., in press). Which model to fit is
+#' flavors of race models (Hellmann et al., 2023). Which model to fit is
 #' specified by the argument \code{model}.
 #' Only a ML method is implemented.
 #' See \code{\link{dWEV}}, \code{\link{d2DSD}}, and \code{\link{dRM}} for more
@@ -100,7 +100,6 @@
 #'  \strong{Parameters not fitted}. The models get developed continuously and not
 #'  all changes are adopted in the fitting function instantly. Following parameters
 #'  are currently not included in the fitting routine:
-#'  - \code{omega} only relevant for 2DSD and dynWEV
 #'  - in race models: \code{sza}, \code{szb}, \code{smu1}, and \code{smu2}
 #'
 #' \strong{`init_grid`}. Each row should be one parameter set to check. The column names
@@ -134,7 +133,7 @@
 #'
 #' @md
 #'
-#' @references Hellmann, S., Zehetleitner, M., & Rausch, M. (in press). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review}. <https://osf.io/9jfqr/>
+#' @references  Hellmann, S., Zehetleitner, M., & Rausch, M. (2023). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review} 2023 Mar 13. doi: 10.1037/rev0000411. Epub ahead of print. PMID: 36913292.
 #'
 #' <https://nashjc.wordpress.com/2016/11/10/why-optim-is-out-of-date/>
 #'
@@ -145,7 +144,7 @@
 #' @author Sebastian Hellmann.
 #'
 #' @name fitRTConf
-#' @importFrom stats setNames aggregate optim qnorm pnorm optimize
+#' @importFrom stats setNames aggregate optim qnorm pnorm optimize quantile
 #' @importFrom minqa bobyqa
 #' @importFrom dplyr if_else case_when rename
 #' @import parallel
@@ -199,10 +198,6 @@ fitRTConf <- function(data, model = "dynWEV",
             Process continues withouth logging.
             Interrupt and install 'logger' if logging is needed.", immediate.=TRUE)
     logging <- FALSE
-  }
-  ### Check model argument
-  if (model == "WEVmu") {  ## Old name for dynWEV model
-    model <- "dynWEV"
   }
 
   #### Check argument types ###
@@ -375,18 +370,24 @@ fitRTConf <- function(data, model = "dynWEV",
   fixed <- fixed[names(fixed)!="sym_thetas"]
 
   ### Now, call the specific fitting functions:
-  if (grepl("2DSD", model)) res <- fitting2DSD(df, nConds, nRatings, fixed, sym_thetas,
+  if (grepl("2DSD", model)) {
+    if (model=="2DSD") fixed$lambda <- 0
+    res <- fitting2DSD(df, nConds, nRatings, fixed, sym_thetas,
                                           grid_search, init_grid, optim_method, opts,
                                           logging, filename,
                                           useparallel, n.cores,
                                           restr_tau, precision,
                                           used_cats, actual_nRatings)
-  if (grepl("dynWEV",model)) res <- fittingdynWEV(df, nConds, nRatings, fixed, sym_thetas,
+  }
+  if (grepl("dynWEV|dynaViTE",model)) {
+    if (model=="dynWEV") fixed$lambda <- 0
+    res <- fittingdynWEV(df, nConds, nRatings, fixed, sym_thetas,
                                               grid_search, init_grid, optim_method, opts,
                                               logging, filename,
                                               useparallel, n.cores,
                                               restr_tau, precision,
                                               used_cats, actual_nRatings)
+  }
   if (grepl("IRM", model)) res <- fittingIRM(df, nConds, nRatings, fixed,
                                              sym_thetas, grepl("t", model),
                                         grid_search, init_grid, optim_method, opts,
@@ -405,7 +406,7 @@ fitRTConf <- function(data, model = "dynWEV",
                                           useparallel, n.cores,
                                           precision,
                                           used_cats, actual_nRatings, precision)
-  if (!exists("res")) stop("model not known. model must contain one of: 'dynWEV', '2DSD', 'IRM', 'PCRM', or 'DDMConf'")
+  if (!exists("res")) stop("model not known. model must contain one of: 'dynaViTE', 'dynWEV', '2DSD', '2DSDT', 'IRM', 'PCRM', or 'DDMConf'")
 
 
   return(res)

@@ -147,8 +147,8 @@ predictConfModels <- function(paramDf,
   models <- unique(paramDf$model)
   if (is.null(models)) stop("model column missing in paramDf")
   if (!is.numeric(maxrt)) stop("maxrt must be numeric")
-  if (!all(grepl("dynWEV|2DSD|IRM|PCRM|DDMConf", models))) {
-    stop("model must contain 'dynWEV', '2DSD', 'DDMConf', 'IRM', 'PCRM', 'IRMt', or 'PCRMt'")
+  if (!all(grepl("dynWEV|2DSD|IRM|PCRM|DDMConf|dynaViTE", models))) {
+    stop("model must contain 'dynaViTE', 'dynWEV', '2DSD', 'DDMConf', 'IRM', 'PCRM', 'IRMt', or 'PCRMt'")
   }
   sbjcol <- c("subject", "participant", "sbj")[which(c("subject", "participant", "sbj") %in% names(paramDf))]
   if (length(sbjcol)==0) {
@@ -227,8 +227,8 @@ predictRTModels <- function(paramDf,
   if (!is.numeric(maxrt)) stop("maxrt must be numeric")
   models <- unique(paramDf$model)
   if (is.null(models)) stop("model column missing in paramDf")
-  if (!all(grepl("dynWEV|2DSD|IRM|PCRM|DDMConf", models))) {
-    stop("model must contain 'dynWEV', '2DSD', 'DDMConf', 'IRM', 'PCRM', 'IRMt', or 'PCRMt'")
+  if (!all(grepl("dynWEV|2DSD|IRM|PCRM|DDMConf|dynaViTE", models))) {
+    stop("model must contain 'dynaViTE', 'dynWEV', '2DSD', 'DDMConf', 'IRM', 'PCRM', 'IRMt', or 'PCRMt'")
   }
   sbjcol <- c("subject", "participant", "sbj")[which(c("subject", "participant", "sbj") %in% names(paramDf))]
   if (length(sbjcol)==0) {

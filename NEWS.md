@@ -1,3 +1,12 @@
+# dynConfiR 0.0.3 (March 2023)
+## Improvements
+- added the dynaViTE model (generalization of dynWEV with time-dependent 
+confidence variable), which includes the additional lambda which can also be fitted
+- improved fitting procedure for dynaViTE/dynWEV and 2DSD: confidence thresholds for 
+starting parameters in the initial grid search are now estimated using simulations; 
+this decreases the size of the initial grid drastically, while improving the initial
+values
+
 
 # dynConfiR 0.0.2 (December 2022)
 ## Improvements

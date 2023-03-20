@@ -31,7 +31,7 @@
 #define PARAM_tau  8
 #define PARAM_th1  9
 #define PARAM_th2  10
-#define PARAM_omega 11
+#define PARAM_lambda 11
 #define PARAM_w    12
 #define PARAM_muvis  13
 #define PARAM_sigvis 14
@@ -57,7 +57,7 @@ public:
     double muvis;   // mean drift in the visibility accumulation process
     double sigvis; // variability in the drift rate of the visibility process
     double svis;   // variability in the visibility accumulation process
-    double omega; // power for the decision of confidence by judgment time
+    double lambda; // power for the decision of confidence by judgment time
 
     // Precision constants set by SetPrecision()
     double  TUNE_INT_T0;
@@ -88,14 +88,14 @@ public:
           th1 = params[PARAM_th1-1];
           th2 = params[PARAM_th2-1];
           w = 0;
-          omega = 1;
+          lambda = 1;
           muvis = 0;
           sigvis = 1;
           svis = 1;
         }
         if (params.size()>= 12)  //2DSD model
         {
-          omega = params[PARAM_omega];tau = params[PARAM_tau];
+          lambda = params[PARAM_lambda];tau = params[PARAM_tau];
           th1 = params[PARAM_th1];
           th2 = params[PARAM_th2];
           w = 0;
@@ -138,7 +138,7 @@ public:
         if (w<0 || w > 1)                  { valid = false; if (print) Rcpp::Rcout << "error: invalid parameter w = " << w << ", allowed: w in [0,1]" <<  std::endl; }
         if (sigvis < 0)                      { valid = false; if (print) Rcpp::Rcout << "error: invalid parameter sigvis = " << sigvis <<  std::endl; }
         if (svis <= 0)                        { valid = false; if (print) Rcpp::Rcout << "error: invalid parameter svis = " << svis <<  std::endl; }
-        if (omega < 0)                        { valid = false; if (print) Rcpp::Rcout << "error: invalid parameter omega = " << omega <<  std::endl; }
+        if (lambda < 0)                        { valid = false; if (print) Rcpp::Rcout << "error: invalid parameter lambda = " << lambda <<  std::endl; }
 
         return valid;
     }
