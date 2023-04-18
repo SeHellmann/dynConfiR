@@ -193,7 +193,7 @@
 #' if (requireNamespace("ggplot2", quietly = TRUE)) {
 #'   require(ggplot2)
 #'   ggplot(two_samples, aes(x=rt, y=conf))+
-#'     stat_density_2d(aes(fill = ..density..), geom = "raster", contour = FALSE) +
+#'     stat_density_2d(aes(fill = after_stat(density)), geom = "raster", contour = FALSE) +
 #'     xlim(c(0, 2))+ ylim(c(-1.5, 4))+
 #'     facet_grid(cols=vars(w), rows=vars(response), labeller = "label_both")
 #' }
