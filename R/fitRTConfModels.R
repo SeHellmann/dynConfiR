@@ -106,7 +106,6 @@
 #' @import parallel
 # @importFrom pracma integral
 #' @aliases fitConfModels
-#' @importFrom Rcpp evalCpp
 #'
 #' @examples
 #' # 1. Generate data from two artificial participants

@@ -100,7 +100,7 @@ paramDf <- full_join(paramDf1, paramDf2)
 paramDf  # each model parameters sets hat its relevant parameters
 # Split paramDf by model (maybe also other columns) and simulate data
 simus <- paramDf |> group_by(model) |>
- summarise(simulateRTConf(cur_data_all(), n=200, simult_conf = TRUE))
+ reframe(simulateRTConf(cbind(cur_group(), pick(everything())), n=200, simult_conf = TRUE))
 head(simus)
 
 }

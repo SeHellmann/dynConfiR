@@ -65,12 +65,8 @@
 #'
 #' @name predictDDMConf
 #' @importFrom stats integrate
-#' @import dplyr
 #' @importFrom progress progress_bar
-#' @importFrom magrittr %>%
-#' @importFrom rlang .data
 # @importFrom pracma integral
-#' @importFrom Rcpp evalCpp
 #'
 #' @examples
 #' # 1. Define some parameter set in a data.frame
@@ -158,44 +154,38 @@ predictDDMConf_Conf <- function(paramDf,
   # So, to speed up computations for high values of st0, we set it to 0
   # but add the constant to maxrt
   maxrt <- maxrt + paramDf$st0
-  paramDf$st0 <- 0
+  a    = paramDf$a
+  z    = paramDf$z
+  sz = paramDf$sz
 
+  res <- expand.grid(condition = 1:nConds, stimulus=c(-1,1),
+                     response=c("lower", "upper"), rating = 1:nRatings,
+                     p=NA, info=NA, err=NA)
   if (.progress) {
     pb <- progress_bar$new(total = nConds*nRatings*4)
   }
 
-
-  help_fct <- function(row) {
+  for (i in 1:nrow(res)) {
+    row <- res[i,]
+    s    = S[row$condition]
+    th1  = ifelse(row$response == 1, thetas_upper[(nRatings+1-row$rating)], thetas_lower[(nRatings+1-row$rating)])
+    th2  = ifelse(row$response == 1, thetas_upper[(nRatings+2-row$rating)], thetas_lower[(nRatings+2-row$rating)])
+    v    = V[row$condition]*(row$stimulus)
+    sv   = SV[row$condition]
     p <- integrate(function(rt) return(dDDMConf(rt, response=as.character(row$response),
-                                            th1 = 0, th2=1e+64,
-                                            v=row$v, s=row$s,
-                                            sv = row$sv, z=row$z, sz=row$sz,
-                                            a = row$a,
-                                            st0 = 0, t0 =0,
-                                            z_absolute = FALSE)),
-                   lower=row$th1, upper=min(row$th2, maxrt), subdivisions = subdivisions,
+                                                th1 = 0, th2=1e+64,
+                                                v=v, s=s,
+                                                sv = sv, z=z, sz=sz,
+                                                a = a,
+                                                st0 = 0, t0 =0,
+                                                z_absolute = FALSE)),
+                   lower=th1, upper=min(th2, maxrt), subdivisions = subdivisions,
                    stop.on.error = stop.on.error)
     if (.progress) pb$tick()
-    return(data.frame(p = p$value, info = p$message, err = p$abs.error))
+    res[i, 5:7] <- list(p = p$value, info = p$message, err = p$abs.error)
   }
-
-
-
-
-  res <- expand.grid(condition = 1:nConds, stimulus=c(-1,1),
-                     response=c("lower", "upper"), rating = 1:nRatings) %>%
-    mutate(a    = paramDf$a,
-           s    = S[.data$condition],
-           th1  = if_else(.data$response == 1, thetas_upper[(nRatings+1-.data$rating)], thetas_lower[(nRatings+1-.data$rating)]),
-           th2  = if_else(.data$response == 1, thetas_upper[(nRatings+2-.data$rating)], thetas_lower[(nRatings+2-.data$rating)]),
-           v    = V[.data$condition]*(.data$stimulus),
-           z    = paramDf$z, sz = paramDf$sz,
-           sv   = SV[.data$condition]) %>%
-    group_by(.data$condition, .data$stimulus, .data$response, .data$rating) %>%
-    summarise(help_fct(cur_data_all()))%>%
-    mutate(correct=as.numeric(.data$stimulus==if_else(.data$response=="upper", 1, -1 ))) %>%
-    ungroup() %>%
-    select(c("condition", "stimulus", "response", "correct", "rating", "p", "info", "err"))
+  res$correct <- as.numeric(res$stimulus==(2*as.numeric(res$response=="upper")-1 ))
+  res <- res[c("condition", "stimulus", "response", "correct", "rating", "p", "info", "err")]
   # the last line is to sort the output columns
   # (to combine outputs from predictWEV_Conf and predictDDMConf_Conf)
   res
@@ -212,7 +202,7 @@ predictDDMConf_RT <- function(paramDf,
                               .progress = TRUE) {
   if (scaled && is.null(DistConf)) {
     message(paste("scaled is TRUE and DistConf is NULL. The rating distribution will",
-    " be computed, which will take additional time.", sep=""))
+                  " be computed, which will take additional time.", sep=""))
   }
   nConds <- length(grep(pattern = "^v[0-9]", names(paramDf), value = T))
   symmetric_confidence_thresholds <- length(grep(pattern = "thetaUpper", names(paramDf), value = T))<1
@@ -244,8 +234,6 @@ predictDDMConf_RT <- function(paramDf,
   } else {
     SV <- rep(paramDf$sv, nConds)
   }
-
-
   ## Recover confidence thresholds
   if (symmetric_confidence_thresholds) {
     thetas_upper <- c(0, t(paramDf[,paste("theta",(nRatings-1):1, sep = "")]), 1e+64)
@@ -256,60 +244,62 @@ predictDDMConf_RT <- function(paramDf,
   }
 
   if (is.null(minrt)) minrt <- paramDf$t0
-  df <- expand.grid(rt = seq(minrt, maxrt, length.out = subdivisions),
+  rt = seq(minrt, maxrt, length.out = subdivisions)
+  df <- expand.grid(rt = rt,
                     rating = 1:nRatings,
                     response=c("lower", "upper"),
                     stimulus=c(-1,1),
-                    condition = 1:nConds) %>%
-    mutate(s    = S[.data$condition],
-           th1  = if_else(.data$response == 1, thetas_upper[(nRatings+1-.data$rating)], thetas_lower[(nRatings+1-.data$rating)]),
-           th2  = if_else(.data$response == 1, thetas_upper[(nRatings+2-.data$rating)], thetas_lower[(nRatings+2-.data$rating)]),
-           v    = V[.data$condition]*(.data$stimulus),
-           sv   = SV[.data$condition])
-  if (.progress) {
-    pb <- progress_bar$new(total = nConds*nRatings*4)
-  }
-  dens <- function(df) {
-    res <- dDDMConf(df$rt, df$response[1],
-                th1 = df$th1[1], th2=df$th2[1],
-                v = df$v[1],
-                s=df$s[1], sv=df$sv[1],
-                a  = paramDf$a,
-                z  = paramDf$z,  sz  = paramDf$sz,
-                t0 = paramDf$t0, st0 = paramDf$st0)
-    if (.progress) pb$tick()
-    return(data.frame(rt=df$rt, dens=res))
-  }
-
-  df <- df %>% group_by(df[,c("rating", "response", "stimulus", "condition")]) %>%
-    summarise(dens(.data))
-
-
+                    condition = 1:nConds, dens=NA)
   if (scaled) {
     ## Scale RT-density to integrate to 1 (for plotting together with simulations)
     # Therefore, divide the density by the probability of a
     # decision-rating-response (as in data.frame DistConf)
     if (is.null(DistConf)) {
       DistConf <- predictDDMConf_Conf(paramDf,
-                                 maxrt = maxrt, subdivisions=subdivisions,
-                                 .progress = FALSE) %>%
-        ungroup()
+                                      maxrt = maxrt, subdivisions=subdivisions,
+                                      .progress = FALSE)
     }
-    DistConf <- DistConf %>%
-      ungroup() %>%
-      select(c("rating", "response", "stimulus", "condition", "p"))
-    # if (is.character(DistConf$response)) {
-    #   DistConf$response <- as.integer(as.factor(DistConf$response))
-    # }
-    df <- df %>%
-      left_join(DistConf, by=c("response", "stimulus", "condition","rating")) %>%
-      mutate(densscaled = if_else(.data$p!=0, .data$dens/.data$p, 0)) %>%
-      select(-c("p"))
+    DistConf <- DistConf[,c("rating", "response", "stimulus", "condition", "p")]
+    df$densscaled <- NA
   }
-  df <- df %>% mutate(correct = as.numeric(.data$stimulus==if_else(.data$response=="upper", 1, -1 ))) %>%
-    ungroup() %>%
-    select(c("condition", "stimulus", "response", "correct", "rating",
-             "rt", "dens", rep("densscaled", as.numeric(scaled))))
+
+
+  if (.progress) {
+    pb <- progress_bar$new(total = nConds*nRatings*4)
+  }
+  for ( i in 1:(nRatings*2*2*nConds)) {
+    cur_row <- df[1+((i-1)*subdivisions),]
+    s <- S[cur_row$condition]
+    th1 <- ifelse(cur_row$response == 1, thetas_upper[(nRatings+1-cur_row$rating)], thetas_lower[(nRatings+1-cur_row$rating)])
+    th2 <-ifelse(cur_row$response == 1, thetas_upper[(nRatings+2-cur_row$rating)], thetas_lower[(nRatings+2-cur_row$rating)])
+    v <- V[cur_row$condition]*(cur_row$stimulus)
+    sv <- SV[cur_row$condition]
+
+    df[(1:subdivisions) + subdivisions*(i-1), "dens"] <-
+      dDDMConf(rt, as.character(cur_row$response),
+              th1 = th1, th2=th2,
+              v = v, s=s, sv=sv,
+              a  = paramDf$a,
+              z  = paramDf$z,  sz  = paramDf$sz,
+              t0 = paramDf$t0, st0 = paramDf$st0)
+    if (scaled) {
+      P <- DistConf[DistConf$condition==cur_row$condition &
+                      DistConf$response==cur_row$response &
+                      DistConf$rating == cur_row$rating &
+                      DistConf$stimulus==cur_row$stimulus,]$p
+      if (P != 0) {
+        df[(1:subdivisions) + subdivisions*(i-1), "densscaled"] <-
+          df[(1:subdivisions) + subdivisions*(i - 1), "dens"]/P
+      } else {
+        df[(1:subdivisions) + subdivisions*(i-1), "densscaled"] <- 0
+      }
+    }
+    if (.progress) pb$tick()
+  }
+
+  df$correct <-  as.numeric(df$stimulus==(2*as.numeric(df$response=="upper") - 1))
+  df <- df[,c("condition", "stimulus", "response", "correct", "rating",
+             "rt", "dens", rep("densscaled", as.numeric(scaled)))]
   # the last line is to sort the output columns
   # (to combine outputs from predictWEV_RT and predictDDMConf_RT)
   return(df)

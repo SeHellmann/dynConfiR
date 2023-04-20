@@ -117,17 +117,17 @@ empirical_response_dist <- part8 %>%
   group_by(condition) %>% 
   mutate(ntrials = n()) %>%
   group_by(correct, condition, rating) %>%
-  summarise(p = n()/ntrials[1]) %>% ungroup()
+  summarise(p = n()/ntrials[1], .groups = "drop")
 predictedResponses <- predictedResponses %>%
   mutate(condition = factor(condition, labels=levels(part8$condition))) %>%
   group_by(correct, condition, rating) %>%
-  summarise(p = mean(p)) %>% ungroup()
+  summarise(p = mean(p), .groups = "drop") 
   
 predictedRTdist <- predictedRTdist %>%
   mutate(condition = factor(condition, labels=levels(part8$condition))) %>%
   group_by(correct, rating, rt) %>%
   summarise(dens = mean(dens),
-            densscaled = mean(densscaled)) %>% ungroup()
+            densscaled = mean(densscaled), .groups = "drop")
 
 ```
 

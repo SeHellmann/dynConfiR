@@ -146,13 +146,12 @@
 #' @name fitRTConf
 #' @importFrom stats setNames aggregate optim qnorm pnorm optimize quantile
 #' @importFrom minqa bobyqa
-#' @importFrom dplyr if_else case_when rename
-#' @import parallel
-#' @importFrom magrittr %>%
+#' @importFrom dplyr if_else rename
 #' @importFrom rlang .data
+#' @importFrom magrittr %>%
+#' @import parallel
 # @importFrom pracma integral
 #' @aliases fitSeqSampConf fitConfModel fitConf fitConfRT
-#' @importFrom Rcpp evalCpp
 #'
 #' @examples
 #' # We use one of the implemented models, "dynWEV"

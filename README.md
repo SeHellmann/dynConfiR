@@ -156,7 +156,7 @@ distributions.
 
     fitted_pars %>% 
       group_by(model, participant) %>% 
-      summarise(predictConf(cur_data_all(), model=cur_group()$model[1]))
+      summarise(predictConf(pick(everything()), model=cur_group()$model[1]))
 
 ## Further functions
 

@@ -68,13 +68,9 @@
 #'
 #' @name predictRTConf
 #' @importFrom stats integrate
-#' @import dplyr
 #' @importFrom progress progress_bar
-#' @importFrom magrittr %>%
-#' @importFrom rlang .data
 # @importFrom pracma integral
 #' @aliases predictConf
-#' @importFrom Rcpp evalCpp
 #'
 #' @examples
 #' # Examples for "dynWEV" model (equivalent applicable for

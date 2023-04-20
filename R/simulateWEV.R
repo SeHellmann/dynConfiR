@@ -213,64 +213,6 @@ simulateWEV <- function (paramDf, n=1e+4,  model = "dynWEV", simult_conf = FALSE
     nRatings <- length(grep(pattern = "^thetaUpper[0-9]", names(paramDf)))+1
   }
 
-  # if (method == "rtdists") {
-  #   simus <- expand.grid(condition = rep(1:nConds, each=n), stimulus=stimulus)
-  #   ### Produce decision responses and confidence measures according to the given model
-  #   if (model == "2DSD") {
-  #     if (all(SV==0)) {
-  #       simus <- cbind(simus, rdiffusion(n=nrow(simus), a=rep(a, nrow(simus)), v=V[simus$condition]*simus$stimulus, t0 = t0,
-  #                                    z = z*a, d = 0, sz = a*sz, sv = 0,
-  #                                    st0=st0, s=S[simus$condition],
-  #                                    precision = precision))
-  #       simus$conf <- rnorm(n=nrow(simus),
-  #                              mean=a * 0^(simus$response=="lower") +tau*V[simus$condition]*simus$stimulus,
-  #                              sd=sqrt(tau)*S[simus$condition])
-  #     } else {
-  #       simus$d <- rnorm(n=nrow(simus),
-  #                      mean=V[simus$condition]*simus$stimulus,
-  #                      sd = SV[simus$condition])
-  #       simus <- cbind(simus,
-  #                    rdiffusion(n=nrow(simus), a=rep(a, nrow(simus)), v=simus$d, t0 = t0,
-  #                               z = z*a, d = 0, sz = a*sz, sv = 0,
-  #                               st0=st0, s=S[simus$condition],
-  #                               precision = precision))
-  #       simus$conf <- rnorm(n=nrow(simus),
-  #                         mean=a * 0^(simus$response=="lower") +tau*simus$d,
-  #                         sd=sqrt(tau)*S[simus$condition])
-  #     }
-  #   } else {
-  #     ### Simulation in the dynWEV model   ####
-  #     w = paramDf$w
-  #     svis = paramDf$svis
-  #     if (all(SV==0)) {
-  #       simus <- cbind(simus,
-  #                    rdiffusion(n=nrow(simus), a=a, v=V[simus$condition]*simus$stimulus, t0 = t0,
-  #                               z = z*a, d = 0, sz = a*sz, sv = 0,
-  #                               st0=st0, s=S[simus$condition],
-  #                               precision = precision))
-  #       simus$evid_conf <- rnorm(n=nrow(simus),
-  #                              mean=V[simus$condition]*simus$stimulus*tau*(-1)^(simus$response=="lower"),
-  #                              sd = sqrt(tau)*S[simus$condition])
-  #
-  #     } else {
-  #       simus$d <- rnorm(n=nrow(simus),
-  #                      mean=V[simus$condition]*simus$stimulus,
-  #                      sd = SV[simus$condition])
-  #       simus <- cbind(simus,
-  #                    rdiffusion(n=nrow(simus), a=a, v=simus$d, t0 = t0,
-  #                               z = z*a, d = 0, sz = a*sz, sv = 0,
-  #                               st0=st0, s=S[simus$condition],
-  #                               precision = precision))
-  #       simus$evid_conf <- rnorm(n=nrow(simus),
-  #                              mean=simus$d*tau*(-1)^(simus$response=="lower"),
-  #                              sd = sqrt(tau)*S[simus$condition])
-  #     }
-  #     sigvis <- paramDf$sigvis
-  #     simus$visibility <- rnorm(n=nrow(simus), mean= (simus$rt+tau)*abs(V[simus$condition]), sd = sqrt(svis^2*(tau+simus$rt)+(simus$rt+tau)^2*sigvis^2))
-  #     simus$conf <- w*simus$evid_conf+(1-w)*simus$visibility
-  #     simus$response <- if_else(simus$response=="upper", 1, -1)
-  #   }
-  # }
   if (model =="2DSD") {
     w = -1
     svis = -1
@@ -287,29 +229,33 @@ simulateWEV <- function (paramDf, n=1e+4,  model = "dynWEV", simult_conf = FALSE
     }
   }
 
-  simus <- expand.grid(condition = 1:nConds, stimulus=stimulus) %>%
-    mutate(v  = V[.data$condition]*.data$stimulus,
-           sv = SV[.data$condition],
-           s = S[.data$condition],
-           muvis = muvis[.data$condition]) %>%
-    group_by(.data$condition, .data$stimulus) %>%
-    summarise(as.data.frame(r_WEV(n=n, params=c(a/as.numeric(cur_data()[3]),as.numeric(cur_data()[1])/as.numeric(cur_data()[3]),
-                                                t0+st0/2, d, sz, as.numeric(cur_data()[2])/as.numeric(cur_data()[3]),
-                                                st0, z, tau,
-                                                0, 1, # filler for thetas
-                                                lambda,
-                                                # when dynaViTE, use w, sigvis, svis, else do not supply the parameters
-                                                rep(c(w, as.numeric(cur_data()[4])/as.numeric(cur_data()[3]),
-                                                sigvis/as.numeric(cur_data()[3]), svis/as.numeric(cur_data()[3])),
-                                                as.numeric(model=="dynaViTE"))),
-                                  model=which(model == c("2DSD", "dynaViTE")),
-                                  delta = delta, maxT =maxrt, TRUE),
-                            c("rt", "response", "conf", "dec", "vis", "mu"))) %>%
-    rename(rt=3, response=4, conf=5, dec=6, vis=7, mu=8) %>%
-    ungroup() %>%
-    mutate(conf = .data$conf * S[.data$condition],
-           dec = .data$dec * S[.data$condition],
-           vis = .data$vis * S[.data$condition])
+  df <- expand.grid(condition = 1:nConds, stimulus=stimulus)
+  ## Produce process outcomes and compute confidence measure
+  simus <- data.frame()
+  for ( i in 1:nrow(df)) {
+    s = as.numeric(S[df[i,]$condition])
+
+  temp <- as.data.frame(r_WEV(n=n,
+                              params=c(a/s,
+                                       as.numeric(V[df[i,]$condition]*df[i,]$stimulus)/s,
+                                       t0+st0/2, d, sz, as.numeric(SV[df[i,]$condition])/s,
+                                       st0, z, tau,
+                                       0, 1, # filler for thetas
+                                       lambda,
+                                       # when dynaViTE, use w, sigvis, svis, else do not supply the parameters
+                                       rep(c(w, as.numeric(muvis[df[i,]$condition])/s,
+                                             sigvis/s, svis/s),
+                                           as.numeric(model=="dynaViTE"))),
+                              model=which(model == c("2DSD", "dynaViTE")),
+                              delta = delta, maxT =maxrt, TRUE))
+  names(temp) <- c("rt", "response", "conf", "dec", "vis", "mu")
+  temp$conf <- temp$conf * s
+  temp$dec  <- temp$dec * s
+  temp$vis  <- temp$vis * s
+
+  simus <- rbind(simus,
+                 cbind(condition=df[i, "condition"], stimulus=df[i, "stimulus"], temp))
+  }
   if (!process_results) simus <- select(simus, -c("dec", "vis", "mu"))
 
   if (symmetric_confidence_thresholds) {
@@ -340,26 +286,21 @@ simulateWEV <- function (paramDf, n=1e+4,  model = "dynWEV", simult_conf = FALSE
 
   if (gamma==TRUE) {
     gamma_condition <- simus %>% group_by(.data$correct) %>%
-      summarise(data.frame(t(Hmisc::rcorr.cens(.data$rating,S=.data$condition, outx=TRUE)))) %>%
-      select(.data$correct, Gamma = .data$Dxy)
+      summarise(Gamma=c(t(Hmisc::rcorr.cens(.data$rating,S=.data$condition, outx=TRUE)))[2])
     gamma_rt <- simus %>% group_by(.data$correct) %>%
-      summarise(data.frame(t(Hmisc::rcorr.cens(.data$rating,S=.data$rt, outx=TRUE))))%>%
-      select(.data$correct, Gamma = .data$Dxy)
+      summarise(Gamma=c(t(Hmisc::rcorr.cens(.data$rating,S=.data$rt, outx=TRUE)))[2])
     gamma_correct <- simus %>% group_by(.data$condition) %>%
-      summarise(data.frame(t(Hmisc::rcorr.cens(.data$rating,S=.data$correct, outx=TRUE))))%>%
-      select(.data$condition, Gamma = .data$Dxy)
+      summarise(Gamma=c(t(Hmisc::rcorr.cens(.data$rating,S=.data$correct, outx=TRUE)))[2])
     gamma_rt_bycondition <- simus %>% group_by(.data$condition) %>%
-      summarise(data.frame(t(Hmisc::rcorr.cens(.data$rating,S=.data$rt, outx=TRUE))))%>%
-      select(.data$condition, Gamma = .data$Dxy)
+      summarise(Gamma=c(t(Hmisc::rcorr.cens(.data$rating,S=.data$rt, outx=TRUE)))[2])
     gamma_rt_byconditionbycorrect <- simus %>% group_by(.data$condition, .data$correct) %>%
-      summarise(data.frame(t(Hmisc::rcorr.cens(.data$rating,S=.data$rt, outx=TRUE))))%>%
-      select(.data$condition, Gamma = .data$Dxy)
+      summarise(Gamma=c(t(Hmisc::rcorr.cens(.data$rating,S=.data$rt, outx=TRUE)))[2])
   }
   if (agg_simus) {
     simus <- simus %>% group_by(.data$rating, .data$correct, .data$condition) %>%
       summarise(p = n()/(2*n)) %>%
       full_join(y=expand.grid(rating=1:nRatings, condition=1:nConds,
-                              correct=c(0,1))) %>%
+                              correct=c(0,1)), by=join_by("rating", "condition", "correct")) %>%
       mutate(p = ifelse(is.na(.data$p), 0, .data$p))
   } else {
     if (process_results) {

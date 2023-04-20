@@ -205,7 +205,7 @@ d2DSD(dfu, th1=-Inf, th2=Inf, a=2*s, v=.5*s, s=2)[1:5]
 if (requireNamespace("ggplot2", quietly = TRUE)) {
   require(ggplot2)
   ggplot(dfu, aes(x=rt, y=conf))+
-    stat_density_2d(aes(fill = ..density..), geom = "raster", contour = FALSE) +
+    stat_density_2d(aes(fill = after_stat(density)), geom = "raster", contour = FALSE) +
     facet_wrap(~response)
 }
 boxplot(conf~response, data=dfu)

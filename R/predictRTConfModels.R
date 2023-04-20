@@ -89,11 +89,9 @@
 #' @author Sebastian Hellmann.
 #'
 #' @name predictRTConfModels
-#' @importFrom dplyr rename
 #' @import parallel
 # @importFrom pracma integral
 #' @aliases predictConfModels
-#' @importFrom Rcpp evalCpp
 #'
 #' @examples
 #' # First example for 2 participant and the "dynWEV" model
@@ -279,7 +277,7 @@ predictRTModels <- function(paramDf,
   if (is.null(minrt)) {
     minrt <- min(paramDf$t0)
     if (simult_conf && any(c("2DSD", "dynWEV") %in% models)) {
-      pars_diffmodels <- filter(paramDf, .data$model %in% c("2DSD", "dynWEV"))
+      pars_diffmodels <- paramDf[paramDf$model %in% c("2DSD", "dynWEV"),]
       minrt <- min(minrt, pars_diffmodels$t0+pars_diffmodels$tau)
     }
   }

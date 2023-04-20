@@ -65,9 +65,6 @@
 #' @author Sebastian Hellmann.
 #'
 #' @name simulateRTConf
-#' @import dplyr
-#' @importFrom magrittr %>%
-#' @importFrom rlang .data
 #' @importFrom stats runif
 # @importFrom pracma integral
 #' @aliases rConfModel  simulateConfModel
@@ -88,7 +85,7 @@
 #' paramDf  # each model parameters sets hat its relevant parameters
 #' # Split paramDf by model (maybe also other columns) and simulate data
 #' simus <- paramDf |> group_by(model) |>
-#'  summarise(simulateRTConf(cur_data_all(), n=200, simult_conf = TRUE))
+#'  reframe(simulateRTConf(cbind(cur_group(), pick(everything())), n=200, simult_conf = TRUE))
 #' head(simus)
 #'
 
@@ -101,8 +98,7 @@ simulateRTConf <- function (paramDf, n=1e+4,  model = NULL,
                  stimulus = c(1,2), delta=0.01, maxrt=15, seed=NULL)
 {
   gc(verbose = FALSE, full=FALSE)
-  if (nrow(paramDf)>1) stop("paramDf must have one row. For more than one parameter set, please use a split-apply method,
-                            like group_by, summarise (from the dplyr package).")
+  if (nrow(paramDf)>1) stop("paramDf must have one row.")
   paramDf <- paramDf[,c(!is.na(paramDf))]
   if (is.null(model) && ("model" %in% names(paramDf))) model <- paramDf$model
   if ((model %in% c("dynaViTE", "dynWEV", "WEVmu", "2DSD", "2DSDT")) && identical(stimulus, c(1,2))) stimulus <- c(-1,1)

@@ -125,7 +125,7 @@ PDFtoQuantiles <- function(pdf_df, p = c(.1,.3,.5,.7,.9),
   if ("densscaled" %in% names(pdf_df)) pdf_df$densscaled <- NULL
 
   temp <- pdf_df %>% select(-c("rt", "dens")) %>%
-    group_by(across()) %>% summarise(N=n())
+    group_by(pick(everything())) %>% summarise(N=n(), .groups = "drop")
   if (min(temp$N) < 100) {
     warning(paste("There are only", min(temp$N), "rows for at least one subgroup of the data set.",
                   "\nConsider refining the rt-grid for more accurate computations."))
@@ -145,7 +145,6 @@ PDFtoQuantiles <- function(pdf_df, p = c(.1,.3,.5,.7,.9),
       select(-c("dens"))
   }
 
-
   pdf_df <- pdf_df %>% group_by(pdf_df[, setdiff(names(pdf_df), c("rt", "densscaled", "dt"))]) %>%
     mutate(cdfscaled= cumsum(.data$densscaled*.data$dt)) %>%
     select(-"densscaled", - "dt")
@@ -154,7 +153,7 @@ PDFtoQuantiles <- function(pdf_df, p = c(.1,.3,.5,.7,.9),
       summarise(cdfscaled = mean(.data$cdfscaled))
   }
   pdf_df <- pdf_df %>% group_by(pdf_df[, setdiff(names(pdf_df), c("rt", "cdfscaled"))]) %>%
-    summarise(CDFtoQuantiles(.data$cdfscaled, .data$rt, p = p))
+    reframe(CDFtoQuantiles(.data$cdfscaled, .data$rt, p = p))
 
   pdf_df
 }
