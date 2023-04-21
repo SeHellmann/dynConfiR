@@ -52,4 +52,4 @@ NeedsCompilation: yes
 Packaged: 2023-03-17
 Repository: CRAN
 Roxygen: list(old_usage = TRUE, markdown=TRUE)
-RoxygenNote: 7.2.0
+RoxygenNote: 7.2.3

@@ -79,6 +79,7 @@
 #' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #' @importFrom stats runif
+#' @importFrom Rcpp evalCpp
 # @importFrom pracma integral
 #' @aliases simulateIRM simulatePCRM
 #'
