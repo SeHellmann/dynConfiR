@@ -377,7 +377,7 @@ predictWEV_RT <- function(paramDf, model=NULL,
              simult_conf = simult_conf, z_absolute = FALSE, precision = precision)
     } else if (model=="2DSD") {
       df[(1:subdivisions) + subdivisions*(i-1), "dens"] <-
-        d2DSD(rt, response=cur_row$response,
+        d2DSD(rt, response=as.character(cur_row$response),
               vth1,vth2,v = v,
               tau=paramDf$tau, a=paramDf$a,
               t0 = paramDf$t0, z = paramDf$z, sz = paramDf$sz, st0=paramDf$st0,

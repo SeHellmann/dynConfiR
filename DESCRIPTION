@@ -14,7 +14,7 @@ Description: Provides density functions for the joint distribution of
     as well as functions for parameter fitting, prediction and simulation
     for various dynamical models of decision confidence.  All models are
     explained in detail by Hellmann et al.  (2023;
-    Preprint available at <https://osf.io/9jfqr/>).  Implemented models are the dynaViTE model, 
+    Preprint available at <https://osf.io/9jfqr/>, published version: <doi:10.1037/rev0000411>).  Implemented models are the dynaViTE model, 
     dynWEV model, the 2DSD model (Pleskac & Busemeyer, 2010, <doi:10.1037/a0019737>),
     and various race models.  C++ code for dynWEV and 2DSD is based on the
     'rtdists' package by Henrik Singmann.

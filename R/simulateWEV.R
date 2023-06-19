@@ -235,27 +235,25 @@ simulateWEV <- function (paramDf, n=1e+4,  model = "dynWEV", simult_conf = FALSE
   simus <- data.frame()
   for ( i in 1:nrow(df)) {
     s = as.numeric(S[df[i,]$condition])
+    temp <- as.data.frame(r_WEV(n=n,
+                                params=c(a/s,
+                                         as.numeric(V[df[i,]$condition]*df[i,]$stimulus)/s,
+                                         t0+st0/2, d, sz, as.numeric(SV[df[i,]$condition])/s,
+                                         st0, z, tau,
+                                         lambda,
+                                         # when dynaViTE, use w, sigvis, svis, else do not supply the parameters
+                                         rep(c(w, as.numeric(muvis[df[i,]$condition])/s,
+                                               sigvis/s, svis/s),
+                                             as.numeric(model=="dynaViTE"))),
+                                model=which(model == c("2DSD", "dynaViTE")),
+                                delta = delta, maxT =maxrt, stop_on_error=TRUE))
+    names(temp) <- c("rt", "response", "conf", "dec", "vis", "mu")
+    temp$conf <- temp$conf * s
+    temp$dec  <- temp$dec * s
+    temp$vis  <- temp$vis * s
 
-  temp <- as.data.frame(r_WEV(n=n,
-                              params=c(a/s,
-                                       as.numeric(V[df[i,]$condition]*df[i,]$stimulus)/s,
-                                       t0+st0/2, d, sz, as.numeric(SV[df[i,]$condition])/s,
-                                       st0, z, tau,
-                                       0, 1, # filler for thetas
-                                       lambda,
-                                       # when dynaViTE, use w, sigvis, svis, else do not supply the parameters
-                                       rep(c(w, as.numeric(muvis[df[i,]$condition])/s,
-                                             sigvis/s, svis/s),
-                                           as.numeric(model=="dynaViTE"))),
-                              model=which(model == c("2DSD", "dynaViTE")),
-                              delta = delta, maxT =maxrt, stop_on_error=TRUE))
-  names(temp) <- c("rt", "response", "conf", "dec", "vis", "mu")
-  temp$conf <- temp$conf * s
-  temp$dec  <- temp$dec * s
-  temp$vis  <- temp$vis * s
-
-  simus <- rbind(simus,
-                 cbind(condition=df[i, "condition"], stimulus=df[i, "stimulus"], temp))
+    simus <- rbind(simus,
+                   cbind(condition=df[i, "condition"], stimulus=df[i, "stimulus"], temp))
   }
   if (!process_results) simus <- select(simus, -c("dec", "vis", "mu"))
 
@@ -276,9 +274,9 @@ simulateWEV <- function (paramDf, n=1e+4,  model = "dynWEV", simult_conf = FALSE
 
   simus$rating <- 1
   simus$rating[simus$response==1] <- as.numeric(as.character(cut(simus$conf[simus$response==1],
-                                                            breaks=thetas_upper, labels = levels_upper)))
+                                                                 breaks=thetas_upper, labels = levels_upper)))
   simus$rating[simus$response==-1] <- as.numeric(as.character(cut(simus$conf[simus$response==-1],
-                                                            breaks=thetas_lower, labels = levels_lower)))
+                                                                  breaks=thetas_lower, labels = levels_lower)))
 
   simus$correct <- as.numeric(simus$response == simus$stimulus)
   if (simult_conf) {
@@ -287,19 +285,19 @@ simulateWEV <- function (paramDf, n=1e+4,  model = "dynWEV", simult_conf = FALSE
 
   if (gamma==TRUE) {
     gamma_condition <- simus %>% group_by(.data$correct) %>%
-      summarise(Gamma=c(t(Hmisc::rcorr.cens(.data$rating,S=.data$condition, outx=TRUE)))[2])
+      summarise(Gamma=c(t(Hmisc::rcorr.cens(.data$rating,S=.data$condition, outx=TRUE)))[2],.groups="drop")
     gamma_rt <- simus %>% group_by(.data$correct) %>%
-      summarise(Gamma=c(t(Hmisc::rcorr.cens(.data$rating,S=.data$rt, outx=TRUE)))[2])
+      summarise(Gamma=c(t(Hmisc::rcorr.cens(.data$rating,S=.data$rt, outx=TRUE)))[2],.groups="drop")
     gamma_correct <- simus %>% group_by(.data$condition) %>%
-      summarise(Gamma=c(t(Hmisc::rcorr.cens(.data$rating,S=.data$correct, outx=TRUE)))[2])
+      summarise(Gamma=c(t(Hmisc::rcorr.cens(.data$rating,S=.data$correct, outx=TRUE)))[2],.groups="drop")
     gamma_rt_bycondition <- simus %>% group_by(.data$condition) %>%
-      summarise(Gamma=c(t(Hmisc::rcorr.cens(.data$rating,S=.data$rt, outx=TRUE)))[2])
+      summarise(Gamma=c(t(Hmisc::rcorr.cens(.data$rating,S=.data$rt, outx=TRUE)))[2],.groups="drop")
     gamma_rt_byconditionbycorrect <- simus %>% group_by(.data$condition, .data$correct) %>%
-      summarise(Gamma=c(t(Hmisc::rcorr.cens(.data$rating,S=.data$rt, outx=TRUE)))[2])
+      summarise(Gamma=c(t(Hmisc::rcorr.cens(.data$rating,S=.data$rt, outx=TRUE)))[2],.groups="drop")
   }
   if (agg_simus) {
     simus <- simus %>% group_by(.data$rating, .data$correct, .data$condition) %>%
-      summarise(p = n()/(2*n)) %>%
+      summarise(p = n()/(2*n),.groups="drop") %>%
       full_join(y=expand.grid(rating=1:nRatings, condition=1:nConds,
                               correct=c(0,1)), by=join_by("rating", "condition", "correct")) %>%
       mutate(p = ifelse(is.na(.data$p), 0, .data$p))

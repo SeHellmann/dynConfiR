@@ -255,7 +255,7 @@ r2DSD <- function (n, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, st0=0,
   for (i in seq_len(length(pars$parameter_indices))) {
     ok_rows <- pars$parameter_indices[[i]]
     current_n <- length(ok_rows)
-    out <- r_WEV(current_n, pars$params[ok_rows[1], 1:12],
+    out <- r_WEV(current_n, pars$params[ok_rows[1], c(1:9, 12)],
                  model=1, delta = delta, maxT =maxrt, stop_on_error)[,1:3]
     if (simult_conf) {
       # add tau to response times, if choice and confidence given simultaneously

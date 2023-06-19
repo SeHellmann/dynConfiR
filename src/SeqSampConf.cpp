@@ -102,7 +102,7 @@ NumericVector d_IRM2 (NumericVector rts, NumericVector params, int win=1,  doubl
 
   NumericVector out(length, 0.0);  // Should default to 0s when creating NumericVector, but just in case..
 
-  out = density_IRM (rts, params, win, step_width);
+  out = density_IRM2 (rts, params, win, step_width);
 
   return out;
 }
@@ -307,19 +307,10 @@ NumericVector dd_PCRM (NumericVector rts, NumericVector xj, NumericVector params
 // [[Rcpp::export]]
 NumericVector r_RM (int n, NumericVector params, double rho, double delta=0.01, double maxT=9)
 {
-  double sdu, sdv, muu, muv, noise1, noise2;
-  if (params[6] !=0 ) {
-    noise1 = R::rnorm(0, params[6]);
-  } else {
-    noise1 = 0;
-  }
-  if (params[7] !=0 ) {
-    noise2 = R::rnorm(0, params[7]);
-  } else {
-    noise2 = 0;
-  }
-  muu = (params[0]+params[1])*delta;
-  muv = (params[0]-params[1])*delta;
+  double sdu, sdv, driftnoise1, driftnoise2; //muu, muv,
+
+  // muu = (params[0]+params[1])*delta;
+  // muv = (params[0]-params[1])*delta;
 
   sdu = sqrt(2*(1+rho)*delta);
   sdv = sqrt(2*(1-rho)*delta);
@@ -329,14 +320,24 @@ NumericVector r_RM (int n, NumericVector params, double rho, double delta=0.01, 
 
   NumericMatrix out(n, 3);
   for (int i=0; i < n; i++) {
+    if (params[6] !=0 ) {
+      driftnoise1 = R::rnorm(0, params[6]);
+    } else {
+      driftnoise1 = 0;
+    }
+    if (params[7] !=0 ) {
+      driftnoise2 = R::rnorm(0, params[7]);
+    } else {
+      driftnoise2 = 0;
+    }
     x01 = params[2]+R::runif(0, params[8]);
     x02 = params[3]+R::runif(0, params[9]);
     t = 0;
     while ((x01 < 0) && (x02 < 0) && (t < maxT)) {
       u = R::rnorm(0, sdu);
       v = R::rnorm(0, sdv);
-      x01 = x01 + delta*noise1 + 0.5*((muu+muv)+params[4]*(u+v));
-      x02 = x02 + delta*noise2 + 0.5*((muu-muv)+params[5]*(u-v));
+      x01 = x01 + delta*(driftnoise1 + params[0]) + 0.5*params[4]*(u+v);
+      x02 = x02 + delta*(driftnoise2 + params[1]) + 0.5*params[5]*(u-v);
       t += delta;
     }
     if (x01 > 0) {
@@ -375,27 +376,18 @@ NumericMatrix r_WEV (int n, NumericVector params, int model,
                      double delta=0.01, double maxT=9,
                      bool stop_on_error=true)
 {
-  g_Params = new Parameters (params, 1e-3);
-
-  NumericMatrix out(n, 6);
-
-  if (!g_Params->ValidateParams_2DSD(stop_on_error))
-  {
-    if (stop_on_error) { Rcpp::stop("Error validating parameters.\n"); }
-    else { return out;  }
-  }
+  if (params.length()<10) { Rcpp::stop("Not enough parameters supplied.\n"); }
 
   // model codes: 1: 2DSD, 2: dynaViTE/dynWEV
   if (model == 1) {
-      params[12] = 1; // w
-      params[13] = 0; // muvis (arbitrary value)
-      params[14] = 1; // sigvis(arbitrary value)
-      params[15] = 1; // svis  (arbitrary value)
+      params[10] = 1; // w
+      params[11] = 0; // muvis (arbitrary value)
+      params[12] = 1; // sigvis(arbitrary value)
+      params[13] = 1; // svis  (arbitrary value)
   }
 
-  out = RNG_WEV(n,  params, delta, maxT, stop_on_error);
+  NumericMatrix out = RNG_WEV(n,  params, delta, maxT, stop_on_error);
 
-  delete g_Params;
   return out;
 }
 

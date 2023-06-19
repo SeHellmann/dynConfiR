@@ -102,7 +102,7 @@ paramDf <- data.frame(a=2,b=2, v1=0.5, v2=1, t0=0.1,st0=0,
                       theta1=4)
 
 # 2. Simulate trials for both stimulus categories and all conditions (2)
-simus <- simulateRM(paramDf, n=300,model="PCRM", time_scaled=TRUE)
+simus <- simulateRM(paramDf, n=30,model="PCRM", time_scaled=TRUE)
 head(simus)
 # equivalent:
 simus <- simulateRM(paramDf, model="PCRMt")
@@ -119,7 +119,7 @@ simus <- simulateRM(paramDf, model="PCRMt")
 # automatically aggregate simulation distribution
 # to get only accuracy x confidence rating distribution for
 # all conditions
-agg_simus <- simulateRM(paramDf, n = 200, model="PCRMt", agg_simus = TRUE)
+agg_simus <- simulateRM(paramDf, n = 20, model="PCRMt", agg_simus = TRUE)
 head(agg_simus)
 \donttest{
   agg_simus$rating <- factor(agg_simus$rating, labels=c("unsure", "sure"))

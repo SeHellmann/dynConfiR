@@ -4,7 +4,7 @@
 #' Package: \tab dynConfiR\cr
 #' Type: \tab Package\cr
 #' Version: \tab 0.0.3\cr
-#' Date: \tab 2023-03-17\cr
+#' Date: \tab 2023-04-20\cr
 #' Depends: \tab R (>= 4.0)\cr
 #' License: \tab GPL (>=3)\cr
 #' URL: \tab https://github.com/SeHellmann/dynConfiR\cr

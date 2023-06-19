@@ -22,7 +22,6 @@ using namespace Rcpp;
 NumericMatrix RNG_WEV (int n, NumericVector params, double delta=0.01,
                      double maxT=9, bool stop_on_error=true)
 {
-
   NumericMatrix out(n, 6);
 
   double a   =    params[0];
@@ -34,11 +33,32 @@ NumericMatrix RNG_WEV (int n, NumericVector params, double delta=0.01,
   double st0 =    params[6];
   double zr  =    params[7];
   double tau =    params[8];
-  double lambda =  params[11];
-  double w   =    params[12];
-  double muvis =  params[13];
-  double sigvis = params[14];
-  double svis =   params[15];
+  double lambda =  params[9];
+  double w   =    params[10];
+  double muvis =  params[11];
+  double sigvis = params[12];
+  double svis =   params[13];
+
+  bool valid = true;
+
+  if (a <= 0)                         { valid = false; Rcpp::Rcout << "error: invalid parameter a = " << a << std::endl;  }
+  if (szr < 0 || szr > 1)             { valid = false; Rcpp::Rcout << "error: invalid parameter szr = " << szr << std::endl; }
+  if (st0 < 0)                        { valid = false; Rcpp::Rcout << "error: invalid parameter st0 = " << st0 << std::endl; }
+  if (sv < 0)                         { valid = false; Rcpp::Rcout << "error: invalid parameter sv = " << sv << std::endl; }
+  if (t0 - fabs(0.5*d) - 0.5*st0 < 0) { valid = false; Rcpp::Rcout << "error: invalid parameter combination t0 = " << t0 << ", d = " << d << ", st0 =" << st0 << std::endl; }
+  if (zr - 0.5*szr <= 0)              { valid = false; Rcpp::Rcout << "error: invalid parameter combination zr = " << zr << ", szr = " << szr << std::endl;}
+  if (zr + 0.5*szr >= 1)              { valid = false; Rcpp::Rcout << "error: invalid parameter combination zr = " << zr << ", szr = " << szr << std::endl;}
+  if (tau < 0)                        { valid = false; Rcpp::Rcout << "error: invalid parameter tau = " << tau << std::endl;}
+  if (w<0 || w > 1)                   { valid = false; Rcpp::Rcout << "error: invalid parameter w = " << w << ", allowed: w in [0,1]" <<  std::endl; }
+  if (sigvis < 0)                      { valid = false; Rcpp::Rcout << "error: invalid parameter sigvis = " << sigvis <<  std::endl; }
+  if (svis <= 0)                        { valid = false; Rcpp::Rcout << "error: invalid parameter svis = " << svis <<  std::endl; }
+  if (lambda < 0)                        { valid = false; Rcpp::Rcout << "error: invalid parameter lambda = " << lambda <<  std::endl; }
+
+  if (!valid) {
+    if (stop_on_error) { Rcpp::stop("Error validating parameters.\n"); }
+    else {return out;}
+  }
+
 
   double mu, x0, t, conf, vis;
   int resp;
