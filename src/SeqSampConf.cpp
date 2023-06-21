@@ -307,13 +307,14 @@ NumericVector dd_PCRM (NumericVector rts, NumericVector xj, NumericVector params
 // [[Rcpp::export]]
 NumericVector r_RM (int n, NumericVector params, double rho, double delta=0.01, double maxT=9)
 {
-  double sdu, sdv, driftnoise1, driftnoise2; //muu, muv,
+  double driftnoise1, driftnoise2, invrho; //muu, muv,sdu, sdv,
 
+  invrho = sqrt(1-rho*rho);
   // muu = (params[0]+params[1])*delta;
   // muv = (params[0]-params[1])*delta;
 
-  sdu = sqrt(2*(1+rho)*delta);
-  sdv = sqrt(2*(1-rho)*delta);
+  // sdu = sqrt(delta);
+  // sdv = sqrt(delta);
 
   double x01, x02, u,v, t, xl;
   int win;
@@ -334,10 +335,10 @@ NumericVector r_RM (int n, NumericVector params, double rho, double delta=0.01, 
     x02 = params[3]+R::runif(0, params[9]);
     t = 0;
     while ((x01 < 0) && (x02 < 0) && (t < maxT)) {
-      u = R::rnorm(0, sdu);
-      v = R::rnorm(0, sdv);
-      x01 = x01 + delta*(driftnoise1 + params[0]) + 0.5*params[4]*(u+v);
-      x02 = x02 + delta*(driftnoise2 + params[1]) + 0.5*params[5]*(u-v);
+      u = R::rnorm(0, 1);
+      v = R::rnorm(0, 1);
+      x01 = x01 + delta*(driftnoise1 + params[0]) + sqrt(delta)*params[4]*u;
+      x02 = x02 + delta*(driftnoise2 + params[1]) + sqrt(delta)*params[5]*(rho*u+invrho*v);
       t += delta;
     }
     if (x01 > 0) {
