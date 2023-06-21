@@ -187,8 +187,9 @@ simulateRM <- function (paramDf, n=1e+4,  model = "IRM", time_scaled=FALSE,
   for ( i in 1:nrow(df)) {
     mu1 <- (-1)^(1+df[i,]$stimulus==1) * V[df[i,]$condition]
     temp <- as.data.frame(r_RM(n,c(mu1, -mu1,
-                   -paramDf$a, -paramDf$b, S[df[i,]$condition],
-                   paramDf$t0, paramDf$st0),
+                   -paramDf$a, -paramDf$b,
+                   S[df[i,]$condition],S[df[i,]$condition],
+                   0,0,0,0),
                    rho = ifelse(model=="IRM", 0, -.5),
                    delta=delta, maxT=maxrt))
     names(temp) <- c("rt", "response", "xl")
