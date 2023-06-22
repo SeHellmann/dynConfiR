@@ -35,19 +35,26 @@ NumericVector d_2DSD (NumericVector rts, NumericVector params, double precision=
 
     if ((boundary < 1) || (boundary > 2)) { Rcpp::stop ("Boundary must be either 2 (upper) or 1 (lower)\n"); }
 
-    g_Params = new Parameters (params, precision);
-
     NumericVector out(length, 0.0);  // Should default to 0s when creating NumericVector, but just in case..
 
-    if (!g_Params->ValidateParams_2DSD(stop_on_error))
+    if (!ValidateParams(params, true))
     {
         if (stop_on_error) { Rcpp::stop("Error validating parameters.\n"); }
                       else { return out; }
     }
 
-    out = density_2DSD (rts, boundary-1, stop_on_zero);
+    // Add tuning values for numerical integrations at the end of parameters
+    // ToDo: Optimize and check precision values
+    params.push_back(0.0089045 * exp(-1.037580*precision)); // TUNE_INT_T0
+    params.push_back(0.0508061 * exp(-1.022373*precision)); // TUNE_INT_Z
+    //     These have been added to optimise code paths by treating very small variances as 0
+    //     e.g. with precision = 3, sv or sz values < 10^-5 are considered 0
+    params.push_back(pow (10, -(precision+2.0))); // TUNE_SZ_EPSILON
+    params.push_back(pow (10, -(precision+2.0))); // TUNE_ST0_EPSILON
 
-    delete g_Params;
+    out = density_2DSD (rts, params, boundary-1, stop_on_zero);
+
+    //delete g_Params;
     return out;
 }
 
@@ -67,14 +74,41 @@ NumericVector d_WEVmu (NumericVector rts, NumericVector params, double precision
 
     if (!g_Params->ValidateParams_2DSD(stop_on_error))
     {
-        if (stop_on_error) { Rcpp::stop("Error validating parameters.\n"); }
-        else { return out; }
+      if (stop_on_error) { Rcpp::stop("Error validating parameters.\n"); }
+      else { return out; }
     }
 
     out = density_WEVmu (rts, boundary-1, stop_on_zero);
 
     delete g_Params;
     return out;
+}
+
+// R-callable PDF for DDMConf - pass boundary to retrieve (1 = lower, 2 = upper)
+// [[Rcpp::export]]
+NumericVector d_DDMConf (NumericVector rts, NumericVector params, double precision=1e-5, int boundary=2,
+                         bool stop_on_error=true, bool stop_on_zero=false,
+                         double st0precision=0.01)
+{
+  int length = rts.length();
+  if (length > MAX_INPUT_VALUES) { Rcpp::stop("Number of RT values passed in exceeds maximum of %d.\n", MAX_INPUT_VALUES); }
+
+  if ((boundary < 1) || (boundary > 2)) { Rcpp::stop ("Boundary must be either 2 (upper) or 1 (lower)\n"); }
+
+  g_Params = new Parameters (params, precision);
+
+  NumericVector out(length, 0.0);  // Should default to 0s when creating NumericVector, but just in case..
+
+  if (!g_Params->ValidateParams_2DSD(stop_on_error))
+  {
+    if (stop_on_error) { Rcpp::stop("Error validating parameters.\n"); }
+    else { return out; }
+  }
+
+  out = density_DDMConf (rts, boundary-1, stop_on_zero, st0precision);
+
+  delete g_Params;
+  return out;
 }
 
 // [[Rcpp::export]]
@@ -599,32 +633,6 @@ NumericVector r_LCA (int n, NumericVector params, double delta=0.01, double maxT
 
 
 
-// R-callable PDF for DDMConf - pass boundary to retrieve (1 = lower, 2 = upper)
-// [[Rcpp::export]]
-NumericVector d_DDMConf (NumericVector rts, NumericVector params, double precision=1e-5, int boundary=2,
-                         bool stop_on_error=true, bool stop_on_zero=false,
-                         double st0precision=0.01)
-{
-  int length = rts.length();
-  if (length > MAX_INPUT_VALUES) { Rcpp::stop("Number of RT values passed in exceeds maximum of %d.\n", MAX_INPUT_VALUES); }
-
-  if ((boundary < 1) || (boundary > 2)) { Rcpp::stop ("Boundary must be either 2 (upper) or 1 (lower)\n"); }
-
-  g_Params = new Parameters (params, precision);
-
-  NumericVector out(length, 0.0);  // Should default to 0s when creating NumericVector, but just in case..
-
-  if (!g_Params->ValidateParams_2DSD(stop_on_error))
-  {
-    if (stop_on_error) { Rcpp::stop("Error validating parameters.\n"); }
-    else { return out; }
-  }
-
-  out = density_DDMConf (rts, boundary-1, stop_on_zero, st0precision);
-
-  delete g_Params;
-  return out;
-}
 
 
 
