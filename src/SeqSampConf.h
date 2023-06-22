@@ -31,6 +31,8 @@ using namespace Rcpp;
 
 // Used by both PDF and CDF (also includes tuning params) also by 2DSD and WEV implementation
 #include "Parameters.h"
+#include "ValidateParameters.h"
+
 
 // While not enforced, this is the global parameters Singleton
 //   To be created and freed in the other calls in SeqSampConf.cpp
