@@ -66,19 +66,26 @@ NumericVector d_WEVmu (NumericVector rts, NumericVector params, double precision
     if (length > MAX_INPUT_VALUES) { Rcpp::stop("Number of RT values passed in exceeds maximum of %d.\n", MAX_INPUT_VALUES); }
 
     if ((boundary < 1) || (boundary > 2)) { Rcpp::stop ("Boundary must be either 2 (upper) or 1 (lower)\n"); }
-    g_Params = new Parameters (params, precision);
 
     NumericVector out(length, 0.0);  // Should default to 0s when creating NumericVector, but just in case..
 
-    if (!g_Params->ValidateParams_2DSD(stop_on_error))
+    if (!ValidateParams(params, true))
     {
       if (stop_on_error) { Rcpp::stop("Error validating parameters.\n"); }
       else { return out; }
     }
 
-    out = density_WEVmu (rts, boundary-1, stop_on_zero);
+    // Add tuning values for numerical integrations at the end of parameters
+    // ToDo: Optimize and check precision values
+    params.push_back(0.0089045 * exp(-1.037580*precision)); // TUNE_INT_T0
+    params.push_back(0.0508061 * exp(-1.022373*precision)); // TUNE_INT_Z
+    //     These have been added to optimise code paths by treating very small variances as 0
+    //     e.g. with precision = 3, sv or sz values < 10^-5 are considered 0
+    params.push_back(pow (10, -(precision+2.0))); // TUNE_SZ_EPSILON
+    params.push_back(pow (10, -(precision+2.0))); // TUNE_ST0_EPSILON
 
-    delete g_Params;
+    out = density_WEVmu (rts, params, boundary-1, stop_on_zero);
+
     return out;
 }
 
@@ -93,19 +100,26 @@ NumericVector d_DDMConf (NumericVector rts, NumericVector params, double precisi
 
   if ((boundary < 1) || (boundary > 2)) { Rcpp::stop ("Boundary must be either 2 (upper) or 1 (lower)\n"); }
 
-  g_Params = new Parameters (params, precision);
 
   NumericVector out(length, 0.0);  // Should default to 0s when creating NumericVector, but just in case..
 
-  if (!g_Params->ValidateParams_2DSD(stop_on_error))
+  if (!ValidateParams(params, true))
   {
     if (stop_on_error) { Rcpp::stop("Error validating parameters.\n"); }
     else { return out; }
   }
 
-  out = density_DDMConf (rts, boundary-1, stop_on_zero, st0precision);
+  // Add tuning values for numerical integrations at the end of parameters
+  // ToDo: Optimize and check precision values
+  params.push_back(0.0089045 * exp(-1.037580*precision)); // TUNE_INT_T0
+  params.push_back(0.0508061 * exp(-1.022373*precision)); // TUNE_INT_Z
+  //     These have been added to optimise code paths by treating very small variances as 0
+  //     e.g. with precision = 3, sv or sz values < 10^-5 are considered 0
+  params.push_back(pow (10, -(precision+2.0))); // TUNE_SZ_EPSILON
+  params.push_back(pow (10, -(precision+2.0))); // TUNE_ST0_EPSILON
 
-  delete g_Params;
+  out = density_DDMConf (rts, params, boundary-1, stop_on_zero, st0precision);
+
   return out;
 }
 

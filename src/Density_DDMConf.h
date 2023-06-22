@@ -22,74 +22,70 @@ using namespace Rcpp;
 #define EPSILON 1e-6
 
 // Forward declarations
-double g_minus_DDMConf (double t, double st0precision);
-double g_plus_DDMConf  (double t, double st0precision);
+double g_minus_DDMConf (double t, double st0precision, NumericVector params);
 
-static double integral_t0_g_minus_DDMConf (double t, Parameters *params, double st0precision);
-static double integral_z_g_minus_DDMConf  (double t, Parameters *params);
-static double integral_v_g_minus_DDMConf  (double t, double zr, Parameters *params);
+static double integral_t0_g_minus_DDMConf (double t, NumericVector params, double st0precision);
+static double integral_z_g_minus_DDMConf  (double t, NumericVector params);
+static double integral_v_g_minus_DDMConf  (double t, double zr, NumericVector params);
 
 static double g_minus_small_time_DDMConf (double t, double zr, int N);
 static double g_minus_large_time_DDMConf (double t, double zr, int N);
 
 // TODO: Make sure these function names are accurate
-static double integrate_z_over_t_DDMConf  (Parameters *params, double a, double b, double step_width, double st0precision);
-static double integrate_v_over_zr_DDMConf (Parameters *params, double a, double b, double t, double step_width);
+static double integrate_z_over_t_DDMConf  (NumericVector params, double a, double b, double step_width, double st0precision);
+static double integrate_v_over_zr_DDMConf (NumericVector params, double a, double b, double t, double step_width);
 
 
 // Main calls
-NumericVector density_DDMConf (NumericVector rts, int boundary, bool stopon0, double st0precision)
+NumericVector density_DDMConf (NumericVector rts, NumericVector params, int boundary, bool stopon0, double st0precision)
 {
     int length = rts.length();
     NumericVector out(length);
     if (stopon0) {
       if (boundary == 1) {
+        params[7] = 1- params[7]; // z -> 1 - z
+        params[1] = - params[1]; // v  -> - v
+        params[3] = - params[3]; // d  -> - d
         for (int i = 0; i < length; i++) {
-          out[i] =  g_plus_DDMConf(rts[i], st0precision);
+          out[i] =  g_minus_DDMConf(rts[i], st0precision, params);
           if (out[i]==0) break;
         }
       } // Calc upper
       else {
         for (int i = 0; i < length; i++) {
-          out[i] = -g_minus_DDMConf(rts[i], st0precision);
+          out[i] = -g_minus_DDMConf(rts[i], st0precision, params);
           if (out[i]==0) break;
         }
       } // Calc lower
     } else {
-      if (boundary == 1) { for (int i = 0; i < length; i++) { out[i] =  g_plus_DDMConf(rts[i], st0precision);  } } // Calc upper
-      else { for (int i = 0; i < length; i++) { out[i] = -g_minus_DDMConf(rts[i], st0precision); } } // Calc lower
+      if (boundary == 1) {
+        params[7] = 1- params[7]; // z -> 1 - z
+        params[1] = - params[1]; // v  -> - v
+        params[3] = - params[3]; // d  -> - d
+        for (int i = 0; i < length; i++) {
+        out[i] =  g_minus_DDMConf(rts[i], st0precision, params);
+          }
+        } // Calc upper
+      else { for (int i = 0; i < length; i++) { out[i] = -g_minus_DDMConf(rts[i], st0precision, params); } } // Calc lower
     }
 
 
     return out;
 }
 
-double g_minus_DDMConf(double t, double st0precision)
+double g_minus_DDMConf(double t, double st0precision, NumericVector params)
 {
-    return integral_t0_g_minus_DDMConf (t - g_Params->t0 - 0.5*g_Params->d, g_Params, st0precision);
+    return integral_t0_g_minus_DDMConf (t - params[2] - 0.5*params[3], params, st0precision);
 }
 
-double g_plus_DDMConf(double t, double st0precision)
-{
-    // Make a copy so we don't disturb our params
-    // (?TODO: we could optimise the object creation out and just set them back after the call)
-    Parameters new_params(*g_Params);
-    new_params.zr = 1 - g_Params->zr;
-    new_params.v = -g_Params->v;
-
-    return integral_t0_g_minus_DDMConf (t - new_params.t0 + 0.5*new_params.d, &new_params, st0precision);
-}
-
-
-
-static double integral_t0_g_minus_DDMConf (double t, Parameters *params, double st0precision)
+static double integral_t0_g_minus_DDMConf (double t, NumericVector params, double st0precision)
 {
     double res;
 
-    if (params->st0 < params->TUNE_ST0_EPSILON) // 170501   was == 0)
+    if (params[6] < params[13]) // 170501   was == 0)
     {
-      if (( t  > (params->th2)) ||
-          ( t  < (params->th1))) {
+      if (( t  > (params[9])) ||
+          ( t  < (params[8]))) {
         return 0.0;
       } else {
         res = integral_z_g_minus_DDMConf (t, params);
@@ -97,14 +93,14 @@ static double integral_t0_g_minus_DDMConf (double t, Parameters *params, double 
     }
     else
     {
-        if (((t + .5*params->st0) < params->th1) ||
-            ((t - .5*params->st0) > params->th2)) {
+        if (((t + .5*params[6]) < params[8]) ||
+            ((t - .5*params[6]) > params[9])) {
           return 0.0;
         } else {
           res = integrate_z_over_t_DDMConf(params,
-                                           std::max(t - .5*params->st0, params->th1),
-                                           std::min(t + .5*params->st0, params->th2),
-                                           params->TUNE_INT_T0, st0precision) / params->st0;
+                                           std::max(t - .5*params[6], params[8]),
+                                           std::min(t + .5*params[6], params[9]),
+                                           params[10], st0precision) / params[6];
         }
     }
 
@@ -112,30 +108,30 @@ static double integral_t0_g_minus_DDMConf (double t, Parameters *params, double 
 }
 
 
-static double integral_z_g_minus_DDMConf (double t, Parameters *params)
+static double integral_z_g_minus_DDMConf (double t, NumericVector params)
 {
     double res;
 
     if (t <= 0) return 0;
 
-    if (params->szr < params->TUNE_SZ_EPSILON)
+    if (params[4] < params[12])
     {
-        res = integral_v_g_minus_DDMConf (t, params->zr, params);
+        res = integral_v_g_minus_DDMConf (t, params[7], params);
     }
     else
     {
-        res = integrate_v_over_zr_DDMConf(params, params->zr - .5*params->szr, params->zr + .5*params->szr,
-                                  t, params->TUNE_INT_Z) / params->szr;
+        res = integrate_v_over_zr_DDMConf(params, params[7] - .5*params[4], params[7] + .5*params[4],
+                                          t, params[11]) / params[4];
     }
     return res;
 }
 
 
-static double integral_v_g_minus_DDMConf (double t, double zr, Parameters *params)
+static double integral_v_g_minus_DDMConf (double t, double zr, NumericVector params)
 {
-    double a = params->a;
-    double v = params->v;
-    double sv = params->sv;
+  double a = params[0];
+  double v = params[1];
+  double sv = params[5];
 
     int N_small, N_large;
     double sv2t, simple, factor, eps;
@@ -208,7 +204,7 @@ static double g_minus_large_time_DDMConf(double t, double zr, int N)
 
 // CONVERSION NOTE: Simplest way to deal with the integrate function is to remove
 //                  the clever recursiveness and instead (ugh) duplicate code
-static double integrate_z_over_t_DDMConf (Parameters *params, double a, double b, double step_width, double st0precision)
+static double integrate_z_over_t_DDMConf (NumericVector params, double a, double b, double step_width, double st0precision)
 {
     double width = b-a;
     int N = std::max(4, (int) (width / step_width));
@@ -223,7 +219,7 @@ static double integrate_z_over_t_DDMConf (Parameters *params, double a, double b
     return result;
 }
 
-static double integrate_v_over_zr_DDMConf (Parameters *params, double a, double b, double t, double step_width)
+static double integrate_v_over_zr_DDMConf (NumericVector params, double a, double b, double t, double step_width)
 {
     double width = b-a;
     int N = std::max(4, (int) (width / step_width));

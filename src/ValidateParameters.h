@@ -53,9 +53,9 @@ bool ValidateParams (NumericVector params, bool print)
       // w < 0 OR w > 1
       if (params[12]<0 || params[12] > 1)             { valid = false; if (print) Rcpp::Rcout << "error: invalid parameter w = " << params[12] << ", allowed: w in [0,1]" <<  std::endl; }
       // sigvis < 0
-      if (params[13] < 0)               { valid = false; if (print) Rcpp::Rcout << "error: invalid parameter sigvis = " << params[13] <<  std::endl; }
+      if (params[14] < 0)               { valid = false; if (print) Rcpp::Rcout << "error: invalid parameter sigvis = " << params[14] <<  std::endl; }
       // svis <= 0
-      if (params[14] <= 0)                { valid = false; if (print) Rcpp::Rcout << "error: invalid parameter svis = " << params[14] <<  std::endl; }
+      if (params[15] <= 0)                { valid = false; if (print) Rcpp::Rcout << "error: invalid parameter svis = " << params[15] <<  std::endl; }
     }
   }
   return valid;

@@ -36,7 +36,7 @@ using namespace Rcpp;
 
 // While not enforced, this is the global parameters Singleton
 //   To be created and freed in the other calls in SeqSampConf.cpp
-Parameters *g_Params;
+//Parameters *g_Params;
 
 #define BOUNDARY_LOWER 0
 #define BOUNDARY_UPPER 1
