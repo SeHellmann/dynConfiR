@@ -423,7 +423,7 @@ NumericMatrix r_WEV (int n, NumericVector params, int model,
                      bool stop_on_error=true)
 {
   if (params.length()<10) { Rcpp::stop("Not enough parameters supplied.\n"); }
-
+  NumericMatrix out(n, 6);
   // model codes: 1: 2DSD, 2: dynaViTE/dynWEV
   if (model == 1) {
       params[10] = 1; // w
@@ -432,7 +432,7 @@ NumericMatrix r_WEV (int n, NumericVector params, int model,
       params[13] = 1; // svis  (arbitrary value)
   }
 
-  NumericMatrix out = RNG_WEV(n,  params, delta, maxT, stop_on_error);
+  out = RNG_WEV(n,  params, delta, maxT, stop_on_error);
 
   return out;
 }
