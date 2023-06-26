@@ -276,7 +276,7 @@ rWEV <- function (n, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, st0=0,
     ok_rows <- pars$parameter_indices[[i]]
     current_n <- length(ok_rows)
     out <- r_WEV(current_n, pars$params[ok_rows[1], c(1:9, 12:16)],
-                 model=2, delta = delta, maxT =maxrt, stop_on_error)
+                  delta = delta, maxT =maxrt, stop_on_error)
 
     out[,3] <- out[,3]/pars$params[ok_rows[1], 11]  # multiply by s (diffusion constant)
     out[,4] <- out[,4]/pars$params[ok_rows[1], 11]  # multiply by s (diffusion constant)

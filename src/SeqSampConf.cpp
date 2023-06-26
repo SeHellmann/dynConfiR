@@ -418,20 +418,12 @@ NumericVector r_RM (int n, NumericVector params, double rho, double delta=0.01, 
 
 
 // [[Rcpp::export]]
-NumericMatrix r_WEV (int n, NumericVector params, int model,
+NumericMatrix r_WEV (int n, NumericVector params,
                      double delta=0.01, double maxT=9,
                      bool stop_on_error=true)
 {
-  if (params.length()<10) { Rcpp::stop("Not enough parameters supplied.\n"); }
+  if (params.length()<13) { Rcpp::stop("Not enough parameters supplied.\n"); }
   NumericMatrix out(n, 6);
-  // model codes: 1: 2DSD, 2: dynaViTE/dynWEV
-  if (model == 1) {
-      params[10] = 1; // w
-      params[11] = 0; // muvis (arbitrary value)
-      params[12] = 1; // sigvis(arbitrary value)
-      params[13] = 1; // svis  (arbitrary value)
-  }
-
   out = RNG_WEV(n,  params, delta, maxT, stop_on_error);
 
   return out;

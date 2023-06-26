@@ -245,7 +245,6 @@ simulateWEV <- function (paramDf, n=1e+4,  model = "dynWEV", simult_conf = FALSE
                                          rep(c(w, as.numeric(muvis[df[i,]$condition])/s,
                                                sigvis/s, svis/s),
                                              as.numeric(model=="dynaViTE"))),
-                                model=which(model == c("2DSD", "dynaViTE")),
                                 delta = delta, maxT =maxrt, stop_on_error=TRUE))
     names(temp) <- c("rt", "response", "conf", "dec", "vis", "mu")
     temp$conf <- temp$conf * s

@@ -146,18 +146,17 @@ BEGIN_RCPP
 END_RCPP
 }
 // r_WEV
-NumericMatrix r_WEV(int n, NumericVector params, int model, double delta, double maxT, bool stop_on_error);
-RcppExport SEXP _dynConfiR_r_WEV(SEXP nSEXP, SEXP paramsSEXP, SEXP modelSEXP, SEXP deltaSEXP, SEXP maxTSEXP, SEXP stop_on_errorSEXP) {
+NumericMatrix r_WEV(int n, NumericVector params, double delta, double maxT, bool stop_on_error);
+RcppExport SEXP _dynConfiR_r_WEV(SEXP nSEXP, SEXP paramsSEXP, SEXP deltaSEXP, SEXP maxTSEXP, SEXP stop_on_errorSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type n(nSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type params(paramsSEXP);
-    Rcpp::traits::input_parameter< int >::type model(modelSEXP);
     Rcpp::traits::input_parameter< double >::type delta(deltaSEXP);
     Rcpp::traits::input_parameter< double >::type maxT(maxTSEXP);
     Rcpp::traits::input_parameter< bool >::type stop_on_error(stop_on_errorSEXP);
-    rcpp_result_gen = Rcpp::wrap(r_WEV(n, params, model, delta, maxT, stop_on_error));
+    rcpp_result_gen = Rcpp::wrap(r_WEV(n, params, delta, maxT, stop_on_error));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -217,7 +216,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_dynConfiR_dd_IRM", (DL_FUNC) &_dynConfiR_dd_IRM, 5},
     {"_dynConfiR_dd_PCRM", (DL_FUNC) &_dynConfiR_dd_PCRM, 4},
     {"_dynConfiR_r_RM", (DL_FUNC) &_dynConfiR_r_RM, 5},
-    {"_dynConfiR_r_WEV", (DL_FUNC) &_dynConfiR_r_WEV, 6},
+    {"_dynConfiR_r_WEV", (DL_FUNC) &_dynConfiR_r_WEV, 5},
     {"_dynConfiR_r_RM_Kiani", (DL_FUNC) &_dynConfiR_r_RM_Kiani, 6},
     {"_dynConfiR_r_LCA", (DL_FUNC) &_dynConfiR_r_LCA, 4},
     {"_dynConfiR_r_DDMConf", (DL_FUNC) &_dynConfiR_r_DDMConf, 5},

@@ -37,8 +37,8 @@ r_RM <- function(n, params, rho, delta = 0.01, maxT = 9) {
     .Call(`_dynConfiR_r_RM`, n, params, rho, delta, maxT)
 }
 
-r_WEV <- function(n, params, model, delta = 0.01, maxT = 9, stop_on_error = TRUE) {
-    .Call(`_dynConfiR_r_WEV`, n, params, model, delta, maxT, stop_on_error)
+r_WEV <- function(n, params, delta = 0.01, maxT = 9, stop_on_error = TRUE) {
+    .Call(`_dynConfiR_r_WEV`, n, params, delta, maxT, stop_on_error)
 }
 
 r_RM_Kiani <- function(n, params, rho, Bl, delta = 0.01, maxT = 9) {
