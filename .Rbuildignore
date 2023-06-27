@@ -26,3 +26,4 @@ ChecksDebugs
 script_fit_test.R
 autosave
 run_examples.R
+^codecov\.yml$

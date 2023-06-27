@@ -33,6 +33,7 @@ Imports:
     rlang,
     stats
 Suggests: 
+    covr,
     ggplot2,
     Hmisc,
     knitr,

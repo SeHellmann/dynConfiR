@@ -5,6 +5,9 @@ output:
   md_document:
     variant: gfm
 ---
+<!-- badges: start -->
+[![Codecov test coverage](https://codecov.io/gh/SeHellmann/dynConfiR/branch/main/graph/badge.svg)](https://app.codecov.io/gh/SeHellmann/dynConfiR?branch=main)
+<!-- badges: end -->
 
 ```{r setup,echo=FALSE,message=FALSE}
 #library(jpeg)
