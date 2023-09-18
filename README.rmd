@@ -5,8 +5,11 @@ output:
   md_document:
     variant: gfm
 ---
+
 <!-- badges: start -->
+
 [![Codecov test coverage](https://codecov.io/gh/SeHellmann/dynConfiR/branch/main/graph/badge.svg)](https://app.codecov.io/gh/SeHellmann/dynConfiR?branch=main)
+
 <!-- badges: end -->
 
 ```{r setup,echo=FALSE,message=FALSE}
@@ -22,19 +25,19 @@ knitr::opts_knit$set(base.url=paste(gitrep,gitbranch, sep="/"))
 
 # dynConfiR: R package for sequential sampling models of decision confidence
 
-This package includes implementation for several sequential sampling models of decision making and confidence judgments. The package includes density functions for decision, confidence and response time outcomes for following models: 
-Dynamic visibility, time, and evidence model (dynaViTE), Dynamic weighted evidence and visibility (dynWEV), two-stage signal detection (2DSD), inpedendent and partially-correlated race models (IRM/PCRM) (see [Hellmann et al. 2023)](https://doi.org/10.1037/rev0000411) for details; Preprint available [here](https://osf.io/9jfqr)). In addition, the package includes functions for parameter fitting, prediction and simulation of data.
+This package includes implementation for several sequential sampling models of decision making and confidence judgments. The package includes density functions for decision, confidence and response time outcomes for following models: Dynamic visibility, time, and evidence model (dynaViTE), Dynamic weighted evidence and visibility (dynWEV), two-stage signal detection (2DSD), inpedendent and partially-correlated race models (IRM/PCRM) (see [Hellmann et al. 2023)](https://doi.org/10.1037/rev0000411) for details; Preprint available [here](https://osf.io/9jfqr)). In addition, the package includes functions for parameter fitting, prediction and simulation of data.
 
 ## Installation
 
 The latest released version of the package is available on CRAN via
 
-  `install.packages("dynConfiR")`
+`install.packages("dynConfiR")`
 
-For the current development version, the easiest way of installation is 
-using `devtools` and install from GitHub:
+For the current development version, the easiest way of installation is using `devtools` and install from GitHub:
 
-    devtools::install_github("SeHellmann/dynConfiR")
+```         
+devtools::install_github("SeHellmann/dynConfiR")
+```
 
 ## Usage
 
@@ -64,7 +67,7 @@ When using the package for model comparison, the suggested workflow is:
 #![Workflow for model comparison][README_files/Workflow.jpg?raw=true]
 ```
 
-![Package workflow for model comparison](README_files/Workflow.jpg)
+![Package workflow for model comparison](man/figures/Workflow.jpg)
 
 Data should be of the form
 
@@ -95,7 +98,9 @@ Alternatively to `stimulus` or `response` it is possible to use a column, `corre
 
 If there are several participants, for which the models should be fitted independently, and the models of interest are dynWEV and 2DSD, then fitting the models is done using the `fitRTConfModels` function:
 
-    fitted_pars <- fitRTConfModels(data, models=c("dynWEV","2DSD"), stimulus="direction", condition="coherence")
+```         
+fitted_pars <- fitRTConfModels(data, models=c("dynWEV","2DSD"), stimulus="direction", condition="coherence")
+```
 
 By default, this parallelizes the fitting process over participant-model combinations. The output is then a data frame with one row for each participant-model combination and columns for parameters and measures for model performance (negative log-likelihood, BIC, AIC and AICc). These may be used for quantitative model comparison.
 
@@ -136,9 +141,11 @@ For prediction the functions `predictConf` and `predictRT` are used, together wi
 
 **Usage example:**
 
-    fitted_pars %>% 
-      group_by(model, participant) %>% 
-      summarise(predictConf(pick(everything()), model=cur_group()$model[1]))
+```         
+fitted_pars %>% 
+  group_by(model, participant) %>% 
+  summarise(predictConf(pick(everything()), model=cur_group()$model[1]))
+```
 
 ## Further functions
 

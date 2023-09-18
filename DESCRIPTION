@@ -19,7 +19,8 @@ Description: Provides density functions for the joint distribution of
     and various race models.  C++ code for dynWEV and 2DSD is based on the
     'rtdists' package by Henrik Singmann.
 License: GPL (>= 3)
-URL: https://github.com/SeHellmann/dynConfiR
+URL: https://github.com/SeHellmann/dynConfiR,
+    https://sehellmann.github.io/dynConfiR/
 BugReports: https://github.com/SeHellmann/dynConfiR
 Depends: 
     R (>= 4.0)

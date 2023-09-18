@@ -1,12 +1,21 @@
+<!-- badges: start -->
+
+[![Codecov test
+coverage](https://codecov.io/gh/SeHellmann/dynConfiR/branch/main/graph/badge.svg)](https://app.codecov.io/gh/SeHellmann/dynConfiR?branch=main)
+
+<!-- badges: end -->
+
 # dynConfiR: R package for sequential sampling models of decision confidence
 
 This package includes implementation for several sequential sampling
 models of decision making and confidence judgments. The package includes
 density functions for decision, confidence and response time outcomes
-for following models: Dynamic weighted evidence and visibility (dynWEV),
-two-stage signal detection (2DSD), inpedendent and partially-correlated
-race models (IRM/PCRM) (see [Hellmann et al. (in
-press)](https://osf.io/9jfqr) for details). In addition, the package
+for following models: Dynamic visibility, time, and evidence model
+(dynaViTE), Dynamic weighted evidence and visibility (dynWEV), two-stage
+signal detection (2DSD), inpedendent and partially-correlated race
+models (IRM/PCRM) (see [Hellmann et
+al. 2023)](https://doi.org/10.1037/rev0000411) for details; Preprint
+available [here](https://osf.io/9jfqr)). In addition, the package
 includes functions for parameter fitting, prediction and simulation of
 data.
 
@@ -28,18 +37,18 @@ using `devtools` and install from GitHub:
 ``` r
 library(dynConfiR)
 d2DSD(rt=0.7, th1=1, th2=2.5, response="lower", 
-      tau=1, a=2, v=0.7, t0=0, z =0.5, sv=0, st0=0.1)
+      a=2, v=0.7, t0=0, z =0.5, sv=0, st0=0.1, tau=1, lambda=0.5)
 ```
 
-    ## [1] 0.03387271
+    ## [1] 0.02387629
 
 ``` r
 dWEV(rt=2.7, th1=1, th2=2.5, response="lower", 
-      tau=1, a=2, v=0.7, t0=0, z =0.5, sv=0, st0=0.1,
+      tau=1, a=2, v=0.7, t0=0, z =0.5, sv=0, st0=0.1, lambda=0.2,
      simult_conf = TRUE)
 ```
 
-    ## [1] 0.01578955
+    ## [1] 0.0143774
 
 ``` r
 dIRM(1.2, response=2, mu1=0.5, mu2=-0.5, a=0.8, b=0.5, th1=-0.5, th2=2, 
@@ -59,7 +68,12 @@ dPCRM(1.2, response=2, mu1=0.5, mu2=-0.5, a=0.8, b=0.5, th1=-0.5, th2=2,
 
 When using the package for model comparison, the suggested workflow is:
 
-![Package workflow for model comparison](README_files/Workflow.jpg)
+<figure>
+<img src="man/figures/Workflow.jpg"
+alt="Package workflow for model comparison" />
+<figcaption aria-hidden="true">Package workflow for model
+comparison</figcaption>
+</figure>
 
 Data should be of the form
 
@@ -162,6 +176,13 @@ distributions.
 
 Implementation of a simulation of observations in the Leaky Competing
 Accumulator model (see `rLCA`).
+
+## References
+
+Hellmann S, Zehetleitner M, Rausch M. Simultaneous modeling of choice,
+confidence, and response time in visual perception. Psychol Rev. 2023
+Mar 13. doi: [10.1037/rev0000411](https://doi.org/10.1037/rev0000411).
+Epub ahead of print. PMID: 36913292.
 
 ## Contact
 
