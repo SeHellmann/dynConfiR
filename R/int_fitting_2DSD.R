@@ -297,9 +297,9 @@ fitting2DSD <- function(df, nConds, nRatings, fixed, sym_thetas,
     optim_node <- function(start) { # define optim-routine to run on each node
       noFitYet <- TRUE
       start <- c(t(start))
-      names(start) <- parnames
       for (l in 1:opts$nRestarts){
         start <- start + rnorm(length(start), sd=pmax(0.001, abs(t(t(start))/20)))
+        names(start) <- parnames
         if (optim_method == "Nelder-Mead") {
           try(m <- optim(par = start,
                          fn = neglikelihood_2DSD_free,

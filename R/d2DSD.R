@@ -259,7 +259,7 @@ r2DSD <- function (n, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, st0=0,
                  delta = delta, maxT =maxrt, stop_on_error)[,1:3]
     if (simult_conf) {
       # add tau to response times, if choice and confidence given simultaneously
-      out[1,] <- out[1,] + pars$params[ok_rows[1], 9]
+      out[,1] <- out[,1] + pars$params[ok_rows[1], 9]
     }
     res[ok_rows,] <- out
   }

@@ -10,7 +10,7 @@
 README.md
 README.rmd
 README_files
-
+man/figures
 .github
 .gitignore
 
@@ -27,3 +27,7 @@ script_fit_test.R
 autosave
 run_examples.R
 ^codecov\.yml$
+^pkgdown$
+^_pkgdown\.yml$
+^docs$
+^\.github$

@@ -17,7 +17,7 @@
 #'   * \code{stimulus} (encoding the stimulus category in a binary choice task),
 #'   * \code{response} (encoding the decision response),
 #'   * \code{correct} (encoding whether the decision was correct; values in 0, 1)
-#'   * \code{sbj} (giving the subject ID; the models given in the second argument are fitted for each
+#' * \code{sbj} (giving the subject ID; the models given in the second argument are fitted for each
 #'   subject individually. (Furthermore, if `logging = TRUE`, the ID is used in files
 #'   saved with interim results and logging messages.))
 #' @param models character vector with following possible elements "dynWEV", "2DSD", "IRM", "PCRM", "IRMt", and "PCRMt"  for the models to be fit.
@@ -99,13 +99,12 @@
 #'
 #' @references  Hellmann, S., Zehetleitner, M., & Rausch, M. (2023). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review} 2023 Mar 13. doi: 10.1037/rev0000411. Epub ahead of print. PMID: 36913292.
 #'
-#' @author Sebastian Hellmann.
+#' @author Sebastian Hellmann, \email{sebastian.hellmann@@ku.de}
 #'
 #' @name fitRTConfModels
 #' @importFrom dplyr rename
 #' @import parallel
 # @importFrom pracma integral
-#' @aliases fitConfModels
 #'
 #' @examples
 #' # 1. Generate data from two artificial participants

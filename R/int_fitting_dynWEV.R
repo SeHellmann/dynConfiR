@@ -207,7 +207,7 @@ fittingdynWEV <- function(df, nConds, nRatings, fixed, sym_thetas,
 
   if (optim_method!="Nelder-Mead") {
                       # a,  z, sz,  v1, v2,....,,   st0, sv, t0,thetaLower1, dthetaLower2.., thetaUpper1... (or theta1,...),  tau, w, svis, sigvis, lambda
-    lower_optbound <- c(0,  0,  0,  rep(0, nConds), 0,   0,  0, rep(c(-Inf,  rep(0, nRatings-2)), 2-as.numeric(sym_thetas)),    0, 0,  0,   0,      0)[!(parnames %in% names(fixed))]
+    lower_optbound <- c(0,  0,  0,  rep(0, nConds), 0,   0,  0, rep(c(-Inf,  rep(0, nRatings-2)), 2-as.numeric(sym_thetas)),    0, 0,  1e-6,   0,      0)[!(parnames %in% names(fixed))]
     upper_optbound <- c(Inf,1,  1,  rep(Inf,nConds),Inf, Inf,1, rep(Inf, (2-as.numeric(sym_thetas))*(nRatings-1)),      restr_tau, 1, Inf, Inf,     Inf)[!(parnames %in% names(fixed))]
   }
 
@@ -306,9 +306,9 @@ fittingdynWEV <- function(df, nConds, nRatings, fixed, sym_thetas,
     optim_node <- function(start) { # define optim-routine to run on each node
       noFitYet <- TRUE
       start <- c(t(start))
-      names(start) <- parnames
       for (l in 1:opts$nRestarts){
         start <- start + rnorm(length(start), sd=pmax(0.001, abs(t(t(start))/20)))
+        names(start) <- parnames
         if (optim_method == "Nelder-Mead") {
           m <- try(optim(par = start,
                          fn = neglikelihood_dynWEV_free,

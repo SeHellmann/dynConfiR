@@ -215,10 +215,10 @@ simulateWEV <- function (paramDf, n=1e+4,  model = "dynWEV", simult_conf = FALSE
   }
 
   if (model =="2DSD") {
-    w = -1
-    svis = -1
-    sigvis = -1
-    muvis = rep(-1, nConds)
+    w = 1
+    svis = 1
+    sigvis = 0
+    muvis = rep(0, nConds)
   } else {
     w = paramDf$w
     svis = paramDf$svis
@@ -241,10 +241,10 @@ simulateWEV <- function (paramDf, n=1e+4,  model = "dynWEV", simult_conf = FALSE
                                          t0+st0/2, d, sz, as.numeric(SV[df[i,]$condition])/s,
                                          st0, z, tau,
                                          lambda,
-                                         # when dynaViTE, use w, sigvis, svis, else do not supply the parameters
-                                         rep(c(w, as.numeric(muvis[df[i,]$condition])/s,
-                                               sigvis/s, svis/s),
-                                             as.numeric(model=="dynaViTE"))),
+                                         w, # if model=2DSD, this is set to 1
+                                         # if model=2DSD, these are set arbitrary
+                                         as.numeric(muvis[df[i,]$condition])/s,
+                                         sigvis/s, svis/s),
                                 delta = delta, maxT =maxrt, stop_on_error=TRUE))
     names(temp) <- c("rt", "response", "conf", "dec", "vis", "mu")
     temp$conf <- temp$conf * s
