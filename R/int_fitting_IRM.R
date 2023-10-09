@@ -237,6 +237,7 @@ fittingIRM <- function(df, nConds, nRatings, fixed, sym_thetas, time_scaled,
       start <- c(t(inits[i,]))
       names(start) <- names(inits)
       for (l in 1:opts$nRestarts){
+        start <- pmax(pmin(start, upper_optbound-1e-6), lower_optbound+1e-6)
         if (optim_method == "Nelder-Mead") {
           try(m <- optim(par = start,
                          fn = neglikelihood_IRM_free,
@@ -246,6 +247,7 @@ fittingIRM <- function(df, nConds, nRatings, fixed, sym_thetas, time_scaled,
                          method="Nelder-Mead",
                          control = list(maxit = opts$maxit, reltol = opts$reltol)))
         } else if (optim_method =="bobyqa") {
+          start <- pmax(pmin(start, upper_optbound-1e-6), lower_optbound+1e-6)
           try(m <- bobyqa(par = start,
                           fn = neglikelihood_IRM_bounded,
                           lower = lower_optbound, upper = upper_optbound,
@@ -262,6 +264,7 @@ fittingIRM <- function(df, nConds, nRatings, fixed, sym_thetas, time_scaled,
             m$value <- m$fval
           }
         } else if (optim_method=="L-BFGS-B") {  ### ToDo: use dfoptim or pracma::grad as gradient!
+          start <- pmax(pmin(start, upper_optbound-1e-6), lower_optbound+1e-6)
           try(m <- optim(par = start,
                          fn = neglikelihood_IRM_bounded,
                          lower = lower_optbound, upper = upper_optbound,
@@ -293,6 +296,7 @@ fittingIRM <- function(df, nConds, nRatings, fixed, sym_thetas, time_scaled,
               save(logL, inits,  df,fit, attempt,file=filename)
             }
             start <- fit$par
+            names(start) <- names(inits)
           } else if (m$value < fit$value) {
             fit <- m
             if (logging==TRUE) {
@@ -301,6 +305,7 @@ fittingIRM <- function(df, nConds, nRatings, fixed, sym_thetas, time_scaled,
               save(logL, inits,  df,fit, attempt,file=filename)
             }
             start <- fit$par
+            names(start) <- names(inits)
           } # end of if better value
         }   # end of if we got a optim-result at all
       }     # end of for restarts
@@ -314,6 +319,7 @@ fittingIRM <- function(df, nConds, nRatings, fixed, sym_thetas, time_scaled,
       start <- c(t(start))
       names(start) <- parnames
       for (l in 1:opts$nRestarts){
+        start <- pmax(pmin(start, upper_optbound-1e-6), lower_optbound+1e-6)
         if (optim_method == "Nelder-Mead") {
           try(m <- optim(par = start,
                          fn = neglikelihood_IRM_free,
@@ -323,6 +329,7 @@ fittingIRM <- function(df, nConds, nRatings, fixed, sym_thetas, time_scaled,
                          method="Nelder-Mead",
                          control = list(maxit = opts$maxit, reltol = opts$reltol)))
         } else if (optim_method =="bobyqa") {
+          start <- pmax(pmin(start, upper_optbound-1e-6), lower_optbound+1e-6)
           try(m <- bobyqa(par = start,
                           fn = neglikelihood_IRM_bounded,
                           lower = lower_optbound, upper = upper_optbound,
@@ -340,6 +347,7 @@ fittingIRM <- function(df, nConds, nRatings, fixed, sym_thetas, time_scaled,
             m$value <- m$fval
           }
         } else if (optim_method=="L-BFGS-B") {  ### ToDo: use dfoptim or pracma::grad as gradient!
+          start <- pmax(pmin(start, upper_optbound-1e-6), lower_optbound+1e-6)
           try(m <- optim(par = start,
                          fn = neglikelihood_IRM_bounded,
                          lower = lower_optbound, upper = upper_optbound,
@@ -359,9 +367,11 @@ fittingIRM <- function(df, nConds, nRatings, fixed, sym_thetas, time_scaled,
             fit <- m
             noFitYet <- FALSE
             start <- fit$par
+            names(start) <- parnames
           } else if (m$value < fit$value) {
             fit <- m
             start <- fit$par
+            names(start) <- parnames
           }
         }
       }

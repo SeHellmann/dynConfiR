@@ -278,6 +278,7 @@ fitting2DSD <- function(df, nConds, nRatings, fixed, sym_thetas,
               save(logL, inits,  df,fit, attempt,file=filename)
             }
             start <- fit$par
+            names(start) <- names(inits)
           } else if (m$value < fit$value) {
             fit <- m
             if (logging==TRUE) {
@@ -286,6 +287,7 @@ fitting2DSD <- function(df, nConds, nRatings, fixed, sym_thetas,
               save(logL, inits,  df,fit, attempt,file=filename)
             }
             start <- fit$par
+            names(start) <- names(inits)
           } # end of if better value
         }   # end of if we got a optim-result at all
       }     # end of for restarts
@@ -475,30 +477,21 @@ neglikelihood_2DSD_free <-   function(p, data,
   # get parameter vector back from real transformations
   paramDf <-  data.frame(matrix(nrow=1, ncol=0))
   paramDf[,paste("v",1:(nConds), sep="")] <- exp(p[1:(nConds)])
+  if (length(fixed)>=1) paramDf <- cbind(paramDf, as.data.frame(fixed))
+
   if (!("a" %in% names(fixed))) paramDf$a <- exp(p[["a"]])
   if (!("sv" %in% names(fixed))) paramDf$sv <- exp(p[["sv"]])
   if (!("z" %in% names(fixed))) paramDf$z <- pnorm(p[["z"]]) ## relative mean starting point
-  if (!("sz" %in% names(fixed))) {
-    if (!("z" %in% names(fixed))) {
-      paramDf$sz <- (min(paramDf$z, (1-paramDf$z))*2)*pnorm(p[["sz"]]) ##
-    } else {
-      paramDf$sz <- (min(fixed[['z']], (1-fixed[['z']]))*2)*pnorm(p[["sz"]]) ##
-    }
-  }
+  if (!("sz" %in% names(fixed))) paramDf$sz <- (min(paramDf$z, (1-paramDf$z))*2)*pnorm(p[["sz"]]) ##
   if (!("t0" %in% names(fixed))) paramDf$t0 <- pnorm(p[["t0"]])*mint0
   if (!("st0" %in% names(fixed))) paramDf$st0 <- exp(p[["st0"]])
   if (!("tau" %in% names(fixed))) {
     if (restr_tau == Inf) {
       paramDf$tau <- exp(p[["tau"]])
+    } else if (simult_conf) {
+      paramDf$tau <- pnorm(p[["tau"]])*(mint0-paramDf$t0)
     } else {
       paramDf$tau <- restr_tau * pnorm(p[["tau"]])
-    }
-    if (simult_conf) {
-      if ("t0" %in% names(fixed)) {
-        res$tau <- pnorm(p[["tau"]])*(mint0-fixed[['t0']])
-      } else {
-        res$tau <- pnorm(p[["tau"]])*(mint0-paramDf$t0)
-      }
     }
   }
   if (!("lambda" %in% names(fixed))) paramDf$lambda <- exp(p[["lambda"]])
@@ -520,9 +513,6 @@ neglikelihood_2DSD_free <-   function(p, data,
 
   if (any(is.infinite(t(paramDf))) || any(is.na(t(paramDf)))) {
     return(1e12)
-  }
-  if (length(fixed)>=1) {
-    paramDf <- cbind(paramDf, as.data.frame(fixed))
   }
   negloglik <- -LogLikWEV(data, paramDf, "2DSD", simult_conf, precision, stop_on_error=FALSE)
   return(negloglik)
