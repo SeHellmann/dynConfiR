@@ -277,12 +277,12 @@ from top to bottom
 <span class="r-in"><span><span class="va">data</span><span class="op">$</span><span class="va">rating</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cut.html" class="external-link">cut</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">conf</span>, breaks <span class="op">=</span> <span class="va">threshs</span>, include.lowest <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     rt response     conf stimulus condition rating</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 1.21    upper 2.218417    upper         1      3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 1.27    upper 4.396735    upper         1      3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 1.77    lower 2.211490    upper         1      3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4 0.92    upper 2.705221    upper         1      3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5 0.58    upper 1.460461    upper         1      2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6 1.82    upper 4.000420    upper         1      3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 0.76    upper 2.057219    upper         1      3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 1.91    upper 2.095410    upper         1      3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 0.40    upper 4.708475    upper         1      3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 1.67    upper 4.433874    upper         1      3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 0.78    upper 2.084166    upper         1      3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6 0.80    upper 4.550698    upper         1      3</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># 2. Use fitting function</span></span></span>
 <span class="r-in"><span><span class="co"># Fitting the model with these opts results in a pretty bad fit</span></span></span>
@@ -291,14 +291,14 @@ from top to bottom
 <span class="r-in"><span>   <span class="fu">fitRTConf</span><span class="op">(</span><span class="va">data</span>, <span class="st">"dynWEV"</span>, fixed<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>sym_thetas<span class="op">=</span><span class="cn">TRUE</span>, z<span class="op">=</span><span class="fl">0.5</span>, st0<span class="op">=</span><span class="fl">0</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>            grid_search <span class="op">=</span> <span class="cn">FALSE</span>, logging<span class="op">=</span><span class="cn">FALSE</span>,</span></span>
 <span class="r-in"><span>            opts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>nAttempts<span class="op">=</span><span class="fl">1</span>, nRestarts<span class="op">=</span><span class="fl">2</span>, maxfun<span class="op">=</span><span class="fl">2000</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>          v1           sv        a   z        sz        t0 st0    theta1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 0.4460914 2.260823e-07 2.221178 0.5 0.4572502 0.2369627   0 0.3257676</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      theta2       tau         w      svis    sigvis lambda</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 0.8821536 0.6570014 0.7347319 0.8691081 0.9209544      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                     fixed negLogLik   N  k      BIC     AICc</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 sym_thetas=TRUE, z=0.5, st0=0, lambda=0   300.512 120 11 653.6864 625.0611</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       AIC</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 623.024</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          v1        sv        a   z          sz        t0 st0   theta1   theta2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 0.7951459 0.7560289 2.336335 0.5 0.009499797 0.2111689   0 1.477041 2.274607</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       tau         w        svis    sigvis lambda</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 1.60381 0.4830951 0.005578631 0.3226565      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                     fixed negLogLik   N  k      BIC    AICc</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 sym_thetas=TRUE, z=0.5, st0=0, lambda=0    283.78 120 11 620.2224 591.597</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      AIC</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 589.56</span>
 <span class="r-in"><span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
