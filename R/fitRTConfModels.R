@@ -155,7 +155,7 @@ fitRTConfModels <- function(data, models = c("dynWEV", "2DSD"),
                       nRatings = NULL, fixed = list(sym_thetas = FALSE), restr_tau=Inf,
                       grid_search=TRUE,
                       opts=list(), optim_method = "bobyqa", logging=FALSE, precision=1e-5,
-                      parallel = TRUE, n.cores=NULL, ...){ #  ?ToDO: vary_sv=FALSE, RRT=NULL, vary_tau=FALSE
+                      parallel = FALSE, n.cores=NULL, ...){ #  ?ToDO: vary_sv=FALSE, RRT=NULL, vary_tau=FALSE
   if (any(!grepl("dynaViTE|IRM|PCRM|IRMt|PCRMt|dynWEV|2DSD|DDMConf", models))) stop("all models must contain 'dynWEV', '2DSD', 'DDMConf', 'IRM', or 'PCRM'")
 
   ### Maybe later: use ...-argument für renaming data-columns and to pass other arguments

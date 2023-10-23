@@ -112,7 +112,7 @@
 #'   simus$rating <- factor(simus$rating, labels=c("unsure", "sure"))
 #'   ggplot(simus, aes(x=rt, group=interaction(correct, rating),
 #'                     color=as.factor(correct), linetype=rating))+
-#'     geom_density(size=1.2)+xlim(c(0,5))+
+#'     geom_density(linewidth=1.2)+xlim(c(0,5))+
 #'     facet_grid(rows=vars(condition), labeller = "label_both")
 #' }
 #'

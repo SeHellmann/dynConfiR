@@ -59,7 +59,7 @@ NumericVector d_2DSD (NumericVector rts, NumericVector params, double precision=
 
 
 // [[Rcpp::export]]
-NumericVector d_WEVmu (NumericVector rts, NumericVector params, double precision=1e-5, int boundary=2,
+NumericVector d_WEVmu (NumericVector rts, NumericMatrix parammatrix, double precision=1e-5, int boundary=2,
                        bool stop_on_error=true, int stop_on_zero=false)
 {
     int length = rts.length();
@@ -68,25 +68,51 @@ NumericVector d_WEVmu (NumericVector rts, NumericVector params, double precision
     if ((boundary < 1) || (boundary > 2)) { Rcpp::stop ("Boundary must be either 2 (upper) or 1 (lower)\n"); }
 
     NumericVector out(length, 0.0);  // Should default to 0s when creating NumericVector, but just in case..
+    NumericVector params;
+    if (nrow(parammatrix)==1) {
+      params = parammatrix(0, _);
+      if (!ValidateParams(params, true))
+      {
+        if (stop_on_error) { Rcpp::stop("Error validating parameters.\n"); }
+        else { return out; }
+      }
+      // Add tuning values for numerical integrations at the end of parameters
+      // ToDo: Optimize and check precision values
+      params.push_back(0.0089045 * exp(-1.037580*precision)); // TUNE_INT_T0
+      params.push_back(0.0508061 * exp(-1.022373*precision)); // TUNE_INT_Z
+      //     These have been added to optimise code paths by treating very small variances as 0
+      //     e.g. with precision = 3, sv or sz values < 10^-5 are considered 0
+      params.push_back(pow (10, -(precision+2.0))); // TUNE_SZ_EPSILON
+      params.push_back(pow (10, -(precision+2.0))); // TUNE_ST0_EPSILON
 
-    if (!ValidateParams(params, true))
-    {
-      if (stop_on_error) { Rcpp::stop("Error validating parameters.\n"); }
-      else { return out; }
+      out = density_WEVmu (rts, params, boundary-1, stop_on_zero);
+
+      return out;
+    } else {
+      // for each entry in rts and each row in parammatrix, define params as the row of parammatrix and do the rest
+      for (int i = 0; i < length; i++)
+      {
+        params = parammatrix(i, _);
+        if (!ValidateParams(params, true))
+        {
+          if (stop_on_error) { Rcpp::stop("Error validating parameters.\n"); }
+          else { return out; }
+        }
+        // Add tuning values for numerical integrations at the end of parameters
+        // ToDo: Optimize and check precision values
+        params.push_back(0.0089045 * exp(-1.037580*precision)); // TUNE_INT_T0
+        params.push_back(0.0508061 * exp(-1.022373*precision)); // TUNE_INT_Z
+        //     These have been added to optimise code paths by treating very small variances as 0
+        //     e.g. with precision = 3, sv or sz values < 10^-5 are considered 0
+        params.push_back(pow (10, -(precision+2.0))); // TUNE_SZ_EPSILON
+        params.push_back(pow (10, -(precision+2.0))); // TUNE_ST0_EPSILON
+
+        out = density_WEVmu (rts, params, boundary-1, stop_on_zero);
+
+        return out;
+        // Add tuning values for numerical integrations at the end of parameters
+      }
     }
-
-    // Add tuning values for numerical integrations at the end of parameters
-    // ToDo: Optimize and check precision values
-    params.push_back(0.0089045 * exp(-1.037580*precision)); // TUNE_INT_T0
-    params.push_back(0.0508061 * exp(-1.022373*precision)); // TUNE_INT_Z
-    //     These have been added to optimise code paths by treating very small variances as 0
-    //     e.g. with precision = 3, sv or sz values < 10^-5 are considered 0
-    params.push_back(pow (10, -(precision+2.0))); // TUNE_SZ_EPSILON
-    params.push_back(pow (10, -(precision+2.0))); // TUNE_ST0_EPSILON
-
-    out = density_WEVmu (rts, params, boundary-1, stop_on_zero);
-
-    return out;
 }
 
 // R-callable PDF for DDMConf - pass boundary to retrieve (1 = lower, 2 = upper)

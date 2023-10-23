@@ -101,6 +101,13 @@
 #' @param process_results logical. Whether the output simulations should contain the final
 #' state of the decision (and visibility) process as additional column. Default is FALSE, meaning that
 #' no additional columns for the final process states are returned.
+#' @param parammatrix A numeric matrix with rows for each observations and columns for different parameters.
+#' It offers a second way of specifying parameters, which is useful, if parameters vary with each trial.
+#' If all parameters are supplied, the columns of the matrix should be in the same order as the parameters
+#' in the dWEV function. If the matrix has column names, the function will use them to assign the parameters.
+#' If only a subset of parameters are specified, the matrix must have column names and for remaining parameters,
+#' the default values of dWEV are used (if available). We recommend to use column
+#' names in any case.
 #'
 #' @return \code{dWEV} gives the density/likelihood/probability of the diffusion process producing
 #' a decision of \code{response} at time \code{rt} and a confidence judgment corresponding to the
@@ -212,12 +219,19 @@
 dWEV <- function (rt, response="upper", th1,th2, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, st0=0,
                   tau=1, w=0.5, muvis=NULL, sigvis=0, svis=1,
                   lambda = 0, s=1,  simult_conf = FALSE, precision=1e-5, z_absolute = FALSE,
-                  stop_on_error=TRUE, stop_on_zero=FALSE)
+                  stop_on_error=TRUE, stop_on_zero=FALSE, parammatrix)
 {
   # for convenience accept data.frame as first argument.
   if (is.data.frame(rt)) {
     response <- rt$response
     rt <- rt$rt
+  }
+
+  ## If parammatrix is supplied, then we use another, simpler function call
+  if (!missing(parammatrix)) {
+    return(dWEV_parammatrix(rt, response, parammatrix,
+                            simult_conf, precision, z_absolute,
+                            stop_on_error, stop_on_zero))
   }
 
   nn <- length(rt)
@@ -250,6 +264,105 @@ dWEV <- function (rt, response="upper", th1,th2, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, s
                                    stop_on_error, as.numeric(stop_on_zero))
   }
   abs(densities)
+}
+
+
+
+dWEV_parammatrix <- function(rt, response, parammatrix,
+                  simult_conf = FALSE, precision=1e-5, z_absolute = FALSE,
+                  stop_on_error=TRUE, stop_on_zero=FALSE)
+{
+  nn <- length(rt)
+  parnames <- c("a", "v", "t0", "d", "sz", "sv", "st0","z",
+                "tau", "th1", "th2", "lambda", "w", "muvis", "sigvis", "svis", "s")
+  defaults <- c(NA, NA, 0, 0, 0, 0, 0,0.5,
+                1, NA, NA, 0, 0.5, -99, 0, 1, 1)
+
+
+  if (nrow(parammatrix) != nn) {
+    stop("Number of rows in parammatrix must match length of rt")
+  }
+  if (ncol(parammatrix) != 17) {
+    if (is.null(colnames(parammatrix))) {
+      stop("Number of columns in parammatrix must be 17, or\n",
+           "parammatrix must have column names")
+    } else {
+    # Fill in columns for missing parameters (not in names(parammatrix)) with
+    # default values from actual function call
+      missing_cols <- match(setdiff(parnames, colnames(parammatrix)),
+                            parnames)
+      if (length(missing_cols) > 0) {
+        if (any(is.na(defaults[missing_cols]))) {
+          stop("Missing columns in parammatrix must have names that match\n",
+               "parameters with defaults in dWEV!")
+        }
+        parammatrix[,parnames[missing_cols]] <- rep(defaults[missing_cols], nrow(parammatrix))
+      }
+    }
+    # Fill muvis values with absolute value of decision drift v
+    if (all(parammatrix[,"muvis"]==-99)) parammatrix[,"muvis"] <- abs(parammatrix[, "v"])
+  }
+  # sort parameter columns to the right order
+  if (!is.null(colnames(parammatrix))) {
+    parammatrix <- parammatrix[,parnames]
+  }
+  # Fill single missing muvis (index: 14) values with absolute value of decision drift v
+  parammatrix[is.na(parammatrix[,14]), 14] <-
+    abs(parammatrix[is.na(parammatrix[,14]), 2])
+
+  # Scale the parameters scaled by s by s
+  # In the actual function:
+  # cbind (a/s, v/s, t0, d, sz, sv/s, st0, z,
+  #        tau, th1/s, th2/s, lambda, w, muvis/s, sigvis/s, svis/s, numeric_bounds)
+  parammatrix[, c(1, 2,6, 10, 11, 14, 15, 16)] <-
+    parammatrix[, c(1, 2,6, 10, 11, 14, 15, 16)]/parammatrix[,17]
+
+  if (simult_conf) {
+    # See also actual function dWEV
+    # Substract tau from rt because both processes are assumed to happen
+    # subsequentially and therefore observable response time is the sum of
+    # decision time, interjudgment time and non-decision component
+    rt <- rt-parammatrix[,9]
+  }
+  # If any th1 or th2 is -Inf or Inf, then set it to the smallest or largest
+  parammatrix[parammatrix[,10]==-Inf,10] <- - .Machine$double.xmax
+  parammatrix[parammatrix[,11]==Inf,11] <- .Machine$double.xmax
+
+  # If z and sz are given as absolute values, recalc them to relative values
+  if (z_absolute) {
+    parammatrix[,8] <- parammatrix[,8]/parammatrix[,1]
+    parammatrix[,5] <- parammatrix[,5]/parammatrix[,1]
+  }
+  # Recalc t0, s.t. it is the center of non-decision time and not the minimum
+  # (required by C code)
+  parammatrix[,3] <- parammatrix[,3]+parammatrix[,7]/2
+
+  ## Compute responses as 1 or 2
+  if (all(response %in% c(-1, 1))) {
+    response <- ifelse(response==1, 2, 1)
+  }
+  if (is.character(response)) {
+    response <- match.arg(response, choices=c("upper", "lower"),several.ok = TRUE)
+    response <- ifelse(response == "upper", 2L, 1L)
+  }
+  else {
+    response <- as.numeric(response)
+    if (any(!(response %in% 1:2)))
+      stop("response needs to be either 'upper', 'lower', or as.numeric(response) %in% 1:2!")
+    response <- as.integer(response)
+  }
+
+
+  ## Compute densities in two calls (one per response direction)
+  densities <- vector("numeric",length=nn)
+  for (i in 1:2) {
+    densities[response==i] <-
+      d_WEVmu (rt[response==i],
+               parammatrix[response==i,1:16],
+               precision, i,
+               stop_on_error, as.numeric(stop_on_zero))
+  }
+  return(abs(densities))
 }
 
 
