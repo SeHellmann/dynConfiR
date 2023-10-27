@@ -21,6 +21,7 @@ CRAN_Checks.RData
 ^CRAN-SUBMISSION$
 cran_prep.RData
 
+CRANlogs
 Spielplatz
 ChecksDebugs
 script_fit_test.R

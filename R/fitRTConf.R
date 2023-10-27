@@ -405,7 +405,9 @@ fitRTConf <- function(data, model = "dynWEV",
                                           useparallel, n.cores,
                                           precision,
                                           used_cats, actual_nRatings, precision)
-  if (!exists("res")) stop("model not known. model must contain one of: 'dynaViTE', 'dynWEV', '2DSD', '2DSDT', 'IRM', 'PCRM', or 'DDMConf'")
+  if (!exists("res")) stop("Model is unknown.
+                           model must contain one of: 'dynaViTE', 'dynWEV',
+                           '2DSD', '2DSDT', 'IRM', 'IMRt', 'PCRM', 'PCRMt', or 'DDMConf'")
 
 
   return(res)

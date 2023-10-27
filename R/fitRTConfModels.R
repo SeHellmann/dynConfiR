@@ -151,12 +151,16 @@
 
 #' @rdname fitRTConfModels
 #' @export
-fitRTConfModels <- function(data, models = c("dynWEV", "2DSD"),
+fitRTConfModels <- function(data, models = c("dynaViTE", "2DSD", "PCRMt"),
                       nRatings = NULL, fixed = list(sym_thetas = FALSE), restr_tau=Inf,
                       grid_search=TRUE,
                       opts=list(), optim_method = "bobyqa", logging=FALSE, precision=1e-5,
-                      parallel = FALSE, n.cores=NULL, ...){ #  ?ToDO: vary_sv=FALSE, RRT=NULL, vary_tau=FALSE
-  if (any(!grepl("dynaViTE|IRM|PCRM|IRMt|PCRMt|dynWEV|2DSD|DDMConf", models))) stop("all models must contain 'dynWEV', '2DSD', 'DDMConf', 'IRM', or 'PCRM'")
+                      parallel = TRUE, n.cores=NULL, ...){ #  ?ToDO: vary_sv=FALSE, RRT=NULL, vary_tau=FALSE
+  if (any(!grepl("dynaViTE|IRM|PCRM|IRMt|PCRMt|dynWEV|2DSD|DDMConf", models))) {
+    stop("all models must be one of:
+    'dynaViTE', 'dynWEV', '2DSDT', '2DSD',
+    'DDMConf', 'IRM', 'IRMt', 'PCRM', or 'PCRMt'")
+  }
 
   ### Maybe later: use ...-argument für renaming data-columns and to pass other arguments
   # colrenames <- c(...)
