@@ -32,12 +32,12 @@ fittingDDMConf<- function(df, nConds, nRatings, fixed, sym_thetas,
   ### 1. Generate initial grid for grid search over possible parameter sets ####
   #### Create grid ####
   if (is.null(init_grid)) {
-    init_grid <- expand.grid(a = c(0.2,  0.6, 1.1),
-                             vmin = c( 0.5, 2, 3),
+    init_grid <- expand.grid(a = c(0.8,  1.2, 2, 3),
+                             vmin = c(0.01, 0.5, 1.3),
                              vmax = c(2, 4, 6),
                              sv = c(0.1, 1.5),
-                             z = c(0.5),
-                             sz = c(0.01, 0.3),
+                             z = c(0.4, 0.6),
+                             sz = c(0.01, 0.1, 0.3),
                              t0 = c(max(mint0-1.3, 0.02), max(min(mint0-1,0.2),mint0/2)),
                              st0 = st0,
                              thetaMax = thetaMax,

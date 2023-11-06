@@ -29,8 +29,8 @@ fittingdynWEV <- function(df, nConds, nRatings, fixed, sym_thetas,
       if (!(is.numeric(restr_tau) && restr_tau >0)) {stop(paste("restr_tau must be numeric and positive, Inf or 'simult_conf'. But restr_tau=", restr_tau, sep=""))}
       tau = seq(0.2*restr_tau,0.9*restr_tau, length.out = 3)
     }
-    init_grid <- expand.grid(a = c(0.5, 1,1.7, 2.5),                  ### a = distance btw. upper and lower bound \in (0,\infty)]
-                             vmin = c(0.01, 0.1),                     ### vmin = mean drift rate in first condition \in (0,\infty)]
+    init_grid <- expand.grid(a = c(0.5, 1,1.7, 2.5, 5),               ### a = distance btw. upper and lower bound \in (0,\infty)]
+                             vmin = c(0.01, 0.1, 1.3),                ### vmin = mean drift rate in first condition \in (0,\infty)]
                              vmax = c(1.4, 2.5, 3.7, 5),              ### vmax = mean drift rate in last condition \in (\vmin,\infty)]
                              sv = c(0.01, 0.8, 1.5),                  ### sv = SD of drift rate (normal distr.) \in (0,\infty)]
                              z = sum((df$response==1)*df$n)/sum(df$n),### z = mean start point (bias) \in [0,1]

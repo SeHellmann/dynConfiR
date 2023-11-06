@@ -194,10 +194,12 @@ LogLikRM <- function(data, paramDf, model="IRM", time_scaled =FALSE, data_names 
   }
 
   ## Produce output as log-Likelihood
-  if (any(is.na(probs))) return(-1e12)
-  if (any(probs<=0)) {
-    return(-1e12)
-  }
+  # if (any(is.na(probs))) return(-1e12)
+  # if (any(probs<=0)) {
+  #   return(-1e12)
+  # }
+  probs[probs==0] <- .Machine$double.xmin
+
   if ("n" %in% names(data)) {
     logl <- sum(log(probs)*data$n)
   } else {
