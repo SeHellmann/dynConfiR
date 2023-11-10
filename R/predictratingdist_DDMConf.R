@@ -159,7 +159,7 @@ predictDDMConf_Conf <- function(paramDf,
   sz = paramDf$sz
 
   res <- expand.grid(condition = 1:nConds, stimulus=c(-1,1),
-                     response=c("lower", "upper"), rating = 1:nRatings,
+                     response=c(-1,1), rating = 1:nRatings,
                      p=NA, info=NA, err=NA)
   if (.progress) {
     pb <- progress_bar$new(total = nConds*nRatings*4)
@@ -172,7 +172,7 @@ predictDDMConf_Conf <- function(paramDf,
     th2  = ifelse(row$response == 1, thetas_upper[(nRatings+2-row$rating)], thetas_lower[(nRatings+2-row$rating)])
     v    = V[row$condition]*(row$stimulus)
     sv   = SV[row$condition]
-    p <- integrate(function(rt) return(dDDMConf(rt, response=as.character(row$response),
+    p <- integrate(function(rt) return(dDDMConf(rt, response=row$response,
                                                 th1 = 0, th2=1e+64,
                                                 v=v, s=s,
                                                 sv = sv, z=z, sz=sz,
@@ -247,7 +247,7 @@ predictDDMConf_RT <- function(paramDf,
   rt = seq(minrt, maxrt, length.out = subdivisions)
   df <- expand.grid(rt = rt,
                     rating = 1:nRatings,
-                    response=c("lower", "upper"),
+                    response=c(-1,1),
                     stimulus=c(-1,1),
                     condition = 1:nConds, dens=NA)
   if (scaled) {
@@ -297,7 +297,7 @@ predictDDMConf_RT <- function(paramDf,
     if (.progress) pb$tick()
   }
 
-  df$correct <-  as.numeric(df$stimulus==(2*as.numeric(df$response=="upper") - 1))
+  df$correct <-  as.numeric(df$stimulus==df$response)
   df <- df[,c("condition", "stimulus", "response", "correct", "rating",
              "rt", "dens", rep("densscaled", as.numeric(scaled)))]
   # the last line is to sort the output columns
