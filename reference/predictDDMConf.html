@@ -179,12 +179,12 @@ conditions.</p>
 <span class="r-in"><span><span class="va">preds_Conf</span> <span class="op">&lt;-</span> <span class="fu">predictDDMConf_Conf</span><span class="op">(</span><span class="va">paramDf</span>,  maxrt <span class="op">=</span> <span class="fl">15</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">preds_Conf</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   condition stimulus response correct rating          p info          err</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1         1       -1    lower       1      1 0.32260885   OK 9.980641e-06</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2         2       -1    lower       1      1 0.32597348   OK 2.002264e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3         1        1    lower       0      1 0.11438204   OK 3.269940e-06</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4         2        1    lower       0      1 0.04054175   OK 2.148754e-06</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5         1       -1    upper       0      1 0.12691602   OK 1.552460e-06</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6         2       -1    upper       0      1 0.04961359   OK 6.704916e-07</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1         1       -1       -1       1      1 0.32260885   OK 9.980641e-06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2         2       -1       -1       1      1 0.32597348   OK 2.002264e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3         1        1       -1       0      1 0.11438204   OK 3.269940e-06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4         2        1       -1       0      1 0.04054175   OK 2.148754e-06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5         1       -1        1       1      1 0.12691602   OK 1.552460e-06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6         2       -1        1       1      1 0.04961359   OK 6.704916e-07</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># 3. Compute RT density</span></span></span>
 <span class="r-in"><span><span class="va">preds_RT</span> <span class="op">&lt;-</span> <span class="fu">predictDDMConf_RT</span><span class="op">(</span><span class="va">paramDf</span>, maxrt<span class="op">=</span><span class="fl">4</span>, subdivisions<span class="op">=</span><span class="fl">200</span><span class="op">)</span> <span class="co">#(scaled=FALSE)</span></span></span>
@@ -193,12 +193,12 @@ conditions.</p>
 <span class="r-in"><span>                              scaled<span class="op">=</span><span class="cn">TRUE</span>, DistConf <span class="op">=</span> <span class="va">preds_Conf</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">preds_RT</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   condition stimulus response correct rating        rt dens densscaled</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1         1       -1    lower       1      1 0.1000000    0          0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2         1       -1    lower       1      1 0.1195980    0          0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3         1       -1    lower       1      1 0.1391960    0          0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4         1       -1    lower       1      1 0.1587940    0          0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5         1       -1    lower       1      1 0.1783920    0          0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6         1       -1    lower       1      1 0.1979899    0          0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1         1       -1       -1       1      1 0.1000000    0          0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2         1       -1       -1       1      1 0.1195980    0          0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3         1       -1       -1       1      1 0.1391960    0          0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4         1       -1       -1       1      1 0.1587940    0          0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5         1       -1       -1       1      1 0.1783920    0          0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6         1       -1       -1       1      1 0.1979899    0          0</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># \donttest{</span></span></span>
 <span class="r-in"><span>  <span class="co"># Example of visualization</span></span></span>
@@ -225,13 +225,13 @@ conditions.</p>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="PDFtoQuantiles.html">PDFtoQuantiles</a></span><span class="op">(</span><span class="va">preds_RT</span>, scaled <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 6 × 7</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   condition stimulus response correct rating     p     q</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>         1       -<span style="color: #BB0000;">1</span> lower          1 unsure   0.1 0.962</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span>         1       -<span style="color: #BB0000;">1</span> lower          1 unsure   0.3 1.16 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span>         1       -<span style="color: #BB0000;">1</span> lower          1 unsure   0.5 1.39 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span>         1       -<span style="color: #BB0000;">1</span> lower          1 unsure   0.7 1.75 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span>         1       -<span style="color: #BB0000;">1</span> lower          1 unsure   0.9 2.49 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span>         1       -<span style="color: #BB0000;">1</span> lower          1 sure     0.1 0.335</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>         1       -<span style="color: #BB0000;">1</span>       -<span style="color: #BB0000;">1</span>       1 unsure   0.1 0.962</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span>         1       -<span style="color: #BB0000;">1</span>       -<span style="color: #BB0000;">1</span>       1 unsure   0.3 1.16 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span>         1       -<span style="color: #BB0000;">1</span>       -<span style="color: #BB0000;">1</span>       1 unsure   0.5 1.39 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span>         1       -<span style="color: #BB0000;">1</span>       -<span style="color: #BB0000;">1</span>       1 unsure   0.7 1.75 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span>         1       -<span style="color: #BB0000;">1</span>       -<span style="color: #BB0000;">1</span>       1 unsure   0.9 2.49 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span>         1       -<span style="color: #BB0000;">1</span>       -<span style="color: #BB0000;">1</span>       1 sure     0.1 0.335</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
