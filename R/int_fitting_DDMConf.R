@@ -17,16 +17,25 @@ fittingDDMConf<- function(df, nConds, nRatings, fixed, sym_thetas,
   common_RTrange <- c(sort(common_RTrange$maxRT, decreasing = TRUE)[2],
     sort(common_RTrange$minRT, decreasing = FALSE)[2])
   minst0 <- common_RTrange[1]- common_RTrange[2]
-  st0 <- c(minst0, (3*minst0+max(df$rt))/4, (minst0+max(df$rt))/2, max(df$rt))
+  st0 <- c(minst0, (3*minst0+max(df$rt))/4, (minst0+max(df$rt))/2, (minst0+4*max(df$rt))/5)
   ## Guess suitable confidence thresholds from theoretical distribution of
   ## the confidence measure and proportion of ratings in the data
+
+  # observed rt are equal to dt+nondectime, and all dts from rating=1 have to be
+  # dt > thetaMax --> rt = dt + nondectime  > thetaMax + nondectime > thetaMax
+  # --> therefore: thetaMax <= min(rt | rating=1) - t0
   thetaMax <- min(filter(df, .data$rating == 1)$rt)
-  thetaMax <- seq(0.5, 0.8, length.out=3)*thetaMax
+  thetaMax <- seq(0.6, 0.9, length.out=3)*thetaMax
+  # observed rt are maximal equal to dt+t0+st0, and all dts from rating=5 have to be
+  # faster than thetaMin (i.e. dt < thetaMin)
+  # --> rt = dt + nondectime < thetaMin + nondectime < thetaMin + t0 + st0
+  # --> therefore: thetaMin > rt - t0 - st0 for all rts from rating=5
+  # --> therefore: thetaMin > max(rt | rating=5) - t0 - st0
   if (nRatings > 2) {
     # theta_(nRatings-1) = thetaMin * thetaMax
-    thetaMin <- 1/c(nRatings, nRatings+1, nRatings+2)
+    thetaMin <- c(1.02, 1.2, 1.4) * max(filter(df, .data$rating==5)$rt)
   } else {
-    thetaMin <- 1
+    thetaMin <- 1.1 * max(filter(df, .data$rating == 5)$rt)
   }
 
   ### 1. Generate initial grid for grid search over possible parameter sets ####
@@ -38,7 +47,7 @@ fittingDDMConf<- function(df, nConds, nRatings, fixed, sym_thetas,
                              sv = c(0.1, 1.5),
                              z = c(0.4, 0.6),
                              sz = c(0.01, 0.1, 0.3),
-                             t0 = c(max(mint0-1.3, 0.02), max(min(mint0-1,0.2),mint0/2)),
+                             t0 = c(0.01, max(mint0-1.3, 0.02), max(min(mint0-1,0.2),mint0/2)),
                              st0 = st0,
                              thetaMax = thetaMax,
                              thetaMin = thetaMin)
@@ -68,23 +77,27 @@ fittingDDMConf<- function(df, nConds, nRatings, fixed, sym_thetas,
       init_grid[paste("v", i+1, sep="")] <- init_grid$vmin+(i/(nConds-1))^2*(init_grid$vmax-init_grid$vmin)
     }
   }
+  init_grid$thetaMin <- init_grid$thetaMin - init_grid$t0 - init_grid$st0
+  init_grid$thetaMax <- init_grid$thetaMax - init_grid$t0
+  init_grid <- init_grid[init_grid$thetaMin<init_grid$thetaMax,]
+  init_grid <- init_grid[init_grid$thetaMin>0,]
+
   if (sym_thetas) {
-    init_grid[paste0("theta",(nRatings-1))] <- init_grid$thetaMax * init_grid$thetaMin
+    init_grid[paste0("theta",(nRatings-1))] <- init_grid$thetaMin
     if (nRatings > 2) {
       for (i in (nRatings-2):1) {
-        init_grid[paste("dtheta", i, sep="")] <-
-          init_grid$thetaMax * (1-init_grid$thetaMin) / (nRatings-2)
+        init_grid[paste("dtheta", i, sep="")] <- (init_grid$thetaMax -init_grid$thetaMin) / (nRatings-2)
       }
       cols_theta <- c(paste0("theta",(nRatings-1)), paste("dtheta", (nRatings-2):1, sep=""))
     } else {
       cols_theta <- c("theta1")
     }
   } else {
-    init_grid[paste0(c("thetaUpper", "thetaLower"),(nRatings-1))] <- init_grid$thetaMax * init_grid$thetaMin
+    init_grid[paste0(c("thetaUpper", "thetaLower"),(nRatings-1))] <- init_grid$thetaMin
     if (nRatings > 2) {
       for (i in (nRatings-2):1) {
         init_grid[paste(c("dthetaUpper", "dthetaLower"), i, sep="")] <-
-          init_grid$thetaMax * (1-init_grid$thetaMin) / (nRatings-2)
+          (init_grid$thetaMax -init_grid$thetaMin) / (nRatings-2)
       }
       cols_theta <- c(paste0(c("thetaLower"),(nRatings-1)), paste("dthetaLower", (nRatings-2):1, sep=""),
                       paste0(c("thetaUpper"),(nRatings-1)), paste("dthetaUpper", (nRatings-2):1, sep=""))
@@ -388,14 +401,11 @@ neglikelihood_DDMConf_bounded <-   function(p, data, nConds, nRatings, fixed, sy
     thetas_lower <- c(.Machine$double.eps, t(paramDf[,paste("thetaLower",(nRatings-1):1, sep="")]), 1e+64)
   }
 
-
-  data <- data %>% mutate(response = if_else(.data[['response']]==-1,"lower","upper"))
-
   ## Compute the row-wise likelihood of observations
-  data <-data %>% mutate(th1 = case_when(.data$response=="upper" ~ thetas_upper[(nRatings + 1 - .data$rating)],
-                                          .data$response=="lower" ~ thetas_lower[(nRatings + 1 - .data$rating)]),
-                         th2 = case_when(.data$response=="upper" ~ thetas_upper[(nRatings + 2 - .data$rating)],
-                                          .data$response=="lower" ~ thetas_lower[(nRatings + 2 - .data$rating)]),
+  data <-data %>% mutate(th1 = case_when(.data$response ==  1 ~ thetas_upper[(nRatings + 1 - .data$rating)],
+                                          .data$response== -1 ~ thetas_lower[(nRatings + 1 - .data$rating)]),
+                         th2 = case_when(.data$response ==  1 ~ thetas_upper[(nRatings + 2 - .data$rating)],
+                                          .data$response== -1 ~ thetas_lower[(nRatings + 2 - .data$rating)]),
                          M_drift = V[.data$condition]*.data$stimulus,
                          SV = SV[.data$condition],
                          S = S[.data$condition])
@@ -406,7 +416,7 @@ neglikelihood_DDMConf_bounded <-   function(p, data, nConds, nRatings, fixed, sy
                                   sv = SV, s = S,
                                   z_absolute = FALSE,
                                   precision = precision, stop_on_error = TRUE,
-                                  stop_on_zero=TRUE, st0stepsize = st0stepsize))
+                                  stop_on_zero=FALSE, st0stepsize = st0stepsize))
 
   ## Produce output as log-Likelihood
   if (any(is.na(probs))) return(1e12)

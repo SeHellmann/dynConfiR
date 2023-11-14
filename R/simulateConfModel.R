@@ -4,7 +4,7 @@
 #' together with a discrete confidence judgment for the sequential sampling confidence model
 #' specified by the argument \code{model}, given specific parameter constellations.
 #' This function is a wrapper that calls the respective functions for diffusion based
-#' models (dynWEV and 2DSD: \code{\link{simulateWEV}}) and race models (IRM, PCRM,
+#' models (dynaViTE and 2DSD: \code{\link{simulateWEV}}) and race models (IRM, PCRM,
 #' IRMt, and PCRMt: \code{\link{simulateRM}}. It also computes the Gamma rank correlation
 #' between the confidence ratings and
 #' condition (task difficulty), reaction times and accuracy in the simulated output.
@@ -12,7 +12,8 @@
 #' @param paramDf a list or dataframe with one row with the required parameters.
 #' @param n integer. The number of samples (per condition and stimulus direction) generated.
 #' Total number of samples is \code{n*nConditions*length(stimulus)}.
-#' @param model character scalar. One of "2DSD", "dynWEV", "IRM", "PCRM", "IRMt", or "PCRMt".
+#' @param model character scalar. One of "dynaViTE", "dynWEV", "2DSD", "2DSDT", "DDConf",
+#' "IRM", "PCRM", "IRMt", or "PCRMt". Could also be passed as a column in the paramDf argument.
 #' @param gamma logical. If TRUE, the gamma correlation between confidence ratings, rt and accuracy is
 #' computed.
 #' @param agg_simus logical. Simulation is done on a trial basis with RTs outcome. If TRUE,
@@ -47,7 +48,7 @@
 #'
 #' @details The output of the fitting function \code{\link{fitRTConf}} with the respective model
 #' fits the argument `paramDf` for simulation. The function calls the respective simulation
-#' function for diffusion based models, i.e. dynWEV and 2DSD (\code{\link{simulateWEV}}) or race models,
+#' function for diffusion based models, i.e. dynaViTE and 2DSD (\code{\link{simulateWEV}}) or race models,
 #' i.e. IRM(t) and PCRM(t), (\code{\link{simulateRM}}). See there for more information.
 #'
 #' \strong{Simulation Method:} The simulation is done by simulating normal variables

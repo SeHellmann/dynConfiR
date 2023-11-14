@@ -143,10 +143,10 @@ predictWEV_Conf <- function(paramDf, model="dynaViTE",
     model <- paramDf$model
   }
   if (!("lambda" %in% names(paramDf))) {
-    if (model %in% c("dynaViTE", "2DSDT")) warning("No lambda specified in paramDf. lambda=0 used")
+    if (grepl("dynaViTE|2DSDT", model)) warning("No lambda specified in paramDf. lambda=0 used")
     paramDf$lambda <- 0
   }
-  if (model %in% c("WEVmu", "dynWEV")) model <- "dynaViTE"
+  if (grepl("WEVmu|dynWEV|dynaViTE", model)) model <- "dynaViTE"
   if (grepl("2DSD", model)) model <- "2DSD"
   if ("model" %in% names(paramDf)) paramDf$model <- NULL
 
@@ -226,7 +226,7 @@ predictWEV_Conf <- function(paramDf, model="dynaViTE",
                                       z_absolute = FALSE, precision = precision)),
               lower=paramDf$t0, upper=maxrt, subdivisions = subdivisions,
                  stop.on.error = stop.on.error)
-  } else {
+  } else if (model=="2DSD") {
     p <- integrate(function(rt) return(d2DSD(rt, response=as.character(row$response),
                                              vth1,vth2, a=paramDf$a,
                                              v = (-1)^(row$stimulus=="lower")*V[row$condition],
@@ -237,7 +237,7 @@ predictWEV_Conf <- function(paramDf, model="dynaViTE",
                                              z_absolute = FALSE, precision = precision)),
                    lower=paramDf$t0, upper=maxrt, subdivisions = subdivisions,
                    stop.on.error = stop.on.error)
-  }
+  } else { stop("model must contain dynaViTE, dynWEV, or 2DSD") }
   if (.progress) pb$tick()
   res[i, 5:7] <- list(p = p$value, info = p$message, err = p$abs.error)
   }
@@ -270,10 +270,10 @@ predictWEV_RT <- function(paramDf, model=NULL,
     model <- paramDf$model
   }
   if (!("lambda" %in% names(paramDf))) {
-    if (model %in% c("dynaViTE", "2DSDT")) warning("No lambda specified in paramDf. lambda=0 used")
+    if (grepl("dynaViTE|2DSDT", model)) warning("No lambda specified in paramDf. lambda=0 used")
     paramDf$lambda <- 0
   }
-  if (model %in% c("WEVmu", "dynWEV")) model <- "dynaViTE"
+  if (grepl("WEVmu|dynWEV|dynaViTE", model)) model <- "dynaViTE"
   if (grepl("2DSD", model)) model <- "2DSD"
   if ("model" %in% names(paramDf)) paramDf$model <- NULL
 
@@ -383,7 +383,7 @@ predictWEV_RT <- function(paramDf, model=NULL,
               t0 = paramDf$t0, z = paramDf$z, sz = paramDf$sz, st0=paramDf$st0,
               sv = SV[cur_row$condition], lambda=paramDf$lambda,s = S[cur_row$condition],
               simult_conf = simult_conf, z_absolute = FALSE, precision = precision)
-    } else { stop("model must be IRM, IRMt, PCRM or PCRMt") }
+    } else { stop("model must contain dynaViTE, dynWEV, or 2DSD") }
 
     if (scaled) {
       P <- DistConf[DistConf$condition==cur_row$condition &

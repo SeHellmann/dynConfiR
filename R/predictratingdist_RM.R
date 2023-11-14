@@ -134,13 +134,13 @@ predictRM_Conf <- function(paramDf, model="IRM", time_scaled = FALSE,
                                 maxrt=15, subdivisions = 100L, stop.on.error=FALSE,
                                 .progress=TRUE){
   #### Check model argument
-  if (model=="IRMt") {
+  if (grepl("IRMt",model)) {
     time_scaled=TRUE
   }
-  if (model=="PCRMt") {
+  if (grepl("PCRMt",model)) {
     time_scaled=TRUE
   }
-  if (!model %in% c("IRM", "PCRM","IRMt", "PCRMt")) stop("model must be 'IRM', 'PCRM', 'IRMt' or 'PCRMt'")
+  if (!(grepl("IRM|PCRM|IRMt|PCRMt",model))) stop("model must conatin 'IRM', 'PCRM', 'IRMt' or 'PCRMt'")
 
   if (!time_scaled) {
     paramDf$wx = 1
@@ -210,7 +210,7 @@ predictRM_Conf <- function(paramDf, model="IRM", time_scaled = FALSE,
     mu1  = V[row$condition]*(-1)^(1+row$stimulus)
     mu2  = V[row$condition]*(-1)^(row$stimulus)
 
-    if (model=="IRM") {
+    if (grepl("IRM", model)) {
       p <- integrate(function(rt) return(dIRM(rt, response=row$response,
                                               mu1=mu1, mu2 = mu2, s=s,
                                               a = a, b=b,
@@ -223,7 +223,7 @@ predictRM_Conf <- function(paramDf, model="IRM", time_scaled = FALSE,
                                               time_scaled=time_scaled)),
                      lower=paramDf$t0, upper=maxrt, subdivisions = subdivisions,
                      stop.on.error = stop.on.error)
-    } else {
+    } else if (grepl("PCRM", model)) {
       p <- integrate(function(rt) return(dPCRM(rt, response=row$response,
                                                mu1=mu1, mu2 = mu2, s=s,
                                                a = a, b=b,
@@ -256,12 +256,14 @@ predictRM_RT <- function(paramDf, model="IRM", time_scaled = FALSE,
                                  scaled = FALSE, DistConf=NULL,
                                 .progress = TRUE) {
   #### Check model argument
-  if (model=="IRMt") {
+  if (grepl("IRMt",model)) {
     time_scaled=TRUE
   }
-  if (model=="PCRMt") {
+  if (grepl("PCRMt",model)) {
     time_scaled=TRUE
   }
+  if (!(grepl("IRM|PCRM|IRMt|PCRMt",model))) stop("model must conatin 'IRM', 'PCRM', 'IRMt' or 'PCRMt'")
+
   if (!time_scaled) {
     paramDf$wx = 1
     paramDf$wrt = 0
