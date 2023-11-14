@@ -319,20 +319,20 @@ package <code>rtdists</code> for the Ratcliff diffusion model.</p>
 <span class="r-in"><span><span class="co"># Same RT distribution but upper and lower responses changed</span></span></span>
 <span class="r-in"><span><span class="va">dfl</span> <span class="op">&lt;-</span> <span class="fu">r2DSD</span><span class="op">(</span><span class="fl">50</span>, a<span class="op">=</span><span class="fl">2</span>,v<span class="op">=</span><span class="op">-</span><span class="fl">0.5</span>,t0<span class="op">=</span><span class="fl">0</span>,z<span class="op">=</span><span class="fl">0.5</span>,d<span class="op">=</span><span class="fl">0</span>,sz<span class="op">=</span><span class="fl">0</span>,sv<span class="op">=</span><span class="fl">0</span>, st0<span class="op">=</span><span class="fl">0</span>,  tau<span class="op">=</span><span class="fl">1</span>, s<span class="op">=</span><span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">dfu</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     rt response      conf</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 0.64        1 1.5724474</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 0.31       -1 0.4328929</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 1.59        1 1.7121482</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4 0.61        1 2.2425497</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5 0.46        1 3.7468833</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6 0.24       -1 0.2090137</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     rt response       conf</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 1.31        1 1.91698337</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 0.69        1 1.81592239</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 0.21        1 1.71567837</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 2.09       -1 0.08747758</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 0.44        1 0.81090131</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6 0.47        1 1.84452791</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">d2DSD</span><span class="op">(</span><span class="va">dfu</span>, th1<span class="op">=</span><span class="op">-</span><span class="cn">Inf</span>, th2<span class="op">=</span><span class="cn">Inf</span>, a<span class="op">=</span><span class="fl">2</span>, v<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.5397949 0.2687900 0.1492849 0.5611966 0.6709210</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.21839073 0.50541201 0.61559296 0.02784091 0.68442962</span>
 <span class="r-in"><span><span class="co"># Scaling diffusion parameters leads do same density values</span></span></span>
 <span class="r-in"><span><span class="va">s</span> <span class="op">&lt;-</span> <span class="fl">2</span></span></span>
 <span class="r-in"><span><span class="fu">d2DSD</span><span class="op">(</span><span class="va">dfu</span>, th1<span class="op">=</span><span class="op">-</span><span class="cn">Inf</span>, th2<span class="op">=</span><span class="cn">Inf</span>, a<span class="op">=</span><span class="fl">2</span><span class="op">*</span><span class="va">s</span>, v<span class="op">=</span><span class="fl">.5</span><span class="op">*</span><span class="va">s</span>, s<span class="op">=</span><span class="fl">2</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.5397949 0.2687900 0.1492849 0.5611966 0.6709210</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.21839073 0.50541201 0.61559296 0.02784091 0.68442962</span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"ggplot2"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">dfu</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">rt</span>, y<span class="op">=</span><span class="va">conf</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span></span>
@@ -346,7 +346,7 @@ package <code>rtdists</code> for the Ratcliff diffusion model.</p>
 <span class="r-in"><span><span class="co"># Restricting to specific confidence region</span></span></span>
 <span class="r-in"><span><span class="va">dfu</span> <span class="op">&lt;-</span> <span class="va">dfu</span><span class="op">[</span><span class="va">dfu</span><span class="op">$</span><span class="va">conf</span> <span class="op">&gt;</span><span class="fl">0</span> <span class="op">&amp;</span> <span class="va">dfu</span><span class="op">$</span><span class="va">conf</span> <span class="op">&lt;</span><span class="fl">1</span>,<span class="op">]</span></span></span>
 <span class="r-in"><span><span class="fu">d2DSD</span><span class="op">(</span><span class="va">dfu</span>, th1<span class="op">=</span><span class="fl">0</span>, th2<span class="op">=</span><span class="fl">1</span>, a<span class="op">=</span><span class="fl">2</span>, v<span class="op">=</span><span class="fl">0.5</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.10292640 0.09522490 0.17661764 0.07934696 0.17613723</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.01066098 0.16544740 0.10125406 0.16700521 0.14810414</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># If lower confidence threshold is higher than the upper, the function throws an error,</span></span></span>
 <span class="r-in"><span><span class="co"># except when stop_on_error is FALSE</span></span></span>
