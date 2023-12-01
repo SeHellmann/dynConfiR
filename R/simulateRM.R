@@ -185,7 +185,7 @@ simulateRM <- function (paramDf, n=1e+4,  model = "IRM", time_scaled=FALSE,
   ## Produce process outcomes and compute confidence measure
   simus <- data.frame()
   for ( i in 1:nrow(df)) {
-    mu1 <- (-1)^(1+df[i,]$stimulus==1) * V[df[i,]$condition]
+    mu1 <- (-1)^(1+as.numeric(df[i,]$stimulus==1)) * V[df[i,]$condition]
     temp <- as.data.frame(r_RM(n,c(mu1, -mu1,
                    -paramDf$a, -paramDf$b,
                    S[df[i,]$condition],S[df[i,]$condition],
@@ -331,7 +331,7 @@ rRM_Kiani <- function (paramDf, n=1e+4, time_scaled=FALSE,
   ## Produce process outcomes and compute confidence measure
   simus <- data.frame()
   for ( i in 1:nrow(df)) {
-    mu1 <- (-1)^(1+df[i,]$stimulus==1) * V[df[i,]$condition]
+    mu1 <- (-1)^(1+as.numeric(df[i,]$stimulus==1)) * V[df[i,]$condition]
     temp <- as.data.frame(r_RM_Kiani(n,c(mu1, -mu1, paramDf$a, paramDf$b, paramDf$s, paramDf$t0, paramDf$st0),
                                      paramDf$rho, paramDf$Bl,
                                      delta=delta, maxT=maxrt))
