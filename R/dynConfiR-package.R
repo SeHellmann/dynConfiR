@@ -12,7 +12,7 @@
 #'
 #' Provides response time and confidence distributions (density/PDF) for following models: dynaViTE,dynWEV, 2DSD, 2DSDT, IRM and PCRM
 #'
-#' @aliases dynWEV-package
+#' @aliases dynConfiR-package
 #' @name dynConfiR-package
 #' @docType package
 #' @title The dynConfiR Package
