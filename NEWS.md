@@ -1,3 +1,8 @@
+# dynConfiR 0.0.4 (January 2024)
+Fixed a CRAN note and improved robustness in fitting functions, and simulations. 
+Also improved initial parameter sets for model fitting.
+
+
 # dynConfiR 0.0.3 (April 2023)
 ## Improvements
 - added the dynaViTE model (generalization of dynWEV with time-dependent 
