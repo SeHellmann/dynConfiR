@@ -24,7 +24,7 @@ starting point), s (diffusion constant)."><!-- mathjax --><script src="https://c
     
     <a class="navbar-brand me-2" href="../index.html">dynConfiR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.4</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -298,19 +298,19 @@ package <code>rtdists</code> for the Ratcliff diffusion model.</p>
 <span class="r-in"><span><span class="va">dfl</span> <span class="op">&lt;-</span> <span class="fu">rDDMConf</span><span class="op">(</span><span class="fl">50</span>, a<span class="op">=</span><span class="fl">2</span>,v<span class="op">=</span><span class="op">-</span><span class="fl">0.5</span>,t0<span class="op">=</span><span class="fl">0</span>,z<span class="op">=</span><span class="fl">0.5</span>,d<span class="op">=</span><span class="fl">0</span>,sz<span class="op">=</span><span class="fl">0</span>,sv<span class="op">=</span><span class="fl">0</span>, st0<span class="op">=</span><span class="fl">2</span>, s<span class="op">=</span><span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">dfu</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         rt response conf</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 1.645547        1 0.33</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 1.914215        1 1.91</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 1.187160        1 0.26</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4 1.843438        1 0.94</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5 2.880353        1 1.73</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6 2.824044        1 2.03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 2.779407        1 1.23</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 1.298709        1 0.43</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 1.778782        1 0.26</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 4.076643        1 3.86</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 1.603740        1 0.58</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6 1.575264        1 0.50</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">dDDMConf</span><span class="op">(</span><span class="va">dfu</span>, th1<span class="op">=</span><span class="fl">0.5</span>, th2<span class="op">=</span><span class="fl">2.5</span>, a<span class="op">=</span><span class="fl">2</span>, v<span class="op">=</span><span class="fl">.5</span>, st0<span class="op">=</span><span class="fl">2</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.1899966 0.2055765 0.1459742 0.2020069 0.1281170</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.14927917 0.15932944 0.19843205 0.01240505 0.18701914</span>
 <span class="r-in"><span><span class="co"># Scaling diffusion parameters leads do same density values</span></span></span>
 <span class="r-in"><span><span class="va">s</span> <span class="op">&lt;-</span> <span class="fl">2</span></span></span>
 <span class="r-in"><span><span class="fu">dDDMConf</span><span class="op">(</span><span class="va">dfu</span>, th1<span class="op">=</span><span class="fl">0.5</span>, th2<span class="op">=</span><span class="fl">2.5</span>, a<span class="op">=</span><span class="fl">2</span><span class="op">*</span><span class="va">s</span>, v<span class="op">=</span><span class="fl">.5</span><span class="op">*</span><span class="va">s</span>, s<span class="op">=</span><span class="fl">2</span>, st0<span class="op">=</span><span class="fl">2</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.1899966 0.2055765 0.1459742 0.2020069 0.1281170</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.14927917 0.15932944 0.19843205 0.01240505 0.18701914</span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"ggplot2"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">dfu</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">rt</span>, y<span class="op">=</span><span class="va">conf</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span></span>
@@ -324,12 +324,11 @@ package <code>rtdists</code> for the Ratcliff diffusion model.</p>
 <span class="r-in"><span><span class="co"># Restricting to specific confidence region</span></span></span>
 <span class="r-in"><span><span class="va">dfu</span> <span class="op">&lt;-</span> <span class="va">dfu</span><span class="op">[</span><span class="va">dfu</span><span class="op">$</span><span class="va">conf</span> <span class="op">&gt;</span><span class="fl">0</span> <span class="op">&amp;</span> <span class="va">dfu</span><span class="op">$</span><span class="va">conf</span> <span class="op">&lt;</span><span class="fl">1</span>,<span class="op">]</span></span></span>
 <span class="r-in"><span><span class="fu">dDDMConf</span><span class="op">(</span><span class="va">dfu</span>, th1<span class="op">=</span><span class="fl">0</span>, th2<span class="op">=</span><span class="fl">1</span>, a<span class="op">=</span><span class="fl">2</span>, v<span class="op">=</span><span class="fl">0.5</span>, st0<span class="op">=</span><span class="fl">2</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.24306868 0.24306868 0.24306868 0.06067161 0.24306868</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.2430687 0.2430687 0.2430687 0.2430687 0.2430687</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># If lower confidence threshold is higher than the upper, the function throws an error,</span></span></span>
 <span class="r-in"><span><span class="co"># except when stop_on_error is FALSE</span></span></span>
 <span class="r-in"><span><span class="fu">dDDMConf</span><span class="op">(</span><span class="va">dfu</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="op">]</span>, th1<span class="op">=</span><span class="fl">1</span>, th2<span class="op">=</span><span class="fl">0</span>, a<span class="op">=</span><span class="fl">2</span>, v<span class="op">=</span><span class="fl">0.5</span>, stop_on_error <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> error: invalid parameter combination th1 = 1, th2 = 0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> error: invalid parameter combination th1 = 1, th2 = 0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0 0 0 0 0</span>
 <span class="r-in"><span></span></span>

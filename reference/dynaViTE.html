@@ -52,7 +52,7 @@ st0 and diffusion constant s differ from what is often found in the literature."
     
     <a class="navbar-brand me-2" href="../index.html">dynConfiR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.4</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -367,28 +367,28 @@ package <code>rtdists</code> for the Ratcliff diffusion model.</p>
 <span class="r-in"><span><span class="co"># Same RT and response distribution but different confidence distribution</span></span></span>
 <span class="r-in"><span><span class="va">df2</span> <span class="op">&lt;-</span> <span class="fu">rWEV</span><span class="op">(</span><span class="fl">5000</span>, a<span class="op">=</span><span class="fl">2</span>,v<span class="op">=</span><span class="fl">0.5</span>,t0<span class="op">=</span><span class="fl">0</span>,z<span class="op">=</span><span class="fl">0.5</span>,d<span class="op">=</span><span class="fl">0</span>,sz<span class="op">=</span><span class="fl">0</span>,sv<span class="op">=</span><span class="fl">0</span>, st0<span class="op">=</span><span class="fl">0</span>,  tau<span class="op">=</span><span class="fl">1</span>, s<span class="op">=</span><span class="fl">1</span>, w<span class="op">=</span><span class="fl">0.1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">df1</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     rt response        conf</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 1.69        1  1.43731447</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 5.26        1 -0.08666673</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 1.52        1  0.97523126</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4 1.72        1  2.40275951</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5 1.11        1  2.80897434</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6 0.39       -1  0.13355986</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     rt response     conf</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 1.10        1 2.605565</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 0.79        1 1.838853</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 0.85        1 1.644993</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 0.63        1 1.403772</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 0.87        1 1.759505</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6 1.49        1 2.644473</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Scaling diffusion parameters leads do same density values</span></span></span>
 <span class="r-in"><span><span class="fu">dWEV</span><span class="op">(</span><span class="va">df1</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="op">]</span>, th1<span class="op">=</span><span class="op">-</span><span class="cn">Inf</span>, th2<span class="op">=</span><span class="cn">Inf</span>, a<span class="op">=</span><span class="fl">2</span>, v<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.130319184 0.001019616 0.164180273 0.125114051 0.286569415</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.2904880 0.4421210 0.4077332 0.5468699 0.3968512</span>
 <span class="r-in"><span><span class="va">s</span> <span class="op">&lt;-</span> <span class="fl">2</span></span></span>
 <span class="r-in"><span><span class="fu">dWEV</span><span class="op">(</span><span class="va">df1</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="op">]</span>, th1<span class="op">=</span><span class="op">-</span><span class="cn">Inf</span>, th2<span class="op">=</span><span class="cn">Inf</span>, a<span class="op">=</span><span class="fl">2</span><span class="op">*</span><span class="va">s</span>, v<span class="op">=</span><span class="fl">.5</span><span class="op">*</span><span class="va">s</span>, s<span class="op">=</span><span class="fl">2</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.130319184 0.001019616 0.164180273 0.125114051 0.286569415</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.2904880 0.4421210 0.4077332 0.5468699 0.3968512</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Diffusion constant also scales confidence parameters</span></span></span>
 <span class="r-in"><span><span class="fu">dWEV</span><span class="op">(</span><span class="va">df1</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="op">]</span>, th1<span class="op">=</span><span class="fl">0.2</span>, th2<span class="op">=</span><span class="fl">1</span>, a<span class="op">=</span><span class="fl">2</span>, v<span class="op">=</span><span class="fl">.5</span>, sv<span class="op">=</span><span class="fl">0.2</span>, w<span class="op">=</span><span class="fl">0.5</span>, sigvis <span class="op">=</span> <span class="fl">0.2</span>, svis <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.0283783933 0.0001095055 0.0373959826 0.0270335324 0.0731985823</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.07441594 0.12434338 0.11256444 0.16179937 0.10889060</span>
 <span class="r-in"><span><span class="va">s</span> <span class="op">&lt;-</span> <span class="fl">2</span></span></span>
 <span class="r-in"><span><span class="fu">dWEV</span><span class="op">(</span><span class="va">df1</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="op">]</span>, th1<span class="op">=</span><span class="fl">0.2</span><span class="op">*</span><span class="va">s</span>, th2<span class="op">=</span><span class="fl">1</span><span class="op">*</span><span class="va">s</span>, a<span class="op">=</span><span class="fl">2</span><span class="op">*</span><span class="va">s</span>, v<span class="op">=</span><span class="fl">.5</span><span class="op">*</span><span class="va">s</span>, s<span class="op">=</span><span class="fl">2</span>,</span></span>
 <span class="r-in"><span>     sv<span class="op">=</span><span class="fl">0.2</span><span class="op">*</span><span class="va">s</span>, w<span class="op">=</span><span class="fl">0.5</span>, sigvis<span class="op">=</span><span class="fl">0.2</span><span class="op">*</span><span class="va">s</span>, svis<span class="op">=</span><span class="fl">1</span><span class="op">*</span><span class="va">s</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.0283783933 0.0001095055 0.0373959826 0.0270335324 0.0731985823</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.07441594 0.12434338 0.11256444 0.16179937 0.10889060</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">two_samples</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">df1</span>, w<span class="op">=</span><span class="st">"high"</span><span class="op">)</span>,</span></span>
@@ -406,14 +406,14 @@ package <code>rtdists</code> for the Ratcliff diffusion model.</p>
 <span class="r-in"><span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/lims.html" class="external-link">xlim</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span><span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/lims.html" class="external-link">ylim</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1.5</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span></span>
 <span class="r-in"><span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_grid.html" class="external-link">facet_grid</a></span><span class="op">(</span>cols<span class="op">=</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">w</span><span class="op">)</span>, rows<span class="op">=</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">response</span><span class="op">)</span>, labeller <span class="op">=</span> <span class="st">"label_both"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 1230 rows containing non-finite values (`stat_density2d()`).</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 1299 rows containing non-finite values (`stat_density2d()`).</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 1584 rows containing missing values (`geom_raster()`).</span>
 <span class="r-plt img"><img src="dynaViTE-4.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Restricting to specific confidence region</span></span></span>
 <span class="r-in"><span><span class="va">df1</span> <span class="op">&lt;-</span> <span class="va">df1</span><span class="op">[</span><span class="va">df1</span><span class="op">$</span><span class="va">conf</span> <span class="op">&gt;</span><span class="fl">0</span> <span class="op">&amp;</span> <span class="va">df1</span><span class="op">$</span><span class="va">conf</span> <span class="op">&lt;</span><span class="fl">1</span>,<span class="op">]</span></span></span>
 <span class="r-in"><span><span class="fu">dWEV</span><span class="op">(</span><span class="va">df1</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="op">]</span>, th1<span class="op">=</span><span class="fl">0</span>, th2<span class="op">=</span><span class="fl">1</span>, a<span class="op">=</span><span class="fl">2</span>, v<span class="op">=</span><span class="fl">0.5</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.04466931 0.12573321 0.26799748 0.11645066 0.04609826</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.126824951 0.045380233 0.004346528 0.008892081 0.024229832</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># If lower confidence threshold is higher than the upper, the function throws an error,</span></span></span>
 <span class="r-in"><span><span class="co"># except when stop_on_error is FALSE</span></span></span>
