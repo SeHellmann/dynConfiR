@@ -2,6 +2,7 @@
 % Please edit documentation in R/dynConfiR-package.R
 \docType{package}
 \name{dynConfiR-package}
+\alias{dynConfiR}
 \alias{dynConfiR-package}
 \title{The dynConfiR Package}
 \description{
@@ -19,6 +20,15 @@ URL: \tab https://github.com/SeHellmann/dynConfiR\cr
 }
 
 Provides response time and confidence distributions (density/PDF) for following models: dynaViTE,dynWEV, 2DSD, 2DSDT, IRM and PCRM
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/SeHellmann/dynConfiR}
+  \item \url{https://sehellmann.github.io/dynConfiR/}
+  \item Report bugs at \url{https://github.com/SeHellmann/dynConfiR}
+}
+
 }
 \author{
 Sebastian Hellmann
