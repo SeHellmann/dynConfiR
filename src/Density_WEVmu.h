@@ -50,12 +50,14 @@ NumericVector density_WEVmu (NumericVector rts, NumericVector params, int bounda
         for (int i = 0; i < length; i++) {
           out[i] =  g_minus_WEVmu(rts[i], params);
           if (out[i]==0) break;
+          if (i % 200 ==0 ) Rcpp::checkUserInterrupt();
         }
       } // Calc upper
       else {
         for (int i = 0; i < length; i++) {
           out[i] = -g_minus_WEVmu(rts[i], params);
           if (out[i]==0) break;
+          if (i % 200 ==0 ) Rcpp::checkUserInterrupt();
         }
       } // Calc lower
     } else {
@@ -65,9 +67,15 @@ NumericVector density_WEVmu (NumericVector rts, NumericVector params, int bounda
         params[3] = - params[3]; // d  -> - d
         for (int i = 0; i < length; i++) {
           out[i] =  g_minus_WEVmu(rts[i], params);
+          if (i % 200 ==0 ) Rcpp::checkUserInterrupt();
           }
         } // Calc upper
-      else { for (int i = 0; i < length; i++) { out[i] = -g_minus_WEVmu(rts[i], params); } } // Calc lower
+      else {
+        for (int i = 0; i < length; i++) {
+          out[i] = -g_minus_WEVmu(rts[i], params);
+          if (i % 200 ==0 ) Rcpp::checkUserInterrupt();
+        }
+      } // Calc lower
     }
     return out;
 }
@@ -158,8 +166,6 @@ static double integral_v_g_minus_WEVmu (double t, double zr, NumericVector param
     {
       int_c = Phi((th2-Mu)/Sigma) - Phi((th1-Mu)/Sigma);
     }
-
-    Rcpp::checkUserInterrupt();
 
     // Approximate the series in the function f:
     eps = EPSILON / factor;

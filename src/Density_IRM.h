@@ -87,6 +87,7 @@ NumericVector density_IRM (NumericVector rts, NumericVector params, int win=1, d
                 } else {
                     out[i] = fac * densIRM_equalbounds( rts[i],  th2,  th1, muw,  mul,  a,  b,
                                                         wx, wrt, wint);
+                  if (i % 200 ==0 ) Rcpp::checkUserInterrupt();
                 }
             }
         } else {
@@ -98,6 +99,7 @@ NumericVector density_IRM (NumericVector rts, NumericVector params, int win=1, d
                         integrate_densIRM_equalbounds_over_t(rts[i]-st0, rts[i], dt,
                                                          th2,  th1, muw,  mul,  a,  b,
                                                          wx, wrt, wint);
+                  if (i % 200 ==0 ) Rcpp::checkUserInterrupt();
                 }
             }
         }
@@ -121,6 +123,7 @@ NumericVector density_IRM (NumericVector rts, NumericVector params, int win=1, d
                 } else {
                     out[i] = fac *  densIRM_differbounds (rts[i], th2,  th1, muw,  mul, wx, wrt, wint,
                                        C, expC,  Xis);
+                  if (i % 200 ==0 ) Rcpp::checkUserInterrupt();
                 }
             }
         } else {
@@ -132,6 +135,7 @@ NumericVector density_IRM (NumericVector rts, NumericVector params, int win=1, d
                     integrate_densIRM_differbounds_over_t(rts[i]-st0, rts[i], dt,
                                                          th2,  th1, muw,  mul, wx, wrt, wint,
                                                          C, expC, Xis);
+                  if (i % 200 ==0 ) Rcpp::checkUserInterrupt();
                 }
             }
         }

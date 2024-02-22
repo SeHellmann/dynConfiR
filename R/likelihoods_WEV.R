@@ -117,7 +117,7 @@
 
 #' @rdname LogLikWEV
 #' @export
-LogLikWEV <- function(data, paramDf, model="dynaViTE", simult_conf = FALSE, precision=1e-5, stop_on_error = TRUE, data_names = list(), ...) {
+LogLikWEV <- function(data, paramDf, model="dynaViTE", simult_conf = FALSE, precision=3, stop_on_error = TRUE, data_names = list(), ...) {
   #### Check data formatting ####
   data <- rename(data, ...)
   if ((model %in% c("dynWEV", "2DSD")) && !("lambda" %in% names(paramDf))) paramDf$lambda <- 0

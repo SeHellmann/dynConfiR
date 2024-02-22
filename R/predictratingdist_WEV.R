@@ -136,7 +136,7 @@
 predictWEV_Conf <- function(paramDf, model="dynaViTE",
                             maxrt=15, subdivisions = 100L, simult_conf = FALSE,
                             stop.on.error = FALSE,
-                            precision=1e-5,
+                            precision=3,
                             .progress=TRUE){
   if (is.null(model)) {
     if (!("model" %in% names(paramDf))) stop("Either supply model argument or model entry in paramDf argument.")
@@ -259,7 +259,7 @@ predictWEV_Conf <- function(paramDf, model="dynaViTE",
 predictWEV_RT <- function(paramDf, model=NULL,
                                  maxrt=9, subdivisions = 100L, minrt=NULL,
                                   simult_conf = FALSE,
-                                 scaled = FALSE, DistConf=NULL, precision=1e-5,
+                                 scaled = FALSE, DistConf=NULL, precision=3,
                                 .progress = TRUE) {
   if (scaled && is.null(DistConf)) {
     message(paste("scaled is TRUE and DistConf is NULL. The rating distribution will",

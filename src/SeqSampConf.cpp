@@ -44,12 +44,19 @@ NumericVector d_2DSD (NumericVector rts, NumericVector params, double precision=
 
     // Add tuning values for numerical integrations at the end of parameters
     // ToDo: Optimize and check precision values
-    params.push_back(0.0089045 * exp(-1.037580*precision)); // TUNE_INT_T0
-    params.push_back(0.0508061 * exp(-1.022373*precision)); // TUNE_INT_Z
-    //     These have been added to optimise code paths by treating very small variances as 0
-    //     e.g. with precision = 3, sv or sz values < 10^-5 are considered 0
-    params.push_back(pow (10, -(precision+2.0))); // TUNE_SZ_EPSILON
-    params.push_back(pow (10, -(precision+2.0))); // TUNE_ST0_EPSILON
+    if (precision >= 1) {
+      params.push_back(0.0089045 * exp(-1.037580*precision)); // TUNE_INT_T0
+      params.push_back(0.0508061 * exp(-1.022373*precision)); // TUNE_INT_Z
+      //     These have been added to optimise code paths by treating very small variances as 0
+      //     e.g. with precision = 3, sv or sz values < 10^-5 are considered 0
+      params.push_back(pow (10, -(precision+2.0))); // TUNE_SZ_EPSILON
+      params.push_back(pow (10, -(precision+2.0))); // TUNE_ST0_EPSILON
+    } else {
+      params.push_back(precision); // TUNE_INT_T0
+      params.push_back(precision); // TUNE_INT_Z
+      params.push_back(0); // TUNE_SZ_EPSILON
+      params.push_back(0); // TUNE_ST0_EPSILON
+    }
 
     out = density_2DSD (rts, params, boundary-1, stop_on_zero);
 
@@ -75,14 +82,19 @@ NumericVector d_WEVmu (NumericVector rts, NumericVector params, double precision
       else { return out; }
     }
 
-    // Add tuning values for numerical integrations at the end of parameters
-    // ToDo: Optimize and check precision values
-    params.push_back(0.0089045 * exp(-1.037580*precision)); // TUNE_INT_T0
-    params.push_back(0.0508061 * exp(-1.022373*precision)); // TUNE_INT_Z
-    //     These have been added to optimise code paths by treating very small variances as 0
-    //     e.g. with precision = 3, sv or sz values < 10^-5 are considered 0
-    params.push_back(pow (10, -(precision+2.0))); // TUNE_SZ_EPSILON
-    params.push_back(pow (10, -(precision+2.0))); // TUNE_ST0_EPSILON
+    if (precision >= 1) {
+      params.push_back(0.0089045 * exp(-1.037580*precision)); // TUNE_INT_T0
+      params.push_back(0.0508061 * exp(-1.022373*precision)); // TUNE_INT_Z
+      //     These have been added to optimise code paths by treating very small variances as 0
+      //     e.g. with precision = 3, sv or sz values < 10^-5 are considered 0
+      params.push_back(pow (10, -(precision+2.0))); // TUNE_SZ_EPSILON
+      params.push_back(pow (10, -(precision+2.0))); // TUNE_ST0_EPSILON
+    } else {
+      params.push_back(precision); // TUNE_INT_T0
+      params.push_back(precision); // TUNE_INT_Z
+      params.push_back(0); // TUNE_SZ_EPSILON
+      params.push_back(0); // TUNE_ST0_EPSILON
+    }
 
     out = density_WEVmu (rts, params, boundary-1, stop_on_zero);
 
@@ -211,6 +223,7 @@ NumericVector dd_IRM (NumericVector rts, NumericVector xj, NumericVector params,
                 exp(-(muw*t+a)*(muw*t+a)/sig2t) *
                 (exp(-(xj[i]-(mul*t+a))*(xj[i]-(mul*t+a))/sig2t) -
                 exp(-(2*b*mul)/(sigma*sigma))*exp(-(xj[i]-(mul*t-a))*(xj[i]-(mul*t-a))/sig2t));
+            if (i % 200 ==0 ) Rcpp::checkUserInterrupt();
         }
     } else {
         if (method==1) {
@@ -241,6 +254,7 @@ NumericVector dd_IRM (NumericVector rts, NumericVector xj, NumericVector params,
                         exp(expC[j] - (x1tilde)*(x1tilde)/(sig2t) - (x2tilde)*(x2tilde)/(sig2t));
                 }
                 out[i] = temp*fac/(t*t);
+                if (i % 200 ==0 ) Rcpp::checkUserInterrupt();
             }
         } else if (method == 2){
             muw = params[0];
@@ -276,6 +290,7 @@ NumericVector dd_IRM (NumericVector rts, NumericVector xj, NumericVector params,
                     temp = temp + temp1;
                 }
                 out[i] = temp*fact*fac;
+                if (i % 200 ==0 ) Rcpp::checkUserInterrupt();
             }
         }
     }
@@ -344,6 +359,7 @@ NumericVector dd_PCRM (NumericVector rts, NumericVector xj, NumericVector params
                 exp(expC[j] - (x1tilde)*(x1tilde)/(sig2t) - (x2tilde+0.5*x1tilde)*(x2tilde+0.5*x1tilde)/(0.75*sig2t));
         }
         out[i] = temp*fac/(t*t);
+        if (i % 200 ==0 ) Rcpp::checkUserInterrupt();
     }
 
     return out;

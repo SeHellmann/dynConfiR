@@ -154,7 +154,7 @@
 fitRTConfModels <- function(data, models = c("dynaViTE", "2DSD", "PCRMt"),
                       nRatings = NULL, fixed = list(sym_thetas = FALSE), restr_tau=Inf,
                       grid_search=TRUE,
-                      opts=list(), optim_method = "bobyqa", logging=FALSE, precision=1e-5,
+                      opts=list(), optim_method = "bobyqa", logging=FALSE, precision=3,
                       parallel = TRUE, n.cores=NULL, ...){ #  ?ToDO: vary_sv=FALSE, RRT=NULL, vary_tau=FALSE
   if (any(!grepl("dynaViTE|IRM|PCRM|IRMt|PCRMt|dynWEV|2DSD|DDMConf", models))) {
     stop("all models must be one of:

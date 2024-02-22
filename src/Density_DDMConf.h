@@ -49,12 +49,14 @@ NumericVector density_DDMConf (NumericVector rts, NumericVector params, int boun
         for (int i = 0; i < length; i++) {
           out[i] =  g_minus_DDMConf(rts[i], st0precision, params);
           if (out[i]==0) break;
+          if (i % 200 ==0 ) Rcpp::checkUserInterrupt();
         }
       } // Calc upper
       else {
         for (int i = 0; i < length; i++) {
           out[i] = -g_minus_DDMConf(rts[i], st0precision, params);
           if (out[i]==0) break;
+          if (i % 200 ==0 ) Rcpp::checkUserInterrupt();
         }
       } // Calc lower
     } else {
@@ -63,10 +65,16 @@ NumericVector density_DDMConf (NumericVector rts, NumericVector params, int boun
         params[1] = - params[1]; // v  -> - v
         params[3] = - params[3]; // d  -> - d
         for (int i = 0; i < length; i++) {
-        out[i] =  g_minus_DDMConf(rts[i], st0precision, params);
-          }
-        } // Calc upper
-      else { for (int i = 0; i < length; i++) { out[i] = -g_minus_DDMConf(rts[i], st0precision, params); } } // Calc lower
+          out[i] =  g_minus_DDMConf(rts[i], st0precision, params);
+          if (i % 200 ==0 ) Rcpp::checkUserInterrupt();
+        }
+      } // Calc upper
+      else {
+        for (int i = 0; i < length; i++) {
+          out[i] = -g_minus_DDMConf(rts[i], st0precision, params);
+          if (i % 200 ==0 ) Rcpp::checkUserInterrupt();
+        }
+      } // Calc lower
     }
 
 
