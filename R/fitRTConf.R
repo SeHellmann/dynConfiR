@@ -56,7 +56,7 @@
 #' @param restr_tau numerical or `Inf` or `"simult_conf"`. For 2DSD and dynWEV only.
 #' Upper bound for tau. Fits will be in the interval (0,`restr_tau`). If FALSE tau will be unbound.
 #' For `"simult_conf"`, see the documentation of \code{\link{d2DSD}} and \code{\link{dWEV}}
-#' @param precision numerical scalar. For 2DSD and dynWEV only. Precision of calculation.
+#' @param precision numeric. Precision of calculation.
 #' (in the respective models) for the density functions (see \code{\link{dWEV}} for more information).
 #' @param ... Possibility of giving alternative variable names in data frame
 #' (in the form \code{condition = "SOA"}, or \code{response="pressedKey"}).
@@ -189,7 +189,7 @@ fitRTConf <- function(data, model = "dynWEV",
                       fixed = list(sym_thetas = FALSE),
                       init_grid = NULL, grid_search = TRUE,
                       data_names = list(), nRatings = NULL, restr_tau =Inf,
-                      precision=1e-5,logging=FALSE, opts=list(), optim_method = "bobyqa",
+                      precision=3,logging=FALSE, opts=list(), optim_method = "bobyqa",
                       useparallel = FALSE, n.cores=NULL, ...){ #  ?ToDO: vary_sv=FALSE, RRT=NULL, vary_tau=FALSE
   # Check if package 'logger' is installed, if logging is wished
   if (logging && !requireNamespace("logger", quietly = TRUE)) {

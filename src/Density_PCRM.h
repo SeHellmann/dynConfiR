@@ -92,6 +92,7 @@ NumericVector density_PCRM (NumericVector rts, NumericVector params, int win=1, 
             } else {
                 out[i] = fac *  densPCRM (rts[i], th2,  th1, muw,  mul, wx, wrt, wint,
                                    C, expC,  Xis);
+              if (i % 200 ==0 ) Rcpp::checkUserInterrupt();
             }
         }
     } else {
@@ -103,6 +104,7 @@ NumericVector density_PCRM (NumericVector rts, NumericVector params, int win=1, 
                     integrate_densPCRM_over_t(rts[i]-st0, rts[i], dt,
                                               th2,  th1, muw,  mul, wx, wrt, wint,
                                               C, expC, Xis);
+              if (i % 200 ==0 ) Rcpp::checkUserInterrupt();
             }
         }
     }

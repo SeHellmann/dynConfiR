@@ -117,7 +117,7 @@
 
 #' @rdname LogLikWEV
 #' @export
-LogLikWEV <- function(data, paramDf, model="dynaViTE", simult_conf = FALSE, precision=1e-5, stop_on_error = TRUE, data_names = list(), ...) {
+LogLikWEV <- function(data, paramDf, model="dynaViTE", simult_conf = FALSE, precision=3, stop_on_error = TRUE, data_names = list(), ...) {
   #### Check data formatting ####
   data <- rename(data, ...)
   if ((model %in% c("dynWEV", "2DSD")) && !("lambda" %in% names(paramDf))) paramDf$lambda <- 0
@@ -180,8 +180,10 @@ LogLikWEV <- function(data, paramDf, model="dynaViTE", simult_conf = FALSE, prec
   if (is.null(data[[data_names$condition]])) data[[data_names$condition]] <- 1
 
   data <- data %>% mutate(response = if_else(.data[[data_names$response]]==sort(unique(data[[data_names$response]]))[1],"lower","upper"),
-                          stimulus = if_else(.data[[data_names$stimulus]]==sort(unique(data[[data_names$stimulus]]))[1],-1,1),
                           condition = as.numeric(factor(.data[[data_names$condition]],levels = sort(unique(data[[data_names$condition]])))))
+  if (length(unique(data[[data_names$stimulus]]))==2) {
+    data[[data_names$stimulus]] = if_else(data[[data_names$stimulus]]==sort(unique(data[[data_names$stimulus]]))[1],-1,1)
+  }
   if (!is.numeric(data$rating)) {
     data <- data %>% mutate(rating = as.numeric(as.factor(.data[[data_names$rating]])))
   }

@@ -15,7 +15,9 @@ fill_thresholds <- function(res, used_cats, actual_nRatings, min_conf) {
     if (max(used_cats)<actual_nRatings) {
       thetas[paste("theta", (max(used_cats):(actual_nRatings-1)), sep="")] <- max(1e+24, max(thetas, na.rm=TRUE))
     }
-    thetas[which(is.na(thetas))] <- thetas[(which(is.na(thetas))-1)]
+    while (any(is.na(thetas))) {
+      thetas[which(is.na(thetas))] <- thetas[(which(is.na(thetas))-1)]
+    }
     res[,names(thetas)]<- thetas
   } else {
     thetasUpper <- rep(NA,(actual_nRatings-1))

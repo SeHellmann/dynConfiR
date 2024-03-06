@@ -472,7 +472,7 @@ fitting2DSD <- function(df, nConds, nRatings, fixed, sym_thetas,
 
 
 neglikelihood_2DSD_free <-   function(p, data,
-                                      restr_tau, nConds, nRatings, fixed, mint0, simult_conf, sym_thetas, precision=1e-5)
+                                      restr_tau, nConds, nRatings, fixed, mint0, simult_conf, sym_thetas, precision=3)
 {
   # get parameter vector back from real transformations
   paramDf <-  data.frame(matrix(nrow=1, ncol=0))
@@ -520,7 +520,7 @@ neglikelihood_2DSD_free <-   function(p, data,
 
 
 neglikelihood_2DSD_bounded <-   function(p, data,
-                                         restr_tau, nConds, nRatings, fixed, simult_conf, mint0, sym_thetas=FALSE, precision=1e-5)
+                                         restr_tau, nConds, nRatings, fixed, simult_conf, mint0, sym_thetas=FALSE, precision=3)
 {
   # get parameter vector back from real transformations
   paramDf <-   data.frame(matrix(nrow=1, ncol=length(p)))

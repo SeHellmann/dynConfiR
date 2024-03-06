@@ -347,7 +347,7 @@ fittingDDMConf<- function(df, nConds, nRatings, fixed, sym_thetas,
 
 
 
-neglikelihood_DDMConf_bounded <-   function(p, data, nConds, nRatings, fixed, sym_thetas=FALSE, precision=1e-5, st0stepsize=0.001)
+neglikelihood_DDMConf_bounded <-   function(p, data, nConds, nRatings, fixed, sym_thetas=FALSE, precision=3, st0stepsize=0.001)
 {
   # get parameter vector back from real transformations
   paramDf <-   data.frame(matrix(nrow=1, ncol=length(p)))

@@ -50,12 +50,14 @@ NumericVector density_2DSD (NumericVector rts, NumericVector params, int boundar
         for (int i = 0; i < length; i++) {
           out[i] =  g_minus_2DSD(rts[i], params);
           if (out[i]==0) break;
+          if (i % 200 ==0 ) Rcpp::checkUserInterrupt();
         }
       } // Calc upper
       else {
         for (int i = 0; i < length; i++) {
           out[i] = -g_minus_2DSD(rts[i], params);
           if (out[i]==0) break;
+          if (i % 200 ==0 ) Rcpp::checkUserInterrupt();
           }
         } // Calc lower
     } else {
@@ -65,9 +67,15 @@ NumericVector density_2DSD (NumericVector rts, NumericVector params, int boundar
         params[3] = - params[3]; // d  -> - d
         for (int i = 0; i < length; i++) {
           out[i] =  g_minus_2DSD(rts[i], params);
+          if (i % 200 ==0 ) Rcpp::checkUserInterrupt();
         }
       } // Calc upper
-      else { for (int i = 0; i < length; i++) { out[i] = -g_minus_2DSD(rts[i], params); } } // Calc lower
+      else {
+        for (int i = 0; i < length; i++) {
+          out[i] = -g_minus_2DSD(rts[i], params);
+          if (i % 200 ==0 ) Rcpp::checkUserInterrupt();
+        }
+      } // Calc lower
     }
 
 

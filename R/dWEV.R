@@ -85,7 +85,7 @@
 #' with the decision. If that is the case decision and confidence judgment are assumed to have happened
 #' subsequent before the response. Therefore `tau` is included in the response time. If the decision was
 #' reported before the confidence report, `simul_conf` should be `FALSE`.
-#' @param precision numerical scalar value. Precision of calculation. Corresponds to the
+#' @param precision numerical scalar value. Precision of calculation. Determines the
 #' step size of integration w.r.t. `z` and `t0`. Default is 1e-5.
 #' @param z_absolute logical. Determines whether `z` is treated as absolute start point
 #' (`TRUE`) or relative (`FALSE`; default) to `a`.
@@ -218,7 +218,7 @@
 #' @export
 dWEV <- function (rt, response="upper", th1,th2, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, st0=0,
                   tau=1, w=0.5, muvis=NULL, sigvis=0, svis=1,
-                  lambda = 0, s=1,  simult_conf = FALSE, precision=1e-5, z_absolute = FALSE,
+                  lambda = 0, s=1,  simult_conf = FALSE, precision=3, z_absolute = FALSE,
                   stop_on_error=TRUE, stop_on_zero=FALSE, parammatrix)
 {
   # for convenience accept data.frame as first argument.

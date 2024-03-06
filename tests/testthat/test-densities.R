@@ -37,8 +37,8 @@ test_that("dynWEV works", {
                  0.0210877315338026, 0.0106006919740067, 0.00527825242394075),
                tolerance=0.00001)
   ## test for scaling effect of s (diffusion constant)
-  expect_equal(dWEV(seq(0, 3, by=0.5), "lower", 0.4*2, 2.5*2, tau=1, a=2*2, v=0.5*2, t0=0, z =0.5, sv=0.2*2, w=0.5, sigvis=0.2*2, svis=1*2, s=1*2, precision = 10),
-               dWEV(seq(0, 3, by=0.5), "lower", 0.4, 2.5, tau=1, a=2, v=0.5, t0=0, z =0.5, sv=0.2, w=0.5, sigvis=0.2, svis=1, s=1, precision = 10))
+  expect_equal(dWEV(seq(0, 3, by=0.5), "lower", 0.4*2, 2.5*2, tau=1, a=2*2, v=0.5*2, t0=0, z =0.5, sv=0.2*2, w=0.5, sigvis=0.2*2, svis=1*2, s=1*2, precision = 5),
+               dWEV(seq(0, 3, by=0.5), "lower", 0.4, 2.5, tau=1, a=2, v=0.5, t0=0, z =0.5, sv=0.2, w=0.5, sigvis=0.2, svis=1, s=1, precision = 5))
   ## test for effect of t0
   expect_equal(dWEV(seq(0, 3, by=0.5), "lower", 0.4, 2.5, tau=1, a=2, v=0.5, t0=0, z =0.5, sv=0.2, w=0.5, sigvis=0.2, svis=1, s=1),
                dWEV(seq(0, 3, by=0.5)+0.4, "lower", 0.4, 2.5, tau=1, a=2, v=0.5, t0=0.4, z =0.5, sv=0.2, w=0.5, sigvis=0.2, svis=1, s=1))
