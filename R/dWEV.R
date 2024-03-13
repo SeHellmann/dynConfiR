@@ -93,6 +93,13 @@
 #' outside the allowed range (= \code{FALSE}) or produce an error in this case (= \code{TRUE}).
 #' @param stop_on_zero Should the computation of densities stop as soon as a density value of 0 occurs.
 #' This may save a lot of time if the function is used for a likelihood function. Default: FALSE
+#' @param parammatrix A numeric matrix with rows for each observations and columns for different parameters.
+#' It offers a second way of specifying parameters, which is useful, if parameters vary with each trial.
+#' If all parameters are supplied, the columns of the matrix should be in the same order as the parameters
+#' in the dWEV function. If the matrix has column names, the function will use them to assign the parameters.
+#' If only a subset of parameters are specified, the matrix must have column names and for remaining parameters,
+#' the default values of dWEV are used (if available). We recommend to use column
+#' names in any case.
 #' @param n integer. The number of samples generated.
 #' @param delta numeric. Discretization step size for simulations in the stochastic process
 #' @param maxrt numeric. Maximum decision time returned. If the simulation of the stochastic
@@ -101,13 +108,6 @@
 #' @param process_results logical. Whether the output simulations should contain the final
 #' state of the decision (and visibility) process as additional column. Default is FALSE, meaning that
 #' no additional columns for the final process states are returned.
-#' @param parammatrix A numeric matrix with rows for each observations and columns for different parameters.
-#' It offers a second way of specifying parameters, which is useful, if parameters vary with each trial.
-#' If all parameters are supplied, the columns of the matrix should be in the same order as the parameters
-#' in the dWEV function. If the matrix has column names, the function will use them to assign the parameters.
-#' If only a subset of parameters are specified, the matrix must have column names and for remaining parameters,
-#' the default values of dWEV are used (if available). We recommend to use column
-#' names in any case.
 #'
 #' @return \code{dWEV} gives the density/likelihood/probability of the diffusion process producing
 #' a decision of \code{response} at time \code{rt} and a confidence judgment corresponding to the
@@ -258,7 +258,7 @@ dWEV <- function (rt, response="upper", th1,th2, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, s
       rt[ok_rows] <- rt[ok_rows]-pars$params[ok_rows[1],9]
     }
     densities[ok_rows] <- d_WEVmu (rt[ok_rows],
-                                   pars$params[ok_rows[1],1:16],
+                                   matrix(pars$params[ok_rows[1],1:16], nrow=1),
                                    precision,
                                    pars$params[ok_rows[1],17],
                                    stop_on_error, as.numeric(stop_on_zero))
@@ -276,7 +276,7 @@ dWEV_parammatrix <- function(rt, response, parammatrix,
   parnames <- c("a", "v", "t0", "d", "sz", "sv", "st0","z",
                 "tau", "th1", "th2", "lambda", "w", "muvis", "sigvis", "svis", "s")
   defaults <- c(NA, NA, 0, 0, 0, 0, 0,0.5,
-                1, NA, NA, 0, 0.5, -99, 0, 1, 1)
+                1, NA, NA, 0, 0.5, Inf, 0, 1, 1)
 
 
   if (nrow(parammatrix) != nn) {
@@ -296,11 +296,13 @@ dWEV_parammatrix <- function(rt, response, parammatrix,
           stop("Missing columns in parammatrix must have names that match\n",
                "parameters with defaults in dWEV!")
         }
-        parammatrix[,parnames[missing_cols]] <- rep(defaults[missing_cols], nrow(parammatrix))
+        parammatrix <- cbind(parammatrix, matrix(rep(defaults[missing_cols], each=nrow(parammatrix)),
+                                                 nrow=nn, dimnames = list(rownames=NULL,
+                                                                          colnames=parnames[missing_cols])))
       }
     }
     # Fill muvis values with absolute value of decision drift v
-    if (all(parammatrix[,"muvis"]==-99)) parammatrix[,"muvis"] <- abs(parammatrix[, "v"])
+    if (all(is.infinite(parammatrix[,"muvis"]))) parammatrix[,"muvis"] <- abs(parammatrix[, "v"])
   }
   # sort parameter columns to the right order
   if (!is.null(colnames(parammatrix))) {
@@ -344,8 +346,7 @@ dWEV_parammatrix <- function(rt, response, parammatrix,
   if (is.character(response)) {
     response <- match.arg(response, choices=c("upper", "lower"),several.ok = TRUE)
     response <- ifelse(response == "upper", 2L, 1L)
-  }
-  else {
+  } else {
     response <- as.numeric(response)
     if (any(!(response %in% 1:2)))
       stop("response needs to be either 'upper', 'lower', or as.numeric(response) %in% 1:2!")

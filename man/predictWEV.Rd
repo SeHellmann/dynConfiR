@@ -11,11 +11,11 @@ dynWEV, and 2DSD confidence models}
 \usage{
 predictWEV_Conf(paramDf, model = "dynaViTE", maxrt = 15,
   subdivisions = 100L, simult_conf = FALSE, stop.on.error = FALSE,
-  precision = 1e-05, .progress = TRUE)
+  precision = 3, .progress = TRUE)
 
 predictWEV_RT(paramDf, model = NULL, maxrt = 9, subdivisions = 100L,
   minrt = NULL, simult_conf = FALSE, scaled = FALSE, DistConf = NULL,
-  precision = 1e-05, .progress = TRUE)
+  precision = 3, .progress = TRUE)
 }
 \arguments{
 \item{paramDf}{a list or dataframe with one row. Column names should match the names

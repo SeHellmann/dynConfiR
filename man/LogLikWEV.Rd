@@ -10,7 +10,7 @@
 \title{Log-Likelihood functions for the dynWEV and 2DSD models of confidence}
 \usage{
 LogLikWEV(data, paramDf, model = "dynaViTE", simult_conf = FALSE,
-  precision = 1e-05, stop_on_error = TRUE, data_names = list(), ...)
+  precision = 3, stop_on_error = TRUE, data_names = list(), ...)
 }
 \arguments{
 \item{data}{a dataframe where each row is one trial. Containing following variables:

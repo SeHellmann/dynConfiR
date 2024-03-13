@@ -213,6 +213,7 @@ simulateWEV <- function (paramDf, n=1e+4,  model = "dynWEV", simult_conf = FALSE
   } else {
     nRatings <- length(grep(pattern = "^thetaUpper[0-9]", names(paramDf)))+1
   }
+  if (nRatings==1) nRatings <- 2
 
   if (model =="2DSD") {
     w = 1
