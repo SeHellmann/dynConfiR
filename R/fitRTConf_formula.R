@@ -30,9 +30,6 @@
 #' algorithm is omitted. The fitting is then started with a mean parameter set
 #' from the default grid (if `init_grid=NULL`) or directly with the rows from
 #' `init_grid`, if not `NULL`. (Default: `TRUE`)
-#' @param data_names named list (e.g. `c(rating="confidence")`). Alternative
-#' possibility of giving other column names for the variables in the data. By default
-#' column names are identical to the ones given in the data argument description.
 #' @param nRatings integer. Number of rating categories. If `NULL`, the maximum of
 #' `rating` and `length(unique(rating))` is used. This argument is especially
 #' important for data sets where not the whole range of rating categories is realized.
@@ -186,11 +183,12 @@
 #' @rdname fitRTConf_formula
 #' @export
 fitRTConf_formula <- function(data, model = "dynWEV",
-                      manipulations = list(),
-                      fixed = list(sym_thetas = FALSE, s=1),
-                      nRatings = NULL, restr_tau =Inf,
-                      precision=1e-5,logging=FALSE, opts=list(), optim_method = "bobyqa",
-                      useparallel = FALSE, n.cores=NULL, ...){ #  ?ToDO: vary_sv=FALSE, RRT=NULL, vary_tau=FALSE
+                              manipulations = list(),
+                              fixed = list(sym_thetas = FALSE, s=1),
+                              nRatings = NULL, restr_tau =Inf,
+                              precision=1e-5,grid_search=TRUE,
+                              logging=FALSE, opts=list(), optim_method = "Nelder-Mead",
+                              useparallel = FALSE, n.cores=NULL, ...){ #  ?ToDO: vary_sv=FALSE, RRT=NULL, vary_tau=FALSE
   # Check if package 'logger' is installed, if logging is wished
   if (logging && !requireNamespace("logger", quietly = TRUE)) {
     warning("Package 'logger' is not installed but needed to log fitting progress.
@@ -199,16 +197,12 @@ fitRTConf_formula <- function(data, model = "dynWEV",
     logging <- FALSE
   }
 
-
   #### Check for opts given ####
   opts_missing <- !(c("nAttempts", "nRestarts", "maxfun", "maxit", "reltol", "factr") %in% names(opts))
   opts <- c(opts,
             setNames(as.list(c(5, 5, 8000, 2*1e+3,1e-6, 1e-10)[opts_missing]),
                      c("nAttempts", "nRestarts","maxfun", "maxit", "reltol", "factr")[opts_missing]))
   optim_method <- match.arg(optim_method, c("bobyqa", "L-BFGS-B", "Nelder-Mead"))
-
-  #### Check for column names given ####
-  data_names <- c("rating", "rt", "response","stimulus","correct")
 
   #### Process data input ####
   ### extract columns and check right formatting:
@@ -219,41 +213,22 @@ fitRTConf_formula <- function(data, model = "dynWEV",
   if ("response" %in% cols) {
     response <- data[["response"]]
   }
-  if (!exists("stimulus")) {
-    if (!("correct" %in% cols)) {stop("Column names in data must contain 2 of following 3: stimulus, response, correct or must be specified with the data_names argument.")}
-    correct <- data[["correct"]]
-    stim_levels <- sort(unique(response))
-    if (length(stim_levels) != 2) {stop(paste("Response must have exactly two unique values! Values are: ", paste(stim_levels, collapse = ", ")))}
-    response <- if_else(response==stim_levels[1],-1,1)
-    stimulus <- c(-1,1)[(1+as.numeric(response==1))]*(-1)^(1-correct)
-  } else {
-    if (!exists("response")) {
-      if (!("correct" %in% cols)) {stop("Column names in data must contain 2 of following 3: stimulus, response, correct or must be specified with the data_names argument.")}
-      correct <- data[["correct"]]
+  if (!exists("response")) {
+    if (!("correct" %in% cols)) {stop("Column names in data must contain 'response' or 'correct'.")}
+    if (!exists("stimulus")) {
+      if (!("z" %in% fixed) || !(fixed$sym_thetas)) warning("Only the accuracy of responses provided. We recommend to set z=0.5 and sym_thetas=TRUE in the 'fixed' argument in such situations because biases could not be identified!")
+      response <- data[["correct"]]
+    } else {
       stim_levels <- sort(unique(stimulus))
       if (length(stim_levels) != 2) {stop(paste("Stimulus must have exactly two unique values! Values are: ", paste(stim_levels, collapse = ", ")))}
       stimulus <- if_else(stimulus==stim_levels[1],-1,1)
       response <- if_else(stimulus*(-1)^correct==1, -1, 1)
-    } else {
-      if (all(response %in% c(-1,1))) {
-        if (!(all(stimulus %in% c(-1,1)))) {
-          stim_levels <- sort(unique(stimulus))
-          stimulus <- if_else(stimulus==stim_levels[1],-1,1)
-        }
-      } else {
-        stim_levels <- sort(unique(response))
-        response <- if_else(response==stim_levels[1],-1,1)
-        if (!(all(stimulus %in% c(-1,1)))) {
-          if (!(all(stimulus %in% stim_levels))) { stop("Values in stimulus must either be in c(-1,1) or same values as in response")}
-          stimulus <- if_else(stimulus==stim_levels[1],-1,1)
-        }
-      }
     }
   }
-
-  if (grepl("RM", model)) {         # If Race Models are used, re-code lower(-1) and upper(+1) boundary to first(1) and second(2) accumulator
-    stimulus <- (stimulus/2 +1.5)   # Diffusion-based models (dynWEV; 2DSD): -1    1
-    response <- (response/2 +1.5)   # Race-based models (IRM(t), PCRM(t)):    1    2
+  if (all(response %in% c(0,1))) {
+    response <- as.logical(response)
+  } else {
+    response <- response == -1
   }
 
   rt <- data[["rt"]]
@@ -268,12 +243,10 @@ fitRTConf_formula <- function(data, model = "dynWEV",
     if (is.null(nRatings)) {
       nRatings <- max(rating)
     }
-    if (max(length(unique(rating)), max(rating)+1-min(rating))>nRatings && any(rating==0)) {
+    if (max(length(unique(rating)), max(rating)+1-min(rating))==nRatings && any(rating==0)) {
       rating <- rating + 1L
-      nRatings <- nRatings + 1
     }
   }
-
   if (length(unique(rating))< nRatings) {
     # If some rating categories are not used, we fit less thresholds numerically and fill up the
     # rest by the obvious best-fitting thresholds (e.g. +/- Inf for the lowest/highest...) in the end.
@@ -291,46 +264,52 @@ fitRTConf_formula <- function(data, model = "dynWEV",
   if ( nRatings < 2) {
     stop("There has to be at least two rating levels")
   }
+  DVs = data.frame(rating,response,rt)
 
   ### Use manipulations and fixed parameters to get a model.matrix for fitting
 
   # define all necessary parameters for a model
   model <- match.arg(model, c("2DSD", "2DSDT", "dynWEV", "dynaViTE"))
+  parnames <- c("v", "z", "a", "d", "sz", "t0", "st0", "sv", "tau", "w", "svis", "sigvis", "lambda", "s")
+  model_params_fixed <- c("lambda"=0, "w"=1, "sigvis"=1, "svis"=1)
   if (model=="2DSD") {
-    parnames <- c("v", "z", "a", "sz", "t0", "st0", "sv", "tau", "s")
+    to_set <- setdiff(c("w", "sigvis", "svis", "lambda"), names(fixed))
   } else if (model=="2DSDT") {
-    parnames <- c("v", "z", "a", "sz", "t0", "st0", "sv", "tau", "lambda", "s")
+    to_set <- setdiff(c("w", "sigvis", "svis"), names(fixed))
   } else if (model=="dynWEV") {
-    parnames <- c("v", "z", "a", "sz", "t0", "st0", "sv", "tau", "w", "svis", "sigvis", "s")
+    to_set <- setdiff(c("lambda"), names(fixed))
   } else if (model=="dynaViTE") {
-    parnames <- c("v", "z", "a", "sz", "t0", "st0", "sv", "tau", "w", "svis", "sigvis", "lambda", "s")
+    to_set <- NULL
   } else { stop(paste0("Model: ", model, " not implemented!")) }
+  fixed <- c(fixed, model_params_fixed[to_set])
 
   # Get manipulated parameter names
   man_pars <- sapply(manipulations, FUN = function(x) x[[2]])
+  const_pars <- setdiff(parnames, c(man_pars, names(fixed)))
+  names(manipulations) <- unlist(man_pars)
 
-  # Create one vector with a formula for each model parameter,
-  # those that are not manipulated get only an intercept
-  # if a parameter is fixed, it gets no formula
-  manipulations2 <- list()
-  for (i in 1:length(parnames)) {
-    # Only, if parameter is not excluded from fitting (i.e. fixed)
-    if (!parnames[i] %in%names(fixed)) {
-      # If parameter is manipulated, use user-specified formula
-      if (parnames[i] %in% man_pars) {
-        manipulations2[[parnames[i]]] <- manipulations[[match(parnames[i], man_pars)]]
-      } else {
-        # else use only an intercept
-        manipulations2[[parnames[i]]] <- as.formula(paste0(parnames[i], "~1"))
-      }
-      # create a constant column in the data for each parameter (necessary for model.matrix to function)
-      data[[parnames[i]]] <- 1
-    } else {
-      if (parnames[i] %in% man_pars) warning(paste0("Parameter `", parnames[i], "` is ambiguously specified as both fixed and manipulated!\nIt will be fixed for fitting!"))
-    }
-  }
-  # drop Input and further use filled manipulation vector
-  manipulations <- manipulations2
+  # # Create one vector with a formula for each model parameter,
+  # # those that are not manipulated get only an intercept
+  # # if a parameter is fixed, it gets no formula
+  # manipulations2 <- list()
+  # for (i in 1:length(parnames)) {
+  #   # Only, if parameter is not excluded from fitting (i.e. fixed)
+  #   if (!parnames[i] %in%names(fixed)) {
+  #     # If parameter is manipulated, use user-specified formula
+  #     if (parnames[i] %in% man_pars) {
+  #       manipulations2[[parnames[i]]] <- manipulations[[match(parnames[i], man_pars)]]
+  #     } else {
+  #       # else use only an intercept
+  #       manipulations2[[parnames[i]]] <- as.formula(paste0(parnames[i], "~1"))
+  #     }
+  #     # create a constant column in the data for each parameter (necessary for model.matrix to function)
+  #     data[[parnames[i]]] <- 1
+  #   } else {
+  #     if (parnames[i] %in% man_pars) warning(paste0("Parameter `", parnames[i], "` is ambiguously specified as both fixed and manipulated!\nIt will be fixed for fitting!"))
+  #   }
+  # }
+  # # drop Input and further use filled manipulation vector
+  # manipulations <- manipulations2
 
   # create one big model matrix for all manipulation
   # containing all necessary columns for any factor level etc.
@@ -339,30 +318,41 @@ fitRTConf_formula <- function(data, model = "dynWEV",
   # containing a character vector with the column names of the
   # model.matrix used for this parameter
   fit_pars_columns <- list()
-  fit_pars_columns_names <- NULL
+  fit_pars_beta_names <- NULL
   fit_par_names <- NULL
+  # create a constant column in the data for each parameter (necessary for model.matrix to function)
+  data[,names(manipulations)] <- 1
+
+  factor_cols <- names(data[,sapply(data, is.factor), drop=FALSE])
+  #contr_list <- eval(parse(text=paste0("list(", paste(paste(factor_cols, "='contr.treatment'"), c(rep(",", length(factor_cols)-1), " "), collapse = ""), ")")))
+  contr_list <- NULL
+
   for (i in 1:length(manipulations)) {
     cur_parameter <- as.character(manipulations[[i]][[2]])
-    temp <- model.matrix(manipulations[[i]],data)#, contrasts.arg =
-    fit_pars_columns[[i]] <- colnames(temp)
-    fit_pars_columns_names <- c(fit_pars_columns_names, paste(cur_parameter, colnames(temp), sep="_"))
+    #model.frame(manipulations[[i]], data=data)
+    temp <- model.matrix(manipulations[[i]],data,
+                         contrasts.arg = contr_list )#, contrasts.arg =
+    fit_pars_columns[[names(manipulations)[i]]] <- colnames(temp)
+    fit_pars_beta_names <- c(fit_pars_beta_names, paste(cur_parameter, colnames(temp), sep="_"))
     fit_par_names <- c(fit_par_names, cur_parameter)
     model_matrix <- cbind(model_matrix, temp[, setdiff(colnames(temp), colnames(model_matrix)), drop=FALSE])
   }
-  model_matrix
-  names(fit_pars_columns) <- fit_par_names
-  fit_pars_columns
-  fit_par_names
-  fit_pars_columns_names <- sub("\\(Intercept\\)", "1",fit_pars_columns_names)
-  fit_pars_columns_names
+  # model_matrix
+  # names(fit_pars_columns) <- fit_par_names
+  # fit_pars_columns
+  # #lapply(seq_along(fit_pars_columns), function(y, n, i) { paste(n[[i]], y[[i]], sep="_") }, y=fit_pars_columns, n=names(fit_pars_columns))
+  # fit_par_names
+  # #fit_pars_columns_names <- sub("\\(Intercept\\)", "1",fit_pars_columns_names)
+  # fit_pars_beta_names
+  # const_pars
 
-  DVs = data.frame(rating, stimulus, response,rt)
+
 
   #### Initialize logger, if logging is wished ####
   if (logging==TRUE) {
     ## get participant ID for logging
-    if (data_names$sbj %in% cols){
-      sbjcol <- data_names$sbj
+    if ("sbj" %in% cols){
+      sbjcol <- "sbj"
     } else if ("participant" %in% cols) {
       sbjcol <- "participant"
     }
@@ -398,41 +388,43 @@ fitRTConf_formula <- function(data, model = "dynWEV",
   if (grepl("2DSD", model)) {
     if (model=="2DSD") fixed$lambda <- 0
     res <- fitting2DSD(df, nConds, nRatings, fixed, sym_thetas,
-                                          grid_search, init_grid, optim_method, opts,
-                                          logging, filename,
-                                          useparallel, n.cores,
-                                          restr_tau, precision,
-                                          used_cats, actual_nRatings)
+                       grid_search, init_grid, optim_method, opts,
+                       logging, filename,
+                       useparallel, n.cores,
+                       restr_tau, precision,
+                       used_cats, actual_nRatings)
   }
   if (grepl("dynWEV|dynaViTE",model)) {
     if (model=="dynWEV") fixed$lambda <- 0
-    res <- fittingdynWEV_formula(DVs,model_matrix,
-                                 manipulations, fixed,
+    res <- fittingdynWEV_formula(DVs, model_matrix,
+                                 fixed,
+                                 fit_pars_beta_names, const_pars,
+                                 fit_pars_columns,
                                  nRatings, sym_thetas,
-                                optim_method, opts,
-                                logging, filename,
-                                useparallel, n.cores,
-                                restr_tau, precision,
-                                used_cats, actual_nRatings)
+                                 optim_method, opts,
+                                 logging, filename,
+                                 useparallel, n.cores,
+                                 restr_tau, precision, grid_search,
+                                 used_cats, actual_nRatings)
   }
   if (grepl("IRM", model)) res <- fittingIRM(df, nConds, nRatings, fixed,
                                              sym_thetas, grepl("t", model),
-                                        grid_search, init_grid, optim_method, opts,
-                                        logging, filename,
-                                        useparallel, n.cores,
-                                        used_cats, actual_nRatings)
+                                             grid_search, init_grid, optim_method, opts,
+                                             logging, filename,
+                                             useparallel, n.cores,
+                                             used_cats, actual_nRatings)
   if (grepl("PCRM", model)) res <- fittingPCRM(df, nConds, nRatings, fixed ,
                                                sym_thetas, grepl("t", model),
-                                          grid_search, init_grid, optim_method, opts,
-                                          logging, filename,
-                                          useparallel, n.cores,
-                                          used_cats, actual_nRatings)
+                                               grid_search, init_grid, optim_method, opts,
+                                               logging, filename,
+                                               useparallel, n.cores,
+                                               used_cats, actual_nRatings)
   if (model == "DDMConf") res <- fittingDDMConf(df, nConds, nRatings, fixed, sym_thetas,
-                                          grid_search, init_grid, opts,
-                                          logging, filename,
-                                          useparallel, n.cores,
-                                          precision,
-                                          used_cats, actual_nRatings, precision)
+                                                grid_search, init_grid, opts,
+                                                logging, filename,
+                                                useparallel, n.cores,
+                                                precision,
+                                                used_cats, actual_nRatings, precision)
   if (!exists("res")) stop("model not known. model must contain one of: 'dynaViTE', 'dynWEV', '2DSD', '2DSDT', 'IRM', 'PCRM', or 'DDMConf'")
 
 

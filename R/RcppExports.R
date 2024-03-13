@@ -5,8 +5,12 @@ d_2DSD <- function(rts, params, precision = 1e-5, boundary = 2L, stop_on_error =
     .Call(`_dynConfiR_d_2DSD`, rts, params, precision, boundary, stop_on_error, stop_on_zero)
 }
 
-d_WEVmu <- function(rts, params, precision = 1e-5, boundary = 2L, stop_on_error = TRUE, stop_on_zero = FALSE) {
-    .Call(`_dynConfiR_d_WEVmu`, rts, params, precision, boundary, stop_on_error, stop_on_zero)
+d_WEVmu <- function(rts, parammatrix, precision = 1e-5, boundary = 2L, stop_on_error = TRUE, stop_on_zero = FALSE) {
+    .Call(`_dynConfiR_d_WEVmu`, rts, parammatrix, precision, boundary, stop_on_error, stop_on_zero)
+}
+
+d_WEVmu_fit <- function(rts, boundary, parammatrix, precision = 3) {
+    .Call(`_dynConfiR_d_WEVmu_fit`, rts, boundary, parammatrix, precision)
 }
 
 d_DDMConf <- function(rts, params, precision = 1e-5, boundary = 2L, stop_on_error = TRUE, stop_on_zero = FALSE, st0precision = 0.01) {
@@ -39,6 +43,10 @@ r_RM <- function(n, params, rho, delta = 0.01, maxT = 9) {
 
 r_WEV <- function(n, params, delta = 0.01, maxT = 9, stop_on_error = TRUE) {
     .Call(`_dynConfiR_r_WEV`, n, params, delta, maxT, stop_on_error)
+}
+
+r_WEV_matrix <- function(params, delta = 0.01, maxT = 9, stop_on_error = TRUE) {
+    .Call(`_dynConfiR_r_WEV_matrix`, params, delta, maxT, stop_on_error)
 }
 
 r_RM_Kiani <- function(n, params, rho, Bl, delta = 0.01, maxT = 9) {

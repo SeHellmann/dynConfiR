@@ -13,7 +13,7 @@ dWEV(rt, response = "upper", th1, th2, a, v, t0 = 0, z = 0.5, d = 0,
   sz = 0, sv = 0, st0 = 0, tau = 1, w = 0.5, muvis = NULL,
   sigvis = 0, svis = 1, lambda = 0, s = 1, simult_conf = FALSE,
   precision = 1e-05, z_absolute = FALSE, stop_on_error = TRUE,
-  stop_on_zero = FALSE)
+  stop_on_zero = FALSE, parammatrix)
 
 rWEV(n, a, v, t0 = 0, z = 0.5, d = 0, sz = 0, sv = 0, st0 = 0,
   tau = 1, w = 0.5, muvis = NULL, sigvis = 0, svis = 1, lambda = 0,
@@ -112,6 +112,14 @@ outside the allowed range (= \code{FALSE}) or produce an error in this case (= \
 
 \item{stop_on_zero}{Should the computation of densities stop as soon as a density value of 0 occurs.
 This may save a lot of time if the function is used for a likelihood function. Default: FALSE}
+
+\item{parammatrix}{A numeric matrix with rows for each observations and columns for different parameters.
+It offers a second way of specifying parameters, which is useful, if parameters vary with each trial.
+If all parameters are supplied, the columns of the matrix should be in the same order as the parameters
+in the dWEV function. If the matrix has column names, the function will use them to assign the parameters.
+If only a subset of parameters are specified, the matrix must have column names and for remaining parameters,
+the default values of dWEV are used (if available). We recommend to use column
+names in any case.}
 
 \item{n}{integer. The number of samples generated.}
 

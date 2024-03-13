@@ -228,10 +228,12 @@ simulateRM <- function (paramDf, n=1e+4,  model = "IRM", time_scaled=FALSE,
   symmetric_confidence_thresholds <- length(grep(pattern = "thetaUpper", names(paramDf), value = T))<1
   if (symmetric_confidence_thresholds) {
     nRatings <- length(grep(pattern = "^theta[0-9]", names(paramDf)))+1
+    if (nRatings==1) nRatings <- 2
     thetas_upper <- c(-Inf, t(paramDf[,paste("theta",1:(nRatings-1), sep = "")]), Inf)
     thetas_lower <- c(-Inf, t(paramDf[,paste("theta",1:(nRatings-1), sep = "")]), Inf)
   } else {
     nRatings <- length(grep(pattern = "^thetaUpper[0-9]", names(paramDf)))+1
+    if (nRatings==1) nRatings <- 2
     thetas_upper <- c(-Inf, t(paramDf[,paste("thetaUpper",1:(nRatings-1), sep = "")]), Inf)
     thetas_lower <- c(-Inf, t(paramDf[,paste("thetaLower",1:(nRatings-1), sep="")]), Inf)
   }

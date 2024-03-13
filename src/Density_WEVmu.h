@@ -80,6 +80,17 @@ NumericVector density_WEVmu (NumericVector rts, NumericVector params, int bounda
     return out;
 }
 
+double density_WEVmu2 (double rt, NumericVector params, int boundary, int stopon0)
+{
+  if (boundary == 1) {
+      params[7] = 1- params[7]; // z -> 1 - z
+      params[1] = - params[1]; // v  -> - v
+      params[3] = - params[3]; // d  -> - d
+    } // Calc upper
+  return -g_minus_WEVmu(rt, params);  // Calc lower
+}
+
+
 double g_minus_WEVmu(double t, NumericVector params)
 {
     return integral_t0_g_minus_WEVmu (t - params[2] - 0.5*params[3], params);
