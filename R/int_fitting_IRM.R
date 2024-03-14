@@ -415,7 +415,7 @@ fittingIRM <- function(df, nConds, nRatings, fixed, sym_thetas, time_scaled,
         }
         if (length(fitted_weights)==2) {
           res$wx <- pnorm(p[["wx"]])
-          res$wrt <- pnorm(p[["wrt"]])*res$wx
+          res$wrt <- pnorm(p[["wrt"]])*(1-res$wx)
           res$wint <- 1 - res$wx - res$wrt
         }
       } else {
@@ -449,7 +449,7 @@ fittingIRM <- function(df, nConds, nRatings, fixed, sym_thetas, time_scaled,
           res[, setdiff(c("wx", "wrt", "wint"),names(res))] <- 1- sum(as.numeric(res[grep("^w", names(res), value=TRUE)]))
         }
         if (length(fitted_weights)==2) {
-          res$wrt <- res[["wrt"]]*res$wx
+          res$wrt <- res[["wrt"]]*(1-res$wx)
           res$wint <- 1 - res$wx - res$wrt
         }
         if (length(fitted_weights)==0) {
@@ -531,7 +531,7 @@ neglikelihood_IRM_free <-   function(p, data,  time_scaled,
     }
     if (length(fitted_weights)==2) {
       paramDf$wx <- pnorm(p[["wx"]])
-      paramDf$wrt <- pnorm(p[["wrt"]])*paramDf$wx
+      paramDf$wrt <- pnorm(p[["wrt"]])*(1-paramDf$wx)
       paramDf$wint <- 1 - paramDf$wx - paramDf$wrt
     }
   } else {
@@ -601,7 +601,7 @@ neglikelihood_IRM_bounded <-   function(p, data, time_scaled,
       paramDf[, setdiff(c("wx", "wrt", "wint"),names(paramDf))] <- 1- sum(as.numeric(paramDf[grep("^w", names(paramDf), value=TRUE)]))
     }
     if (length(fitted_weights)==2) {
-      paramDf$wrt <- paramDf[["wrt"]]*paramDf$wx
+      paramDf$wrt <- paramDf[["wrt"]]*(1-paramDf$wx)
       paramDf$wint <- 1 - paramDf$wx - paramDf$wrt
     }
   }
