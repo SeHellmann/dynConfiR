@@ -12,7 +12,7 @@
 dWEV(rt, response = "upper", th1, th2, a, v, t0 = 0, z = 0.5, d = 0,
   sz = 0, sv = 0, st0 = 0, tau = 1, w = 0.5, muvis = NULL,
   sigvis = 0, svis = 1, lambda = 0, s = 1, simult_conf = FALSE,
-  precision = 1e-05, z_absolute = FALSE, stop_on_error = TRUE,
+  precision = 3, z_absolute = FALSE, stop_on_error = TRUE,
   stop_on_zero = FALSE)
 
 rWEV(n, a, v, t0 = 0, z = 0.5, d = 0, sz = 0, sv = 0, st0 = 0,
@@ -101,8 +101,9 @@ with the decision. If that is the case decision and confidence judgment are assu
 subsequent before the response. Therefore \code{tau} is included in the response time. If the decision was
 reported before the confidence report, \code{simul_conf} should be \code{FALSE}.}
 
-\item{precision}{numerical scalar value. Precision of calculation. Corresponds to the
-step size of integration w.r.t. \code{z} and \code{t0}. Default is 1e-5.}
+\item{precision}{numerical scalar value. Precision of calculation. Determines the
+step size of integration w.r.t. \code{z} and \code{t0}.
+Represents the number of decimals precisely computet on average. Default is 6.}
 
 \item{z_absolute}{logical. Determines whether \code{z} is treated as absolute start point
 (\code{TRUE}) or relative (\code{FALSE}; default) to \code{a}.}

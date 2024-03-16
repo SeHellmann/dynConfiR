@@ -80,7 +80,8 @@
 #' assumed to have happened subsequent before response and computations are different,
 #' when there is an observable interjudgment time (then `simult_conf` should be `FALSE`).
 #' @param precision \code{numerical} scalar value. Precision of calculation.
-#' Determines the the stepsize of integration w.r.t. `z` and `t0`. Default is 1e-5.
+#' Determines the the stepsize of integration w.r.t. `z` and `t0`.
+#' Represents the number of decimals precisely computet on average. Default is 6.
 #' @param z_absolute logical. Determines whether `z` is treated as absolute start point
 #' (`TRUE`) or relative (`FALSE`; default) to `a`.
 #' @param stop_on_error Should the diffusion functions return 0 if the parameters values
@@ -199,7 +200,7 @@
 #' @export
 d2DSD <- function (rt, response="upper", th1,th2,a,v,t0=0,z=0.5,
                    d=0,sz=0,sv=0, st0=0,tau=1,lambda=0, s=1,
-                   simult_conf=FALSE, precision=3, z_absolute = FALSE,
+                   simult_conf=FALSE, precision=6, z_absolute = FALSE,
                    stop_on_error=TRUE, stop_on_zero = FALSE)
 {
   # for convenience accept data.frame as first argument.

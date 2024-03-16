@@ -51,7 +51,11 @@
 #' @param szb numeric. Between-trial variability in starting point of the second accumulator.
 #'
 #' @param time_scaled logical. Whether the confidence measure should be time-dependent. See Details.
-#' @param step_width numeric. Step size for the integration in t0 (motor time). Default: 1e-6.
+#' @param precision numerical scalar value. Precision of calculation. Determines the
+#' step size of integration w.r.t. `t0`.
+#' Represents the number of decimals precisely computet on average. Default is 6.
+#' @param step_width numeric. Alternative way to define the precision of integration
+#' w.r.t. `t0` by directly providing the step size for the integration.
 #'
 #' @param n integer. The number of samples generated.
 #' @param delta numeric. Discretization step size for simulations in the stochastic process
@@ -190,7 +194,8 @@
 dIRM <- function (rt,response=1, mu1, mu2, a, b,
                   th1, th2, wx=1, wrt=0, wint=0,
                   t0=0, st0=0, s1=1, s2=1, s=NULL,
-                  time_scaled = TRUE, step_width=NULL)
+                  time_scaled = TRUE, precision=6,
+                  step_width=NULL)
 {
   # for convenience accept data.frame as first argument.
   if (is.data.frame(rt)) {
@@ -198,10 +203,14 @@ dIRM <- function (rt,response=1, mu1, mu2, a, b,
     rt <- rt$rt
   }
   if (is.null(step_width)) {
-    step_width = 0.089045 * exp(-1.037580*4)
+    step_width = 0.4578627727708822 * exp(-0.8466054539598147*precision)
+    #step_width = 0.089045 * exp(-1.037580*precision)
+    # step_width = 0.089045 * exp(-1.037580*4)
   } else if (step_width>1) {
-    step_width = 0.089045 * exp(-1.037580*step_width)
+    step_width = 0.4578627727708822 * exp(-0.8466054539598147*step_width)
+    #step_width = 0.089045 * exp(-1.037580*step_width)
   }
+  print(step_width)
   if (any(c(a<=0, b<=0))) {stop("Both thresholds (a  and b) must be positive")}
   if (any(c(s1<=0,s2<=0) )) {stop("s1 and s2 must be positive")}
   if (any(t0<0)) {stop("Non-decision time, t0, has to be non-negative")}
@@ -254,7 +263,7 @@ dIRM2 <- function (rt,response=1, mu1, mu2, a, b,
                   t0=0, st0=0, s1=1, s2=1,
                   smu1 = 0, smu2 = 0, sza=0, szb=0,
                    s=NULL,
-                  time_scaled = TRUE, step_width=NULL)
+                  time_scaled = TRUE, precision=6, step_width=NULL)
 {
   # for convenience accept data.frame as first argument.
   if (is.data.frame(rt)) {
@@ -262,9 +271,12 @@ dIRM2 <- function (rt,response=1, mu1, mu2, a, b,
     rt <- rt$rt
   }
   if (is.null(step_width)) {
-    step_width = 0.089045 * exp(-1.037580*4)
+    step_width = 0.4578627727708822 * exp(-0.8466054539598147*precision)
+    #step_width = 0.089045 * exp(-1.037580*precision)
+    # step_width = 0.089045 * exp(-1.037580*4)
   } else if (step_width>1) {
-    step_width = 0.089045 * exp(-1.037580*step_width)
+    step_width = 0.4578627727708822 * exp(-0.8466054539598147*step_width)
+    #step_width = 0.089045 * exp(-1.037580*step_width)
   }
   if (any(c(a<=0, b<=0))) {stop("Both thresholds (a  and b) must be positive")}
   if (any(c(s1<=0,s2<=0) )) {stop("s1 and s2 must be positive")}
@@ -325,7 +337,8 @@ dIRM2 <- function (rt,response=1, mu1, mu2, a, b,
 dPCRM <- function (rt,response=1, mu1, mu2, a, b,
                    th1, th2, wx=1, wrt=0, wint=0,
                    t0=0, st0=0, s1=1, s2=1, s=NULL,
-                   time_scaled = TRUE, step_width=NULL)
+                   time_scaled = TRUE, precision=6,
+                   step_width=NULL)
 {
   # for convenience accept data.frame as first argument.
   if (is.data.frame(rt)) {
@@ -333,9 +346,12 @@ dPCRM <- function (rt,response=1, mu1, mu2, a, b,
     rt <- rt$rt
   }
   if (is.null(step_width)) {
-    step_width = 0.089045 * exp(-1.037580*4)
+    step_width = 0.4578627727708822 * exp(-0.8466054539598147*precision)
+    #step_width = 0.089045 * exp(-1.037580*precision)
+    # step_width = 0.089045 * exp(-1.037580*4)
   } else if (step_width>1) {
-    step_width = 0.089045 * exp(-1.037580*step_width)
+    step_width = 0.4578627727708822 * exp(-0.8466054539598147*step_width)
+    #step_width = 0.089045 * exp(-1.037580*step_width)
   }
   if (any(c(a<=0, b<=0))) {stop("Both thresholds (a  and b) must be positive")}
   if (any(c(s1<=0,s2<=0) )) {stop("s must be positive")}

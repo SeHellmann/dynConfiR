@@ -189,7 +189,7 @@ fitRTConf <- function(data, model = "dynWEV",
                       fixed = list(sym_thetas = FALSE),
                       init_grid = NULL, grid_search = TRUE,
                       data_names = list(), nRatings = NULL, restr_tau =Inf,
-                      precision=3,logging=FALSE, opts=list(), optim_method = "bobyqa",
+                      precision=6,logging=FALSE, opts=list(), optim_method = "bobyqa",
                       useparallel = FALSE, n.cores=NULL, ...){ #  ?ToDO: vary_sv=FALSE, RRT=NULL, vary_tau=FALSE
   # Check if package 'logger' is installed, if logging is wished
   if (logging && !requireNamespace("logger", quietly = TRUE)) {

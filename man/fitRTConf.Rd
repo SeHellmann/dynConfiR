@@ -10,7 +10,7 @@
 \usage{
 fitRTConf(data, model = "dynWEV", fixed = list(sym_thetas = FALSE),
   init_grid = NULL, grid_search = TRUE, data_names = list(),
-  nRatings = NULL, restr_tau = Inf, precision = 1e-05, logging = FALSE,
+  nRatings = NULL, restr_tau = Inf, precision = 6, logging = FALSE,
   opts = list(), optim_method = "bobyqa", useparallel = FALSE,
   n.cores = NULL, ...)
 }
@@ -59,7 +59,7 @@ If given, ratings has to be given as factor or integer.}
 Upper bound for tau. Fits will be in the interval (0,\code{restr_tau}). If FALSE tau will be unbound.
 For \code{"simult_conf"}, see the documentation of \code{\link{d2DSD}} and \code{\link{dWEV}}}
 
-\item{precision}{numerical scalar. For 2DSD and dynWEV only. Precision of calculation.
+\item{precision}{numeric. Precision of calculation.
 (in the respective models) for the density functions (see \code{\link{dWEV}} for more information).}
 
 \item{logging}{logical. If \code{TRUE}, a folder 'autosave/fit\strong{model}' is created and

@@ -45,8 +45,8 @@ NumericVector d_2DSD (NumericVector rts, NumericVector params, double precision=
     // Add tuning values for numerical integrations at the end of parameters
     // ToDo: Optimize and check precision values
     if (precision >= 1) {
-      params.push_back(0.0089045 * exp(-1.037580*precision)); // TUNE_INT_T0
-      params.push_back(0.0508061 * exp(-1.022373*precision)); // TUNE_INT_Z
+      params.push_back(0.0089045 * exp(-1.037580*(precision-3.5))); // TUNE_INT_T0
+      params.push_back(0.0508061 * exp(-1.022373*(precision-3.5))); // TUNE_INT_Z
       //     These have been added to optimise code paths by treating very small variances as 0
       //     e.g. with precision = 3, sv or sz values < 10^-5 are considered 0
       params.push_back(pow (10, -(precision+2.0))); // TUNE_SZ_EPSILON
@@ -83,8 +83,8 @@ NumericVector d_WEVmu (NumericVector rts, NumericVector params, double precision
     }
 
     if (precision >= 1) {
-      params.push_back(0.0089045 * exp(-1.037580*precision)); // TUNE_INT_T0
-      params.push_back(0.0508061 * exp(-1.022373*precision)); // TUNE_INT_Z
+      params.push_back(0.0089045 * exp(-1.037580*(precision-3.5))); // TUNE_INT_T0
+      params.push_back(0.0508061 * exp(-1.022373*(precision-3.5))); // TUNE_INT_Z
       //     These have been added to optimise code paths by treating very small variances as 0
       //     e.g. with precision = 3, sv or sz values < 10^-5 are considered 0
       params.push_back(pow (10, -(precision+2.0))); // TUNE_SZ_EPSILON
@@ -103,7 +103,7 @@ NumericVector d_WEVmu (NumericVector rts, NumericVector params, double precision
 
 // R-callable PDF for DDMConf - pass boundary to retrieve (1 = lower, 2 = upper)
 // [[Rcpp::export]]
-NumericVector d_DDMConf (NumericVector rts, NumericVector params, double precision=1e-5, int boundary=2,
+NumericVector d_DDMConf (NumericVector rts, NumericVector params, double precision=6, int boundary=2,
                          bool stop_on_error=true, bool stop_on_zero=false,
                          double st0precision=0.01)
 {

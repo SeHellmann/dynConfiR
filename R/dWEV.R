@@ -86,7 +86,8 @@
 #' subsequent before the response. Therefore `tau` is included in the response time. If the decision was
 #' reported before the confidence report, `simul_conf` should be `FALSE`.
 #' @param precision numerical scalar value. Precision of calculation. Determines the
-#' step size of integration w.r.t. `z` and `t0`. Default is 1e-5.
+#' step size of integration w.r.t. `z` and `t0`.
+#' Represents the number of decimals precisely computet on average. Default is 6.
 #' @param z_absolute logical. Determines whether `z` is treated as absolute start point
 #' (`TRUE`) or relative (`FALSE`; default) to `a`.
 #' @param stop_on_error Should the diffusion functions return 0 if the parameters values are

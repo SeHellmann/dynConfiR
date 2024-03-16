@@ -142,10 +142,10 @@ ggplot(empirical_response_dist, aes(x=rating, y=p)) +
 
 ```{r, out.width="100%", fig.dim=c(6, 8)}
 ggplot(subset(part8, rt<18), aes(x=rt, color=as.factor(correct))) +
-  geom_density(aes(linetype="Observed"), size=1.2)+
+  geom_density(aes(linetype="Observed"), linewidth=1)+
   geom_line(data = predictedRTdist, 
             aes(y=densscaled, linetype="Prediction"), 
-            size=1.2)+
+            linewidth=1)+
   scale_color_discrete(name="Accuracy")+
   scale_linetype_discrete(name="")+
   theme(legend.position = "bottom")+

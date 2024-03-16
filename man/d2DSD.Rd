@@ -9,7 +9,7 @@
 \usage{
 d2DSD(rt, response = "upper", th1, th2, a, v, t0 = 0, z = 0.5, d = 0,
   sz = 0, sv = 0, st0 = 0, tau = 1, lambda = 0, s = 1,
-  simult_conf = FALSE, precision = 1e-05, z_absolute = FALSE,
+  simult_conf = FALSE, precision = 6, z_absolute = FALSE,
   stop_on_error = TRUE, stop_on_zero = FALSE)
 
 r2DSD(n, a, v, t0 = 0, z = 0.5, d = 0, sz = 0, sv = 0, st0 = 0,
@@ -92,8 +92,9 @@ simultaneously with the decision, as then decision and confidence judgment are
 assumed to have happened subsequent before response and computations are different,
 when there is an observable interjudgment time (then \code{simult_conf} should be \code{FALSE}).}
 
-\item{precision}{\code{numerical} scalar value. Precision of calculation. Corresponds
-to the stepsize of integration w.r.t. \code{z} and \code{t0}. Default is 1e-5.}
+\item{precision}{\code{numerical} scalar value. Precision of calculation.
+Determines the the stepsize of integration w.r.t. \code{z} and \code{t0}.
+Represents the number of decimals precisely computet on average. Default is 6.}
 
 \item{z_absolute}{logical. Determines whether \code{z} is treated as absolute start point
 (\code{TRUE}) or relative (\code{FALSE}; default) to \code{a}.}
