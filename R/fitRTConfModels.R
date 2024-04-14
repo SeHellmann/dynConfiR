@@ -3,7 +3,7 @@
 #' This function is a wrapper of the function \code{\link{fitConfModel}} (see
 #' there for more information). It calls the function for every possible combination
 #' of model and participant in `model` and \code{data} respectively.
-#' Also, see \code{\link{dWEV}}, \code{\link{d2DSD}}, \code{\link{dDDMConf}},
+#' Also, see \code{\link{dWEV}}, \code{\link{d2DSD}}, \code{\link{dDDConf}},
 #' and \code{\link{dRM}} for more
 #' information about the parameters.
 #'
@@ -156,10 +156,14 @@ fitRTConfModels <- function(data, models = c("dynaViTE", "2DSD", "PCRMt"),
                       grid_search=TRUE,
                       opts=list(), optim_method = "bobyqa", logging=FALSE, precision=3,
                       parallel = TRUE, n.cores=NULL, ...){ #  ?ToDO: vary_sv=FALSE, RRT=NULL, vary_tau=FALSE
-  if (any(!grepl("dynaViTE|IRM|PCRM|IRMt|PCRMt|dynWEV|2DSD|DDMConf", models))) {
+  if (any(models =="DDMConf")) {
+    warning("DDMConf was renamed DDConf in version 1.0.0! DDConf will be fitted instead!")
+    models[models=="DDMConf"] = "DDConf"
+  }
+  if (any(!grepl("dynaViTE|IRM|PCRM|IRMt|PCRMt|dynWEV|2DSD|DDConf", models))) {
     stop("all models must be one of:
     'dynaViTE', 'dynWEV', '2DSDT', '2DSD',
-    'DDMConf', 'IRM', 'IRMt', 'PCRM', or 'PCRMt'")
+    'DDConf', 'IRM', 'IRMt', 'PCRM', or 'PCRMt'")
   }
 
   ### Maybe later: use ...-argument für renaming data-columns and to pass other arguments

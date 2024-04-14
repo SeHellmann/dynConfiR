@@ -2,7 +2,7 @@
 ## (i.e. increasing "confidence" here, is increasing RT and thus corresponds to
 ## lower confidence)
 
-fittingDDMConf<- function(df, nConds, nRatings, fixed, sym_thetas,
+fittingDDConf<- function(df, nConds, nRatings, fixed, sym_thetas,
                         grid_search, init_grid=NULL, opts,
                         logging, filename,
                         useparallel, n.cores, precision,
@@ -139,13 +139,13 @@ fittingDDMConf<- function(df, nConds, nRatings, fixed, sym_thetas,
     if (useparallel) {
       logL <-
         parApply(cl, inits, MARGIN=1,
-                 function(p) try(neglikelihood_DDMConf_bounded(p, df,nConds, nRatings, fixed,sym_thetas, precision, st0stepsize),
+                 function(p) try(neglikelihood_DDConf_bounded(p, df,nConds, nRatings, fixed,sym_thetas, precision, st0stepsize),
                                  silent=TRUE))
       #stopCluster(cl)
     } else {
       logL <-
         apply(inits, MARGIN = 1,
-              function(p) try(neglikelihood_DDMConf_bounded(p, df, nConds, nRatings, fixed,sym_thetas, precision, st0stepsize),
+              function(p) try(neglikelihood_DDConf_bounded(p, df, nConds, nRatings, fixed,sym_thetas, precision, st0stepsize),
                               silent=TRUE))
     }
     logL <- as.numeric(logL)
@@ -174,7 +174,7 @@ fittingDDMConf<- function(df, nConds, nRatings, fixed, sym_thetas,
       names(start) <- names(inits)
       for (l in 1:opts$nRestarts){
         try(m <- bobyqa(par = start,
-                        fn = neglikelihood_DDMConf_bounded,
+                        fn = neglikelihood_DDConf_bounded,
                         lower = lower_optbound, upper = upper_optbound,
                         data=df, nConds=nConds, nRatings=nRatings,
                         fixed = fixed, sym_thetas=sym_thetas, precision=precision,
@@ -233,7 +233,7 @@ fittingDDMConf<- function(df, nConds, nRatings, fixed, sym_thetas,
       names(start) <- parnames
       for (l in 1:opts$nRestarts){
         try(m <- bobyqa(par = start,
-                        fn = neglikelihood_DDMConf_bounded,
+                        fn = neglikelihood_DDConf_bounded,
                         lower = lower_optbound, upper = upper_optbound,
                         data=df,  nConds=nConds, nRatings=nRatings,
                         fixed = fixed, sym_thetas=sym_thetas, precision=precision,
@@ -268,7 +268,7 @@ fittingDDMConf<- function(df, nConds, nRatings, fixed, sym_thetas,
         return(c(fit$value,fit$par))
       } else {
         # If optimization broke return starting values and start-negloglik
-        return(c(start, neglikelihood_DDMConf_bounded(start, df,nConds, nRatings, fixed,sym_thetas, precision, st0stepsize)))
+        return(c(start, neglikelihood_DDConf_bounded(start, df,nConds, nRatings, fixed,sym_thetas, precision, st0stepsize)))
       } # end of node-function
     }
     clusterExport(cl, c("parnames", "opts", "optim_node" ), envir = environment())
@@ -347,7 +347,7 @@ fittingDDMConf<- function(df, nConds, nRatings, fixed, sym_thetas,
 
 
 
-neglikelihood_DDMConf_bounded <-   function(p, data, nConds, nRatings, fixed, sym_thetas=FALSE, precision=3, st0stepsize=0.001)
+neglikelihood_DDConf_bounded <-   function(p, data, nConds, nRatings, fixed, sym_thetas=FALSE, precision=3, st0stepsize=0.001)
 {
   # get parameter vector back from real transformations
   paramDf <-   data.frame(matrix(nrow=1, ncol=length(p)))
@@ -409,7 +409,7 @@ neglikelihood_DDMConf_bounded <-   function(p, data, nConds, nRatings, fixed, sy
                          M_drift = V[.data$condition]*.data$stimulus,
                          SV = SV[.data$condition],
                          S = S[.data$condition])
-  probs <- with(data, dDDMConf(rt,  response, th1, th2,
+  probs <- with(data, dDDConf(rt,  response, th1, th2,
                                   a=paramDf$a,
                                   v = M_drift,
                                   t0 = paramDf$t0, z = paramDf$z, sz = paramDf$sz, st0=paramDf$st0,

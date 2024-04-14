@@ -93,7 +93,7 @@ as fitted result as well as additional information about the fit (\code{negLogLi
 This function is a wrapper of the function \code{\link{fitConfModel}} (see
 there for more information). It calls the function for every possible combination
 of model and participant in \code{model} and \code{data} respectively.
-Also, see \code{\link{dWEV}}, \code{\link{d2DSD}}, \code{\link{dDDMConf}},
+Also, see \code{\link{dWEV}}, \code{\link{d2DSD}}, \code{\link{dDDConf}},
 and \code{\link{dRM}} for more
 information about the parameters.
 }

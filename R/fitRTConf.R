@@ -1,7 +1,7 @@
 #' Function for fitting sequential sampling confidence models
 #'
 #' Fits the parameters of different models of response time and confidence, including
-#' the 2DSD model (Pleskac & Busemeyer, 2010), dynWEV, DDMConf, and various
+#' the 2DSD model (Pleskac & Busemeyer, 2010), dynWEV, DDConf, and various
 #' flavors of race models (Hellmann et al., 2023). Which model to fit is
 #' specified by the argument \code{model}.
 #' Only a ML method is implemented.
@@ -22,7 +22,7 @@
 #'                                                       if unique the ID is used in saved files with interim results
 #'                                                       and logging messages;
 #'                                                       if non-unique or missing and `logging =TRUE`, 999 will be used then)
-#' @param model character scalar. One of "dynWEV", "2DSD", "IRM", "PCRM", "IRMt", "PCRMt", or "DDMConf" for the model to be fit.
+#' @param model character scalar. One of "dynWEV", "2DSD", "IRM", "PCRM", "IRMt", "PCRMt", or "DDConf" for the model to be fit.
 #' @param fixed list. List with parameter-value pairs for parameters that should not be fitted. See Details.
 #' @param init_grid data.frame or `NULL`. Grid for the initial parameter search. Each row is one parameter constellation.
 #' See details for more information. If \code{NULL} a default grid will be used.
@@ -202,7 +202,10 @@ fitRTConf <- function(data, model = "dynWEV",
   #### Check argument types ###
   if (!is.logical(grid_search)) stop(paste("grid_search must be logical, but is ", typeof(grid_search), sep=""))
   if (length(grid_search)!=1) stop(paste("grid_search must be of length 1, it's ", length(grid_search), sep=""))
-
+  if (model =="DDMConf") {
+    warning("DDMConf was renamed DDConf in version 1.0.0! DDConf will be fitted!")
+    model = "DDConf"
+  }
   # colrenames <- c(...)
   # colrenames <- colrenames[colrenames %in% names(data)]
   # data <- rename(data, colrenames)
@@ -399,7 +402,7 @@ fitRTConf <- function(data, model = "dynWEV",
                                           logging, filename,
                                           useparallel, n.cores,
                                           used_cats, actual_nRatings)
-  if (model == "DDMConf") res <- fittingDDMConf(df, nConds, nRatings, fixed, sym_thetas,
+  if (model == "DDConf") res <- fittingDDConf(df, nConds, nRatings, fixed, sym_thetas,
                                           grid_search, init_grid, opts,
                                           logging, filename,
                                           useparallel, n.cores,
@@ -407,7 +410,7 @@ fitRTConf <- function(data, model = "dynWEV",
                                           used_cats, actual_nRatings, precision)
   if (!exists("res")) stop("Model is unknown.
                            model must contain one of: 'dynaViTE', 'dynWEV',
-                           '2DSD', '2DSDT', 'IRM', 'IMRt', 'PCRM', 'PCRMt', or 'DDMConf'")
+                           '2DSD', '2DSDT', 'IRM', 'IMRt', 'PCRM', 'PCRMt', or 'DDConf'")
 
 
   return(res)

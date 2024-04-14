@@ -84,12 +84,12 @@
 #' process exceeds a decision time of `maxrt`, the `response` will be set to 0 and the `maxrt`
 #' will be returned as `rt`.
 #'
-#' @return \code{dDDMConf} gives the density/likelihood/probability of the diffusion process
+#' @return \code{dDDConf} gives the density/likelihood/probability of the diffusion process
 #' producing a decision of \code{response} at time \code{rt} and a confidence
 #' judgment corresponding to the interval \[ \code{th1}, \code{th2}\].
 #' The value will be a numeric vector of the same length as \code{rt}.
 #'
-#' \code{rDDMConf} returns a `data.frame` with three columns and `n` rows. Column names are `rt` (response
+#' \code{rDDConf} returns a `data.frame` with three columns and `n` rows. Column names are `rt` (response
 #' time), `response` (-1 (lower) or 1 (upper), indicating which bound was hit),
 #' `conf` for the decision time (without non-decision time component; not discretized!).
 #'
@@ -136,30 +136,30 @@
 #'
 #' Hellmann, S., Zehetleitner, M., & Rausch, M. (2023). Simultaneous modeling of choice, confidence and response time in visual perception. \emph{Psychological Review} 2023 Mar 13. doi: 10.1037/rev0000411. Epub ahead of print. PMID: 36913292.
 #'
-#' @author For the original `rtdists` package: Underlying C code by Jochen Voss and Andreas Voss. Porting and R wrapping by Matthew Gretton, Andrew Heathcote, Scott Brown, and Henrik Singmann. \code{qdiffusion} by Henrik Singmann. For the `dDDMConf` function the C code was extended by Sebastian Hellmann.
+#' @author For the original `rtdists` package: Underlying C code by Jochen Voss and Andreas Voss. Porting and R wrapping by Matthew Gretton, Andrew Heathcote, Scott Brown, and Henrik Singmann. \code{qdiffusion} by Henrik Singmann. For the `dDDConf` function the C code was extended by Sebastian Hellmann.
 #'
 #' @useDynLib dynConfiR, .registration = TRUE
 #'
-#' @name dDDMConf
-#' @aliases DDMConf rDDMConf
+#' @name dDDConf
+#' @aliases DDConf rDDConf
 #' @importFrom Rcpp evalCpp
 #'
 #' @examples
 #' # Plot rt distribution ignoring confidence
-#' curve(dDDMConf(x, "upper", 0, Inf, a=2, v=0.4, sz=0.2, sv=0.9), xlim=c(0, 2), lty=2)
-#' curve(dDDMConf(x, "lower", 0, Inf, a=2, v=0.4, sz=0.2, sv=0.9), col="red", lty=2, add=TRUE)
-#' curve(dDDMConf(x, "upper", 0, Inf, a=2, v=0.4),add=TRUE)
-#' curve(dDDMConf(x, "lower", 0, Inf, a=2, v=0.4), col="red", add=TRUE)
+#' curve(dDDConf(x, "upper", 0, Inf, a=2, v=0.4, sz=0.2, sv=0.9), xlim=c(0, 2), lty=2)
+#' curve(dDDConf(x, "lower", 0, Inf, a=2, v=0.4, sz=0.2, sv=0.9), col="red", lty=2, add=TRUE)
+#' curve(dDDConf(x, "upper", 0, Inf, a=2, v=0.4),add=TRUE)
+#' curve(dDDConf(x, "lower", 0, Inf, a=2, v=0.4), col="red", add=TRUE)
 #' # Generate a random sample
-#' dfu <- rDDMConf(5000, a=2,v=0.5,t0=0,z=0.5,d=0,sz=0,sv=0, st0=2, s=1)
+#' dfu <- rDDConf(5000, a=2,v=0.5,t0=0,z=0.5,d=0,sz=0,sv=0, st0=2, s=1)
 #' # Same RT distribution but upper and lower responses changed
-#' dfl <- rDDMConf(50, a=2,v=-0.5,t0=0,z=0.5,d=0,sz=0,sv=0, st0=2, s=1)
+#' dfl <- rDDConf(50, a=2,v=-0.5,t0=0,z=0.5,d=0,sz=0,sv=0, st0=2, s=1)
 #' head(dfu)
 #'
-#' dDDMConf(dfu, th1=0.5, th2=2.5, a=2, v=.5, st0=2)[1:5]
+#' dDDConf(dfu, th1=0.5, th2=2.5, a=2, v=.5, st0=2)[1:5]
 #' # Scaling diffusion parameters leads do same density values
 #' s <- 2
-#' dDDMConf(dfu, th1=0.5, th2=2.5, a=2*s, v=.5*s, s=2, st0=2)[1:5]
+#' dDDConf(dfu, th1=0.5, th2=2.5, a=2*s, v=.5*s, s=2, st0=2)[1:5]
 #' if (requireNamespace("ggplot2", quietly = TRUE)) {
 #'   require(ggplot2)
 #'   ggplot(dfu, aes(x=rt, y=conf))+
@@ -170,19 +170,19 @@
 #'
 #' # Restricting to specific confidence region
 #' dfu <- dfu[dfu$conf >0 & dfu$conf <1,]
-#' dDDMConf(dfu, th1=0, th2=1, a=2, v=0.5, st0=2)[1:5]
+#' dDDConf(dfu, th1=0, th2=1, a=2, v=0.5, st0=2)[1:5]
 #'
 #' # If lower confidence threshold is higher than the upper, the function throws an error,
 #' # except when stop_on_error is FALSE
-#' dDDMConf(dfu[1:5,], th1=1, th2=0, a=2, v=0.5, stop_on_error = FALSE)
+#' dDDConf(dfu[1:5,], th1=1, th2=0, a=2, v=0.5, stop_on_error = FALSE)
 #'
 
 
 
 
-#' @rdname dDDMConf
+#' @rdname dDDConf
 #' @export
-dDDMConf <- function (rt, response="upper", th1,th2, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, st0=1,s=1,
+dDDConf <- function (rt, response="upper", th1,th2, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, st0=1,s=1,
                    precision=1e-5, z_absolute = FALSE,
                    stop_on_error=TRUE, stop_on_zero = FALSE, st0stepsize=0.001)
 {
@@ -194,7 +194,7 @@ dDDMConf <- function (rt, response="upper", th1,th2, a,v,t0=0,z=0.5,d=0,sz=0,sv=
 
   nn <- length(rt)
 
-  pars <- prepare_DDMConf_parameter(response = response,
+  pars <- prepare_DDConf_parameter(response = response,
                                  a = a, v = v, t0 = t0, z = z,
                                  d = d, sz = sz, sv = sv, st0 = st0,
                                  th1=th1, th2=th2,
@@ -205,7 +205,7 @@ dDDMConf <- function (rt, response="upper", th1,th2, a,v,t0=0,z=0.5,d=0,sz=0,sv=
   for (i in seq_len(length(pars$parameter_indices))) {
     ok_rows <- pars$parameter_indices[[i]]
 
-    densities[ok_rows] <- d_DDMConf (rt[ok_rows],
+    densities[ok_rows] <- d_DDConf (rt[ok_rows],
                                   pars$params[ok_rows[1],1:10],
                                   precision,
                                   pars$params[ok_rows[1],11],
@@ -218,15 +218,15 @@ dDDMConf <- function (rt, response="upper", th1,th2, a,v,t0=0,z=0.5,d=0,sz=0,sv=
   abs(densities)
 }
 
-#' @rdname dDDMConf
+#' @rdname dDDConf
 #' @export
-rDDMConf <- function (n, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, st0=2,
+rDDConf <- function (n, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, st0=2,
                     s=1, delta=0.01, maxrt=15,
                    z_absolute = FALSE,  stop_on_error=TRUE)
 {
   if (any(missing(a), missing(v))) stop("a and v must be supplied")
 
-  pars <- prepare_DDMConf_parameter(response = 1L,
+  pars <- prepare_DDConf_parameter(response = 1L,
                                  a = a, v = v, t0 = t0, z = z,
                                  d = d, sz = sz, sv = sv, st0 = st0,
                                  th1=0, th2=1,
@@ -236,7 +236,7 @@ rDDMConf <- function (n, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, st0=2,
   for (i in seq_len(length(pars$parameter_indices))) {
     ok_rows <- pars$parameter_indices[[i]]
     current_n <- length(ok_rows)
-    out <- r_DDMConf(current_n, pars$params[ok_rows[1], 1:8],
+    out <- r_DDConf(current_n, pars$params[ok_rows[1], 1:8],
                 delta = delta, maxT =maxrt, stop_on_error)
     res[ok_rows,] <- out
   }
@@ -255,7 +255,7 @@ rDDMConf <- function (n, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, st0=2,
 
 
 
-prepare_DDMConf_parameter <- function(response,
+prepare_DDConf_parameter <- function(response,
                                    a, v, t0, z, d,
                                    sz, sv, st0, th1, th2, s,
                                    nn,

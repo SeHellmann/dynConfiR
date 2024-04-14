@@ -39,7 +39,7 @@ bool ValidateParams (NumericVector params, bool print)
   if (params[7] - 0.5*params[4] < 0) { valid = false; if (print) Rcpp::Rcout << "error: invalid parameter combination zr = " << params[7] << ", szr = " << params[4] << std::endl;}
   if (params[7] + 0.5*params[4] > 1) { valid = false; if (print) Rcpp::Rcout << "error: invalid parameter combination zr = " << params[7] << ", szr = " << params[4] << std::endl;}
 
-  if (params.size()<= 10) { // DDMConf model
+  if (params.size()<= 10) { // DDConf model
     // th2 < th1
     if (params[9] < params[8])      { valid = false; if (print) Rcpp::Rcout << "error: invalid parameter combination th1 = " << params[8] << ", th2 = " << params[9] << std::endl;}
   } else { // 2DSDT and dynaViTE

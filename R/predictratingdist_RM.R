@@ -242,7 +242,7 @@ predictRM_Conf <- function(paramDf, model="IRM", time_scaled = FALSE,
   res$correct <- as.numeric(res$stimulus==res$response)
   res <- res[c("condition", "stimulus", "response", "correct", "rating", "p", "info", "err")]
   # the last line is to sort the output columns
-  # (to combine outputs from predictWEV_Conf and predictDDMConf_Conf)
+  # (to combine outputs from predictWEV_Conf and predictDDConf_Conf)
   res
 }
 
@@ -385,6 +385,6 @@ predictRM_RT <- function(paramDf, model="IRM", time_scaled = FALSE,
   df <- df[,c("condition", "stimulus", "response", "correct", "rating",
               "rt", "dens", rep("densscaled", as.numeric(scaled)))]
   # the last line is to sort the output columns
-  # (to combine outputs from predictWEV_RT and predictDDMConf_RT)
+  # (to combine outputs from predictWEV_RT and predictDDConf_RT)
   return(df)
 }

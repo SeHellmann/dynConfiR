@@ -101,9 +101,9 @@ NumericVector d_WEVmu (NumericVector rts, NumericVector params, double precision
     return out;
 }
 
-// R-callable PDF for DDMConf - pass boundary to retrieve (1 = lower, 2 = upper)
+// R-callable PDF for DDConf - pass boundary to retrieve (1 = lower, 2 = upper)
 // [[Rcpp::export]]
-NumericVector d_DDMConf (NumericVector rts, NumericVector params, double precision=6, int boundary=2,
+NumericVector d_DDConf (NumericVector rts, NumericVector params, double precision=6, int boundary=2,
                          bool stop_on_error=true, bool stop_on_zero=false,
                          double st0precision=0.01)
 {
@@ -130,7 +130,7 @@ NumericVector d_DDMConf (NumericVector rts, NumericVector params, double precisi
   params.push_back(pow (10, -(precision+2.0))); // TUNE_SZ_EPSILON
   params.push_back(pow (10, -(precision+2.0))); // TUNE_ST0_EPSILON
 
-  out = density_DDMConf (rts, params, boundary-1, stop_on_zero, st0precision);
+  out = density_DDConf (rts, params, boundary-1, stop_on_zero, st0precision);
 
   return out;
 }
@@ -653,7 +653,7 @@ NumericVector r_LCA (int n, NumericVector params, double delta=0.01, double maxT
 
 
 // [[Rcpp::export]]
-NumericVector r_DDMConf (int n, NumericVector params, double delta=0.01, double maxT=9, bool stop_on_error=true)
+NumericVector r_DDConf (int n, NumericVector params, double delta=0.01, double maxT=9, bool stop_on_error=true)
 {
   double a   = params[0];
   double v   = params[1];

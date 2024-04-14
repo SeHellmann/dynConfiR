@@ -34,7 +34,7 @@ and logging messages;
 if non-unique or missing and \code{logging =TRUE}, 999 will be used then)
 }}
 
-\item{model}{character scalar. One of "dynWEV", "2DSD", "IRM", "PCRM", "IRMt", "PCRMt", or "DDMConf" for the model to be fit.}
+\item{model}{character scalar. One of "dynWEV", "2DSD", "IRM", "PCRM", "IRMt", "PCRMt", or "DDConf" for the model to be fit.}
 
 \item{fixed}{list. List with parameter-value pairs for parameters that should not be fitted. See Details.}
 
@@ -95,7 +95,7 @@ about fixed and not fitted parameters.
 }
 \description{
 Fits the parameters of different models of response time and confidence, including
-the 2DSD model (Pleskac & Busemeyer, 2010), dynWEV, DDMConf, and various
+the 2DSD model (Pleskac & Busemeyer, 2010), dynWEV, DDConf, and various
 flavors of race models (Hellmann et al., 2023). Which model to fit is
 specified by the argument \code{model}.
 Only a ML method is implemented.

@@ -82,7 +82,7 @@ public:
 
 
         //Rcpp::Rcout << "note: length of params vector " << params.size() << std::endl;
-        if (params.size()<= 10) // DDMConf model
+        if (params.size()<= 10) // DDConf model
         {
           tau = 1;
           th1 = params[PARAM_th1-1];

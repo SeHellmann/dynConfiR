@@ -1,27 +1,27 @@
 #' Prediction of Confidence Rating and Reaction Time Distribution in the drift diffusion confidence model
 #'
-#' \code{predictDDMConf_Conf} predicts the categorical response distribution of
-#' decision and confidence ratings, \code{predictDDMConf_RT} computes the
+#' \code{predictDDConf_Conf} predicts the categorical response distribution of
+#' decision and confidence ratings, \code{predictDDConf_RT} computes the
 #' RT distribution (density) in the drift diffusion confidence model
 #' (Hellmann et al., 2023), given specific parameter
-#' constellations. See \code{\link{dDDMConf}} for more information about the model
+#' constellations. See \code{\link{dDDConf}} for more information about the model
 #' and parameters.
 #'
 #' @param paramDf a list or data frame with one row. Column names should match the names of
-#' \link{DDMConf} model parameter names. For different stimulus quality/mean
+#' \link{DDConf} model parameter names. For different stimulus quality/mean
 #' drift rates, names should be `v1`, `v2`, `v3`,....
 #' Different `sv` and/or `s` parameters are possible with `sv1`, `sv2`, `sv3`... (`s1`, `s2`, `s3`,...
 #' respectively) with equally many steps as for drift rates. Additionally, the confidence
 #' thresholds should be given by names with `thetaUpper1`, `thetaUpper2`,..., `thetaLower1`,... or,
 #' for symmetric thresholds only by `theta1`, `theta2`,....
 #' @param maxrt numeric. The maximum RT for the
-#' integration/density computation. Default: 15 (for `predictDDMConf_Conf`
-#' (integration)), 9 (for `predictDDMConf_RT`).
+#' integration/density computation. Default: 15 (for `predictDDConf_Conf`
+#' (integration)), 9 (for `predictDDConf_RT`).
 #' @param subdivisions \code{integer} (default: 100).
-#' For \code{predictDDMConf_Conf} it is used as argument for the inner integral routine.
-#' For \code{predictDDMConf_RT} it is the number of points for which the density is computed.
+#' For \code{predictDDConf_Conf} it is used as argument for the inner integral routine.
+#' For \code{predictDDConf_RT} it is the number of points for which the density is computed.
 #' @param minrt numeric or `NULL`(default). The minimum rt for the density computation.
-#' @param scaled logical. For \code{predictDDMConf_RT}. Whether the computed density
+#' @param scaled logical. For \code{predictDDConf_RT}. Whether the computed density
 #' should be scaled to integrate to one (additional column `densscaled`). Otherwise the output
 #' contains only the defective density (i.e. its integral is equal to the probability of a
 #' response and not 1). If `TRUE`, the argument `DistConf` should be given, if available.
@@ -29,30 +29,30 @@
 #' @param DistConf `NULL` or `data.frame`. A `data.frame` or `matrix` with column
 #' names, giving the distribution of response and rating choices for
 #' different conditions and stimulus categories in the form of the output of
-#' \code{predictDDMConf_Conf}. It is only necessary, if `scaled=TRUE`, because these
+#' \code{predictDDConf_Conf}. It is only necessary, if `scaled=TRUE`, because these
 #' probabilities are used for scaling. If `scaled=TRUE` and `DistConf=NULL`, it will be computed
-#' with the function \code{predictDDMConf_Conf}, which takes some time and the function will
+#' with the function \code{predictDDConf_Conf}, which takes some time and the function will
 #' throw a message. Default: `NULL`
 #' @param stop.on.error logical. Argument directly passed on to integrate. Default is `FALSE`,
 #' since the densities invoked may lead to slow convergence of the integrals (which are still
 #' quite accurate) which causes R to throw an error.
 #' @param .progress logical. If `TRUE` (default) a progress bar is drawn to the console.
 #'
-#' @return \code{predictDDMConf_Conf} returns a `data.frame`/`tibble` with columns: `condition`, `stimulus`,
+#' @return \code{predictDDConf_Conf} returns a `data.frame`/`tibble` with columns: `condition`, `stimulus`,
 #' `response`, `rating`, `correct`, `p`, `info`, `err`. `p` is the predicted probability of a response
 #' and `rating`, given the stimulus category and condition. `info` and `err` refer to the
 #' respective outputs of the integration routine used for the computation.
-#' \code{predictDDMConf_RT} returns a `data.frame`/`tibble` with columns: `condition`, `stimulus`,
+#' \code{predictDDConf_RT} returns a `data.frame`/`tibble` with columns: `condition`, `stimulus`,
 #' `response`, `rating`, `correct`, `rt` and `dens` (and `densscaled`, if `scaled=TRUE`).
 #'
 #'
-#' @details The function \code{predictDDMConf_Conf} consists merely of an integration of
-#' the response time density, \code{\link{dDDMConf}}, over the
+#' @details The function \code{predictDDConf_Conf} consists merely of an integration of
+#' the response time density, \code{\link{dDDConf}}, over the
 #' response time in a reasonable interval (0 to `maxrt`). The function
-#' \code{predictDDMConf_RT} wraps these density
+#' \code{predictDDConf_RT} wraps these density
 #' functions to a parameter set input and a `data.frame` output.
 #' For the argument \code{paramDf}, the output of the fitting function \code{\link{fitRTConf}}
-#' with the DDMConf model may be used.
+#' with the DDConf model may be used.
 #'
 #' @note Different parameters for different conditions are only allowed for drift rate
 #' \code{v}, drift rate variability \code{sv}, and process variability `s`. Otherwise, `s` is
@@ -63,7 +63,7 @@
 #'
 #' @author Sebastian Hellmann.
 #'
-#' @name predictDDMConf
+#' @name predictDDConf
 #' @importFrom stats integrate
 #' @importFrom progress progress_bar
 # @importFrom pracma integral
@@ -74,13 +74,13 @@
 #'                       sz=0,sv=0.2, st0=0, theta1=0.8)
 #'
 #' # 2. Predict discrete Choice x Confidence distribution:
-#' preds_Conf <- predictDDMConf_Conf(paramDf,  maxrt = 15)
+#' preds_Conf <- predictDDConf_Conf(paramDf,  maxrt = 15)
 #' head(preds_Conf)
 #'
 #' # 3. Compute RT density
-#' preds_RT <- predictDDMConf_RT(paramDf, maxrt=4, subdivisions=200) #(scaled=FALSE)
+#' preds_RT <- predictDDConf_RT(paramDf, maxrt=4, subdivisions=200) #(scaled=FALSE)
 #' # same output with scaled density column:
-#' preds_RT <- predictDDMConf_RT(paramDf, maxrt=4, subdivisions=200,
+#' preds_RT <- predictDDConf_RT(paramDf, maxrt=4, subdivisions=200,
 #'                               scaled=TRUE, DistConf = preds_Conf)
 #' head(preds_RT)
 #'
@@ -106,9 +106,9 @@
 #' head(PDFtoQuantiles(preds_RT, scaled = FALSE))
 #'
 
-#' @rdname predictDDMConf
+#' @rdname predictDDConf
 #' @export
-predictDDMConf_Conf <- function(paramDf,
+predictDDConf_Conf <- function(paramDf,
                                 maxrt=15, subdivisions = 100L, stop.on.error=FALSE,
                                 .progress=TRUE){
 
@@ -172,7 +172,7 @@ predictDDMConf_Conf <- function(paramDf,
     th2  = ifelse(row$response == 1, thetas_upper[(nRatings+2-row$rating)], thetas_lower[(nRatings+2-row$rating)])
     v    = V[row$condition]*(row$stimulus)
     sv   = SV[row$condition]
-    p <- integrate(function(rt) return(dDDMConf(rt, response=row$response,
+    p <- integrate(function(rt) return(dDDConf(rt, response=row$response,
                                                 th1 = 0, th2=1e+64,
                                                 v=v, s=s,
                                                 sv = sv, z=z, sz=sz,
@@ -187,16 +187,16 @@ predictDDMConf_Conf <- function(paramDf,
   res$correct <- as.numeric(res$stimulus==(2*as.numeric(res$response=="upper")-1 ))
   res <- res[c("condition", "stimulus", "response", "correct", "rating", "p", "info", "err")]
   # the last line is to sort the output columns
-  # (to combine outputs from predictWEV_Conf and predictDDMConf_Conf)
+  # (to combine outputs from predictWEV_Conf and predictDDConf_Conf)
   res
 }
 
 
 
 ### Predict RT-distribution
-#' @rdname predictDDMConf
+#' @rdname predictDDConf
 #' @export
-predictDDMConf_RT <- function(paramDf,
+predictDDConf_RT <- function(paramDf,
                               maxrt=9, subdivisions = 100L,  minrt=NULL,
                               scaled = FALSE, DistConf=NULL,
                               .progress = TRUE) {
@@ -255,7 +255,7 @@ predictDDMConf_RT <- function(paramDf,
     # Therefore, divide the density by the probability of a
     # decision-rating-response (as in data.frame DistConf)
     if (is.null(DistConf)) {
-      DistConf <- predictDDMConf_Conf(paramDf,
+      DistConf <- predictDDConf_Conf(paramDf,
                                       maxrt = maxrt, subdivisions=subdivisions,
                                       .progress = FALSE)
     }
@@ -276,7 +276,7 @@ predictDDMConf_RT <- function(paramDf,
     sv <- SV[cur_row$condition]
 
     df[(1:subdivisions) + subdivisions*(i-1), "dens"] <-
-      dDDMConf(rt, as.character(cur_row$response),
+      dDDConf(rt, as.character(cur_row$response),
               th1 = th1, th2=th2,
               v = v, s=s, sv=sv,
               a  = paramDf$a,
@@ -301,6 +301,6 @@ predictDDMConf_RT <- function(paramDf,
   df <- df[,c("condition", "stimulus", "response", "correct", "rating",
              "rt", "dens", rep("densscaled", as.numeric(scaled)))]
   # the last line is to sort the output columns
-  # (to combine outputs from predictWEV_RT and predictDDMConf_RT)
+  # (to combine outputs from predictWEV_RT and predictDDConf_RT)
   return(df)
 }

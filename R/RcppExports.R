@@ -9,8 +9,8 @@ d_WEVmu <- function(rts, params, precision = 1e-5, boundary = 2L, stop_on_error 
     .Call(`_dynConfiR_d_WEVmu`, rts, params, precision, boundary, stop_on_error, stop_on_zero)
 }
 
-d_DDMConf <- function(rts, params, precision = 6, boundary = 2L, stop_on_error = TRUE, stop_on_zero = FALSE, st0precision = 0.01) {
-    .Call(`_dynConfiR_d_DDMConf`, rts, params, precision, boundary, stop_on_error, stop_on_zero, st0precision)
+d_DDConf <- function(rts, params, precision = 6, boundary = 2L, stop_on_error = TRUE, stop_on_zero = FALSE, st0precision = 0.01) {
+    .Call(`_dynConfiR_d_DDConf`, rts, params, precision, boundary, stop_on_error, stop_on_zero, st0precision)
 }
 
 d_IRM <- function(rts, params, win = 1L, step_width = 0.0001) {
@@ -49,7 +49,7 @@ r_LCA <- function(n, params, delta = 0.01, maxT = 9.0) {
     .Call(`_dynConfiR_r_LCA`, n, params, delta, maxT)
 }
 
-r_DDMConf <- function(n, params, delta = 0.01, maxT = 9, stop_on_error = TRUE) {
-    .Call(`_dynConfiR_r_DDMConf`, n, params, delta, maxT, stop_on_error)
+r_DDConf <- function(n, params, delta = 0.01, maxT = 9, stop_on_error = TRUE) {
+    .Call(`_dynConfiR_r_DDConf`, n, params, delta, maxT, stop_on_error)
 }
 

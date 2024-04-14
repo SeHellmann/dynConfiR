@@ -42,9 +42,9 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// d_DDMConf
-NumericVector d_DDMConf(NumericVector rts, NumericVector params, double precision, int boundary, bool stop_on_error, bool stop_on_zero, double st0precision);
-RcppExport SEXP _dynConfiR_d_DDMConf(SEXP rtsSEXP, SEXP paramsSEXP, SEXP precisionSEXP, SEXP boundarySEXP, SEXP stop_on_errorSEXP, SEXP stop_on_zeroSEXP, SEXP st0precisionSEXP) {
+// d_DDConf
+NumericVector d_DDConf(NumericVector rts, NumericVector params, double precision, int boundary, bool stop_on_error, bool stop_on_zero, double st0precision);
+RcppExport SEXP _dynConfiR_d_DDConf(SEXP rtsSEXP, SEXP paramsSEXP, SEXP precisionSEXP, SEXP boundarySEXP, SEXP stop_on_errorSEXP, SEXP stop_on_zeroSEXP, SEXP st0precisionSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -55,7 +55,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type stop_on_error(stop_on_errorSEXP);
     Rcpp::traits::input_parameter< bool >::type stop_on_zero(stop_on_zeroSEXP);
     Rcpp::traits::input_parameter< double >::type st0precision(st0precisionSEXP);
-    rcpp_result_gen = Rcpp::wrap(d_DDMConf(rts, params, precision, boundary, stop_on_error, stop_on_zero, st0precision));
+    rcpp_result_gen = Rcpp::wrap(d_DDConf(rts, params, precision, boundary, stop_on_error, stop_on_zero, st0precision));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -190,9 +190,9 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// r_DDMConf
-NumericVector r_DDMConf(int n, NumericVector params, double delta, double maxT, bool stop_on_error);
-RcppExport SEXP _dynConfiR_r_DDMConf(SEXP nSEXP, SEXP paramsSEXP, SEXP deltaSEXP, SEXP maxTSEXP, SEXP stop_on_errorSEXP) {
+// r_DDConf
+NumericVector r_DDConf(int n, NumericVector params, double delta, double maxT, bool stop_on_error);
+RcppExport SEXP _dynConfiR_r_DDConf(SEXP nSEXP, SEXP paramsSEXP, SEXP deltaSEXP, SEXP maxTSEXP, SEXP stop_on_errorSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -201,7 +201,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type delta(deltaSEXP);
     Rcpp::traits::input_parameter< double >::type maxT(maxTSEXP);
     Rcpp::traits::input_parameter< bool >::type stop_on_error(stop_on_errorSEXP);
-    rcpp_result_gen = Rcpp::wrap(r_DDMConf(n, params, delta, maxT, stop_on_error));
+    rcpp_result_gen = Rcpp::wrap(r_DDConf(n, params, delta, maxT, stop_on_error));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -209,7 +209,7 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_dynConfiR_d_2DSD", (DL_FUNC) &_dynConfiR_d_2DSD, 6},
     {"_dynConfiR_d_WEVmu", (DL_FUNC) &_dynConfiR_d_WEVmu, 6},
-    {"_dynConfiR_d_DDMConf", (DL_FUNC) &_dynConfiR_d_DDMConf, 7},
+    {"_dynConfiR_d_DDConf", (DL_FUNC) &_dynConfiR_d_DDConf, 7},
     {"_dynConfiR_d_IRM", (DL_FUNC) &_dynConfiR_d_IRM, 4},
     {"_dynConfiR_d_IRM2", (DL_FUNC) &_dynConfiR_d_IRM2, 4},
     {"_dynConfiR_d_PCRM", (DL_FUNC) &_dynConfiR_d_PCRM, 4},
@@ -219,7 +219,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_dynConfiR_r_WEV", (DL_FUNC) &_dynConfiR_r_WEV, 5},
     {"_dynConfiR_r_RM_Kiani", (DL_FUNC) &_dynConfiR_r_RM_Kiani, 6},
     {"_dynConfiR_r_LCA", (DL_FUNC) &_dynConfiR_r_LCA, 4},
-    {"_dynConfiR_r_DDMConf", (DL_FUNC) &_dynConfiR_r_DDMConf, 5},
+    {"_dynConfiR_r_DDConf", (DL_FUNC) &_dynConfiR_r_DDConf, 5},
     {NULL, NULL, 0}
 };
 

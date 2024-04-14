@@ -405,6 +405,6 @@ predictWEV_RT <- function(paramDf, model=NULL,
   df <- df[,c("condition", "stimulus", "response", "correct", "rating",
               "rt", "dens", rep("densscaled", as.numeric(scaled)))]
   # the last line is to sort the output columns
-  # (to combine outputs from predictWEV_RT and predictDDMConf_RT)
+  # (to combine outputs from predictWEV_RT and predictDDConf_RT)
   return(df)
 }

@@ -1,3 +1,6 @@
+# dynConfiR 1.0.0 (January 2024)
+- renamed the DDMConf model to DDConf to align with published literature
+
 # dynConfiR 0.0.4 (January 2024)
 Fixed a CRAN note and improved robustness in fitting functions, and simulations. 
 Also improved initial parameter sets for model fitting.
