@@ -154,7 +154,7 @@
 fitRTConfModels <- function(data, models = c("dynaViTE", "2DSD", "PCRMt"),
                       nRatings = NULL, fixed = list(sym_thetas = FALSE), restr_tau=Inf,
                       grid_search=TRUE,
-                      opts=list(), optim_method = "bobyqa", logging=FALSE, precision=3,
+                      opts=list(), optim_method = "bobyqa", logging=FALSE, precision=6,
                       parallel = TRUE, n.cores=NULL, ...){ #  ?ToDO: vary_sv=FALSE, RRT=NULL, vary_tau=FALSE
   if (any(models =="DDMConf")) {
     warning("DDMConf was renamed DDConf in version 1.0.0! DDConf will be fitted instead!")
