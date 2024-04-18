@@ -104,7 +104,7 @@ public:
           svis = 1;
         }
 
-        if (params.size() > 12)    // This switches between parameters for dWEV model or simpler 2DSD model
+        if (params.size() > 12)    // This switches between parameters for ddynaViTE model or simpler 2DSD model
         {
 
           w   = params[PARAM_w];

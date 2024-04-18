@@ -76,10 +76,10 @@ information).
 Simulates the decision responses and reaction times together with a
 discrete confidence judgment in the dynaViTE model, the 2DSD model (Pleskac & Busemeyer, 2010)
 and the dynWEV model (Hellmann et al., 2023), given specific parameter constellations.
-See \code{\link{dWEV}} and \code{\link{d2DSD}} for more information about parameters.
+See \code{\link{ddynaViTE}} and \code{\link{d2DSD}} for more information about parameters.
 Also computes the Gamma rank correlation between the confidence ratings and condition
 (task difficulty), reaction times and accuracy in the simulated output.
-Basically, this function is a wrapper for \code{\link{rWEV}} and \code{\link{r2DSD}}
+Basically, this function is a wrapper for \code{\link{rdynaViTE}} and \code{\link{r2DSD}}
 for application in confidence experiments with manipulation of specific parameters.
 }
 \details{

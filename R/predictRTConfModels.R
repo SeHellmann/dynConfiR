@@ -6,7 +6,7 @@
 #' response distribution (discrete decision and rating outcomes) and the rt density
 #' (density for decision, rating and response time) for every model and
 #' participant combination in \code{paramDf}.
-#' Also, see \code{\link{dWEV}}, \code{\link{d2DSD}}, and \code{\link{dRM}} for more
+#' Also, see \code{\link{ddynaViTE}}, \code{\link{d2DSD}}, and \code{\link{dRM}} for more
 #' information about the parameters.
 #'
 #' @param paramDf a dataframe with one row per combination of model and

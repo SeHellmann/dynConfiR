@@ -164,7 +164,7 @@ set to 0.
 }
 \note{
 Similarly to the drift diffusion models (like \code{ddiffusion} and
-\code{\link{dWEV}}), \code{s1} and \code{s2} are scaling factors (\code{s1} scales: \code{mu1} and  \code{a},
+\code{\link{ddynaViTE}}), \code{s1} and \code{s2} are scaling factors (\code{s1} scales: \code{mu1} and  \code{a},
 \code{s2} scales: \code{mu2} and \code{b}, and depending on response: if \code{response=2}, \code{s1} scales
 \code{th1},\code{th2},and \code{wrt}), otherwise \code{s2} is the scaling factor. It is sometimes
 assumed (Moreno-Bote, 2010), that both noise terms are equal, then they should definitely be

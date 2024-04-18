@@ -78,11 +78,11 @@ respective outputs of the integration routine used for the computation.
 decision and confidence ratings, \code{predictWEV_RT} computes the predicted
 RT distribution (density) in the 2DSD Model (Pleskac & Busemeyer, 2010) and the
 dynWEV model (Hellmann et al., 2023), given specific parameter constellations.
-See \code{\link{dWEV}} and \code{\link{d2DSD}} for more information about parameters.
+See \code{\link{ddynaViTE}} and \code{\link{d2DSD}} for more information about parameters.
 }
 \details{
 The function \code{predictWEV_Conf} consists merely of an integration of
-the response time density, \code{\link{dWEV}} and \code{\link{d2DSD}}, over the response time in a reasonable
+the response time density, \code{\link{ddynaViTE}} and \code{\link{d2DSD}}, over the response time in a reasonable
 interval (\code{t0} to \code{maxrt}). The function \code{predictWEV_RT} wraps these density
 functions to a parameter set input and a data.frame output.
 For the argument \code{paramDf}, the output of the fitting function \code{\link{fitRTConf}}

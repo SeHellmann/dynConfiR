@@ -43,7 +43,7 @@ d2DSD(rt=0.7, th1=1, th2=2.5, response="lower",
     ## [1] 0.02387629
 
 ``` r
-dWEV(rt=2.7, th1=1, th2=2.5, response="lower", 
+ddynaViTE(rt=2.7, th1=1, th2=2.5, response="lower", 
       tau=1, a=2, v=0.7, t0=0, z =0.5, sv=0, st0=0.1, lambda=0.2,
      simult_conf = TRUE)
 ```

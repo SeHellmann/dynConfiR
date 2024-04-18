@@ -5,7 +5,7 @@
 #' decision and confidence ratings, \code{predictWEV_RT} computes the predicted
 #' RT distribution (density) in the 2DSD Model (Pleskac & Busemeyer, 2010) and the
 #' dynWEV model (Hellmann et al., 2023), given specific parameter constellations.
-#' See \code{\link{dWEV}} and \code{\link{d2DSD}} for more information about parameters.
+#' See \code{\link{ddynaViTE}} and \code{\link{d2DSD}} for more information about parameters.
 #'
 #' @param paramDf a list or dataframe with one row. Column names should match the names
 #' of \link{dynaViTE} and \link{2DSD} model specific parameter names.
@@ -53,7 +53,7 @@
 #'
 #'
 #' @details The function \code{predictWEV_Conf} consists merely of an integration of
-#' the response time density, \code{\link{dWEV}} and \code{\link{d2DSD}}, over the response time in a reasonable
+#' the response time density, \code{\link{ddynaViTE}} and \code{\link{d2DSD}}, over the response time in a reasonable
 #' interval (\code{t0} to `maxrt`). The function \code{predictWEV_RT} wraps these density
 #' functions to a parameter set input and a data.frame output.
 #' For the argument \code{paramDf}, the output of the fitting function \code{\link{fitRTConf}}
@@ -213,7 +213,7 @@ predictWEV_Conf <- function(paramDf, model="dynaViTE",
     vth1 <- ifelse(row$response =="upper", thetas_upper[row$rating], thetas_lower[(row$rating)])
     vth2 <- ifelse(row$response =="upper", thetas_upper[(row$rating+1)], thetas_lower[(row$rating+1)])
      if (model == "dynaViTE") {
-    p <- integrate(function(rt) return(dWEV(rt, response=as.character(row$response),
+    p <- integrate(function(rt) return(ddynaViTE(rt, response=as.character(row$response),
                                       vth1,vth2, a=paramDf$a,
                                       v = (-1)^(row$stimulus=="lower")*V[row$condition],
                                       t0 = paramDf$t0, z = paramDf$z, sz = paramDf$sz, sv = SV[row$condition],
@@ -368,7 +368,7 @@ predictWEV_RT <- function(paramDf, model=NULL,
 
     if (model=="dynaViTE") {
       df[(1:subdivisions) + subdivisions*(i-1), "dens"] <-
-        dWEV(rt, response=as.character(cur_row$response),
+        ddynaViTE(rt, response=as.character(cur_row$response),
              vth1,vth2,v = v,
              tau=paramDf$tau, a=paramDf$a,
              t0 = paramDf$t0, z = paramDf$z, sz = paramDf$sz, st0=paramDf$st0,

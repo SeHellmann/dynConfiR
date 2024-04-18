@@ -59,7 +59,7 @@ the function returns -1e+12.
 Computes the Log-likelihood for given data and parameters in the
 dynWEV model (Hellmann et al., 2023) and the 2DSD model
 (Pleskac & Busemeyer, 2010). It is a wrapped version of the
-respective densities \code{\link{dWEV}} and \code{\link{d2DSD}},
+respective densities \code{\link{ddynaViTE}} and \code{\link{d2DSD}},
 where one can find more information about the parameters
 (\code{z} is always given relatively, in the likelihood).
 The function is mainly used in \code{\link{fitRTConf}} but
@@ -95,7 +95,7 @@ if stimulus is -1, and \code{"upper"}, if stimulus is 1.
 stimulus <- sample(c(-1, 1), 200, replace=TRUE)
 discriminability <- sample(c(1, 2), 200, replace=TRUE)
 # generate data for participant 1
-data <- rWEV(200, a=2,v=stimulus*discriminability*0.5,
+data <- rdynaViTE(200, a=2,v=stimulus*discriminability*0.5,
              t0=0.2,z=0.5, sz=0.1,sv=0.1, st0=0,  tau=4, s=1, w=0.3)
 # discretize confidence ratings (only 2 steps: unsure vs. sure)
 data$rating <- as.numeric(cut(data$conf, breaks = c(-Inf, 1, Inf), include.lowest = TRUE))

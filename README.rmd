@@ -47,7 +47,7 @@ devtools::install_github("SeHellmann/dynConfiR")
 library(dynConfiR)
 d2DSD(rt=0.7, th1=1, th2=2.5, response="lower", 
       a=2, v=0.7, t0=0, z =0.5, sv=0, st0=0.1, tau=1, lambda=0.5)
-dWEV(rt=2.7, th1=1, th2=2.5, response="lower", 
+ddynaViTE(rt=2.7, th1=1, th2=2.5, response="lower", 
       tau=1, a=2, v=0.7, t0=0, z =0.5, sv=0, st0=0.1, lambda=0.2,
      simult_conf = TRUE)
 dIRM(1.2, response=2, mu1=0.5, mu2=-0.5, a=0.8, b=0.5, th1=-0.5, th2=2, 

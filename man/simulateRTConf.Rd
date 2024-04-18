@@ -16,7 +16,7 @@ simulateRTConf(paramDf, n = 10000, model = NULL, gamma = FALSE,
 \item{n}{integer. The number of samples (per condition and stimulus direction) generated.
 Total number of samples is \code{n*nConditions*length(stimulus)}.}
 
-\item{model}{character scalar. One of "dynaViTE", "dynWEV", "2DSD", "2DSDT", "DDConf",
+\item{model}{character scalar. One of "dynaViTE", "dynWEV", "2DSD", "2DSDT",
 "IRM", "PCRM", "IRMt", or "PCRMt". Could also be passed as a column in the paramDf argument.}
 
 \item{gamma}{logical. If TRUE, the gamma correlation between confidence ratings, rt and accuracy is

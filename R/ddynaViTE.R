@@ -117,9 +117,10 @@
 #' are completely vectorized for all parameters and even the response boundary.
 #'
 #' @details
-#' The function dWEV was renamed to ddynaViTE in version 0.1.0 of the package.
-#' It is still here for reasons of backwards compatibility. The function just calls the
-#' ddynaViTE function (and produces a deprecation warning).
+#' The functions dWEV and rWEV were renamed to ddynaViTE and rdynaViTE,
+#' respectively in version 0.1.0 of the package.
+#' They are still here for reasons of backwards compatibility. The functions
+#' just calls their counterpar ddynaViTE and rdynaViTE (and produce a deprecation warning).
 #'
 #' The dynamical visibility, time, and evidence (dynaViTE) model
 #' and the weighted evidence and visibility model (dynWEV) are extensions of the 2DSD model
@@ -163,13 +164,16 @@
 #' @useDynLib dynConfiR, .registration = TRUE
 #'
 #' @name dynaViTE
-#' @aliases WEVmodel ddynaViTE ddynWEV rdynaViTE dynWEV dWEV
+#' @aliases WEVmodel ddynaViTE ddynWEV rdynaViTE dynWEV rWEV dWEV
 #' @importFrom Rcpp evalCpp
 #'
 #' @examples
 #' # Plot rt distribution ignoring confidence
-#' curve(ddynaViTE(x, "upper", -Inf, Inf, tau=1, a=2, v=0.4, sz=0.2, sv=0.9), xlim=c(0, 2), lty=2)
-#' curve(ddynaViTE(x, "lower", -Inf, Inf,tau=1, a=2, v=0.4, sz=0.2, sv=0.9), col="red", lty=2, add=TRUE)
+#' curve(ddynaViTE(x, "upper", -Inf, Inf, tau=1, a=2, v=0.4,
+#'                     sz=0.2, sv=0.9),
+#'       xlim=c(0, 2), lty=2)
+#' curve(ddynaViTE(x, "lower", -Inf, Inf,tau=1, a=2, v=0.4, sz=0.2, sv=0.9),
+#'      col="red", lty=2, add=TRUE)
 #' curve(ddynaViTE(x, "upper", -Inf, Inf,  tau=1, a=2, v=0.4),add=TRUE)
 #' curve(ddynaViTE(x, "lower", -Inf, Inf, tau=1, a=2, v=0.4), col="red", add=TRUE)
 #' # Generate a random sample
@@ -216,16 +220,31 @@
 #' @rdname dynaViTE
 #' @export
 dWEV <- function (rt, response="upper", th1,th2, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, st0=0,
-                       tau=1, w=0.5, muvis=NULL, sigvis=0, svis=1,
-                       lambda = 0, s=1,  simult_conf = FALSE, precision=6, z_absolute = FALSE,
-                       stop_on_error=TRUE, stop_on_zero=FALSE) {
+                  tau=1, w=0.5, muvis=NULL, sigvis=0, svis=1,
+                  lambda = 0, s=1,  simult_conf = FALSE, precision=6, z_absolute = FALSE,
+                  stop_on_error=TRUE, stop_on_zero=FALSE) {
   warning("The function dWEV was renamed to ddynaViTE in version 0.1.0 of the package.\\
           It will be removed in future releases of the package!")
   return(ddynaViTE(rt, response="upper", th1,th2, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, st0=0,
-                         tau=1, w=0.5, muvis=NULL, sigvis=0, svis=1,
-                         lambda = 0, s=1,  simult_conf = FALSE, precision=6, z_absolute = FALSE,
-                         stop_on_error=TRUE, stop_on_zero=FALSE))
+                   tau=1, w=0.5, muvis=NULL, sigvis=0, svis=1,
+                   lambda = 0, s=1,  simult_conf = FALSE, precision=6, z_absolute = FALSE,
+                   stop_on_error=TRUE, stop_on_zero=FALSE))
 }
+
+#' @rdname dynaViTE
+#' @export
+rWEV <- function (n, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, st0=0,
+                       tau=1, w=0.5, muvis=NULL, sigvis=0, svis=1,
+                       lambda=0, s=1, delta=0.01, maxrt=15, simult_conf = FALSE,
+                       z_absolute = FALSE,  stop_on_error=TRUE, process_results=FALSE) {
+  warning("The function dWEV was renamed to ddynaViTE in version 0.1.0 of the package.\\
+          It will be removed in future releases of the package!")
+  return(rdynaViTE(n, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, st0=0,
+                tau=1, w=0.5, muvis=NULL, sigvis=0, svis=1,
+                lambda=0, s=1, delta=0.01, maxrt=15, simult_conf = FALSE,
+                z_absolute = FALSE,  stop_on_error=TRUE, process_results=FALSE))
+}
+
 
 #' @rdname dynaViTE
 #' @export

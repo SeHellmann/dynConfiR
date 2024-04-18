@@ -14,7 +14,6 @@
 #'
 #' @aliases dynConfiR-package
 #' @name dynConfiR-package
-#' @docType package
 #' @title The dynConfiR Package
 #' @author Sebastian Hellmann
 #' @keywords package

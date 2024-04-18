@@ -7,7 +7,7 @@
 fitRTConfModels(data, models = c("dynaViTE", "2DSD", "PCRMt"),
   nRatings = NULL, fixed = list(sym_thetas = FALSE), restr_tau = Inf,
   grid_search = TRUE, opts = list(), optim_method = "bobyqa",
-  logging = FALSE, precision = 3, parallel = TRUE, n.cores = NULL, ...)
+  logging = FALSE, precision = 6, parallel = TRUE, n.cores = NULL, ...)
 }
 \arguments{
 \item{data}{a \code{data.frame} where each row is one trial, containing following
@@ -39,7 +39,7 @@ If given, ratings has to be given as factor or integer.}
 
 \item{restr_tau}{numerical or \code{Inf} or \code{"simult_conf"}. Used for 2DSD and dynWEV only. Upper bound for tau.
 Fits will be in the interval (0,\code{restr_tau}). If \code{FALSE} tau will be unbound. For \code{"simult_conf"}, see the documentation of
-\code{\link{d2DSD}} and \code{\link{dWEV}}}
+\code{\link{d2DSD}} and \code{\link{ddynaViTE}}}
 
 \item{grid_search}{logical. If \code{FALSE}, the grid search before the optimization
 algorithm is omitted. The fitting is then started with a mean parameter set
@@ -61,7 +61,7 @@ on OS). Additionally intermediate results are saved in a \code{.RData} file with
 participant ID in the name.}
 
 \item{precision}{numerical scalar. For 2DSD and dynWEV only. Precision of calculation.
-(in the respective models) for the density functions (see \code{\link{dWEV}} for more information).}
+(in the respective models) for the density functions (see \code{\link{ddynaViTE}} for more information).}
 
 \item{parallel}{"models", "single", "both" or \code{FALSE}. If \code{FALSE} no parallelization
 is used in the fitting process. If "models" the fitting process is parallelized over
@@ -93,7 +93,7 @@ as fitted result as well as additional information about the fit (\code{negLogLi
 This function is a wrapper of the function \code{\link{fitConfModel}} (see
 there for more information). It calls the function for every possible combination
 of model and participant in \code{model} and \code{data} respectively.
-Also, see \code{\link{dWEV}}, \code{\link{d2DSD}}, \code{\link{dDDConf}},
+Also, see \code{\link{ddynaViTE}}, \code{\link{d2DSD}}, \code{\link{dDDConf}},
 and \code{\link{dRM}} for more
 information about the parameters.
 }
@@ -134,7 +134,7 @@ stimulus <- sample(c(-1, 1), 400, replace=TRUE)
 discriminability <- sample(c(1, 2), 400, replace=TRUE)
 
 # generate data for participant 1
-data <- rWEV(400, a=2, v=stimulus*discriminability*0.5,
+data <- rdynaViTE(400, a=2, v=stimulus*discriminability*0.5,
              t0=0.2, z=0.5, sz=0.1, sv=0.1, st0=0,  tau=4, s=1, w=0.3)
 # discretize confidence ratings (only 2 steps: unsure vs. sure)
 data$rating <- as.numeric(cut(data$conf, breaks = c(-Inf, 1, Inf), include.lowest = TRUE))
@@ -142,7 +142,7 @@ data$participant = 1
 data$stimulus <- stimulus
 data$discriminability <- discriminability
 # generate data for participant 2
-data2 <- rWEV(400, a=2.5, v=stimulus*discriminability*0.7,
+data2 <- rdynaViTE(400, a=2.5, v=stimulus*discriminability*0.7,
              t0=0.1, z=0.7, sz=0, sv=0.2, st0=0,  tau=2, s=1, w=0.5)
 data2$rating <- as.numeric(cut(data$conf, breaks = c(-Inf, 0.3, Inf), include.lowest = TRUE))
 data2$participant = 2

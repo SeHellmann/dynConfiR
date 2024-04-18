@@ -14,20 +14,20 @@ test_that("r2DSD works", {
   expect_true(all(r2DSD(20, tau=1, a=2, v=0.1, t0=1, z =1.5, sv=0.2, maxrt = 5, stop_on_error = FALSE)== 0))
 })
 
-test_that("rWEV works", {
-  expect_true(all(rWEV(200, tau=1, a=2, v=c(0.5,-0.5), t0=0, z =0.5, sv=0.2, w= 0.8)$response %in% c(-1,0,1)))
-  expect_true(all(rWEV(200, tau=1, a=2, v=0.5, t0=0, z =c(0.4,0.5, 0.6), sv=0.2, w= 0.8)$rt >= 0))
+test_that("rdynaViTE works", {
+  expect_true(all(rdynaViTE(200, tau=1, a=2, v=c(0.5,-0.5), t0=0, z =0.5, sv=0.2, w= 0.8)$response %in% c(-1,0,1)))
+  expect_true(all(rdynaViTE(200, tau=1, a=2, v=0.5, t0=0, z =c(0.4,0.5, 0.6), sv=0.2, w= 0.8)$rt >= 0))
 
-  expect_length(rWEV(20, tau=1, a=2, v=0.5, t0=0, z =0.5, sv=0.2, w= 0.8)$rt, 20)
-  expect_true(any(rWEV(20, tau=1, a=30, v=0.1, t0=0, z =0.5, sv=0.2, maxrt = 2, w= 0.8)$response==0))
-  expect_error(rWEV(20, tau=1, a=2, v=0.1, t0=-1, z =0.5, sv=0.2, w= 0.8, maxrt = 5, stop_on_error = TRUE))
-  expect_true(all(rWEV(20, tau=1, a=2, v=0.1, t0=-1, z =0.5, sv=0.2, w= 0.8, maxrt = 5, stop_on_error = FALSE)== 0))
+  expect_length(rdynaViTE(20, tau=1, a=2, v=0.5, t0=0, z =0.5, sv=0.2, w= 0.8)$rt, 20)
+  expect_true(any(rdynaViTE(20, tau=1, a=30, v=0.1, t0=0, z =0.5, sv=0.2, maxrt = 2, w= 0.8)$response==0))
+  expect_error(rdynaViTE(20, tau=1, a=2, v=0.1, t0=-1, z =0.5, sv=0.2, w= 0.8, maxrt = 5, stop_on_error = TRUE))
+  expect_true(all(rdynaViTE(20, tau=1, a=2, v=0.1, t0=-1, z =0.5, sv=0.2, w= 0.8, maxrt = 5, stop_on_error = FALSE)== 0))
 
-  expect_error(rWEV(20, tau=1, a=2, v=0.1, t0=1, z =0.5, sv=0.2, svis =0, maxrt = 5, stop_on_error = TRUE))
-  expect_true(all(rWEV(20, tau=1, a=2, v=0.1, t0=1, z =0.5, sv=0.2, svis = -1, maxrt = 5, stop_on_error = FALSE)== 0))
+  expect_error(rdynaViTE(20, tau=1, a=2, v=0.1, t0=1, z =0.5, sv=0.2, svis =0, maxrt = 5, stop_on_error = TRUE))
+  expect_true(all(rdynaViTE(20, tau=1, a=2, v=0.1, t0=1, z =0.5, sv=0.2, svis = -1, maxrt = 5, stop_on_error = FALSE)== 0))
 
-  expect_error(rWEV(20, tau=1, a=2, v=0.1, t0=1, z =0.5, sv=0.2, w= 1.2, maxrt = 5, stop_on_error = TRUE))
-  expect_true(all(rWEV(20, tau=1, a=2, v=0.1, t0=1, z =0.5, sv=0.2, w= -0.8, maxrt = 5, stop_on_error = FALSE)== 0))
+  expect_error(rdynaViTE(20, tau=1, a=2, v=0.1, t0=1, z =0.5, sv=0.2, w= 1.2, maxrt = 5, stop_on_error = TRUE))
+  expect_true(all(rdynaViTE(20, tau=1, a=2, v=0.1, t0=1, z =0.5, sv=0.2, w= -0.8, maxrt = 5, stop_on_error = FALSE)== 0))
 })
 
 

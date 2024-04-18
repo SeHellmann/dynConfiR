@@ -57,10 +57,10 @@ If given, ratings has to be given as factor or integer.}
 
 \item{restr_tau}{numerical or \code{Inf} or \code{"simult_conf"}. For 2DSD and dynWEV only.
 Upper bound for tau. Fits will be in the interval (0,\code{restr_tau}). If FALSE tau will be unbound.
-For \code{"simult_conf"}, see the documentation of \code{\link{d2DSD}} and \code{\link{dWEV}}}
+For \code{"simult_conf"}, see the documentation of \code{\link{d2DSD}} and \code{\link{ddynaViTE}}}
 
 \item{precision}{numeric. Precision of calculation.
-(in the respective models) for the density functions (see \code{\link{dWEV}} for more information).}
+(in the respective models) for the density functions (see \code{\link{ddynaViTE}} for more information).}
 
 \item{logging}{logical. If \code{TRUE}, a folder 'autosave/fit\strong{model}' is created and
 messages about the process are printed in a logging file and to console (depending
@@ -99,7 +99,7 @@ the 2DSD model (Pleskac & Busemeyer, 2010), dynWEV, DDConf, and various
 flavors of race models (Hellmann et al., 2023). Which model to fit is
 specified by the argument \code{model}.
 Only a ML method is implemented.
-See \code{\link{dWEV}}, \code{\link{d2DSD}}, and \code{\link{dRM}} for more
+See \code{\link{ddynaViTE}}, \code{\link{d2DSD}}, and \code{\link{dRM}} for more
 information about the parameters and Details for not-fitted parameters.
 }
 \details{
@@ -175,10 +175,10 @@ from top to bottom
 # We use one of the implemented models, "dynWEV"
 # 1. Generate data
 # data with positive drift (stimulus = "upper")
-data <- rWEV(20, a=2,v=0.5,t0=0.2,z=0.5, sz=0.1,sv=0.1, st0=0,  tau=4, s=1, w=0.3)
+data <- rdynaViTE(20, a=2,v=0.5,t0=0.2,z=0.5, sz=0.1,sv=0.1, st0=0,  tau=4, s=1, w=0.3)
 data$stimulus <- "upper"
 # data with negtive drift (stimulus = "lower") but same intensity
-data2 <- rWEV(100, a=2,v=-0.5,t0=0.2,z=0.5,sz=0.1,sv=0.1, st0=0,  tau=4, s=1, w=0.3)
+data2 <- rdynaViTE(100, a=2,v=-0.5,t0=0.2,z=0.5,sz=0.1,sv=0.1, st0=0,  tau=4, s=1, w=0.3)
 data2$stimulus <- "lower"
 data <- rbind(data, data2)
 # Transfer response column and add dummy condition column

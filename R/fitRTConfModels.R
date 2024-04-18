@@ -3,7 +3,7 @@
 #' This function is a wrapper of the function \code{\link{fitConfModel}} (see
 #' there for more information). It calls the function for every possible combination
 #' of model and participant in `model` and \code{data} respectively.
-#' Also, see \code{\link{dWEV}}, \code{\link{d2DSD}}, \code{\link{dDDConf}},
+#' Also, see \code{\link{ddynaViTE}}, \code{\link{d2DSD}}, \code{\link{dDDConf}},
 #' and \code{\link{dRM}} for more
 #' information about the parameters.
 #'
@@ -28,7 +28,7 @@
 #' @param fixed list. List with parameter value pairs for parameters that should not be fitted. (see Details).
 #' @param restr_tau numerical or `Inf` or `"simult_conf"`. Used for 2DSD and dynWEV only. Upper bound for tau.
 #' Fits will be in the interval (0,`restr_tau`). If `FALSE` tau will be unbound. For `"simult_conf"`, see the documentation of
-#' \code{\link{d2DSD}} and \code{\link{dWEV}}
+#' \code{\link{d2DSD}} and \code{\link{ddynaViTE}}
 #' @param grid_search logical. If `FALSE`, the grid search before the optimization
 #' algorithm is omitted. The fitting is then started with a mean parameter set
 #' from the default grid. (Default: `TRUE`)
@@ -52,7 +52,7 @@
 #' If "both", parallelization is done hierarchical. For small number of
 #' models and participants "single" or "both" is preferable. Otherwise, you may use "models".
 #' @param precision numerical scalar. For 2DSD and dynWEV only. Precision of calculation.
-#' (in the respective models) for the density functions (see \code{\link{dWEV}} for more information).
+#' (in the respective models) for the density functions (see \code{\link{ddynaViTE}} for more information).
 #' @param n.cores integer vector or `NULL`. If \code{parallel} is "models" or "single", a single
 #' integer for the number of cores used for parallelization is required. If
 #' \code{parallel} is "both", two values are required. The first for the number of parallel
@@ -114,7 +114,7 @@
 #' discriminability <- sample(c(1, 2), 400, replace=TRUE)
 #'
 #' # generate data for participant 1
-#' data <- rWEV(400, a=2, v=stimulus*discriminability*0.5,
+#' data <- rdynaViTE(400, a=2, v=stimulus*discriminability*0.5,
 #'              t0=0.2, z=0.5, sz=0.1, sv=0.1, st0=0,  tau=4, s=1, w=0.3)
 #' # discretize confidence ratings (only 2 steps: unsure vs. sure)
 #' data$rating <- as.numeric(cut(data$conf, breaks = c(-Inf, 1, Inf), include.lowest = TRUE))
@@ -122,7 +122,7 @@
 #' data$stimulus <- stimulus
 #' data$discriminability <- discriminability
 #' # generate data for participant 2
-#' data2 <- rWEV(400, a=2.5, v=stimulus*discriminability*0.7,
+#' data2 <- rdynaViTE(400, a=2.5, v=stimulus*discriminability*0.7,
 #'              t0=0.1, z=0.7, sz=0, sv=0.2, st0=0,  tau=2, s=1, w=0.5)
 #' data2$rating <- as.numeric(cut(data$conf, breaks = c(-Inf, 0.3, Inf), include.lowest = TRUE))
 #' data2$participant = 2

@@ -18,7 +18,7 @@ get_thetas_for_init_grid_dynWEV_simulations <- function(init_grid, df, nRatings,
       paramRow['tau'] <- paramRow['tau']*(mint0-paramRow['t0'])
     }
     V <- c(t(paramRow[paste("v", 1:nConds, sep="")]))
-    conf <- with(as.data.frame(as.list(paramRow)), rWEV(800, a, c(V,-V), t0, z, 0, sz, sv, st0, tau, w, abs(c(V,V)), sigvis, svis, lambda, 1))$conf
+    conf <- with(as.data.frame(as.list(paramRow)), rdynaViTE(800, a, c(V,-V), t0, z, 0, sz, sv, st0, tau, w, abs(c(V,V)), sigvis, svis, lambda, 1))$conf
     thetas <- quantile(conf, probs=conf_probs, names = FALSE)
     c(thetas[1],diff(thetas))
   }

@@ -32,35 +32,35 @@ test_that("2DSD works", {
 
 
 test_that("dynWEV works", {
-  expect_equal(dWEV(seq(0, 3, by=0.5), "lower", 0.4, 2.5, tau=1, a=2, v=0.5, t0=0, z =0.5, sv=0.2, w=0.5, sigvis=0.2, svis=1, s=1),
+  expect_equal(ddynaViTE(seq(0, 3, by=0.5), "lower", 0.4, 2.5, tau=1, a=2, v=0.5, t0=0, z =0.5, sv=0.2, w=0.5, sigvis=0.2, svis=1, s=1),
                c(0, 0.147064426866004, 0.0798344162131249, 0.0414020207786117,
                  0.0210877315338026, 0.0106006919740067, 0.00527825242394075),
                tolerance=0.00001)
   ## test for scaling effect of s (diffusion constant)
-  expect_equal(dWEV(seq(0, 3, by=0.5), "lower", 0.4*2, 2.5*2, tau=1, a=2*2, v=0.5*2, t0=0, z =0.5, sv=0.2*2, w=0.5, sigvis=0.2*2, svis=1*2, s=1*2, precision = 5),
-               dWEV(seq(0, 3, by=0.5), "lower", 0.4, 2.5, tau=1, a=2, v=0.5, t0=0, z =0.5, sv=0.2, w=0.5, sigvis=0.2, svis=1, s=1, precision = 5))
+  expect_equal(ddynaViTE(seq(0, 3, by=0.5), "lower", 0.4*2, 2.5*2, tau=1, a=2*2, v=0.5*2, t0=0, z =0.5, sv=0.2*2, w=0.5, sigvis=0.2*2, svis=1*2, s=1*2, precision = 5),
+               ddynaViTE(seq(0, 3, by=0.5), "lower", 0.4, 2.5, tau=1, a=2, v=0.5, t0=0, z =0.5, sv=0.2, w=0.5, sigvis=0.2, svis=1, s=1, precision = 5))
   ## test for effect of t0
-  expect_equal(dWEV(seq(0, 3, by=0.5), "lower", 0.4, 2.5, tau=1, a=2, v=0.5, t0=0, z =0.5, sv=0.2, w=0.5, sigvis=0.2, svis=1, s=1),
-               dWEV(seq(0, 3, by=0.5)+0.4, "lower", 0.4, 2.5, tau=1, a=2, v=0.5, t0=0.4, z =0.5, sv=0.2, w=0.5, sigvis=0.2, svis=1, s=1))
+  expect_equal(ddynaViTE(seq(0, 3, by=0.5), "lower", 0.4, 2.5, tau=1, a=2, v=0.5, t0=0, z =0.5, sv=0.2, w=0.5, sigvis=0.2, svis=1, s=1),
+               ddynaViTE(seq(0, 3, by=0.5)+0.4, "lower", 0.4, 2.5, tau=1, a=2, v=0.5, t0=0.4, z =0.5, sv=0.2, w=0.5, sigvis=0.2, svis=1, s=1))
   ## test with negative lower confidence threshold and different parameters
-  expect_equal(dWEV(seq(0, 3, by=0.5), "lower", -100, 100, tau=1, a=2, v=-0.5, t0=0, z =0.2, sv=0.2, w=0.001, sigvis=0.4, svis=1, s=1),
+  expect_equal(ddynaViTE(seq(0, 3, by=0.5), "lower", -100, 100, tau=1, a=2, v=-0.5, t0=0, z =0.2, sv=0.2, w=0.001, sigvis=0.4, svis=1, s=1),
                c(0, 0.43714364613092, 0.153514811046022, 0.0724144673283747,
                  0.0361455558387259, 0.0182440173062963, 0.00924134169763999),
                tolerance=0.00001)
   ## test with explicitly giving parameter muvis
-  expect_equal(dWEV(seq(0, 3, by=0.5), "lower", -100, 100, tau=1, a=2, v=-0.5, t0=0, z =0.2, sv=0.2, w=0.001, sigvis=0.4, svis=1, s=1),
-               dWEV(seq(0, 3, by=0.5), "lower", -100, 100, tau=1, a=2, v=-0.5, t0=0, z =0.2, sv=0.2, w=0.001, muvis = 0.5, sigvis=0.4, svis=1, s=1))
+  expect_equal(ddynaViTE(seq(0, 3, by=0.5), "lower", -100, 100, tau=1, a=2, v=-0.5, t0=0, z =0.2, sv=0.2, w=0.001, sigvis=0.4, svis=1, s=1),
+               ddynaViTE(seq(0, 3, by=0.5), "lower", -100, 100, tau=1, a=2, v=-0.5, t0=0, z =0.2, sv=0.2, w=0.001, muvis = 0.5, sigvis=0.4, svis=1, s=1))
   ## test for equivalence wrt to lambda
-  expect_equal(dWEV(c(0.1, .3,.7,1.2), "upper", 0.5 /((c(0.1, .3,.7,1.2)+2)), 1/((c(0.1, .3,.7,1.2)+2)), 2, 0.5,  0,0.5, 0, 0, 0.3, 0, 2, 0.5, lambda=1),
-               dWEV(c(0.1, .3,.7,1.2), "upper", 0.5 /sqrt((c(0.1, .3,.7,1.2)+2)), 1/sqrt((c(0.1, .3,.7,1.2)+2)),  2, 0.5,  0,0.5, 0, 0, 0.3, 0, 2, 0.5, lambda=0.5))
-  expect_equal(dWEV(c(0.1, .3,.7,1.2), "lower", 0.5, 1, 2, 0.5,  0,0.5, 0, 0, 0.3, 0, 2, 0.5), # default lambda = 0
-               dWEV(c(0.1, .3,.7,1.2), "lower", 0.5 /(c(0.1, .3,.7,1.2)+2)^2, 1/(c(0.1, .3,.7,1.2)+2)^2, 2, 0.5,  0,0.5, 0, 0, 0.3, 0, 2,  0.5, lambda=2))
+  expect_equal(ddynaViTE(c(0.1, .3,.7,1.2), "upper", 0.5 /((c(0.1, .3,.7,1.2)+2)), 1/((c(0.1, .3,.7,1.2)+2)), 2, 0.5,  0,0.5, 0, 0, 0.3, 0, 2, 0.5, lambda=1),
+               ddynaViTE(c(0.1, .3,.7,1.2), "upper", 0.5 /sqrt((c(0.1, .3,.7,1.2)+2)), 1/sqrt((c(0.1, .3,.7,1.2)+2)),  2, 0.5,  0,0.5, 0, 0, 0.3, 0, 2, 0.5, lambda=0.5))
+  expect_equal(ddynaViTE(c(0.1, .3,.7,1.2), "lower", 0.5, 1, 2, 0.5,  0,0.5, 0, 0, 0.3, 0, 2, 0.5), # default lambda = 0
+               ddynaViTE(c(0.1, .3,.7,1.2), "lower", 0.5 /(c(0.1, .3,.7,1.2)+2)^2, 1/(c(0.1, .3,.7,1.2)+2)^2, 2, 0.5,  0,0.5, 0, 0, 0.3, 0, 2,  0.5, lambda=2))
 })
 
 test_that("dynWEV with w=0 equals 2DSD", {
-  expect_equal(dWEV(seq(0, 3, by=0.5), "upper", 0.4, 2.5, tau=1, a=2, v=0.5, t0=0, z =0.5, sv=0.2, st0=0, sz=0,w=1-.Machine$double.eps, sigvis=0.2, svis=1, s=1, precision = 3),
+  expect_equal(ddynaViTE(seq(0, 3, by=0.5), "upper", 0.4, 2.5, tau=1, a=2, v=0.5, t0=0, z =0.5, sv=0.2, st0=0, sz=0,w=1-.Machine$double.eps, sigvis=0.2, svis=1, s=1, precision = 3),
                d2DSD(seq(0, 3, by=0.5), "upper", 0.4, 2.5, tau=1, a=2, v=0.5, t0=0, z =0.5, sv=0.2, s=1, st0=0, sz=0, precision = 3))
-  expect_equal(dWEV(seq(0, 3, by=0.5), "lower", 0.4, 2.5, tau=1, a=2, v=-0.5, t0=0, z =0.5, sv=0.2, st0=0, sz=0,w=1-.Machine$double.eps, sigvis=0.2, svis=1, s=1, precision = 3),
+  expect_equal(ddynaViTE(seq(0, 3, by=0.5), "lower", 0.4, 2.5, tau=1, a=2, v=-0.5, t0=0, z =0.5, sv=0.2, st0=0, sz=0,w=1-.Machine$double.eps, sigvis=0.2, svis=1, s=1, precision = 3),
                d2DSD(seq(0, 3, by=0.5), "lower", 0.4, 2.5, tau=1, a=2, v=-0.5, t0=0, z =0.5, sv=0.2, s=1, st0=0, sz=0, precision = 3))
 })
 

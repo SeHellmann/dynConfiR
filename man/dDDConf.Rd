@@ -6,8 +6,8 @@
 \alias{rDDConf}
 \title{Drift Diffusion Model with time-dependent confidence}
 \usage{
-dDDConf(rt, response = "upper", th1, th2, a, v, t0 = 0, z = 0.5,
-  d = 0, sz = 0, sv = 0, st0 = 1, s = 1, precision = 1e-05,
+dDDConf(rt, response = "upper", th1, th2, a, v, t0 = 0, z = 0.5, d = 0,
+  sz = 0, sv = 0, st0 = 1, s = 1, precision = 6,
   z_absolute = FALSE, stop_on_error = TRUE, stop_on_zero = FALSE,
   st0stepsize = 0.001)
 
