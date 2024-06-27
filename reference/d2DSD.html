@@ -7,7 +7,7 @@ DDM parameters: a (threshold separation), z
 response time constant), d (differences in speed of response execution),
 sv (inter-trial-variability of drift), st0 (inter-trial-variability
 of non-decisional components), sz (inter-trial-variability of relative
-starting point), s (diffusion constant)."><title>Pleskac and Busemeyer's 2DSD Model for Decision Confidence — d2DSD • dynConfiR</title><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous"><!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Pleskac and Busemeyer's 2DSD Model for Decision Confidence — d2DSD"><meta property="og:description" content="Likelihood function and random number generator for a generalization of the
+starting point), s (diffusion constant)."><title>Pleskac and Busemeyer's 2DSD Model for Decision Confidence — d2DSD • dynConfiR</title><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous"><!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.11/clipboard.min.js" integrity="sha512-7O5pXpc0oCRrxk8RUfDYFgn0nO1t+jLuIOQdOMRp4APB7uZ4vSjspzp5y6YDtDs4VzUSTbWzBFZ/LKJhnyFOKw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Pleskac and Busemeyer's 2DSD Model for Decision Confidence — d2DSD"><meta property="og:description" content="Likelihood function and random number generator for a generalization of the
 2DSD Model presented by Pleskac &amp;amp; Busemeyer (2010). It includes following
 parameters:
 DDM parameters: a (threshold separation), z
@@ -22,11 +22,11 @@ starting point), s (diffusion constant)."><!-- mathjax --><script src="https://c
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
     
 
-    <nav class="navbar fixed-top navbar-light navbar-expand-lg bg-light"><div class="container">
+    <nav class="navbar fixed-top navbar-light navbar-expand-lg bg-light" data-bs-theme="light"><div class="container">
     
     <a class="navbar-brand me-2" href="../index.html">dynConfiR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -80,7 +80,7 @@ starting point), <code>s</code> (diffusion constant).</p>
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">d2DSD</span><span class="op">(</span><span class="va">rt</span>, response <span class="op">=</span> <span class="st">"upper"</span>, <span class="va">th1</span>, <span class="va">th2</span>, <span class="va">a</span>, <span class="va">v</span>, t0 <span class="op">=</span> <span class="fl">0</span>, z <span class="op">=</span> <span class="fl">0.5</span>, d <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  sz <span class="op">=</span> <span class="fl">0</span>, sv <span class="op">=</span> <span class="fl">0</span>, st0 <span class="op">=</span> <span class="fl">0</span>, tau <span class="op">=</span> <span class="fl">1</span>, lambda <span class="op">=</span> <span class="fl">0</span>, s <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  simult_conf <span class="op">=</span> <span class="cn">FALSE</span>, precision <span class="op">=</span> <span class="fl">1e-05</span>, z_absolute <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  simult_conf <span class="op">=</span> <span class="cn">FALSE</span>, precision <span class="op">=</span> <span class="fl">6</span>, z_absolute <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  stop_on_error <span class="op">=</span> <span class="cn">TRUE</span>, stop_on_zero <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">r2DSD</span><span class="op">(</span><span class="va">n</span>, <span class="va">a</span>, <span class="va">v</span>, t0 <span class="op">=</span> <span class="fl">0</span>, z <span class="op">=</span> <span class="fl">0.5</span>, d <span class="op">=</span> <span class="fl">0</span>, sz <span class="op">=</span> <span class="fl">0</span>, sv <span class="op">=</span> <span class="fl">0</span>, st0 <span class="op">=</span> <span class="fl">0</span>,</span>
@@ -198,8 +198,9 @@ when there is an observable interjudgment time (then <code>simult_conf</code> sh
 
 
 <dt>precision</dt>
-<dd><p><code>numerical</code> scalar value. Precision of calculation. Corresponds
-to the stepsize of integration w.r.t. <code>z</code> and <code>t0</code>. Default is 1e-5.</p></dd>
+<dd><p><code>numerical</code> scalar value. Precision of calculation.
+Determines the the stepsize of integration w.r.t. <code>z</code> and <code>t0</code>.
+Represents the number of decimals precisely computet on average. Default is 6.</p></dd>
 
 
 <dt>z_absolute</dt>
@@ -361,11 +362,11 @@ package <code>rtdists</code> for the Ratcliff diffusion model.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by Sebastian Hellmann, Manuel Rausch.</p>
+  <p>Developed by Sebastian Hellmann, Manuel Rausch.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
 </div>
 
     </footer></div>

@@ -20,7 +20,51 @@ sigvis (variability in drift rate of visibility accumulator),
 th1 and th2 (lower and upper thresholds for confidence interval).
 lambda for dynaViTE only, the exponent of judgment time for the division by judgment time in the confidence measure, and
 Note that the parametrization or defaults of non-decision time variability
-st0 and diffusion constant s differ from what is often found in the literature."><title>Dynamical visibility, time, and evidence model (dynaViTE) and Dynamical weighted evidence and visibility model (dynWEV) — dynaViTE • dynConfiR</title><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous"><!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Dynamical visibility, time, and evidence model (dynaViTE) and Dynamical weighted evidence and visibility model (dynWEV) — dynaViTE"><meta property="og:description" content="Likelihood function and random number generator for the dynaViTE and dynWEV model
+st0 and diffusion constant s differ from what is often found in the literature.
+Likelihood function and random number generator for the dynaViTE and dynWEV model
+(Hellmann et al., 2023).
+It includes following parameters from the drift diffusion model:
+a (threshold separation),
+z (starting point; relative),
+v (drift rate),
+t0 (non-decision time/response time constant),
+d (differences in speed of response execution),
+sv (inter-trial-variability of drift),
+st0 (inter-trial-variability of non-decisional components),
+sz (inter-trial-variability of relative starting point) and
+s (diffusion constant).
+For the computation of confidence following parameters were added:
+tau (post-decisional accumulation time),
+w (weight on the decision evidence (weight on visibility is (1-w))),
+muvis (mean drift rate of visibility process),
+svis (diffusion constant of visibility process),
+sigvis (variability in drift rate of visibility accumulator),
+th1 and th2 (lower and upper thresholds for confidence interval).
+lambda for dynaViTE only, the exponent of judgment time for the division by judgment time in the confidence measure, and
+Note that the parametrization or defaults of non-decision time variability
+st0 and diffusion constant s differ from what is often found in the literature."><title>Dynamical visibility, time, and evidence model (dynaViTE) and Dynamical weighted evidence and visibility model (dynWEV) — dynaViTE • dynConfiR</title><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous"><!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.11/clipboard.min.js" integrity="sha512-7O5pXpc0oCRrxk8RUfDYFgn0nO1t+jLuIOQdOMRp4APB7uZ4vSjspzp5y6YDtDs4VzUSTbWzBFZ/LKJhnyFOKw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Dynamical visibility, time, and evidence model (dynaViTE) and Dynamical weighted evidence and visibility model (dynWEV) — dynaViTE"><meta property="og:description" content="Likelihood function and random number generator for the dynaViTE and dynWEV model
+(Hellmann et al., 2023).
+It includes following parameters from the drift diffusion model:
+a (threshold separation),
+z (starting point; relative),
+v (drift rate),
+t0 (non-decision time/response time constant),
+d (differences in speed of response execution),
+sv (inter-trial-variability of drift),
+st0 (inter-trial-variability of non-decisional components),
+sz (inter-trial-variability of relative starting point) and
+s (diffusion constant).
+For the computation of confidence following parameters were added:
+tau (post-decisional accumulation time),
+w (weight on the decision evidence (weight on visibility is (1-w))),
+muvis (mean drift rate of visibility process),
+svis (diffusion constant of visibility process),
+sigvis (variability in drift rate of visibility accumulator),
+th1 and th2 (lower and upper thresholds for confidence interval).
+lambda for dynaViTE only, the exponent of judgment time for the division by judgment time in the confidence measure, and
+Note that the parametrization or defaults of non-decision time variability
+st0 and diffusion constant s differ from what is often found in the literature.
+Likelihood function and random number generator for the dynaViTE and dynWEV model
 (Hellmann et al., 2023).
 It includes following parameters from the drift diffusion model:
 a (threshold separation),
@@ -48,11 +92,11 @@ st0 and diffusion constant s differ from what is often found in the literature."
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
     
 
-    <nav class="navbar fixed-top navbar-light navbar-expand-lg bg-light"><div class="container">
+    <nav class="navbar fixed-top navbar-light navbar-expand-lg bg-light" data-bs-theme="light"><div class="container">
     
     <a class="navbar-brand me-2" href="../index.html">dynConfiR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -86,12 +130,34 @@ st0 and diffusion constant s differ from what is often found in the literature."
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="" class="logo" alt=""><h1>Dynamical visibility, time, and evidence model (dynaViTE) and Dynamical weighted evidence and visibility model (dynWEV)</h1>
-      <small class="dont-index">Source: <a href="https://github.com/SeHellmann/dynConfiR/blob/HEAD/R/dWEV.R" class="external-link"><code>R/dWEV.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/SeHellmann/dynConfiR/blob/HEAD/R/dWEV.R" class="external-link"><code>R/dWEV.R</code></a>, <a href="https://github.com/SeHellmann/dynConfiR/blob/HEAD/R/ddynaViTE.R" class="external-link"><code>R/ddynaViTE.R</code></a></small>
       <div class="d-none name"><code>dynaViTE.Rd</code></div>
     </div>
 
     <div class="ref-description section level2">
     <p>Likelihood function and random number generator for the dynaViTE and dynWEV model
+(Hellmann et al., 2023).
+It includes following parameters from the drift diffusion model:
+<code>a</code> (threshold separation),
+<code>z</code> (starting point; relative),
+<code>v</code> (drift rate),
+<code>t0</code> (non-decision time/response time constant),
+<code>d</code> (differences in speed of response execution),
+<code>sv</code> (inter-trial-variability of drift),
+<code>st0</code> (inter-trial-variability of non-decisional components),
+<code>sz</code> (inter-trial-variability of relative starting point) and
+<code>s</code> (diffusion constant).
+For the computation of confidence following parameters were added:
+<code>tau</code> (post-decisional accumulation time),
+<code>w</code> (weight on the decision evidence (weight on visibility is (1-w))),
+<code>muvis</code> (mean drift rate of visibility process),
+<code>svis</code> (diffusion constant of visibility process),
+<code>sigvis</code> (variability in drift rate of visibility accumulator),
+<code>th1</code> and <code>th2</code> (lower and upper thresholds for confidence interval).
+<code>lambda</code> for dynaViTE only, the exponent of judgment time for the division by judgment time in the confidence measure, and
+<strong>Note that the parametrization or defaults of non-decision time variability
+<code>st0</code> and diffusion constant <code>s</code> differ from what is often found in the literature.</strong></p>
+<p>Likelihood function and random number generator for the dynaViTE and dynWEV model
 (Hellmann et al., 2023).
 It includes following parameters from the drift diffusion model:
 <code>a</code> (threshold separation),
@@ -120,10 +186,38 @@ For the computation of confidence following parameters were added:
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">dWEV</span><span class="op">(</span><span class="va">rt</span>, response <span class="op">=</span> <span class="st">"upper"</span>, <span class="va">th1</span>, <span class="va">th2</span>, <span class="va">a</span>, <span class="va">v</span>, t0 <span class="op">=</span> <span class="fl">0</span>, z <span class="op">=</span> <span class="fl">0.5</span>, d <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  sz <span class="op">=</span> <span class="fl">0</span>, sv <span class="op">=</span> <span class="fl">0</span>, st0 <span class="op">=</span> <span class="fl">0</span>, tau <span class="op">=</span> <span class="fl">1</span>, w <span class="op">=</span> <span class="fl">0.5</span>, muvis <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  sigvis <span class="op">=</span> <span class="fl">0</span>, svis <span class="op">=</span> <span class="fl">1</span>, lambda <span class="op">=</span> <span class="fl">0</span>, s <span class="op">=</span> <span class="fl">1</span>, simult_conf <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  precision <span class="op">=</span> <span class="fl">1e-05</span>, z_absolute <span class="op">=</span> <span class="cn">FALSE</span>, stop_on_error <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  precision <span class="op">=</span> <span class="fl">6</span>, z_absolute <span class="op">=</span> <span class="cn">FALSE</span>, stop_on_error <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  stop_on_zero <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">ddynaViTE</span><span class="op">(</span><span class="va">rt</span>, response <span class="op">=</span> <span class="st">"upper"</span>, <span class="va">th1</span>, <span class="va">th2</span>, <span class="va">a</span>, <span class="va">v</span>, t0 <span class="op">=</span> <span class="fl">0</span>, z <span class="op">=</span> <span class="fl">0.5</span>,</span>
+<span>  d <span class="op">=</span> <span class="fl">0</span>, sz <span class="op">=</span> <span class="fl">0</span>, sv <span class="op">=</span> <span class="fl">0</span>, st0 <span class="op">=</span> <span class="fl">0</span>, tau <span class="op">=</span> <span class="fl">1</span>, w <span class="op">=</span> <span class="fl">0.5</span>, muvis <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  sigvis <span class="op">=</span> <span class="fl">0</span>, svis <span class="op">=</span> <span class="fl">1</span>, lambda <span class="op">=</span> <span class="fl">0</span>, s <span class="op">=</span> <span class="fl">1</span>, simult_conf <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  precision <span class="op">=</span> <span class="fl">6</span>, z_absolute <span class="op">=</span> <span class="cn">FALSE</span>, stop_on_error <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  stop_on_zero <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">rdynaViTE</span><span class="op">(</span><span class="va">n</span>, <span class="va">a</span>, <span class="va">v</span>, t0 <span class="op">=</span> <span class="fl">0</span>, z <span class="op">=</span> <span class="fl">0.5</span>, d <span class="op">=</span> <span class="fl">0</span>, sz <span class="op">=</span> <span class="fl">0</span>, sv <span class="op">=</span> <span class="fl">0</span>, st0 <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  tau <span class="op">=</span> <span class="fl">1</span>, w <span class="op">=</span> <span class="fl">0.5</span>, muvis <span class="op">=</span> <span class="cn">NULL</span>, sigvis <span class="op">=</span> <span class="fl">0</span>, svis <span class="op">=</span> <span class="fl">1</span>, lambda <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  s <span class="op">=</span> <span class="fl">1</span>, delta <span class="op">=</span> <span class="fl">0.01</span>, maxrt <span class="op">=</span> <span class="fl">15</span>, simult_conf <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  z_absolute <span class="op">=</span> <span class="cn">FALSE</span>, stop_on_error <span class="op">=</span> <span class="cn">TRUE</span>, process_results <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">dWEV</span><span class="op">(</span><span class="va">rt</span>, response <span class="op">=</span> <span class="st">"upper"</span>, <span class="va">th1</span>, <span class="va">th2</span>, <span class="va">a</span>, <span class="va">v</span>, t0 <span class="op">=</span> <span class="fl">0</span>, z <span class="op">=</span> <span class="fl">0.5</span>, d <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  sz <span class="op">=</span> <span class="fl">0</span>, sv <span class="op">=</span> <span class="fl">0</span>, st0 <span class="op">=</span> <span class="fl">0</span>, tau <span class="op">=</span> <span class="fl">1</span>, w <span class="op">=</span> <span class="fl">0.5</span>, muvis <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  sigvis <span class="op">=</span> <span class="fl">0</span>, svis <span class="op">=</span> <span class="fl">1</span>, lambda <span class="op">=</span> <span class="fl">0</span>, s <span class="op">=</span> <span class="fl">1</span>, simult_conf <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  precision <span class="op">=</span> <span class="fl">6</span>, z_absolute <span class="op">=</span> <span class="cn">FALSE</span>, stop_on_error <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  stop_on_zero <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">rWEV</span><span class="op">(</span><span class="va">n</span>, <span class="va">a</span>, <span class="va">v</span>, t0 <span class="op">=</span> <span class="fl">0</span>, z <span class="op">=</span> <span class="fl">0.5</span>, d <span class="op">=</span> <span class="fl">0</span>, sz <span class="op">=</span> <span class="fl">0</span>, sv <span class="op">=</span> <span class="fl">0</span>, st0 <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  tau <span class="op">=</span> <span class="fl">1</span>, w <span class="op">=</span> <span class="fl">0.5</span>, muvis <span class="op">=</span> <span class="cn">NULL</span>, sigvis <span class="op">=</span> <span class="fl">0</span>, svis <span class="op">=</span> <span class="fl">1</span>, lambda <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  s <span class="op">=</span> <span class="fl">1</span>, delta <span class="op">=</span> <span class="fl">0.01</span>, maxrt <span class="op">=</span> <span class="fl">15</span>, simult_conf <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  z_absolute <span class="op">=</span> <span class="cn">FALSE</span>, stop_on_error <span class="op">=</span> <span class="cn">TRUE</span>, process_results <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">ddynaViTE</span><span class="op">(</span><span class="va">rt</span>, response <span class="op">=</span> <span class="st">"upper"</span>, <span class="va">th1</span>, <span class="va">th2</span>, <span class="va">a</span>, <span class="va">v</span>, t0 <span class="op">=</span> <span class="fl">0</span>, z <span class="op">=</span> <span class="fl">0.5</span>,</span>
+<span>  d <span class="op">=</span> <span class="fl">0</span>, sz <span class="op">=</span> <span class="fl">0</span>, sv <span class="op">=</span> <span class="fl">0</span>, st0 <span class="op">=</span> <span class="fl">0</span>, tau <span class="op">=</span> <span class="fl">1</span>, w <span class="op">=</span> <span class="fl">0.5</span>, muvis <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  sigvis <span class="op">=</span> <span class="fl">0</span>, svis <span class="op">=</span> <span class="fl">1</span>, lambda <span class="op">=</span> <span class="fl">0</span>, s <span class="op">=</span> <span class="fl">1</span>, simult_conf <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  precision <span class="op">=</span> <span class="fl">6</span>, z_absolute <span class="op">=</span> <span class="cn">FALSE</span>, stop_on_error <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  stop_on_zero <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">rdynaViTE</span><span class="op">(</span><span class="va">n</span>, <span class="va">a</span>, <span class="va">v</span>, t0 <span class="op">=</span> <span class="fl">0</span>, z <span class="op">=</span> <span class="fl">0.5</span>, d <span class="op">=</span> <span class="fl">0</span>, sz <span class="op">=</span> <span class="fl">0</span>, sv <span class="op">=</span> <span class="fl">0</span>, st0 <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  tau <span class="op">=</span> <span class="fl">1</span>, w <span class="op">=</span> <span class="fl">0.5</span>, muvis <span class="op">=</span> <span class="cn">NULL</span>, sigvis <span class="op">=</span> <span class="fl">0</span>, svis <span class="op">=</span> <span class="fl">1</span>, lambda <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  s <span class="op">=</span> <span class="fl">1</span>, delta <span class="op">=</span> <span class="fl">0.01</span>, maxrt <span class="op">=</span> <span class="fl">15</span>, simult_conf <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  z_absolute <span class="op">=</span> <span class="cn">FALSE</span>, stop_on_error <span class="op">=</span> <span class="cn">TRUE</span>, process_results <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
@@ -252,8 +346,9 @@ reported before the confidence report, <code>simul_conf</code> should be <code>F
 
 
 <dt>precision</dt>
-<dd><p>numerical scalar value. Precision of calculation. Corresponds to the
-step size of integration w.r.t. <code>z</code> and <code>t0</code>. Default is 1e-5.</p></dd>
+<dd><p>numerical scalar value. Precision of calculation. Determines the
+step size of integration w.r.t. <code>z</code> and <code>t0</code>.
+Represents the number of decimals precisely computed on average. Default is 6.</p></dd>
 
 
 <dt>z_absolute</dt>
@@ -295,13 +390,29 @@ no additional columns for the final process states are returned.</p></dd>
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p><code>dWEV</code> gives the density/likelihood/probability of the diffusion process producing
+<p><code>ddynaViTE</code> gives the density/likelihood/probability of the diffusion process producing
 a decision of <code>response</code> at time <code>rt</code> and a confidence judgment corresponding to the
 interval [ <code>th1</code>, <code>th2</code>]. The value will be a numeric vector of the same length as
 <code>rt</code>.</p>
 
 
-<p><code>rWEV</code> returns a <code>data.frame</code> with three columns and <code>n</code> rows. Column names are <code>rt</code> (response
+<p><code>rdynaViTE</code> returns a <code>data.frame</code> with three columns and <code>n</code> rows. Column names are <code>rt</code> (response
+time), <code>response</code> (-1 (lower) or 1 (upper), indicating which bound was hit), and <code>conf</code> (the
+value of the confidence measure; not discretized!).</p>
+
+
+<p>The distribution parameters (as well as <code>response</code>, <code>tau</code>, <code>th1</code> and <code>th2</code>,
+<code>w</code> and <code>sig</code>) are recycled to the length of the result. In other words, the functions
+are completely vectorized for all parameters and even the response boundary.</p>
+
+
+<p><code>ddynaViTE</code> gives the density/likelihood/probability of the diffusion process producing
+a decision of <code>response</code> at time <code>rt</code> and a confidence judgment corresponding to the
+interval [ <code>th1</code>, <code>th2</code>]. The value will be a numeric vector of the same length as
+<code>rt</code>.</p>
+
+
+<p><code>rdynaViTE</code> returns a <code>data.frame</code> with three columns and <code>n</code> rows. Column names are <code>rt</code> (response
 time), <code>response</code> (-1 (lower) or 1 (upper), indicating which bound was hit), and <code>conf</code> (the
 value of the confidence measure; not discretized!).</p>
 
@@ -312,8 +423,33 @@ are completely vectorized for all parameters and even the response boundary.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>The dynamical visibility, time, and evidence (dynaViTE) model
-and the weighted evidence and visibility model are extensions of the 2DSD model
+    <p>The function dWEV was renamed to ddynaViTE in version 0.1.0 of the package.
+It is still here for reasons of backwards compatibility. The function just calls the
+ddynaViTE function (and produces a deprecation warning).</p>
+<p>The dynamical visibility, time, and evidence (dynaViTE) model
+and the weighted evidence and visibility model (dynWEV) are extensions of the 2DSD model
+for decision confidence (see <code><a href="d2DSD.html">d2DSD</a></code>). It assumes that the decision follows a drift
+diffusion model with two additional assumptions to account for confidence. First, there is a
+post-decisional period of further evidence accumulation <code>tau</code>. Second, another accumulation process
+accrues information about stimulus reliability (the visibility process) including also evidence
+about decision irrelevant features. See Hellmann et al. (2023) for more information.
+The measure for confidence is then a weighted sum of the final state of the decision process X
+and the visibility process V over a power-function of total accumulation time,
+i.e. for a decision time T (which is not the response time), the confidence variable is
+$$conf = \frac{wX(T+\tau) + (1-w) V(T+\tau)}{(T+\tau)^\lambda}.$$
+The dynWEV model is a special case of dynaViTE, with the parameter <code>lambda=0</code>.</p>
+<p>All functions are fully vectorized across all parameters as well as the response to match the
+length or <code>rt</code> (i.e., the output is always of length equal to <code>rt</code>). This allows for
+trial wise parameters for each model parameter.</p>
+<p>For convenience, the function allows that the first argument is a <code>data.frame</code> containing
+the information of the first and second argument in two columns (i.e., <code>rt</code> and <code>response</code>).
+Other columns (as well as passing <code>response</code> separately argument) will be ignored.</p>
+<p>The functions dWEV and rWEV were renamed to ddynaViTE and rdynaViTE,
+respectively in version 0.1.0 of the package.
+They are still here for reasons of backwards compatibility. The functions
+just calls their counterpar ddynaViTE and rdynaViTE (and produce a deprecation warning).</p>
+<p>The dynamical visibility, time, and evidence (dynaViTE) model
+and the weighted evidence and visibility model (dynWEV) are extensions of the 2DSD model
 for decision confidence (see <code><a href="d2DSD.html">d2DSD</a></code>). It assumes that the decision follows a drift
 diffusion model with two additional assumptions to account for confidence. First, there is a
 post-decisional period of further evidence accumulation <code>tau</code>. Second, another accumulation process
@@ -344,10 +480,22 @@ Roger Ratcliff and others. Usually <code>s</code> is not specified as the other 
 may be scaled to produce the same distributions (as is done in the code).</p>
 <p>The function code is basically an extension of the <code>ddiffusion</code> function from the
 package <code>rtdists</code> for the Ratcliff diffusion model.</p>
+<p>The parameterization of the non-decisional components, <code>t0</code> and <code>st0</code>,
+differs from the parameterization sometimes used in the literature.
+In the present case <code>t0</code> is the lower bound of the uniform distribution of length
+<code>st0</code>, but <em>not</em> its midpoint. The parameterization employed here is in line
+with the functions in the <code>rtdists</code> package.</p>
+<p>The default diffusion constant <code>s</code> is 1 and not 0.1 as in most applications of
+Roger Ratcliff and others. Usually <code>s</code> is not specified as the other parameters:
+<code>a</code>, <code>v</code>, <code>sv</code>, <code>muvis</code>, <code>sigvis</code>, and <code>svis</code> respectively,
+may be scaled to produce the same distributions (as is done in the code).</p>
+<p>The function code is basically an extension of the <code>ddiffusion</code> function from the
+package <code>rtdists</code> for the Ratcliff diffusion model.</p>
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
     <p>Hellmann, S., Zehetleitner, M., &amp; Rausch, M. (2023). Simultaneous modeling of choice, confidence and response time in visual perception. <em>Psychological Review</em> 2023 Mar 13. doi: 10.1037/rev0000411. Epub ahead of print. PMID: 36913292.</p>
+<p>Hellmann, S., Zehetleitner, M., &amp; Rausch, M. (2023). Simultaneous modeling of choice, confidence and response time in visual perception. <em>Psychological Review</em> 2023 Mar 13. doi: 10.1037/rev0000411. Epub ahead of print. PMID: 36913292.</p>
     </div>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>
@@ -357,15 +505,15 @@ package <code>rtdists</code> for the Ratcliff diffusion model.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Plot rt distribution ignoring confidence</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/curve.html" class="external-link">curve</a></span><span class="op">(</span><span class="fu">dWEV</span><span class="op">(</span><span class="va">x</span>, <span class="st">"upper"</span>, <span class="op">-</span><span class="cn">Inf</span>, <span class="cn">Inf</span>, tau<span class="op">=</span><span class="fl">1</span>, a<span class="op">=</span><span class="fl">2</span>, v<span class="op">=</span><span class="fl">0.4</span>, sz<span class="op">=</span><span class="fl">0.2</span>, sv<span class="op">=</span><span class="fl">0.9</span><span class="op">)</span>, xlim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2</span><span class="op">)</span>, lty<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/curve.html" class="external-link">curve</a></span><span class="op">(</span><span class="fu">dWEV</span><span class="op">(</span><span class="va">x</span>, <span class="st">"lower"</span>, <span class="op">-</span><span class="cn">Inf</span>, <span class="cn">Inf</span>,tau<span class="op">=</span><span class="fl">1</span>, a<span class="op">=</span><span class="fl">2</span>, v<span class="op">=</span><span class="fl">0.4</span>, sz<span class="op">=</span><span class="fl">0.2</span>, sv<span class="op">=</span><span class="fl">0.9</span><span class="op">)</span>, col<span class="op">=</span><span class="st">"red"</span>, lty<span class="op">=</span><span class="fl">2</span>, add<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/curve.html" class="external-link">curve</a></span><span class="op">(</span><span class="fu">dWEV</span><span class="op">(</span><span class="va">x</span>, <span class="st">"upper"</span>, <span class="op">-</span><span class="cn">Inf</span>, <span class="cn">Inf</span>,  tau<span class="op">=</span><span class="fl">1</span>, a<span class="op">=</span><span class="fl">2</span>, v<span class="op">=</span><span class="fl">0.4</span><span class="op">)</span>,add<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/curve.html" class="external-link">curve</a></span><span class="op">(</span><span class="fu">dWEV</span><span class="op">(</span><span class="va">x</span>, <span class="st">"lower"</span>, <span class="op">-</span><span class="cn">Inf</span>, <span class="cn">Inf</span>, tau<span class="op">=</span><span class="fl">1</span>, a<span class="op">=</span><span class="fl">2</span>, v<span class="op">=</span><span class="fl">0.4</span><span class="op">)</span>, col<span class="op">=</span><span class="st">"red"</span>, add<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/curve.html" class="external-link">curve</a></span><span class="op">(</span><span class="fu">ddynaViTE</span><span class="op">(</span><span class="va">x</span>, <span class="st">"upper"</span>, <span class="op">-</span><span class="cn">Inf</span>, <span class="cn">Inf</span>, tau<span class="op">=</span><span class="fl">1</span>, a<span class="op">=</span><span class="fl">2</span>, v<span class="op">=</span><span class="fl">0.4</span>, sz<span class="op">=</span><span class="fl">0.2</span>, sv<span class="op">=</span><span class="fl">0.9</span><span class="op">)</span>, xlim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2</span><span class="op">)</span>, lty<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/curve.html" class="external-link">curve</a></span><span class="op">(</span><span class="fu">ddynaViTE</span><span class="op">(</span><span class="va">x</span>, <span class="st">"lower"</span>, <span class="op">-</span><span class="cn">Inf</span>, <span class="cn">Inf</span>,tau<span class="op">=</span><span class="fl">1</span>, a<span class="op">=</span><span class="fl">2</span>, v<span class="op">=</span><span class="fl">0.4</span>, sz<span class="op">=</span><span class="fl">0.2</span>, sv<span class="op">=</span><span class="fl">0.9</span><span class="op">)</span>, col<span class="op">=</span><span class="st">"red"</span>, lty<span class="op">=</span><span class="fl">2</span>, add<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/curve.html" class="external-link">curve</a></span><span class="op">(</span><span class="fu">ddynaViTE</span><span class="op">(</span><span class="va">x</span>, <span class="st">"upper"</span>, <span class="op">-</span><span class="cn">Inf</span>, <span class="cn">Inf</span>,  tau<span class="op">=</span><span class="fl">1</span>, a<span class="op">=</span><span class="fl">2</span>, v<span class="op">=</span><span class="fl">0.4</span><span class="op">)</span>,add<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/curve.html" class="external-link">curve</a></span><span class="op">(</span><span class="fu">ddynaViTE</span><span class="op">(</span><span class="va">x</span>, <span class="st">"lower"</span>, <span class="op">-</span><span class="cn">Inf</span>, <span class="cn">Inf</span>, tau<span class="op">=</span><span class="fl">1</span>, a<span class="op">=</span><span class="fl">2</span>, v<span class="op">=</span><span class="fl">0.4</span><span class="op">)</span>, col<span class="op">=</span><span class="st">"red"</span>, add<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="dynaViTE-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="co"># Generate a random sample</span></span></span>
-<span class="r-in"><span><span class="va">df1</span> <span class="op">&lt;-</span> <span class="fu">rWEV</span><span class="op">(</span><span class="fl">5000</span>, a<span class="op">=</span><span class="fl">2</span>,v<span class="op">=</span><span class="fl">0.5</span>,t0<span class="op">=</span><span class="fl">0</span>,z<span class="op">=</span><span class="fl">0.5</span>,d<span class="op">=</span><span class="fl">0</span>,sz<span class="op">=</span><span class="fl">0</span>,sv<span class="op">=</span><span class="fl">0</span>, st0<span class="op">=</span><span class="fl">0</span>,  tau<span class="op">=</span><span class="fl">1</span>, s<span class="op">=</span><span class="fl">1</span>, w<span class="op">=</span><span class="fl">0.9</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">df1</span> <span class="op">&lt;-</span> <span class="fu">rdynaViTE</span><span class="op">(</span><span class="fl">5000</span>, a<span class="op">=</span><span class="fl">2</span>,v<span class="op">=</span><span class="fl">0.5</span>,t0<span class="op">=</span><span class="fl">0</span>,z<span class="op">=</span><span class="fl">0.5</span>,d<span class="op">=</span><span class="fl">0</span>,sz<span class="op">=</span><span class="fl">0</span>,sv<span class="op">=</span><span class="fl">0</span>, st0<span class="op">=</span><span class="fl">0</span>,  tau<span class="op">=</span><span class="fl">1</span>, s<span class="op">=</span><span class="fl">1</span>, w<span class="op">=</span><span class="fl">0.9</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co"># Same RT and response distribution but different confidence distribution</span></span></span>
-<span class="r-in"><span><span class="va">df2</span> <span class="op">&lt;-</span> <span class="fu">rWEV</span><span class="op">(</span><span class="fl">5000</span>, a<span class="op">=</span><span class="fl">2</span>,v<span class="op">=</span><span class="fl">0.5</span>,t0<span class="op">=</span><span class="fl">0</span>,z<span class="op">=</span><span class="fl">0.5</span>,d<span class="op">=</span><span class="fl">0</span>,sz<span class="op">=</span><span class="fl">0</span>,sv<span class="op">=</span><span class="fl">0</span>, st0<span class="op">=</span><span class="fl">0</span>,  tau<span class="op">=</span><span class="fl">1</span>, s<span class="op">=</span><span class="fl">1</span>, w<span class="op">=</span><span class="fl">0.1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">df2</span> <span class="op">&lt;-</span> <span class="fu">rdynaViTE</span><span class="op">(</span><span class="fl">5000</span>, a<span class="op">=</span><span class="fl">2</span>,v<span class="op">=</span><span class="fl">0.5</span>,t0<span class="op">=</span><span class="fl">0</span>,z<span class="op">=</span><span class="fl">0.5</span>,d<span class="op">=</span><span class="fl">0</span>,sz<span class="op">=</span><span class="fl">0</span>,sv<span class="op">=</span><span class="fl">0</span>, st0<span class="op">=</span><span class="fl">0</span>,  tau<span class="op">=</span><span class="fl">1</span>, s<span class="op">=</span><span class="fl">1</span>, w<span class="op">=</span><span class="fl">0.1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">df1</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     rt response     conf</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1 1.10        1 2.605565</span>
@@ -376,17 +524,17 @@ package <code>rtdists</code> for the Ratcliff diffusion model.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6 1.49        1 2.644473</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Scaling diffusion parameters leads do same density values</span></span></span>
-<span class="r-in"><span><span class="fu">dWEV</span><span class="op">(</span><span class="va">df1</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="op">]</span>, th1<span class="op">=</span><span class="op">-</span><span class="cn">Inf</span>, th2<span class="op">=</span><span class="cn">Inf</span>, a<span class="op">=</span><span class="fl">2</span>, v<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span></span>
+<span class="r-in"><span><span class="fu">ddynaViTE</span><span class="op">(</span><span class="va">df1</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="op">]</span>, th1<span class="op">=</span><span class="op">-</span><span class="cn">Inf</span>, th2<span class="op">=</span><span class="cn">Inf</span>, a<span class="op">=</span><span class="fl">2</span>, v<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.2904880 0.4421210 0.4077332 0.5468699 0.3968512</span>
 <span class="r-in"><span><span class="va">s</span> <span class="op">&lt;-</span> <span class="fl">2</span></span></span>
-<span class="r-in"><span><span class="fu">dWEV</span><span class="op">(</span><span class="va">df1</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="op">]</span>, th1<span class="op">=</span><span class="op">-</span><span class="cn">Inf</span>, th2<span class="op">=</span><span class="cn">Inf</span>, a<span class="op">=</span><span class="fl">2</span><span class="op">*</span><span class="va">s</span>, v<span class="op">=</span><span class="fl">.5</span><span class="op">*</span><span class="va">s</span>, s<span class="op">=</span><span class="fl">2</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span></span>
+<span class="r-in"><span><span class="fu">ddynaViTE</span><span class="op">(</span><span class="va">df1</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="op">]</span>, th1<span class="op">=</span><span class="op">-</span><span class="cn">Inf</span>, th2<span class="op">=</span><span class="cn">Inf</span>, a<span class="op">=</span><span class="fl">2</span><span class="op">*</span><span class="va">s</span>, v<span class="op">=</span><span class="fl">.5</span><span class="op">*</span><span class="va">s</span>, s<span class="op">=</span><span class="fl">2</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.2904880 0.4421210 0.4077332 0.5468699 0.3968512</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Diffusion constant also scales confidence parameters</span></span></span>
-<span class="r-in"><span><span class="fu">dWEV</span><span class="op">(</span><span class="va">df1</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="op">]</span>, th1<span class="op">=</span><span class="fl">0.2</span>, th2<span class="op">=</span><span class="fl">1</span>, a<span class="op">=</span><span class="fl">2</span>, v<span class="op">=</span><span class="fl">.5</span>, sv<span class="op">=</span><span class="fl">0.2</span>, w<span class="op">=</span><span class="fl">0.5</span>, sigvis <span class="op">=</span> <span class="fl">0.2</span>, svis <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span></span>
+<span class="r-in"><span><span class="fu">ddynaViTE</span><span class="op">(</span><span class="va">df1</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="op">]</span>, th1<span class="op">=</span><span class="fl">0.2</span>, th2<span class="op">=</span><span class="fl">1</span>, a<span class="op">=</span><span class="fl">2</span>, v<span class="op">=</span><span class="fl">.5</span>, sv<span class="op">=</span><span class="fl">0.2</span>, w<span class="op">=</span><span class="fl">0.5</span>, sigvis <span class="op">=</span> <span class="fl">0.2</span>, svis <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.07441594 0.12434338 0.11256444 0.16179937 0.10889060</span>
 <span class="r-in"><span><span class="va">s</span> <span class="op">&lt;-</span> <span class="fl">2</span></span></span>
-<span class="r-in"><span><span class="fu">dWEV</span><span class="op">(</span><span class="va">df1</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="op">]</span>, th1<span class="op">=</span><span class="fl">0.2</span><span class="op">*</span><span class="va">s</span>, th2<span class="op">=</span><span class="fl">1</span><span class="op">*</span><span class="va">s</span>, a<span class="op">=</span><span class="fl">2</span><span class="op">*</span><span class="va">s</span>, v<span class="op">=</span><span class="fl">.5</span><span class="op">*</span><span class="va">s</span>, s<span class="op">=</span><span class="fl">2</span>,</span></span>
+<span class="r-in"><span><span class="fu">ddynaViTE</span><span class="op">(</span><span class="va">df1</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="op">]</span>, th1<span class="op">=</span><span class="fl">0.2</span><span class="op">*</span><span class="va">s</span>, th2<span class="op">=</span><span class="fl">1</span><span class="op">*</span><span class="va">s</span>, a<span class="op">=</span><span class="fl">2</span><span class="op">*</span><span class="va">s</span>, v<span class="op">=</span><span class="fl">.5</span><span class="op">*</span><span class="va">s</span>, s<span class="op">=</span><span class="fl">2</span>,</span></span>
 <span class="r-in"><span>     sv<span class="op">=</span><span class="fl">0.2</span><span class="op">*</span><span class="va">s</span>, w<span class="op">=</span><span class="fl">0.5</span>, sigvis<span class="op">=</span><span class="fl">0.2</span><span class="op">*</span><span class="va">s</span>, svis<span class="op">=</span><span class="fl">1</span><span class="op">*</span><span class="va">s</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.07441594 0.12434338 0.11256444 0.16179937 0.10889060</span>
 <span class="r-in"><span></span></span>
@@ -406,18 +554,92 @@ package <code>rtdists</code> for the Ratcliff diffusion model.</p>
 <span class="r-in"><span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/lims.html" class="external-link">xlim</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span><span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/lims.html" class="external-link">ylim</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1.5</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span></span>
 <span class="r-in"><span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_grid.html" class="external-link">facet_grid</a></span><span class="op">(</span>cols<span class="op">=</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">w</span><span class="op">)</span>, rows<span class="op">=</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">response</span><span class="op">)</span>, labeller <span class="op">=</span> <span class="st">"label_both"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 1299 rows containing non-finite values (`stat_density2d()`).</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 1584 rows containing missing values (`geom_raster()`).</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 1299 rows containing non-finite outside the scale range</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> (`stat_density2d()`).</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 1584 rows containing missing values or values outside the scale range</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_raster()`).</span>
 <span class="r-plt img"><img src="dynaViTE-4.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Restricting to specific confidence region</span></span></span>
 <span class="r-in"><span><span class="va">df1</span> <span class="op">&lt;-</span> <span class="va">df1</span><span class="op">[</span><span class="va">df1</span><span class="op">$</span><span class="va">conf</span> <span class="op">&gt;</span><span class="fl">0</span> <span class="op">&amp;</span> <span class="va">df1</span><span class="op">$</span><span class="va">conf</span> <span class="op">&lt;</span><span class="fl">1</span>,<span class="op">]</span></span></span>
-<span class="r-in"><span><span class="fu">dWEV</span><span class="op">(</span><span class="va">df1</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="op">]</span>, th1<span class="op">=</span><span class="fl">0</span>, th2<span class="op">=</span><span class="fl">1</span>, a<span class="op">=</span><span class="fl">2</span>, v<span class="op">=</span><span class="fl">0.5</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span></span>
+<span class="r-in"><span><span class="fu">ddynaViTE</span><span class="op">(</span><span class="va">df1</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="op">]</span>, th1<span class="op">=</span><span class="fl">0</span>, th2<span class="op">=</span><span class="fl">1</span>, a<span class="op">=</span><span class="fl">2</span>, v<span class="op">=</span><span class="fl">0.5</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.126824951 0.045380233 0.004346528 0.008892081 0.024229832</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># If lower confidence threshold is higher than the upper, the function throws an error,</span></span></span>
 <span class="r-in"><span><span class="co"># except when stop_on_error is FALSE</span></span></span>
-<span class="r-in"><span><span class="fu">dWEV</span><span class="op">(</span><span class="va">df1</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="op">]</span>, th1<span class="op">=</span><span class="fl">1</span>, th2<span class="op">=</span><span class="fl">0</span>, a<span class="op">=</span><span class="fl">2</span>, v<span class="op">=</span><span class="fl">0.5</span>, stop_on_error <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">ddynaViTE</span><span class="op">(</span><span class="va">df1</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="op">]</span>, th1<span class="op">=</span><span class="fl">1</span>, th2<span class="op">=</span><span class="fl">0</span>, a<span class="op">=</span><span class="fl">2</span>, v<span class="op">=</span><span class="fl">0.5</span>, stop_on_error <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> error: invalid parameter combination th1 = 1, th2 = 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> error: invalid parameter combination th1 = 1, th2 = 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0 0 0 0 0</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Plot rt distribution ignoring confidence</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/curve.html" class="external-link">curve</a></span><span class="op">(</span><span class="fu">ddynaViTE</span><span class="op">(</span><span class="va">x</span>, <span class="st">"upper"</span>, <span class="op">-</span><span class="cn">Inf</span>, <span class="cn">Inf</span>, tau<span class="op">=</span><span class="fl">1</span>, a<span class="op">=</span><span class="fl">2</span>, v<span class="op">=</span><span class="fl">0.4</span>,</span></span>
+<span class="r-in"><span>                    sz<span class="op">=</span><span class="fl">0.2</span>, sv<span class="op">=</span><span class="fl">0.9</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>      xlim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2</span><span class="op">)</span>, lty<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/curve.html" class="external-link">curve</a></span><span class="op">(</span><span class="fu">ddynaViTE</span><span class="op">(</span><span class="va">x</span>, <span class="st">"lower"</span>, <span class="op">-</span><span class="cn">Inf</span>, <span class="cn">Inf</span>,tau<span class="op">=</span><span class="fl">1</span>, a<span class="op">=</span><span class="fl">2</span>, v<span class="op">=</span><span class="fl">0.4</span>,</span></span>
+<span class="r-in"><span>                    sz<span class="op">=</span><span class="fl">0.2</span>, sv<span class="op">=</span><span class="fl">0.9</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>     col<span class="op">=</span><span class="st">"red"</span>, lty<span class="op">=</span><span class="fl">2</span>, add<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/curve.html" class="external-link">curve</a></span><span class="op">(</span><span class="fu">ddynaViTE</span><span class="op">(</span><span class="va">x</span>, <span class="st">"upper"</span>, <span class="op">-</span><span class="cn">Inf</span>, <span class="cn">Inf</span>,  tau<span class="op">=</span><span class="fl">1</span>, a<span class="op">=</span><span class="fl">2</span>, v<span class="op">=</span><span class="fl">0.4</span><span class="op">)</span>,add<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/curve.html" class="external-link">curve</a></span><span class="op">(</span><span class="fu">ddynaViTE</span><span class="op">(</span><span class="va">x</span>, <span class="st">"lower"</span>, <span class="op">-</span><span class="cn">Inf</span>, <span class="cn">Inf</span>, tau<span class="op">=</span><span class="fl">1</span>, a<span class="op">=</span><span class="fl">2</span>, v<span class="op">=</span><span class="fl">0.4</span><span class="op">)</span>, col<span class="op">=</span><span class="st">"red"</span>, add<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="dynaViTE-5.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="co"># Generate a random sample</span></span></span>
+<span class="r-in"><span><span class="va">df1</span> <span class="op">&lt;-</span> <span class="fu">rdynaViTE</span><span class="op">(</span><span class="fl">5000</span>, a<span class="op">=</span><span class="fl">2</span>,v<span class="op">=</span><span class="fl">0.5</span>,t0<span class="op">=</span><span class="fl">0</span>,z<span class="op">=</span><span class="fl">0.5</span>,d<span class="op">=</span><span class="fl">0</span>,sz<span class="op">=</span><span class="fl">0</span>,sv<span class="op">=</span><span class="fl">0</span>, st0<span class="op">=</span><span class="fl">0</span>,  tau<span class="op">=</span><span class="fl">1</span>, s<span class="op">=</span><span class="fl">1</span>, w<span class="op">=</span><span class="fl">0.9</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># Same RT and response distribution but different confidence distribution</span></span></span>
+<span class="r-in"><span><span class="va">df2</span> <span class="op">&lt;-</span> <span class="fu">rdynaViTE</span><span class="op">(</span><span class="fl">5000</span>, a<span class="op">=</span><span class="fl">2</span>,v<span class="op">=</span><span class="fl">0.5</span>,t0<span class="op">=</span><span class="fl">0</span>,z<span class="op">=</span><span class="fl">0.5</span>,d<span class="op">=</span><span class="fl">0</span>,sz<span class="op">=</span><span class="fl">0</span>,sv<span class="op">=</span><span class="fl">0</span>, st0<span class="op">=</span><span class="fl">0</span>,  tau<span class="op">=</span><span class="fl">1</span>, s<span class="op">=</span><span class="fl">1</span>, w<span class="op">=</span><span class="fl">0.1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">df1</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     rt response      conf</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 1.04        1 1.2946561</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 0.28       -1 0.7891221</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 0.24       -1 1.2059936</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 0.40       -1 1.6407416</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 0.61        1 1.0397065</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6 0.32        1 0.6360446</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Scaling diffusion parameters leads do same density values</span></span></span>
+<span class="r-in"><span><span class="fu">ddynaViTE</span><span class="op">(</span><span class="va">df1</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="op">]</span>, th1<span class="op">=</span><span class="op">-</span><span class="cn">Inf</span>, th2<span class="op">=</span><span class="cn">Inf</span>, a<span class="op">=</span><span class="fl">2</span>, v<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.3151465 0.2644227 0.2486777 0.2606339 0.5611966</span>
+<span class="r-in"><span><span class="va">s</span> <span class="op">&lt;-</span> <span class="fl">2</span></span></span>
+<span class="r-in"><span><span class="fu">ddynaViTE</span><span class="op">(</span><span class="va">df1</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="op">]</span>, th1<span class="op">=</span><span class="op">-</span><span class="cn">Inf</span>, th2<span class="op">=</span><span class="cn">Inf</span>, a<span class="op">=</span><span class="fl">2</span><span class="op">*</span><span class="va">s</span>, v<span class="op">=</span><span class="fl">.5</span><span class="op">*</span><span class="va">s</span>, s<span class="op">=</span><span class="fl">2</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.3151465 0.2644227 0.2486777 0.2606339 0.5611966</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Diffusion constant also scales confidence parameters</span></span></span>
+<span class="r-in"><span><span class="fu">ddynaViTE</span><span class="op">(</span><span class="va">df1</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="op">]</span>, th1<span class="op">=</span><span class="fl">0.2</span>, th2<span class="op">=</span><span class="fl">1</span>, a<span class="op">=</span><span class="fl">2</span>, v<span class="op">=</span><span class="fl">.5</span>, sv<span class="op">=</span><span class="fl">0.2</span>, w<span class="op">=</span><span class="fl">0.5</span>, sigvis <span class="op">=</span> <span class="fl">0.2</span>, svis <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.08216634 0.10671468 0.10118933 0.10260065 0.16711494</span>
+<span class="r-in"><span><span class="va">s</span> <span class="op">&lt;-</span> <span class="fl">2</span></span></span>
+<span class="r-in"><span><span class="fu">ddynaViTE</span><span class="op">(</span><span class="va">df1</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="op">]</span>, th1<span class="op">=</span><span class="fl">0.2</span><span class="op">*</span><span class="va">s</span>, th2<span class="op">=</span><span class="fl">1</span><span class="op">*</span><span class="va">s</span>, a<span class="op">=</span><span class="fl">2</span><span class="op">*</span><span class="va">s</span>, v<span class="op">=</span><span class="fl">.5</span><span class="op">*</span><span class="va">s</span>, s<span class="op">=</span><span class="fl">2</span>,</span></span>
+<span class="r-in"><span>     sv<span class="op">=</span><span class="fl">0.2</span><span class="op">*</span><span class="va">s</span>, w<span class="op">=</span><span class="fl">0.5</span>, sigvis<span class="op">=</span><span class="fl">0.2</span><span class="op">*</span><span class="va">s</span>, svis<span class="op">=</span><span class="fl">1</span><span class="op">*</span><span class="va">s</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.08216634 0.10671468 0.10118933 0.10260065 0.16711494</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">two_samples</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">df1</span>, w<span class="op">=</span><span class="st">"high"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                     <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">df2</span>, w<span class="op">=</span><span class="st">"low"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># no difference in RT distributions</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html" class="external-link">boxplot</a></span><span class="op">(</span><span class="va">rt</span><span class="op">~</span><span class="va">w</span><span class="op">+</span><span class="va">response</span>, data<span class="op">=</span><span class="va">two_samples</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="dynaViTE-6.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="co"># but different confidence distributions</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html" class="external-link">boxplot</a></span><span class="op">(</span><span class="va">conf</span><span class="op">~</span><span class="va">w</span><span class="op">+</span><span class="va">response</span>, data<span class="op">=</span><span class="va">two_samples</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="dynaViTE-7.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"ggplot2"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">two_samples</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">rt</span>, y<span class="op">=</span><span class="va">conf</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_density_2d.html" class="external-link">stat_density_2d</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes_eval.html" class="external-link">after_stat</a></span><span class="op">(</span><span class="va">density</span><span class="op">)</span><span class="op">)</span>, geom <span class="op">=</span> <span class="st">"raster"</span>, contour <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">+</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/lims.html" class="external-link">xlim</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span><span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/lims.html" class="external-link">ylim</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1.5</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_grid.html" class="external-link">facet_grid</a></span><span class="op">(</span>cols<span class="op">=</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">w</span><span class="op">)</span>, rows<span class="op">=</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">response</span><span class="op">)</span>, labeller <span class="op">=</span> <span class="st">"label_both"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 1314 rows containing non-finite outside the scale range</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> (`stat_density2d()`).</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 1584 rows containing missing values or values outside the scale range</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_raster()`).</span>
+<span class="r-plt img"><img src="dynaViTE-8.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Restricting to specific confidence region</span></span></span>
+<span class="r-in"><span><span class="va">df1</span> <span class="op">&lt;-</span> <span class="va">df1</span><span class="op">[</span><span class="va">df1</span><span class="op">$</span><span class="va">conf</span> <span class="op">&gt;</span><span class="fl">0</span> <span class="op">&amp;</span> <span class="va">df1</span><span class="op">$</span><span class="va">conf</span> <span class="op">&lt;</span><span class="fl">1</span>,<span class="op">]</span></span></span>
+<span class="r-in"><span><span class="fu">ddynaViTE</span><span class="op">(</span><span class="va">df1</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="op">]</span>, th1<span class="op">=</span><span class="fl">0</span>, th2<span class="op">=</span><span class="fl">1</span>, a<span class="op">=</span><span class="fl">2</span>, v<span class="op">=</span><span class="fl">0.5</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.12966728 0.27813631 0.12782518 0.05691273 0.01538666</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># If lower confidence threshold is higher than the upper, the function throws an error,</span></span></span>
+<span class="r-in"><span><span class="co"># except when stop_on_error is FALSE</span></span></span>
+<span class="r-in"><span><span class="fu">ddynaViTE</span><span class="op">(</span><span class="va">df1</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="op">]</span>, th1<span class="op">=</span><span class="fl">1</span>, th2<span class="op">=</span><span class="fl">0</span>, a<span class="op">=</span><span class="fl">2</span>, v<span class="op">=</span><span class="fl">0.5</span>, stop_on_error <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> error: invalid parameter combination th1 = 1, th2 = 0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> error: invalid parameter combination th1 = 1, th2 = 0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0 0 0 0 0</span>
@@ -429,11 +651,11 @@ package <code>rtdists</code> for the Ratcliff diffusion model.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by Sebastian Hellmann, Manuel Rausch.</p>
+  <p>Developed by Sebastian Hellmann, Manuel Rausch.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
 </div>
 
     </footer></div>

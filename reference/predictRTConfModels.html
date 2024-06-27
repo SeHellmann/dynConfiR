@@ -4,15 +4,13 @@ there for more information). It calls the respective function for predicting the
 response distribution (discrete decision and rating outcomes) and the rt density
 (density for decision, rating and response time) for every model and
 participant combination in paramDf.
-Also, see dWEV, d2DSD, and dRM for more
-information about the parameters."><title>Prediction of confidence and RT distributions for several sequential
-sampling confidence models and parameter constellations in parallel — predictRTConfModels • dynConfiR</title><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous"><!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Prediction of confidence and RT distributions for several sequential
-sampling confidence models and parameter constellations in parallel — predictRTConfModels"><meta property="og:description" content="This function is a wrapper around the functions predictRTConf (see
+Also, see ddynaViTE, d2DSD, and dRM for more
+information about the parameters."><title>Prediction of confidence and RT distributions for several sequential sampling confidence models and parameter constellations in parallel — predictRTConfModels • dynConfiR</title><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous"><!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.11/clipboard.min.js" integrity="sha512-7O5pXpc0oCRrxk8RUfDYFgn0nO1t+jLuIOQdOMRp4APB7uZ4vSjspzp5y6YDtDs4VzUSTbWzBFZ/LKJhnyFOKw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Prediction of confidence and RT distributions for several sequential sampling confidence models and parameter constellations in parallel — predictRTConfModels"><meta property="og:description" content="This function is a wrapper around the functions predictRTConf (see
 there for more information). It calls the respective function for predicting the
 response distribution (discrete decision and rating outcomes) and the rt density
 (density for decision, rating and response time) for every model and
 participant combination in paramDf.
-Also, see dWEV, d2DSD, and dRM for more
+Also, see ddynaViTE, d2DSD, and dRM for more
 information about the parameters."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -20,11 +18,11 @@ information about the parameters."><!-- mathjax --><script src="https://cdnjs.cl
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
     
 
-    <nav class="navbar fixed-top navbar-light navbar-expand-lg bg-light"><div class="container">
+    <nav class="navbar fixed-top navbar-light navbar-expand-lg bg-light" data-bs-theme="light"><div class="container">
     
     <a class="navbar-brand me-2" href="../index.html">dynConfiR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -57,8 +55,7 @@ information about the parameters."><!-- mathjax --><script src="https://cdnjs.cl
 </nav><div class="container template-reference-topic">
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="" class="logo" alt=""><h1>Prediction of confidence and RT distributions for several sequential
-sampling confidence models and parameter constellations in parallel</h1>
+      <img src="" class="logo" alt=""><h1>Prediction of confidence and RT distributions for several sequential sampling confidence models and parameter constellations in parallel</h1>
       <small class="dont-index">Source: <a href="https://github.com/SeHellmann/dynConfiR/blob/HEAD/R/predictRTConfModels.R" class="external-link"><code>R/predictRTConfModels.R</code></a></small>
       <div class="d-none name"><code>predictRTConfModels.Rd</code></div>
     </div>
@@ -69,7 +66,7 @@ there for more information). It calls the respective function for predicting the
 response distribution (discrete decision and rating outcomes) and the rt density
 (density for decision, rating and response time) for every model and
 participant combination in <code>paramDf</code>.
-Also, see <code><a href="dynaViTE.html">dWEV</a></code>, <code><a href="d2DSD.html">d2DSD</a></code>, and <code><a href="RaceModels.html">dRM</a></code> for more
+Also, see <code><a href="dynaViTE.html">ddynaViTE</a></code>, <code><a href="d2DSD.html">d2DSD</a></code>, and <code><a href="RaceModels.html">dRM</a></code> for more
 information about the parameters.</p>
     </div>
 
@@ -285,22 +282,22 @@ not be mixed.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2 0.2</span>
 <span class="r-in"><span>  <span class="fu">predictConfModels</span><span class="op">(</span><span class="va">paramDf</span>, parallel<span class="op">=</span><span class="cn">FALSE</span>, .progress<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    condition stimulus response correct rating            p info          err</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1          1        1        1       1      1 2.753968e-01   OK 7.492716e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2          2        1        1       1      1 5.679945e-02   OK 7.931960e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3          1       -1        1       0      1 2.681838e-01   OK 6.398393e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4          2       -1        1       0      1 1.195826e-01   OK 3.433863e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5          1        1       -1       0      1 2.416201e-01   OK 5.497316e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6          2        1       -1       0      1 1.012471e-01   OK 4.170548e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7          1       -1       -1       1      1 2.525929e-01   OK 5.147610e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8          2       -1       -1       1      1 5.262247e-02   OK 6.837657e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9          1        1        1       1      2 3.102957e-01   OK 4.229500e-06</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10         2        1        1       1      2 7.520082e-01   OK 1.191037e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11         1       -1        1       0      2 1.837230e-01   OK 2.486981e-06</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12         2       -1        1       0      2 1.004361e-01   OK 1.176693e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13         1        1       -1       0      2 1.726883e-01   OK 2.781425e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14         2        1       -1       0      2 8.994525e-02   OK 1.025351e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15         1       -1       -1       1      2 2.955013e-01   OK 4.785949e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16         2       -1       -1       1      2 7.273538e-01   OK 2.353133e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1          1        1        1       1      1 2.753728e-01   OK 9.315581e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2          2        1        1       1      1 5.679774e-02   OK 7.626811e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3          1       -1        1       0      1 2.681096e-01   OK 3.040260e-06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4          2       -1        1       0      1 1.194356e-01   OK 3.490771e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5          1        1       -1       0      1 2.415522e-01   OK 4.021249e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6          2        1       -1       0      1 1.011203e-01   OK 3.051408e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7          1       -1       -1       1      1 2.525716e-01   OK 3.781411e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8          2       -1       -1       1      1 5.262146e-02   OK 7.040260e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9          1        1        1       1      2 3.103602e-01   OK 3.966579e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10         2        1        1       1      2 7.521672e-01   OK 1.051311e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11         1       -1        1       0      2 1.837507e-01   OK 2.564741e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12         2       -1        1       0      2 1.004053e-01   OK 1.091082e-06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13         1        1       -1       0      2 1.727156e-01   OK 2.049118e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14         2        1       -1       0      2 9.037236e-02   OK 6.383621e-06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15         1       -1       -1       1      2 2.955683e-01   OK 3.556178e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16         2       -1       -1       1      2 7.275378e-01   OK 1.068380e-04</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 17         1        1        1       1      1 7.417137e-01   OK 2.745013e-06</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 18         2        1        1       1      1 8.157263e-01   OK 7.653117e-06</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 19         1        2        1       0      1 9.326453e-02   OK 2.393541e-07</span>
@@ -359,11 +356,11 @@ not be mixed.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by Sebastian Hellmann, Manuel Rausch.</p>
+  <p>Developed by Sebastian Hellmann, Manuel Rausch.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
 </div>
 
     </footer></div>

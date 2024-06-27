@@ -5,7 +5,7 @@ RT distribution (density) for the sequential sampling confidence model
 specified by the argument model, given specific parameter constellations.
 This function calls the respective functions for diffusion based
 models (dynWEV and 2DSD: predictWEV) and race models (IRM, PCRM,
-IRMt, and PCRMt: predictRM)."><title>Prediction of confidence rating and response time distribution for sequential sampling confidence models — predictRTConf • dynConfiR</title><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous"><!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Prediction of confidence rating and response time distribution for sequential sampling confidence models — predictRTConf"><meta property="og:description" content="predictConf predicts the categorical response distribution of
+IRMt, and PCRMt: predictRM)."><title>Prediction of confidence rating and response time distribution for sequential sampling confidence models — predictRTConf • dynConfiR</title><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous"><!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.11/clipboard.min.js" integrity="sha512-7O5pXpc0oCRrxk8RUfDYFgn0nO1t+jLuIOQdOMRp4APB7uZ4vSjspzp5y6YDtDs4VzUSTbWzBFZ/LKJhnyFOKw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Prediction of confidence rating and response time distribution for sequential sampling confidence models — predictRTConf"><meta property="og:description" content="predictConf predicts the categorical response distribution of
 decision and confidence ratings, predictRT computes the predicted
 RT distribution (density) for the sequential sampling confidence model
 specified by the argument model, given specific parameter constellations.
@@ -18,11 +18,11 @@ IRMt, and PCRMt: predictRM)."><!-- mathjax --><script src="https://cdnjs.cloudfl
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
     
 
-    <nav class="navbar fixed-top navbar-light navbar-expand-lg bg-light"><div class="container">
+    <nav class="navbar fixed-top navbar-light navbar-expand-lg bg-light" data-bs-theme="light"><div class="container">
     
     <a class="navbar-brand me-2" href="../index.html">dynConfiR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -193,12 +193,12 @@ with the respective model may be used.</p>
 <span class="r-in"><span><span class="va">preds_Conf</span> <span class="op">&lt;-</span> <span class="fu">predictConf</span><span class="op">(</span><span class="va">paramDf</span>, <span class="st">"dynWEV"</span>, maxrt <span class="op">=</span> <span class="fl">25</span>, simult_conf<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">preds_Conf</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   condition stimulus response correct rating          p info          err</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1         1        1        1       1      1 0.27539594   OK 8.558189e-06</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2         2        1        1       1      1 0.05679937   OK 1.086692e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3         1       -1        1       0      1 0.26818285   OK 6.614275e-06</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4         2       -1        1       0      1 0.11958254   OK 1.813805e-06</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5         1        1       -1       0      1 0.24162008   OK 2.507387e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6         2        1       -1       0      1 0.10124713   OK 1.094999e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1         1        1        1       1      1 0.27537242   OK 8.340330e-06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2         2        1        1       1      1 0.05679751   OK 2.342414e-06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3         1       -1        1       0      1 0.26810961   OK 6.340627e-06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4         2       -1        1       0      1 0.11943534   OK 1.422487e-06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5         1        1       -1       0      1 0.24155220   OK 2.584314e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6         2        1       -1       0      1 0.10112033   OK 1.140122e-05</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># 3. Compute RT density</span></span></span>
@@ -210,11 +210,11 @@ with the respective model may be used.</p>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">preds_RT</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   condition stimulus response correct rating       rt         dens   densscaled</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1         1        1        1       1      1 3.100000 0.000000e+00 0.000000e+00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2         1        1        1       1      1 3.109548 6.167150e-06 2.239376e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3         1        1        1       1      1 3.119095 4.832921e-03 1.754899e-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4         1        1        1       1      1 3.128643 3.768649e-02 1.368448e-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5         1        1        1       1      1 3.138191 9.891379e-02 3.591694e-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6         1        1        1       1      1 3.147739 1.707602e-01 6.200533e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2         1        1        1       1      1 3.109548 4.118833e-06 1.495732e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3         1        1        1       1      1 3.119095 4.288681e-03 1.557411e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4         1        1        1       1      1 3.128643 3.575798e-02 1.298532e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5         1        1        1       1      1 3.138191 9.614377e-02 3.491409e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6         1        1        1       1      1 3.147739 1.678287e-01 6.094606e-01</span>
 <span class="r-in"><span><span class="co"># \donttest{</span></span></span>
 <span class="r-in"><span>  <span class="co"># produces a warning, if scaled=TRUE and DistConf missing</span></span></span>
 <span class="r-in"><span>  <span class="va">preds_RT</span> <span class="op">&lt;-</span> <span class="fu">predictRT</span><span class="op">(</span><span class="va">paramDf</span>, <span class="st">"dynWEV"</span>,</span></span>
@@ -262,11 +262,11 @@ with the respective model may be used.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by Sebastian Hellmann, Manuel Rausch.</p>
+  <p>Developed by Sebastian Hellmann, Manuel Rausch.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
 </div>
 
     </footer></div>
