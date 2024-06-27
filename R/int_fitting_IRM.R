@@ -2,7 +2,7 @@ fittingIRM <- function(df, nConds, nRatings, fixed, sym_thetas, time_scaled,
                           grid_search, init_grid=NULL, optim_method, opts,
                           logging, filename,
                           useparallel, n.cores,
-                          used_cats, actual_nRatings){
+                          used_cats, actual_nRatings, precision){
   ## Be sure that the parallel cluster is stopped if anything happens (error or user interupt)
   on.exit(try(stopCluster(cl), silent = TRUE))
 
@@ -188,26 +188,26 @@ fittingIRM <- function(df, nConds, nRatings, fixed, sym_thetas, time_scaled,
         logL <-
           parApply(cl, inits, MARGIN=1,
                    function(p) try(neglikelihood_IRM_free(p, df,
-                                                             time_scaled, nConds, nRatings, fixed, fitted_weights, sym_thetas),
+                                                             time_scaled, nConds, nRatings, fixed, fitted_weights, sym_thetas, precision),
                                    silent=TRUE))
         #stopCluster(cl)
       } else {
         logL <-
           apply(inits, MARGIN = 1,
-                function(p) try(neglikelihood_IRM_free(p, df, time_scaled, nConds, nRatings, fixed, fitted_weights, sym_thetas),
+                function(p) try(neglikelihood_IRM_free(p, df, time_scaled, nConds, nRatings, fixed, fitted_weights, sym_thetas, precision),
                                 silent = TRUE))
       }
     } else {
       if (useparallel) {
         logL <-
           parApply(cl, inits, MARGIN=1,
-                   function(p) try(neglikelihood_IRM_bounded(p, df, time_scaled, nConds, nRatings,fixed, fitted_weights,  sym_thetas),
+                   function(p) try(neglikelihood_IRM_bounded(p, df, time_scaled, nConds, nRatings,fixed, fitted_weights,  sym_thetas, precision),
                                    silent=TRUE))
         #stopCluster(cl)
       } else {
         logL <-
           apply(inits, MARGIN = 1,
-                function(p) try(neglikelihood_IRM_bounded(p, df, time_scaled, nConds, nRatings, fixed, fitted_weights, sym_thetas),
+                function(p) try(neglikelihood_IRM_bounded(p, df, time_scaled, nConds, nRatings, fixed, fitted_weights, sym_thetas, precision),
                                 silent=TRUE))
       }
     }
@@ -237,13 +237,12 @@ fittingIRM <- function(df, nConds, nRatings, fixed, sym_thetas, time_scaled,
       start <- c(t(inits[i,]))
       names(start) <- names(inits)
       for (l in 1:opts$nRestarts){
-        start <- pmax(pmin(start, upper_optbound-1e-6), lower_optbound+1e-6)
         if (optim_method == "Nelder-Mead") {
           try(m <- optim(par = start,
                          fn = neglikelihood_IRM_free,
                          data=df, time_scaled=time_scaled, nConds=nConds, nRatings=nRatings,
                          fixed=fixed, fitted_weights=fitted_weights,
-                         sym_thetas=sym_thetas,
+                         sym_thetas=sym_thetas, precision=precision,
                          method="Nelder-Mead",
                          control = list(maxit = opts$maxit, reltol = opts$reltol)))
         } else if (optim_method =="bobyqa") {
@@ -253,7 +252,7 @@ fittingIRM <- function(df, nConds, nRatings, fixed, sym_thetas, time_scaled,
                           lower = lower_optbound, upper = upper_optbound,
                           data=df, time_scaled=time_scaled, nConds=nConds, nRatings=nRatings,
                           fixed=fixed, fitted_weights=fitted_weights,
-                          sym_thetas=sym_thetas,
+                          sym_thetas=sym_thetas, precision=precision,
                           control = list(maxfun=opts$maxfun,
                                          rhobeg = min(0.2, 0.2*max(abs(start))),
                                          npt = length(start)+5)))
@@ -270,7 +269,7 @@ fittingIRM <- function(df, nConds, nRatings, fixed, sym_thetas, time_scaled,
                          lower = lower_optbound, upper = upper_optbound,
                          data=df,  time_scaled=time_scaled, nConds=nConds, nRatings=nRatings,
                          fixed=fixed, fitted_weights=fitted_weights,
-                         sym_thetas=sym_thetas,
+                         sym_thetas=sym_thetas, precision=precision,
                          method="L-BFGS-B",
                          control = list(maxit = opts$maxit, factr = opts$factr)))
         } else {
@@ -319,13 +318,12 @@ fittingIRM <- function(df, nConds, nRatings, fixed, sym_thetas, time_scaled,
       start <- c(t(start))
       names(start) <- parnames
       for (l in 1:opts$nRestarts){
-        start <- pmax(pmin(start, upper_optbound-1e-6), lower_optbound+1e-6)
         if (optim_method == "Nelder-Mead") {
           try(m <- optim(par = start,
                          fn = neglikelihood_IRM_free,
                          data=df,  time_scaled=time_scaled, nConds=nConds, nRatings=nRatings,
                          fixed=fixed, fitted_weights=fitted_weights,
-                         sym_thetas=sym_thetas,
+                         sym_thetas=sym_thetas, precision=precision,
                          method="Nelder-Mead",
                          control = list(maxit = opts$maxit, reltol = opts$reltol)))
         } else if (optim_method =="bobyqa") {
@@ -335,7 +333,7 @@ fittingIRM <- function(df, nConds, nRatings, fixed, sym_thetas, time_scaled,
                           lower = lower_optbound, upper = upper_optbound,
                           data=df,  time_scaled=time_scaled, nConds=nConds, nRatings=nRatings,
                           fixed=fixed, fitted_weights=fitted_weights,
-                          sym_thetas=sym_thetas,
+                          sym_thetas=sym_thetas, precision=precision,
                           control = list(maxfun=opts$maxfun,
                                          rhobeg = min(0.2, 0.2*max(abs(start))),
                                          npt = length(start)+5)),
@@ -353,7 +351,7 @@ fittingIRM <- function(df, nConds, nRatings, fixed, sym_thetas, time_scaled,
                          lower = lower_optbound, upper = upper_optbound,
                          data=df,  time_scaled=time_scaled, nConds=nConds, nRatings=nRatings,
                          fixed=fixed, fitted_weights=fitted_weights,
-                         sym_thetas=sym_thetas,
+                         sym_thetas=sym_thetas, precision=precision,
                          method="L-BFGS-B",
                          control = list(maxit = opts$maxit, factr = opts$factr)))
         } else {
@@ -508,7 +506,7 @@ fittingIRM <- function(df, nConds, nRatings, fixed, sym_thetas, time_scaled,
 
 neglikelihood_IRM_free <-   function(p, data,  time_scaled,
                                      nConds, nRatings,
-                                     fixed, fitted_weights, sym_thetas)
+                                     fixed, fitted_weights, sym_thetas, precision)
 {
   # get parameter vector back from real transformations
   paramDf <-  data.frame(matrix(nrow=1, ncol=0))
@@ -557,7 +555,7 @@ neglikelihood_IRM_free <-   function(p, data,  time_scaled,
   if (any(is.infinite(t(paramDf))) || any(is.na(t(paramDf)))) {
     return(1e12)
   }
-  negloglik <- -LogLikRM(data, paramDf, "IRM", time_scaled)
+  negloglik <- -LogLikRM(data, paramDf, "IRM", time_scaled, precision=precision)
 
   return(negloglik)
 }
@@ -567,7 +565,8 @@ neglikelihood_IRM_free <-   function(p, data,  time_scaled,
 
 neglikelihood_IRM_bounded <-   function(p, data, time_scaled,
                                         nConds, nRatings,
-                                        fixed, fitted_weights, sym_thetas=FALSE)
+                                        fixed, fitted_weights,
+                                        sym_thetas, precision)
 {
   # get parameter vector back from real transformations
   paramDf <-   data.frame(matrix(nrow=1, ncol=length(p)))
@@ -605,7 +604,7 @@ neglikelihood_IRM_bounded <-   function(p, data, time_scaled,
       paramDf$wint <- 1 - paramDf$wx - paramDf$wrt
     }
   }
-  negloglik <- -LogLikRM(data, paramDf, "IRM", time_scaled)
+  negloglik <- -LogLikRM(data, paramDf, "IRM", time_scaled, precision=precision)
   return(negloglik)
 }
 

@@ -210,7 +210,8 @@ dIRM <- function (rt,response=1, mu1, mu2, a, b,
     step_width = 0.4578627727708822 * exp(-0.8466054539598147*step_width)
     #step_width = 0.089045 * exp(-1.037580*step_width)
   }
-  print(step_width)
+
+  # print(step_width)
   if (any(c(a<=0, b<=0))) {stop("Both thresholds (a  and b) must be positive")}
   if (any(c(s1<=0,s2<=0) )) {stop("s1 and s2 must be positive")}
   if (any(t0<0)) {stop("Non-decision time, t0, has to be non-negative")}
@@ -402,7 +403,7 @@ rIRM <- function (n, mu1, mu2, a, b,
                  t0=0, st0=0, s1=1, s2=1, s=NULL,
                  smu1 = 0, smu2=0,
                  sza = 0, szb=0,
-                 time_scaled = TRUE, step_width=NULL,
+                 time_scaled = TRUE,
                  delta=0.01, maxrt=15)
 {
   if (any(missing(mu1), missing(mu2),
@@ -476,7 +477,7 @@ rPCRM <- function (n, mu1, mu2, a, b,
                   t0=0, st0=0, s1=1, s2=1, s=NULL,
                   smu1 = 0, smu2=0,
                   sza = 0, szb=0,
-                  time_scaled = TRUE, step_width=NULL,
+                  time_scaled = TRUE,
                   delta=0.01, maxrt=15)
 {
   if (any(missing(mu1), missing(mu2),

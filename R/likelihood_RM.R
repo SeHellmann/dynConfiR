@@ -26,6 +26,7 @@
 #' @param model character scalar. One of "IRM" or "PCRM". ("IRMt" and "PCRMt" will also be accepted. In that case,
 #' time_scaled is set to TRUE.)
 #' @param time_scaled logical. Whether the confidence measure should be scaled by 1/sqrt(rt). Default: TRUE.
+#' @param precision numerical scalar. Precision of calculation for integration over t0.
 #' @param data_names list. Possibility of giving alternative column names for the variables in the data. By default column names are identical to the
 #' ones given in the data argument description.
 #' @param ... Another possibility of giving alternative variable names in data frame (in the form \code{condition = "SOA"}).
@@ -105,7 +106,8 @@
 
 #' @rdname LogLikRM
 #' @export
-LogLikRM <- function(data, paramDf, model="IRM", time_scaled =FALSE, data_names = list(), ...) {
+LogLikRM <- function(data, paramDf, model="IRM", time_scaled =FALSE,
+                     precision=6, data_names = list(), ...) {
   #### Check model argument
   if (model=="IRMt") {
     model = "IRM"

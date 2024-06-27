@@ -56,8 +56,8 @@
 #' @param restr_tau numerical or `Inf` or `"simult_conf"`. For 2DSD and dynWEV only.
 #' Upper bound for tau. Fits will be in the interval (0,`restr_tau`). If FALSE tau will be unbound.
 #' For `"simult_conf"`, see the documentation of \code{\link{d2DSD}} and \code{\link{ddynaViTE}}
-#' @param precision numeric. Precision of calculation.
-#' (in the respective models) for the density functions (see \code{\link{ddynaViTE}} for more information).
+#' @param precision numeric. Precision of calculation for the density functions
+#'  (see \code{\link{ddynaViTE}} and \code{\link{dPCRM}} for more information).
 #' @param ... Possibility of giving alternative variable names in data frame
 #' (in the form \code{condition = "SOA"}, or \code{response="pressedKey"}).
 #'
@@ -395,13 +395,13 @@ fitRTConf <- function(data, model = "dynWEV",
                                         grid_search, init_grid, optim_method, opts,
                                         logging, filename,
                                         useparallel, n.cores,
-                                        used_cats, actual_nRatings)
+                                        used_cats, actual_nRatings, precision)
   if (grepl("PCRM", model)) res <- fittingPCRM(df, nConds, nRatings, fixed ,
                                                sym_thetas, grepl("t", model),
                                           grid_search, init_grid, optim_method, opts,
                                           logging, filename,
                                           useparallel, n.cores,
-                                          used_cats, actual_nRatings)
+                                          used_cats, actual_nRatings, precision)
   if (model == "DDConf") res <- fittingDDConf(df, nConds, nRatings, fixed, sym_thetas,
                                           grid_search, init_grid, opts,
                                           logging, filename,

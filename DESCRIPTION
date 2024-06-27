@@ -1,7 +1,7 @@
 Type: Package
 Package: dynConfiR
 Title: Dynamic Models for Confidence and Response Time Distributions
-Version: 0.0.4
+Version: 0.1.0
 Authors@R: c(
     person("Sebastian", "Hellmann", , "sebastian.hellmann@ku.de", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-3621-6343")),

@@ -51,8 +51,8 @@
 #' optimization processes for different start points, but see \code{\link{fitRTConf}}).
 #' If "both", parallelization is done hierarchical. For small number of
 #' models and participants "single" or "both" is preferable. Otherwise, you may use "models".
-#' @param precision numerical scalar. For 2DSD and dynWEV only. Precision of calculation.
-#' (in the respective models) for the density functions (see \code{\link{ddynaViTE}} for more information).
+#' @param precision numerical numeric. Precision of calculation for the density functions
+#'  (see \code{\link{ddynaViTE}} and \code{\link{dPCRM}} for more information).
 #' @param n.cores integer vector or `NULL`. If \code{parallel} is "models" or "single", a single
 #' integer for the number of cores used for parallelization is required. If
 #' \code{parallel} is "both", two values are required. The first for the number of parallel

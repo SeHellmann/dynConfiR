@@ -59,8 +59,8 @@ If given, ratings has to be given as factor or integer.}
 Upper bound for tau. Fits will be in the interval (0,\code{restr_tau}). If FALSE tau will be unbound.
 For \code{"simult_conf"}, see the documentation of \code{\link{d2DSD}} and \code{\link{ddynaViTE}}}
 
-\item{precision}{numeric. Precision of calculation.
-(in the respective models) for the density functions (see \code{\link{ddynaViTE}} for more information).}
+\item{precision}{numeric. Precision of calculation for the density functions
+(see \code{\link{ddynaViTE}} and \code{\link{dPCRM}} for more information).}
 
 \item{logging}{logical. If \code{TRUE}, a folder 'autosave/fit\strong{model}' is created and
 messages about the process are printed in a logging file and to console (depending

@@ -60,8 +60,8 @@ messages about the process are printed in a logging file and to console (dependi
 on OS). Additionally intermediate results are saved in a \code{.RData} file with the
 participant ID in the name.}
 
-\item{precision}{numerical scalar. For 2DSD and dynWEV only. Precision of calculation.
-(in the respective models) for the density functions (see \code{\link{ddynaViTE}} for more information).}
+\item{precision}{numerical numeric. Precision of calculation for the density functions
+(see \code{\link{ddynaViTE}} and \code{\link{dPCRM}} for more information).}
 
 \item{parallel}{"models", "single", "both" or \code{FALSE}. If \code{FALSE} no parallelization
 is used in the fitting process. If "models" the fitting process is parallelized over

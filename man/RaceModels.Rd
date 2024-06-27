@@ -27,11 +27,11 @@ dPCRM(rt, response = 1, mu1, mu2, a, b, th1, th2, wx = 1, wrt = 0,
 
 rIRM(n, mu1, mu2, a, b, wx = 1, wrt = 0, wint = 0, t0 = 0, st0 = 0,
   s1 = 1, s2 = 1, s = NULL, smu1 = 0, smu2 = 0, sza = 0, szb = 0,
-  time_scaled = TRUE, step_width = NULL, delta = 0.01, maxrt = 15)
+  time_scaled = TRUE, delta = 0.01, maxrt = 15)
 
 rPCRM(n, mu1, mu2, a, b, wx = 1, wrt = 0, wint = 0, t0 = 0, st0 = 0,
   s1 = 1, s2 = 1, s = NULL, smu1 = 0, smu2 = 0, sza = 0, szb = 0,
-  time_scaled = TRUE, step_width = NULL, delta = 0.01, maxrt = 15)
+  time_scaled = TRUE, delta = 0.01, maxrt = 15)
 }
 \arguments{
 \item{rt}{a numeric vector of RTs. For convenience also a \code{data.frame} with
