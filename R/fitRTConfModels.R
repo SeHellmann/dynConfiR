@@ -156,6 +156,15 @@ fitRTConfModels <- function(data, models = c("dynaViTE", "2DSD", "PCRMt"),
                       grid_search=TRUE,
                       opts=list(), optim_method = "bobyqa", logging=FALSE, precision=6,
                       parallel = TRUE, n.cores=NULL, ...){ #  ?ToDO: vary_sv=FALSE, RRT=NULL, vary_tau=FALSE
+  # Check if package 'logger' is installed, if logging is wished
+  if (logging && !requireNamespace("logger", quietly = TRUE)) {
+    warning("Package 'logger' is not installed but needed to log fitting progress.
+            Process continues withouth logging.
+            Interrupt and install 'logger' if logging is needed.", immediate.=TRUE)
+    logging <- FALSE
+  }
+
+  ## Check specification of model-argument
   if (any(models =="DDMConf")) {
     warning("DDMConf was renamed DDConf in version 1.0.0! DDConf will be fitted instead!")
     models[models=="DDMConf"] = "DDConf"
