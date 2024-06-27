@@ -154,11 +154,20 @@ LogLikRM <- function(data, paramDf, model="IRM", time_scaled =FALSE,
                   setNames(as.list(c("condition","response","stimulus","rating", "rt", "sbj", "correct")[names_missing]),
                            c("condition","response","stimulus","rating", "rt", "sbj", "correct")[names_missing]))
   if (is.null(data[[data_names$condition]])) data[[data_names$condition]] <- 1
-  data <- data %>% mutate(response = if_else(.data[[data_names$response]]==sort(unique(data[[data_names$response]]))[1],1,2),
-                          stimulus = if_else(.data[[data_names$stimulus]]==sort(unique(data[[data_names$stimulus]]))[1],1,2),
-                          condition = as.numeric(factor(.data[[data_names$condition]],levels = sort(unique(data[[data_names$condition]])))))
+
+  if (!(all(data[[data_names$response]] %in% c(1,2)) & all(data[[data_names$stimulus]] %in% c(1,2)))) {
+    data <- data %>% mutate(response = if_else(.data[[data_names$response]]==sort(unique(data[[data_names$response]]))[1],1,2),
+                            stimulus = if_else(.data[[data_names$stimulus]]==sort(unique(data[[data_names$stimulus]]))[1],1,2))
+  } else {
+    data$response <- data[[data_names$response]]
+    data$stimulus <- data[[data_names$stimulus]]
+  }
+
+
+  data$condition <- as.numeric(factor(data[[data_names$condition]],levels = sort(unique(data[[data_names$condition]]))))
+
   if (!is.numeric(data$rating)) {
-    data <- data %>% mutate(rating = as.numeric(as.factor(.data[[data_names$rating]])))
+    data$rating <- as.numeric(as.factor(data[[data_names$rating]]))
   }
   ## Compute the row-wise likelihood of observations
   data <-data %>% mutate(a = paramDf$a,
@@ -188,11 +197,13 @@ LogLikRM <- function(data, paramDf, model="IRM", time_scaled =FALSE,
   if (model=="IRM") {
     probs <- dIRM(data$rt, data$response,data$mu1, data$mu2, data$a, data$b,
                   data$th1, data$th2, data$wx,  data$wrt,  data$wint,
-                  data$t0, data$st0, data$s, time_scaled=time_scaled)
+                  data$t0, data$st0, data$s, time_scaled=time_scaled,
+                  precision=precision)
   } else {
     probs <- dPCRM(data$rt, data$response,data$mu1, data$mu2, data$a, data$b,
                    data$th1, data$th2, data$wx,  data$wrt,  data$wint,
-                   data$t0, data$st0, data$s, time_scaled=time_scaled)
+                   data$t0, data$st0, data$s, time_scaled=time_scaled,
+                   precision=precision)
   }
 
   ## Produce output as log-Likelihood
