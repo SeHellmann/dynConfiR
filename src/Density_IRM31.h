@@ -29,12 +29,12 @@ static double densIRM3 (double t, double th2, double th1,
                         double wx, double wrt, double wint,
                         double smuw, double smul);
 
-static double integrate_densIRM3_over_t (double tmin, double tmax, double dt, double th2, double th1,
+static double integrate_densIRM3_over_t (double tmin, double tmax,
+                                         double dt, double th2, double th1,
                                          double a, double b,
                                          double muw, double mul,
                                          double wx, double wrt, double wint,
                                          double smuw, double smul);
-
 
 // Main calls
 NumericVector density_IRM3 (NumericVector rts, NumericVector params, int win=1, double step_width = 0.0001)
@@ -54,8 +54,8 @@ NumericVector density_IRM3 (NumericVector rts, NumericVector params, int win=1, 
     double wx = params[9];
     double wrt = params[10];
     double wint = params[11];
-    double smuw = params[12];
-    double smul = params[13];
+    double smuw = params[11+win];
+    double smul = params[14-win];
 
 
     muw = muw/sigmaw;
@@ -81,17 +81,15 @@ NumericVector density_IRM3 (NumericVector rts, NumericVector params, int win=1, 
         nsteps = std::max(4, (int) (st0/step_width));
         dt = st0 / nsteps;
     }
-
-
-    //static const float inv_sqrt_2pi = 0.3989422804014327;
-
+    static const float inv_sqrt_2pi = 0.3989422804014327;
+    double fac = - inv_sqrt_2pi*a/2;
 
     if (st0==0) {
       for (int i = 0; i < length; i++) {
         if (rts[i] < 0 ) {
           out[i] = 0;
         } else {
-          out[i] = 0.3989422804014327 *  // 1/sqrt(2*pi)
+          out[i] = fac *   // 1/sqrt(2*pi)
             densIRM3 (rts[i], th2,  th1, a, b, muw,  mul, wx, wrt, wint,
                       smuw, smul);
         }
@@ -101,7 +99,7 @@ NumericVector density_IRM3 (NumericVector rts, NumericVector params, int win=1, 
         if (rts[i] < 0 ) {
           out[i] = 0;
         } else {
-          out[i] = 0.3989422804014327 / st0 *    // 1/sqrt(2*pi)
+          out[i] = fac / st0 *    // 1/sqrt(2*pi)
             integrate_densIRM3_over_t(rts[i]-st0, rts[i], dt,
                                       th2,  th1, a, b, muw,  mul, wx, wrt, wint,
                                       smuw, smul);
@@ -117,9 +115,9 @@ static double densIRM3 (double t, double th2, double th1, double a, double b,
                              double muw, double mul, double wx, double wrt, double wint,
                              double smuw, double smul
                              ){
-  double facA, facB, res;
-  double Sigw2 = t + t*t*smuw *smuw;
-  double Sigl = sqrt(2.0*(t + t*t*smul *smul));
+  //double facA, facB, res;
+  double Sig2tw = 2.0*(t + t*t*smuw*smuw);
+  double Sig2tl = 2.0*(t + t*t*smul*smul); //sqrt(2.0*(t + t*t*smul *smul));
 
   double tth1 = (-th2*sqrt(t) + wrt)/(sqrt(t)*wx + wint);
   double tth2 = (-th1*sqrt(t) + wrt)/(sqrt(t)*wx + wint);
@@ -127,22 +125,36 @@ static double densIRM3 (double t, double th2, double th1, double a, double b,
   if (tth1 > tth2) {
     return 0; // ensure tth1 < tth2 < 0 (i.e. tth represent distance x2 from 0)
   }
-  facA = -a/(2.0*t*sqrt(Sigw2))*
-      exp(-(a+t*muw)*(a+t*muw)/(2*Sigw2));
-  // facB = 2.0*((
-  //   Phi((tth2-t*mul+b)/sqrt(Sigl2*t))-
-  //     Phi((tth1-t*mul+b)/sqrt(Sigl2*t))) +
+  // facA = -a/(2.0*t*sqrt(Sigw2))*
+  //     exp(-(a+t*muw)*(a+t*muw)/(2*Sigw2));
+  // // facB = 2.0*((
+  // //   Phi((tth2-t*mul+b)/sqrt(Sigl2*t))-
+  // //     Phi((tth1-t*mul+b)/sqrt(Sigl2*t))) +
+  // //     exp(2*b*(smul*smul*b - mul))*
+  // //     (Phi((tth2-t*mul+b*(1+2*smul*smul*t))/sqrt(Sigl2*t)) -
+  // //     Phi((tth1-t*mul+b*(1+2*smul*smul*t))/sqrt(Sigl2*t))));
+  // facB = (
+  //   erf((tth2-t*mul-b)/Sigl)-
+  //     erf((tth1-t*mul-b)/Sigl)) +
   //     exp(2*b*(smul*smul*b - mul))*
-  //     (Phi((tth2-t*mul+b*(1+2*smul*smul*t))/sqrt(Sigl2*t)) -
-  //     Phi((tth1-t*mul+b*(1+2*smul*smul*t))/sqrt(Sigl2*t))));
-  facB = (
-    erf((tth2-t*mul-b)/Sigl)-
-      erf((tth1-t*mul-b)/Sigl)) +
-      exp(2*b*(smul*smul*b - mul))*
-      (erf((tth2-t*mul+b*(1+2*smul*smul*t))/Sigl) -
-      erf((tth1-t*mul+b*(1+2*smul*smul*t))/Sigl));
+  //     (erf((tth2-t*mul+b*(1+2*smul*smul*t))/Sigl) -
+  //     erf((tth1-t*mul+b*(1+2*smul*smul*t))/Sigl));
+  //
+  // res = facA*facB;
 
-  res = facA*facB;
+  // a/(2*t) * 1/(sqrt(2*pi*(t+t^2*smu1^2))) * exp(-(-a+t*mu1)^2/(2*(t+t^2*smu1^2))) *
+  //   (erf((-th1 - (t*mu2-b))/(sqrt(2*(t+t*t*smu2*smu2)))) -
+  //   erf((-th2 - (t*mu2-b))/(sqrt(2*(t+t*t*smu2*smu2)))) -
+  //   exp(2*b*(mu2+b*smu2^2)) *
+  //   (erf((-th1 - t*mu2-b*(1+2*t*smu2^2))/(sqrt(2*(t+t*t*smu2*smu2))))-
+  //   erf((-th2 - t*mu2-b*(1+2*t*smu2^2))/(sqrt(2*(t+t*t*smu2*smu2))))))
+  //
+  double res = 1/(t*sqrt(t+t*t*smuw*smuw)) *
+    exp(-(muw*t+a)*(muw*t+a)/Sig2tw) *
+    (erf((tth2-(mul*t+b))/sqrt(Sig2tl))-erf((tth1-(mul*t+b))/sqrt(Sig2tl)) -
+    exp(-2*b*mul + 2*b*b*smul*smul +
+      log(erf((tth2-(mul*t-b*(1+2*smul*smul*t)))/sqrt(Sig2tl)) -
+      erf((tth1-(mul*t-b*(1+2*smul*smul*t)))/sqrt(Sig2tl)))));
   return res;
 }
 

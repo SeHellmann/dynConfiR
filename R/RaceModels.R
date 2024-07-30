@@ -328,6 +328,74 @@ dIRM2 <- function (rt,response=1, mu1, mu2, a, b,
 
 
 
+#' @rdname RaceModels
+#' @export
+dIRM3 <- function (rt,response=1, mu1, mu2, a, b,
+                   th1, th2, wx=1, wrt=0, wint=0,
+                   t0=0, st0=0, s1=1, s2=1,
+                   smu1 = 0, smu2 = 0, s=NULL,
+                   time_scaled = TRUE, precision=6, step_width=NULL)
+{
+  # for convenience accept data.frame as first argument.
+  if (is.data.frame(rt)) {
+    response <- rt$response
+    rt <- rt$rt
+  }
+  if (is.null(step_width)) {
+    step_width = 0.4578627727708822 * exp(-0.8466054539598147*precision)
+    #step_width = 0.089045 * exp(-1.037580*precision)
+    # step_width = 0.089045 * exp(-1.037580*4)
+  } else if (step_width>1) {
+    step_width = 0.4578627727708822 * exp(-0.8466054539598147*step_width)
+    #step_width = 0.089045 * exp(-1.037580*step_width)
+  }
+  if (any(c(a<=0, b<=0))) {stop("Both thresholds (a  and b) must be positive")}
+  if (any(c(s1<=0,s2<=0) )) {stop("s1 and s2 must be positive")}
+  if (any(c(smu1<0,smu2<0) )) {stop("smu1 and smu2 must be non-negative")}
+  if (any(t0<0)) {stop("Non-decision time, t0, has to be non-negative")}
+  if (any(st0<0)) {stop("Non-decision time range, st0, has to be non-negative")}
+  if (!missing(s)) {
+    if (s<=0) stop("s must be positive")
+    s1 <- s
+    s2 <- s
+    if (xor(missing(s1), missing(s2))) {
+      warning("Argument s and s1 (or s2) provided. Only s is used! Maybe check for spelling mistakes")
+      s1 <- s
+      s2 <- s
+    }
+  }
+
+  nn <- length(rt)
+  if (!time_scaled) {
+    wrt <- 0
+    wint <- 0
+    wx <- 1
+  }
+
+  pars <- prepare_RaceModel_parameter2(response = response,
+                                       mu1, mu2,
+                                       a, b,
+                                       s1, s2, th1, th2,
+                                       t0, st0,
+                                       wx, wrt, wint,
+                                       smu1, smu2,
+                                       0, 0,
+                                       nn)
+  densities <- vector("numeric",length=nn)
+  for (i in seq_len(length(pars$parameter_indices))) {
+    ok_rows <- pars$parameter_indices[[i]]
+
+    densities[ok_rows] <- d_IRM3 (rt[ok_rows]-pars$params[ok_rows[1],17],
+                                  pars$params[ok_rows[1],1:14],
+                                  pars$params[ok_rows[1],18],
+                                  step_width)
+  }
+  abs(densities)
+}
+
+
+
+
 
 
 

@@ -21,6 +21,10 @@ d_IRM2 <- function(rts, params, win = 1L, step_width = 0.0001) {
     .Call(`_dynConfiR_d_IRM2`, rts, params, win, step_width)
 }
 
+d_IRM3 <- function(rts, params, win = 1L, step_width = 0.0001) {
+    .Call(`_dynConfiR_d_IRM3`, rts, params, win, step_width)
+}
+
 d_PCRM <- function(rts, params, win = 1L, step_width = 0.0001) {
     .Call(`_dynConfiR_d_PCRM`, rts, params, win, step_width)
 }

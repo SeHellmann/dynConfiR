@@ -87,6 +87,20 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// d_IRM3
+NumericVector d_IRM3(NumericVector rts, NumericVector params, int win, double step_width);
+RcppExport SEXP _dynConfiR_d_IRM3(SEXP rtsSEXP, SEXP paramsSEXP, SEXP winSEXP, SEXP step_widthSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type rts(rtsSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< int >::type win(winSEXP);
+    Rcpp::traits::input_parameter< double >::type step_width(step_widthSEXP);
+    rcpp_result_gen = Rcpp::wrap(d_IRM3(rts, params, win, step_width));
+    return rcpp_result_gen;
+END_RCPP
+}
 // d_PCRM
 NumericVector d_PCRM(NumericVector rts, NumericVector params, int win, double step_width);
 RcppExport SEXP _dynConfiR_d_PCRM(SEXP rtsSEXP, SEXP paramsSEXP, SEXP winSEXP, SEXP step_widthSEXP) {
@@ -212,6 +226,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_dynConfiR_d_DDConf", (DL_FUNC) &_dynConfiR_d_DDConf, 7},
     {"_dynConfiR_d_IRM", (DL_FUNC) &_dynConfiR_d_IRM, 4},
     {"_dynConfiR_d_IRM2", (DL_FUNC) &_dynConfiR_d_IRM2, 4},
+    {"_dynConfiR_d_IRM3", (DL_FUNC) &_dynConfiR_d_IRM3, 4},
     {"_dynConfiR_d_PCRM", (DL_FUNC) &_dynConfiR_d_PCRM, 4},
     {"_dynConfiR_dd_IRM", (DL_FUNC) &_dynConfiR_dd_IRM, 5},
     {"_dynConfiR_dd_PCRM", (DL_FUNC) &_dynConfiR_dd_PCRM, 4},

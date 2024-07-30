@@ -166,6 +166,22 @@ NumericVector d_IRM2 (NumericVector rts, NumericVector params, int win=1,  doubl
 }
 
 
+// [[Rcpp::export]]
+NumericVector d_IRM3 (NumericVector rts, NumericVector params, int win=1,  double step_width = 0.0001)
+{
+  int length = rts.length();
+
+  if (params.length()!= 14) {Rcpp::stop ("Wrong number of parameters given. (Must be 14)\n"); }
+  if ((win < 1) || (win > 2)) { Rcpp::stop ("Boundary must be either 2 (upper) or 1 (lower)\n"); }
+
+  NumericVector out(length, 0.0);  // Should default to 0s when creating NumericVector, but just in case..
+
+  out = density_IRM3 (rts, params, win, step_width);
+
+  return out;
+}
+
+
 
 // [[Rcpp::export]]
 NumericVector d_PCRM (NumericVector rts, NumericVector params, int win=1, double step_width = 0.0001)

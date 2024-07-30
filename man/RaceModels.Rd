@@ -10,6 +10,7 @@
 \alias{rPCRM}
 \alias{racemodels}
 \alias{dIRM2}
+\alias{dIRM3}
 \title{Independent and partially anti-correlated Race Model for Decision Confidence}
 \usage{
 dIRM(rt, response = 1, mu1, mu2, a, b, th1, th2, wx = 1, wrt = 0,
@@ -20,6 +21,10 @@ dIRM2(rt, response = 1, mu1, mu2, a, b, th1, th2, wx = 1, wrt = 0,
   wint = 0, t0 = 0, st0 = 0, s1 = 1, s2 = 1, smu1 = 0, smu2 = 0,
   sza = 0, szb = 0, s = NULL, time_scaled = TRUE, precision = 6,
   step_width = NULL)
+
+dIRM3(rt, response = 1, mu1, mu2, a, b, th1, th2, wx = 1, wrt = 0,
+  wint = 0, t0 = 0, st0 = 0, s1 = 1, s2 = 1, smu1 = 0, smu2 = 0,
+  s = NULL, time_scaled = TRUE, precision = 6, step_width = NULL)
 
 dPCRM(rt, response = 1, mu1, mu2, a, b, th1, th2, wx = 1, wrt = 0,
   wint = 0, t0 = 0, st0 = 0, s1 = 1, s2 = 1, s = NULL,

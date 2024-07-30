@@ -29,10 +29,12 @@ static double densIRM2 (double t, double th2, double th1,
                                     double smuw, double smul,
                                     double sza, double szb, double step_width);
 
-static double integrate_densIRM2_over_t  (double tmin, double tmax, double dt, double th2, double th1, double muw, double mul, double a, double b,
-                                                     double wx, double wrt, double wint,
-                                                     double smuw, double smul,
-                                                     double sza, double szb, double step_width);
+static double integrate_densIRM2_over_t  (double tmin, double tmax,
+                                          double dt, double th2, double th1,
+                                          double muw, double mul, double a, double b,
+                                         double wx, double wrt, double wint,
+                                         double smuw, double smul,
+                                         double sza, double szb, double step_width);
 static double integrate_factor_b_by_szb (double b, double szb, double step_width,
                                          double t, double mul, double smul,
                                          double sigl, double tth2, double tth1);
