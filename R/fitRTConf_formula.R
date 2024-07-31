@@ -140,7 +140,7 @@
 #'
 #' @author Sebastian Hellmann.
 #'
-#' @name fitRTConf
+#' @name fitRTConf_formula
 #' @importFrom stats setNames aggregate optim qnorm pnorm optimize quantile
 #' @importFrom minqa bobyqa
 #' @importFrom dplyr if_else rename
