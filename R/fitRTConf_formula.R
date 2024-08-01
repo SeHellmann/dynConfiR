@@ -269,7 +269,10 @@ fitRTConf_formula <- function(data, model = "dynWEV",
   ### Use manipulations and fixed parameters to get a model.matrix for fitting
 
   # define all necessary parameters for a model
-  model <- match.arg(model, c("2DSD", "2DSDT", "dynWEV", "dynaViTE"))
+  model_name <- model
+  models <- c("2DSD", "2DSDT", "dynWEV", "dynaViTE")
+  matches <- sapply(models, function(m) grepl(m, model))
+  model <- models[max(which(matches))]
   parnames <- c("v", "z", "a", "d", "sz", "t0", "st0", "sv", "tau", "w", "svis", "sigvis", "lambda", "s")
   model_params_fixed <- c("lambda"=0, "w"=1, "sigvis"=1, "svis"=1)
   if (model=="2DSD") {
@@ -367,11 +370,11 @@ fitRTConf_formula <- function(data, model = "dynWEV",
     }
     ## set logger and logging file
     dir.create("autosave", showWarnings = FALSE)
-    dir.create(paste("autosave/fit", model, sep=""), showWarnings = FALSE)
-    filename = paste("autosave/fit", model,"/part_", participant,".RDATA", sep = "")
-    logger <- logger::layout_glue_generator(format = paste('{level} [{time}] on process {pid} {fn} for participant ',participant,' and model ', model,': {msg}', sep=""))
+    dir.create(paste("autosave/fit", model_name, sep=""), showWarnings = FALSE)
+    filename = paste("autosave/fit", model_name,"/part_", participant,".RDATA", sep = "")
+    logger <- logger::layout_glue_generator(format = paste('{level} [{time}] on process {pid} {fn} for participant ',participant,' and model ', model_name,': {msg}', sep=""))
     logger::log_layout(logger)
-    logger::log_appender(logger::appender_file(file=paste("autosave/fit", model,"/logging_", model, ".txt", sep="")), index=2)
+    logger::log_appender(logger::appender_file(file=paste("autosave/fit", model_name,"/logging_", model_name, ".txt", sep="")), index=2)
     logger::log_threshold(logger::DEBUG, index=2)
     logger::log_threshold(logger::DEBUG)
     logger::log_layout(logger, index=2)
