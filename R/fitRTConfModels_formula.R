@@ -152,7 +152,7 @@
 #' @rdname fitRTConfModels_formula
 #' @export
 fitRTConfModels_formula <- function(data, models = c("dynaViTE", "2DSD", "PCRMt"),
-                                    manipulations,
+                                    manipulations=NULL,
                                      fixed = list(sym_thetas = FALSE), nRatings = NULL,
                                     restr_tau=Inf, grid_search=TRUE,
                                     opts=list(), optim_method = "Nelder-Mead", logging=FALSE, precision=2,
@@ -243,14 +243,27 @@ fitRTConfModels_formula <- function(data, models = c("dynaViTE", "2DSD", "PCRMt"
       nRatings <- nRatings + 1
     }
   }
+  if (!inherits(manipulations[[1]], "formula") &
+      ((length(models) != length(manipulations)) ||
+       !inherits(manipulations[[1]][[1]], "formula"))) {
+    stop("models and manipulations arguments do not match.
+         Either provide several models and  one list of manipulations with formulas as elements or
+         a list of manipulation-lists with the same length as the models argument.")
+  }
 
   call_fitfct <- function(X) {
-    cur_model <- models[X[1]]
-    cur_sbj <- X[2]
+    if (inherits(manipulations[[1]], "formula")) {
+      cur_manipulations <- manipulations
+    } else {
+      cur_manipulations <- manipulations[[X[[1]]]]
+    }
+    cur_model <- models[X[[1]]]
+    cur_sbj <- X[[2]]
     sbj <- NULL # to omit a note because of an unbound variable
     data_part <- subset(data, sbj==cur_sbj)
+
     res <- fitRTConf_formula(data_part, model = cur_model,
-                             manipulations=manipulations,
+                             manipulations=cur_manipulations,
                              fixed = fixed, nRatings = nRatings,
                              restr_tau =restr_tau,
                              grid_search = grid_search, precision=precision,
@@ -266,7 +279,7 @@ fitRTConfModels_formula <- function(data, models = c("dynaViTE", "2DSD", "PCRMt"
   jobs <- expand.grid(model=1:length(models), sbj=subjects)
   listjobs <- list()
   for (i in 1:nrow(jobs)) {
-    listjobs[[i]] <- c(model = jobs[["model"]][i], sbj = jobs[["sbj"]][i])
+    listjobs[[i]] <- list(model = jobs[["model"]][i], sbj = jobs[["sbj"]][i])
   }
   if (parallel.models) {
 
