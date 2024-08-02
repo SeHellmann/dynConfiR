@@ -363,7 +363,7 @@ fitRTConf_formula <- function(data, model = "dynWEV",
       participant <- 999
     } else {
       if (length(unique(c(t(data[,sbjcol]))))==1) {
-        participant <- as.numeric(data[1,sbjcol])
+        participant <- data[1,sbjcol]
       } else {
         participant <- 999
       }
