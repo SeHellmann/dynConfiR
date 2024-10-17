@@ -265,6 +265,7 @@ fitRTConf_formula <- function(data, model = "dynWEV",
     stop("There has to be at least two rating levels")
   }
   DVs = data.frame(rating,response,rt)
+  if (exists("stimulus")) DVs$stimulus <- stimulus
 
   ### Use manipulations and fixed parameters to get a model.matrix for fitting
 

@@ -380,7 +380,7 @@ neglikelihood_formula <-   function(beta, DVs,
       }
     }
   }
-  #parammatrix[,"v"] <- parammatrix[,"v"]*DVs$stimulus
+  if ("stimulus" %in% names(DVs)) parammatrix[,"v"] <- parammatrix[,"v"]*DVs$stimulus
   par_thetas <- grep(names(beta), pattern="theta", value=TRUE)
   if (sym_thetas) {
       Thetas <- beta[par_thetas]
