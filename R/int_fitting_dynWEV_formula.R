@@ -30,7 +30,7 @@ fittingdynWEV_formula <- function(DVs, model_matrix,
     }
   } else {
     if (nRatings>2) {
-      c("theta1", paste0("dtheta", rep(2:(nRatings-1), each=2)))
+      c("theta1", paste0("dtheta",(2:(nRatings-1))))
     } else {
       c("theta")
     }
@@ -64,7 +64,7 @@ fittingdynWEV_formula <- function(DVs, model_matrix,
   k <- length(beta_names)
 
   n_initials <- 100
-  inits <- matrix(runif(n_initials*k), nrow = n_initials, dimnames = list(NULL, beta_names))
+  inits <- matrix(rnorm(n_initials*k), nrow = n_initials, dimnames = list(NULL, beta_names))
   if ("st0" %in% beta_names) inits[,c("st0")] <- inits[,c("st0")]/2 - 1.6  # Rescale st0 initials to lower values, because integration would otherwise take a lot of time
 
   ### If no grid-search is desired use mean of possible parameters
@@ -349,8 +349,8 @@ neglikelihood_formula <-   function(beta, DVs,
   parnames <- c("a", "v", "t0", "d","z",  "sz", "sv", "st0","tau", "th1", "th2", "lambda", "w", "muvis", "sigvis", "svis", "s")
   parammatrix <-  matrix(NA, nrow=nrow(DVs), ncol=length(parnames))
   colnames(parammatrix) <- parnames
-  fixed01 <- c("z", "sz", "w", "d", "st0")
-  fixedpos <- c("v", "a", "t0", "sv", "svis", "sigvis", "lambda", "s")
+  fixed01 <- c("z", "sz", "w", "d", "t0", "st0")
+  fixedpos <- c("v", "a", "sv", "svis", "sigvis", "lambda", "s")
 
   for (i in 1:length(parnames)) {
     if (parnames[i] %in% names(fixed)) {
@@ -369,6 +369,10 @@ neglikelihood_formula <-   function(beta, DVs,
         if (restr_tau == Inf) {
           parammatrix[,parnames[i]] <- exp(parammatrix[,parnames[i]])
         } else if (simult_conf) {
+          # print(paste0("We have: maxt0=", round(maxt0, 4), "; parammatrix[,t0]=", round(parammatrix[,"t0"],4),
+          #              "; parammatrix[,'tau']=", round(parammatrix[, "tau"], 4), "; and pnorm(tau)=",
+          #              round(pnorm(parammatrix[,parnames[i]]), 4), ", \n and thus: tau=",
+          #              round(pnorm(parammatrix[,parnames[i]])*(maxt0-parammatrix[,"t0"]), 4), "..."))
           parammatrix[,parnames[i]] <- pnorm(parammatrix[,parnames[i]])*(maxt0-parammatrix[,"t0"])
         } else {
           parammatrix[,parnames[i]] <- restr_tau * pnorm(parammatrix[,parnames[i]])
@@ -380,7 +384,7 @@ neglikelihood_formula <-   function(beta, DVs,
   par_thetas <- grep(names(beta), pattern="theta", value=TRUE)
   if (sym_thetas) {
       Thetas <- beta[par_thetas]
-      Thetas <- c(-1e+21, Thetas[1] + c(0, cumsum(exp(Thetas[-1]))), Inf)
+      Thetas <- c(-1e+32, Thetas[1] + c(0, cumsum(exp(Thetas[-1]))), 1e+32)
       Thetas <- c(Thetas, Thetas)
     } else {
       ThetasLower <- beta[grep(par_thetas, pattern="Lower", value = TRUE)]
@@ -391,7 +395,10 @@ neglikelihood_formula <-   function(beta, DVs,
   }
   parammatrix[,c("th1", "th2")] <- cbind(Thetas[(DVs$response)*(nRatings+1) + DVs$rating],
                                          Thetas[(DVs$response)*(nRatings+1) + DVs$rating+1])
-
+  # print(paste0("We have: maxt0=", round(maxt0, 4), "; parammatrix[,t0]=", round(parammatrix[,"t0"],4),
+  #              "; parammatrix[,'tau']=", round(parammatrix[, "tau"], 4), "; and pnorm(tau)=",
+  #              round(pnorm(parammatrix[,parnames[i]]), 4), ", \n and thus: tau=",
+  #              round(pnorm(parammatrix[,parnames[i]])*(maxt0-parammatrix[,"t0"]), 4), "..."))
   # Fill single missing muvis (index: 14) values with absolute value of decision drift v
   parammatrix[is.na(parammatrix[,14]), 14] <-
     abs(parammatrix[is.na(parammatrix[,14]), 2])
