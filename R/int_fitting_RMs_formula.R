@@ -1,0 +1,452 @@
+fittingRM_formula <- function(DVs, model_matrix,
+                                  fixed,
+                                  fit_pars_beta_names, const_pars,
+                                  fit_pars_columns,
+                                  nRatings, sym_thetas,
+                          optim_method, opts,
+                          logging, filename,
+                          useparallel, n.cores,
+                          restr_tau, precision, grid_search,
+                          used_cats, actual_nRatings){
+
+  # model_matrix
+  # fixed
+  # fit_pars_beta_names
+  # const_pars
+  #
+  # #fit_par_names
+  # fit_pars_columns
+  #
+
+  #manipulations
+
+  #fit_pars_betanames <- sub("\\(Intercept\\)", "1",fit_pars_columns_names)
+
+  par_thetas <- if (!sym_thetas) {
+    if (nRatings>2) {
+      c("thetaLower1", "thetaUpper1", paste0("dtheta", c("Lower", "Upper"), rep(2:(nRatings-1), each=2)))
+    } else {
+      c("thetaLower", "thetaUpper")
+    }
+  } else {
+    if (nRatings>2) {
+      c("theta1", paste0("dtheta",(2:(nRatings-1))))
+    } else {
+      c("theta")
+    }
+  }
+
+
+
+
+
+  ## Be sure that the parallel cluster is stopped if anything happens (error or user interupt)
+  on.exit(try(stopCluster(cl), silent = TRUE))
+  ## Set restrictions on tau
+  maxt0 <-  min(DVs$rt)
+
+  ### 1. Generate initial grid for grid search over possible parameter sets ####
+  #### Create grid ####
+
+
+  #beta <- rnorm(length(fit_pars_columns_names)+length(const_pars)+length(par_thetas))
+  #names(beta) <-
+  beta_names <- c(fit_pars_beta_names, const_pars, par_thetas)
+  k <- length(beta_names)
+
+  n_initials <- 100
+  inits <- matrix(rnorm(n_initials*k), nrow = n_initials, dimnames = list(NULL, beta_names))
+  if ("st0" %in% beta_names) inits[,c("st0")] <- inits[,c("st0")]/2 - 1.6  # Rescale st0 initials to lower values, because integration would otherwise take a lot of time
+
+  ### If no grid-search is desired use mean of possible parameters
+  if (!grid_search) {
+    inits <- colMeans(inits)
+  }
+
+
+  ## Intermezzo: Setup cluster for parallelization   ####
+  if (useparallel) {
+    if (is.null(n.cores)) {
+      n.cores <- detectCores()-1
+    }
+    cl <- makeCluster(type="SOCK", n.cores)
+    clusterExport(cl, c("DVs",  "maxt0",
+                        "nRatings", "fixed", "rho", "sym_thetas", "precision",
+                        "model_matrix", "fit_pars_columns"), envir = environment())
+    clusterExport(cl, c("neglikelihood_formula"), envir = environment())
+  }
+
+
+  ### 2. Search initial grid before optimization  ####
+  if (grid_search) {
+    if (logging==TRUE) {
+      logger::log_info(paste(length(inits[,1]), "...parameter sets to check"))
+      logger::log_info(paste("data got ", nrow(DVs), " rows"))
+      t00 <- Sys.time()
+      logger::log_info("Searching initial values ...")
+    }
+    if (useparallel) {
+        logL <-
+          parApply(cl, inits, MARGIN=1,
+                   function(p) try(neglikelihood_RM_formula(p, DVs,
+                                                         model_matrix, fit_pars_columns,
+                                                         fixed, rho,
+                                                         nRatings, maxt0, sym_thetas, precision),
+                                   silent=TRUE))
+        #stopCluster(cl)
+      } else {
+        logL <-
+          apply(inits, MARGIN = 1,
+                function(p) try(neglikelihood_RM_formula(p, DVs,
+                                                      model_matrix, fit_pars_columns,
+                                                      fixed, rho,
+                                                      nRatings, maxt0, sym_thetas, precision),
+                                silent = TRUE))
+      }
+    if (logging==TRUE) {
+      logger::log_success(paste("Initial grid search took...",as.character(round(as.double(difftime(Sys.time(),t00,units = "mins")), 2))," mins"))
+      save(logL, inits,  DVs,file=filename)
+    }
+    logL <- as.numeric(logL)
+    inits <- inits[order(logL),]
+
+  } else {
+    logL <- NULL
+  }
+# i <- 1
+# l <- 1
+  #### 3. Optimization ####
+  if (logging==TRUE) {
+    logger::log_info("Start fitting ... ")
+  }
+  if (!useparallel || (opts$nAttempts==1)) {
+    noFitYet <- TRUE
+    for (i in 1:opts$nAttempts){
+      start <- c(t(inits[i,]))
+      names(start) <- colnames(inits)
+      for (l in 1:opts$nRestarts){
+        start <- start + rnorm(length(start), sd=pmax(0.001, abs(t(t(start))/20)))
+        if (optim_method == "Nelder-Mead") {
+          try(m <- optim(par = start,
+                         fn = neglikelihood_RM_formula,
+                         DVs=DVs,
+                         model_matrix = model_matrix,
+                         fit_pars_columns=fit_pars_columns,
+                         rho=rho,  nRatings=nRatings,
+                         fixed=fixed, maxt0=maxt0,
+                         sym_thetas=sym_thetas, precision=precision,
+                         method="Nelder-Mead",
+                         control = list(maxit = opts$maxit, reltol = opts$reltol)))
+        } else if (optim_method =="bobyqa") {
+          try(m <- bobyqa(par = start, lower=-Inf, upper=Inf,
+                          fn = neglikelihood_RM_formula,
+                          DVs=DVs,
+                          model_matrix = model_matrix,
+                          fit_pars_columns=fit_pars_columns,
+                          rho=rho, nRatings=nRatings,
+                          fixed=fixed, maxt0=maxt0,
+                          sym_thetas=sym_thetas, precision=precision,
+                          control = list(maxfun=opts$maxfun,
+                                         rhobeg = 2,
+                                         npt = length(start)+5)))
+          ## rhobeg should be: about 0.1*(greatest expected change in parameters --> <= 1-2 (for a, thetas or v's) )
+          ##                   smaller than min(abs(upper-lower)) = min(1, restr_tau)
+          ##                   --> so we use min(0.2*restr_tau, 0.2, 0.2*max(abs(par))).
+          ##                   Default would be: min(0.95, 0.2*max(abs(par))), respectively 0.2*max(upper_optbound-lower_optbound)
+          ## rhoend: use default of 1e-6*rhobeg
+          if (exists("m") && !inherits(m, "try-error")){
+            m$value <- m$fval
+          }
+        } else {
+          stop(paste("Not implemented or unknown method: ", optim_method, ". Use 'bobyqa'or 'Nelder-Mead' instead.", sep=""))
+        }
+        if (logging==TRUE) {
+          logger::log_info(paste("Finished attempt No.", i, " restart no. ", l))
+        }
+        if (!exists("m") || inherits(m, "try-error")){
+          if (logging==TRUE) {
+            logger::log_error(paste("No fit obtained at attempt No.", i))
+            logger::log_error(paste("Used parameter set", paste(start, sep="", collapse=" "), sep=" ", collapse = ""))
+          }
+          break
+        }
+        if (exists("m") && is.list(m)){
+          if (noFitYet) {
+            fit <- m
+            noFitYet <- FALSE
+            if (logging==TRUE) {
+              logger::log_info(paste("First fit obtained at attempt No.", i))
+              attempt <- i
+              save(logL, inits,  DVs,fit, attempt,file=filename)
+            }
+            start <- fit$par
+            names(start) <- colnames(inits)
+          } else if (m$value < fit$value) {
+            fit <- m
+            if (logging==TRUE) {
+              logger::log_info(paste("New fit at attempt No.", i, " restart no. ", l))
+              attempt <- i
+              save(logL, inits,  DVs,fit, attempt,file=filename)
+            }
+            start <- fit$par
+            names(start) <- colnames(inits)
+          } # end of if better value
+        }   # end of if we got a optim-result at all
+      }     # end of for restarts
+    }       # end of for initial start values
+  } else {  # if useparallel
+    starts <- inits[(1:opts$nAttempts),]
+
+    optim_node <- function(start) { # define optim-routine to run on each node
+      noFitYet <- TRUE
+      # start <- c(t(start))
+      # names(start) <- colnames(inits)
+      for (l in 1:opts$nRestarts){
+        start <- start + rnorm(length(start), sd=pmax(0.001, abs(t(t(start))/20)))
+        names(start) <- beta_names
+        if (optim_method == "Nelder-Mead") {
+          m <- try(optim(par = start,
+                         fn = neglikelihood_formula,
+                         DVs=DVs,
+                         model_matrix = model_matrix,
+                         fit_pars_columns=fit_pars_columns,
+                         rho=rho, nRatings=nRatings,
+                         fixed=fixed, maxt0=maxt0,
+                         sym_thetas=sym_thetas, precision=precision,
+                         method="Nelder-Mead",
+                         control = list(maxit = opts$maxit, reltol = opts$reltol)))
+        } else if (optim_method =="bobyqa") {
+          m <- try(bobyqa(par = start, lower=-Inf, upper=Inf,
+                          fn = neglikelihood_formula,
+                          DVs=DVs,
+                          model_matrix = model_matrix,
+                          fit_pars_columns=fit_pars_columns,
+                          rho=rho, nRatings=nRatings,
+                          fixed=fixed, maxt0=maxt0,
+                          sym_thetas=sym_thetas, precision=precision,
+                          control = list(maxfun=opts$maxfun,
+                                         rhobeg = 2,
+                                         npt = length(start)+5)))
+          ## rhobeg should be: about 0.1*(greatest expected change in parameters --> <= 1-2 (for a, thetas or v's) )
+          ##                   smaller than min(abs(upper-lower)) = min(1, restr_tau)
+          ##                   --> so we use min(0.2*restr_tau, 0.2, 0.2*max(abs(par))).
+          ##                   Default would be: min(0.95, 0.2*max(abs(par))), respectively 0.2*max(upper_optbound-lower_optbound)
+          ## rhoend: use default of 1e-6*rhobeg
+          if (exists("m") && !inherits(m, "try-error")){
+            m$value <- m$fval
+          }
+        } else {
+          stop(paste("Not implemented or unknown method: ", optim_method, ". Use 'bobyqa' or 'Nelder-Mead' instead.", sep=""))
+        }
+        if (!exists("m") || inherits(m, "try-error")){
+          break
+        }
+        if (exists("m") && is.list(m)){
+          if (noFitYet) {
+            fit <- m
+            noFitYet <- FALSE
+            start <- fit$par
+            names(start) <- beta_names
+          } else if (m$value < fit$value) {
+            fit <- m
+            start <- fit$par
+            names(start) <- beta_names
+          }
+        }
+      }
+      if (exists("fit") && is.list(fit)){
+        return(c(fit$value,fit$par))
+      } else {
+        return(c(m[1] , rep(NA, length(start))))
+      } # end of node-function
+    }
+    clusterExport(cl, c("beta_names", "opts", "optim_method","optim_node" ), envir = environment())
+    optim_outs <- parApply(cl, starts,MARGIN=1, optim_node )
+    stopCluster(cl)
+    save(logL, DVs, model_matrix, inits, optim_outs, file=filename)
+    optim_outs <- t(optim_outs)
+    best_res <- optim_outs[order(optim_outs[,1]),][1,]
+    fit <- list(par = best_res[-1], value=best_res[1])
+  }   # end of if-else useparallel
+
+  #### 4. Wrap up results ####
+  res <-  list()
+  if(exists("fit") && is.list(fit)){
+    res$k <- length(fit$par)
+    res$N <- nrow(DVs)
+    res$beta <- fit$par
+    #names(res$beta) <- names(inits)
+    res$model_matrix <- model_matrix
+    #res$manipulations <- manipulations
+
+    res$fixed <- paste(c("sym_thetas", names(fixed)), c(sym_thetas,fixed), sep="=", collapse = ", ")
+    res$negLogLik <- fit$value
+    res$BIC <-  2 * fit$value + res$k * log(res$N)
+    res$AICc <- 2 * fit$value + res$k * 2 + 2*res$k*(res$k-1)/(res$N-res$k-1)
+    res$AIC <- 2 * fit$value + res$k * 2
+
+
+  #   compute parameter vector for res
+      # if (nRatings > 2) {
+      #   if (sym_thetas) {
+      #     res[,paste("theta",1:(nRatings-1), sep="")] <- cumsum(c(p[["theta1"]], exp(p[paste0("dtheta", 2:(nRatings-1))])))
+      #   } else {
+      #     res[,paste("thetaUpper",1:(nRatings-1), sep="")] <- cumsum(c(p[["thetaUpper1"]], exp(p[paste0("dthetaUpper", 2:(nRatings-1))])))
+      #     res[,paste("thetaLower",1:(nRatings-1), sep="")] <- cumsum(c(p[["thetaLower1"]], exp(p[paste0("dthetaLower", 2:(nRatings-1))])))
+      #   }
+      # } else {
+      #   if (sym_thetas) {
+      #     res[,paste("theta",1:(nRatings-1), sep="")] <- p[["theta1"]]
+      #   } else {
+      #     res[,paste("thetaUpper",1:(nRatings-1), sep="")] <- p[["thetaUpper1"]]
+      #     res[,paste("thetaLower",1:(nRatings-1), sep="")] <- p[["thetaLower1"]]
+      #   }
+      # }
+    # p <- fit$par
+    # if (optim_method=="Nelder-Mead") {
+    #
+    if (!is.null(used_cats)) {
+      # If some rating categories are not used, we fit less thresholds numerically and fill up the
+      # rest by the obvious best-fitting thresholds (e.g. +/- Inf for the lowest/highest...)
+      res$beta <- fill_thresholds(res$beta, used_cats, actual_nRatings, 1e-32)
+      nRatings <- actual_nRatings
+      k <- length(res$beta)
+    }
+    # if (sym_thetas) {
+    #   parnames <- c(paste("v", 1:nConds, sep=""), 'sv', 'a', 'z', 'sz', 't0','st0', paste("theta", 1:(nRatings-1), sep=""), 'tau', 'w', 'svis','sigvis', 'lambda')
+    # } else {
+    #   parnames <- c(paste("v", 1:nConds, sep=""), 'sv', 'a', 'z', 'sz', 't0','st0', paste("thetaLower", 1:(nRatings-1), sep=""), paste("thetaUpper", 1:(nRatings-1), sep=""), 'tau', 'w', 'svis','sigvis', 'lambda')
+    # }
+    # res <- res[, parnames]
+
+
+    if (logging==TRUE) {
+      logger::log_success("Done fitting and autosaved results")
+      save(logL, DVs, model_matrix, fit, inits, res, file=filename)
+    }
+  }
+  return(res)
+}
+
+fitted_weights <- NULL
+if (time_scaled) {   ## Incorporate fixed weight parameters
+  max_par_weight <- 1
+  fixed_ws <- grep(pattern="w", names(fixed), value=TRUE)
+  if (length(fixed_ws)>1) { ## If 2 are fixed the third weight is also fixed, since they have to sum to 1
+    if ((length(fixed_ws)==3) && (sum(as.numeric(fixed[fixed_ws]))!= 1)) stop("Provided weights do not sum to 1!")
+    if ((length(fixed_ws)==2)) fixed[[setdiff(c("wx","wrt", "wint"),fixed_ws)]] <- 1- sum(as.numeric(fixed[fixed_ws]))
+    fitted_weights <- NULL
+    wx <- 0
+    wrt <- 0
+  }
+  if (length(fixed_ws)==1) { ## If only 1 is supplied, one may be fit
+    max_par_weight <- fixed[[fixed_ws]]
+    fitted_weights <- setdiff(c("wx","wrt", "wint"),fixed_ws)[1]
+    wx <- 0
+    wrt <- 0
+    assign(fitted_weights, c(0.1, 0.5, 0.9)) # Range of fitted parameter: (0,1),
+    # but this will be multiplied with max_fit_weight after optimisation
+
+  }
+  if (length(fixed_ws)==0) { ## If no weight is supplied, two have to be fit
+    ## To keep the optimization box-constraint, we fit the second parameter
+    ## as proportion of the rest of 1 after considering wx, i.e.
+    ## wrt(true weight) = (1-wx)*wrt(fitted parameter)
+    fitted_weights <- c("wx","wrt")
+  }
+}
+
+#beta <- inits[1,]
+neglikelihood_RM_formula <-   function(beta, DVs,
+                                    model_matrix, fit_pars_columns,
+                                    fixed, rho, nRatings, maxt0,
+                                    sym_thetas, precision=1e-5)
+{
+  # get parameter vector back from real transformations
+  parnames <- c("mu1", "mu2", "a", "b", "s1", "s2", "t0", "st0", "wint", "wrt", "wx")
+  #parnames <- c("v", "z", "a", "sz", "t0", "st0", "d", "sv", "tau", "w", "svis", "sigvis", "lambda", "s", "th1", "th2")
+  #parnames <- c("a", "v", "t0", "d","z",  "sz", "sv", "st0","tau", "th1", "th2", "lambda", "w", "muvis", "sigvis", "svis", "s")
+  parammatrix <-  matrix(NA, nrow=nrow(DVs), ncol=length(parnames))
+  colnames(parammatrix) <- parnames
+  fixed01 <- c("t0", "st0", "wint", "wrt", "wx")
+  fixedpos <- c("a", "b", "s1", "s2")
+
+  for (i in 1:length(parnames)) {
+    if (parnames[i] %in% names(fixed)) {
+      parammatrix[,parnames[i]] <- fixed[[parnames[i]]]
+    } else {
+      if (parnames[i] %in% names(beta)) parammatrix[,parnames[i]] <- beta[parnames[i]]
+      if (parnames[i] %in% names(fit_pars_columns)) parammatrix[,parnames[i]] <-
+          model_matrix[,fit_pars_columns[[parnames[i]]], drop=FALSE] %*%
+            beta[grepl(names(beta), pattern=paste0(parnames[i], "_"))]
+      if (parnames[i] %in% fixed01) parammatrix[,parnames[i]] <- pnorm(parammatrix[,parnames[i]])
+      if (parnames[i] %in% fixedpos) parammatrix[,parnames[i]] <- exp(parammatrix[,parnames[i]])
+      if (parnames[i] == "sz") parammatrix[,"sz"] <- (pmin(parammatrix[,"z"], (1-parammatrix[,"z"]))*2)*parammatrix[,"sz"]
+      if (parnames[i] == "t0") parammatrix[,"t0"] <- maxt0*parammatrix[,"t0"]
+      if (parnames[i] == "d") parammatrix[,"d"] <- parammatrix[,"t0"]*parammatrix[,"d"]
+      if (parnames[i] == "tau") {
+        if (restr_tau == Inf) {
+          parammatrix[,parnames[i]] <- exp(parammatrix[,parnames[i]])
+        } else if (simult_conf) {
+          # print(paste0("We have: maxt0=", round(maxt0, 4), "; parammatrix[,t0]=", round(parammatrix[,"t0"],4),
+          #              "; parammatrix[,'tau']=", round(parammatrix[, "tau"], 4), "; and pnorm(tau)=",
+          #              round(pnorm(parammatrix[,parnames[i]]), 4), ", \n and thus: tau=",
+          #              round(pnorm(parammatrix[,parnames[i]])*(maxt0-parammatrix[,"t0"]), 4), "..."))
+          parammatrix[,parnames[i]] <- pnorm(parammatrix[,parnames[i]])*(maxt0-parammatrix[,"t0"])
+        } else {
+          parammatrix[,parnames[i]] <- restr_tau * pnorm(parammatrix[,parnames[i]])
+        }
+      }
+    }
+  }
+  if ("stimulus" %in% names(DVs)) parammatrix[,"v"] <- parammatrix[,"v"]*DVs$stimulus
+  par_thetas <- grep(names(beta), pattern="theta", value=TRUE)
+  if (sym_thetas) {
+      Thetas <- beta[par_thetas]
+      Thetas <- c(-1e+32, Thetas[1] + c(0, cumsum(exp(Thetas[-1]))), 1e+32)
+      Thetas <- c(Thetas, Thetas)
+    } else {
+      ThetasLower <- beta[grep(par_thetas, pattern="Lower", value = TRUE)]
+      ThetasLower <- c(-1e+21, ThetasLower[1] + c(0, cumsum(exp(ThetasLower[-1]))), 1e+21)
+      ThetasUpper <- beta[grep(par_thetas, pattern="Upper", value = TRUE)]
+      ThetasUpper <- c(-1e+21, ThetasUpper[1] + c(0, cumsum(exp(ThetasUpper[-1]))), 1e+21)
+      Thetas <- c(ThetasLower, ThetasUpper)
+  }
+  parammatrix[,c("th1", "th2")] <- cbind(Thetas[(DVs$response)*(nRatings+1) + DVs$rating],
+                                         Thetas[(DVs$response)*(nRatings+1) + DVs$rating+1])
+  # print(paste0("We have: maxt0=", round(maxt0, 4), "; parammatrix[,t0]=", round(parammatrix[,"t0"],4),
+  #              "; parammatrix[,'tau']=", round(parammatrix[, "tau"], 4), "; and pnorm(tau)=",
+  #              round(pnorm(parammatrix[,parnames[i]]), 4), ", \n and thus: tau=",
+  #              round(pnorm(parammatrix[,parnames[i]])*(maxt0-parammatrix[,"t0"]), 4), "..."))
+  # Fill single missing muvis (index: 14) values with absolute value of decision drift v
+  parammatrix[is.na(parammatrix[,14]), 14] <-
+    abs(parammatrix[is.na(parammatrix[,14]), 2])
+
+  # Scale the parameters scaled by s by s
+  # In the actual function:
+  # cbind (a/s, v/s, t0, d, sz, sv/s, st0, z,
+  #        tau, th1/s, th2/s, lambda, w, muvis/s, sigvis/s, svis/s, numeric_bounds)
+  parammatrix[, c(1, 2, 7, 10, 11, 14, 15, 16)] <-
+    parammatrix[, c(1, 2,7, 10, 11, 14, 15, 16)]/parammatrix[,17]
+
+  # bound between trial variability st0 to 2 (seconds)
+  parammatrix[,8] <-  parammatrix[,8]*2
+
+
+  # t0 <- t0+st0/2
+  parammatrix[,3] <- parammatrix[,3] + parammatrix[,8]/2
+  # if (any(is.infinite(t(paramDf))) || any(is.na(t(paramDf)))) {
+  #   return(1e12)
+  # }
+
+  # cbind (a/s, v/s, t0, d, (z).... sz, sv/s, st0, (no z)...,
+  #        tau, th1/s, th2/s, lambda, w, muvis/s, sigvis/s, svis/s, numeric_bounds)
+  probs <- d_WEVmu_fit(DVs$rt, DVs$response, parammatrix[,c(1:4, 6:8, 5, 9:16)], precision=2)
+  # probs <- dWEV_parammatrix(DVs$rt, DVs$response, parammatrix, simult_conf,
+  #                           stop_on_error=TRUE, stop_on_zero=FALSE,
+  #                           precision = 3)
+  probs[probs==0] <- .Machine$double.xmin
+  logl <- sum(log(probs))
+  return(-logl)
+  # DVs <- cbind(DVs, parammatrix, probs)
+}

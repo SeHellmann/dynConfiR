@@ -216,7 +216,7 @@ fitRTConf_formula <- function(data, model = "dynWEV",
   if (!exists("response")) {
     if (!("correct" %in% cols)) {stop("Column names in data must contain 'response' or 'correct'.")}
     if (!exists("stimulus")) {
-      if (!("z" %in% fixed) || !(fixed$sym_thetas)) warning("Only the accuracy of responses provided. We recommend to set z=0.5 and sym_thetas=TRUE in the 'fixed' argument in such situations because biases could not be identified!")
+      if (!("z" %in% fixed) || ("a" %in% fixed && fixed[["a"]]=='b') || !(fixed$sym_thetas)) warning("Only the accuracy of responses provided. We recommend to set z=0.5 and sym_thetas=TRUE in the 'fixed' argument in such situations because biases could not be identified!")
       response <- data[["correct"]]
     } else {
       stim_levels <- sort(unique(stimulus))
@@ -271,19 +271,34 @@ fitRTConf_formula <- function(data, model = "dynWEV",
 
   # define all necessary parameters for a model
   model_name <- model
-  models <- c("2DSD", "2DSDT", "dynWEV", "dynaViTE")
+  models <- c("2DSD", "2DSDT", "dynWEV", "dynaViTE", "IRM", "PCRM", "IRMt", "PCRMt")
   matches <- sapply(models, function(m) grepl(m, model))
   model <- models[max(which(matches))]
-  parnames <- c("v", "z", "a", "d", "sz", "t0", "st0", "sv", "tau", "w", "svis", "sigvis", "lambda", "s")
-  model_params_fixed <- c("lambda"=0, "w"=1, "sigvis"=1, "svis"=1)
-  if (model=="2DSD") {
-    to_set <- setdiff(c("w", "sigvis", "svis", "lambda"), names(fixed))
-  } else if (model=="2DSDT") {
-    to_set <- setdiff(c("w", "sigvis", "svis"), names(fixed))
-  } else if (model=="dynWEV") {
-    to_set <- setdiff(c("lambda"), names(fixed))
-  } else if (model=="dynaViTE") {
-    to_set <- NULL
+
+  if (model %in% c("2DSD", "2DSDT", "dynWEV", "dynaViTE")) {
+    parnames <- c("v", "z", "a", "d", "sz", "t0", "st0", "sv", "tau", "w", "svis", "sigvis", "lambda", "s")
+    model_params_fixed <- c("lambda"=0, "w"=1, "sigvis"=1, "svis"=1)
+    if (model=="2DSD") {
+      to_set <- setdiff(c("w", "sigvis", "svis", "lambda"), names(fixed))
+    } else if (model=="2DSDT") {
+      to_set <- setdiff(c("w", "sigvis", "svis"), names(fixed))
+    } else if (model=="dynWEV") {
+      to_set <- setdiff(c("lambda"), names(fixed))
+    } else if (model=="dynaViTE") {
+      to_set <- NULL
+    }
+    model = "dynaViTE"
+  } else if (model %in% c("IRM", "PCRM", "IRMt", "PCRMt")) {
+    parnames <- c("mu1", "mu2", "a", "b", "s1", "s2", "t0", "st0", "wint", "wrt", "wx")
+    model_params_fixed <-  c("wint"=0, "wx"=1, "wrt"=0)
+    if (!grepl("t", model)) {
+      to_set <- c("wint", "wx", "wrt")
+    }
+    if (grepl("PC", model)) {
+      rho = -0.5
+    } else {
+      rho = 0
+    }
   } else { stop(paste0("Model: ", model, " not implemented!")) }
   fixed <- c(fixed, model_params_fixed[to_set])
 
@@ -389,17 +404,7 @@ fitRTConf_formula <- function(data, model = "dynWEV",
   fixed <- fixed[names(fixed)!="sym_thetas"]
 
   ### Now, call the specific fitting functions:
-  if (grepl("2DSD", model)) {
-    if (model=="2DSD") fixed$lambda <- 0
-    res <- fitting2DSD(df, nConds, nRatings, fixed, sym_thetas,
-                       grid_search, init_grid, optim_method, opts,
-                       logging, filename,
-                       useparallel, n.cores,
-                       restr_tau, precision,
-                       used_cats, actual_nRatings)
-  }
-  if (grepl("dynWEV|dynaViTE",model)) {
-    if (model=="dynWEV") fixed$lambda <- 0
+  if (model=="dynaViTE") {
     res <- fittingdynWEV_formula(DVs, model_matrix,
                                  fixed,
                                  fit_pars_beta_names, const_pars,
@@ -411,26 +416,24 @@ fitRTConf_formula <- function(data, model = "dynWEV",
                                  restr_tau, precision, grid_search,
                                  used_cats, actual_nRatings)
   }
-  if (grepl("IRM", model)) res <- fittingIRM(df, nConds, nRatings, fixed,
-                                             sym_thetas, grepl("t", model),
-                                             grid_search, init_grid, optim_method, opts,
-                                             logging, filename,
-                                             useparallel, n.cores,
-                                             used_cats, actual_nRatings)
-  if (grepl("PCRM", model)) res <- fittingPCRM(df, nConds, nRatings, fixed ,
-                                               sym_thetas, grepl("t", model),
-                                               grid_search, init_grid, optim_method, opts,
-                                               logging, filename,
-                                               useparallel, n.cores,
-                                               used_cats, actual_nRatings)
-  if (model == "DDMConf") res <- fittingDDMConf(df, nConds, nRatings, fixed, sym_thetas,
-                                                grid_search, init_grid, opts,
-                                                logging, filename,
-                                                useparallel, n.cores,
-                                                precision,
-                                                used_cats, actual_nRatings, precision)
-  if (!exists("res")) stop("model not known. model must contain one of: 'dynaViTE', 'dynWEV', '2DSD', '2DSDT', 'IRM', 'PCRM', or 'DDMConf'")
+  if (grepl("RM", model)) res <- fittingRM_formula(
+    DVs, model_matrix,
+    fixed,
+    fit_pars_beta_names, const_pars,
+    fit_pars_columns,
+    nRatings, sym_thetas,
+    optim_method, opts,
+    logging, filename,
+    useparallel, n.cores,
+    restr_tau, precision, grid_search,
+    used_cats, actual_nRatings
 
+    sym_thetas, rho,
+    grid_search, init_grid, optim_method, opts,
+   logging, filename,
+   useparallel, n.cores,
+   used_cats, actual_nRatings)
+  if (!exists("res")) stop("model not known. model must contain one of: 'dynaViTE', 'dynWEV', '2DSD', '2DSDT', 'IRM', 'PCRM', or 'DDMConf'")
 
   return(res)
 }

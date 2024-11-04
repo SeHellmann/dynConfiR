@@ -151,7 +151,8 @@
 
 #' @rdname fitRTConfModels_formula
 #' @export
-fitRTConfModels_formula <- function(data, models = c("dynaViTE", "2DSD", "PCRMt"),
+fitRTConfModels_formula <- function(data, models = c("dynaViTE",
+                                                     "PCRMt", "IRMt"),
                                     manipulations=NULL,
                                      fixed = list(sym_thetas = FALSE), nRatings = NULL,
                                     restr_tau=Inf, grid_search=TRUE,
@@ -160,7 +161,7 @@ fitRTConfModels_formula <- function(data, models = c("dynaViTE", "2DSD", "PCRMt"
   if (any(!grepl("dynaViTE|IRM|PCRM|IRMt|PCRMt|dynWEV|2DSD|DDMConf", models))) {
     stop("all models must be one of:
     'dynaViTE', 'dynWEV', '2DSDT', '2DSD',
-    'DDMConf', 'IRM', 'IRMt', 'PCRM', or 'PCRMt'")
+    'IRM', 'IRMt', or 'PCRMt'")
   }
   if (any(grepl("IRM|PCRM|IRMt|PCRMt|DDMConf", models))) stop("Only dynaViTE (and 2DSD, and dynWEV) implemented so far!")
   ### Maybe later: use ...-argument für renaming data-columns and to pass other arguments
