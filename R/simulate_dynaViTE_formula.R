@@ -137,8 +137,8 @@ simulate_dynaViTE_formula <- function(beta, pred_matrix=NULL, fixed=NULL, #metho
 
   #parnames <- c("v", "z", "a", "sz", "t0", "st0", "d", "sv", "tau", "w", "svis", "sigvis", "lambda", "s", "th1", "th2")
   parnames <- c("a", "v", "t0", "d","z",  "sz", "sv", "st0","tau", "th1", "th2", "lambda", "w", "muvis", "sigvis", "svis", "s")
-  fixed01 <- c("z", "sz", "w", "d", "st0")
-  fixedpos <- c("v", "a", "t0", "sv", "svis", "sigvis", "lambda", "s")
+  fixed01 <- c("z", "sz", "w", "t0", "d", "st0")
+  fixedpos <- c("v", "a", "sv", "svis", "sigvis", "lambda", "s")
   parammatrix <-  matrix(NA, nrow=nrow(pred_matrix), ncol=length(parnames))
   colnames(parammatrix) <- parnames
   for (i in 1:length(parnames)) {
