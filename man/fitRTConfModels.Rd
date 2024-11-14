@@ -23,9 +23,11 @@ the form \code{condition="contrast"}):
 \item \code{response} (encoding the decision response),
 \item \code{correct} (encoding whether the decision was correct; values in 0, 1)
 }
-\item \code{sbj} (giving the subject ID; the models given in the second argument are fitted for each
+\item \code{sbj} alternatively \code{subject} or \code{participant} (giving the subject ID; the models given in the second argument are fitted for each
 subject individually. (Furthermore, if \code{logging = TRUE}, the ID is used in files
-saved with interim results and logging messages.))
+saved with interim results and logging messages.) The output data frame reused the
+name of the column in the input (i.e. the output contains a \code{subject} column, if
+the input contains \code{subject} instead of \code{sbj}).)
 }}
 
 \item{models}{character vector with following possible elements "dynWEV", "2DSD", "IRM", "PCRM", "IRMt", and "PCRMt"  for the models to be fit.}
@@ -58,7 +60,7 @@ box-constraint optimization. For Nelder-Mead a transfinite function rescaling is
 \item{logging}{logical. If \code{TRUE}, a folder 'autosave/fit\strong{model}' is created and
 messages about the process are printed in a logging file and to console (depending
 on OS). Additionally intermediate results are saved in a \code{.RData} file with the
-participant ID in the name.}
+participant/subject ID in the name.}
 
 \item{precision}{numerical numeric. Precision of calculation for the density functions
 (see \code{\link{ddynaViTE}} and \code{\link{dPCRM}} for more information).}
@@ -92,7 +94,7 @@ as fitted result as well as additional information about the fit (\code{negLogLi
 \description{
 This function is a wrapper of the function \code{\link{fitConfModel}} (see
 there for more information). It calls the function for every possible combination
-of model and participant in \code{model} and \code{data} respectively.
+of model and participant/subject in \code{model} and \code{data} respectively.
 Also, see \code{\link{ddynaViTE}}, \code{\link{d2DSD}}, \code{\link{dDDConf}},
 and \code{\link{dRM}} for more
 information about the parameters.

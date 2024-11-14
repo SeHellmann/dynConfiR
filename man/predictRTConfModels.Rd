@@ -76,8 +76,8 @@ subject depending on the input), \code{model}, \code{condition}, \code{stimulus}
 \code{response}, \code{rating}, \code{correct}, \code{p}, \code{info}, \code{err}. \code{p} is the predicted probability of a response
 and \code{rating}, given the stimulus category and condition. \code{info} and \code{err} refer to the
 respective outputs of the integration routine used for the computation.
-\code{predictRTModels} returns a \code{data.frame}/\code{tibble} with columns: \code{participant} (or \code{sbj},
-subject depending on the input), \code{model}, \code{condition}, \code{stimulus},
+\code{predictRTModels} returns a \code{data.frame}/\code{tibble} with columns: \code{participant} (or \code{sbj}/\code{subject}
+depending on the input), \code{model}, \code{condition}, \code{stimulus},
 \code{response}, \code{rating}, \code{correct}, \code{rt} and \code{dens} (and \code{densscaled}, if \code{scaled=TRUE}).
 }
 \description{
@@ -85,7 +85,7 @@ This function is a wrapper around the functions \code{\link{predictRTConf}} (see
 there for more information). It calls the respective function for predicting the
 response distribution (discrete decision and rating outcomes) and the rt density
 (density for decision, rating and response time) for every model and
-participant combination in \code{paramDf}.
+participant/subject combination in \code{paramDf}.
 Also, see \code{\link{ddynaViTE}}, \code{\link{d2DSD}}, and \code{\link{dRM}} for more
 information about the parameters.
 }

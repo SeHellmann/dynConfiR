@@ -5,7 +5,7 @@
 #' there for more information). It calls the respective function for predicting the
 #' response distribution (discrete decision and rating outcomes) and the rt density
 #' (density for decision, rating and response time) for every model and
-#' participant combination in \code{paramDf}.
+#' participant/subject combination in \code{paramDf}.
 #' Also, see \code{\link{ddynaViTE}}, \code{\link{d2DSD}}, and \code{\link{dRM}} for more
 #' information about the parameters.
 #'
@@ -58,8 +58,8 @@
 #' `response`, `rating`, `correct`, `p`, `info`, `err`. `p` is the predicted probability of a response
 #' and `rating`, given the stimulus category and condition. `info` and `err` refer to the
 #' respective outputs of the integration routine used for the computation.
-#' \code{predictRTModels} returns a `data.frame`/`tibble` with columns: `participant` (or `sbj`,
-#' subject depending on the input), `model`, `condition`, `stimulus`,
+#' \code{predictRTModels} returns a `data.frame`/`tibble` with columns: `participant` (or `sbj`/`subject`
+#' depending on the input), `model`, `condition`, `stimulus`,
 #' `response`, `rating`, `correct`, `rt` and `dens` (and `densscaled`, if `scaled=TRUE`).
 #'
 #'

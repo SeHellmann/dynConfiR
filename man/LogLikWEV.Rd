@@ -99,7 +99,6 @@ data <- rdynaViTE(200, a=2,v=stimulus*discriminability*0.5,
              t0=0.2,z=0.5, sz=0.1,sv=0.1, st0=0,  tau=4, s=1, w=0.3)
 # discretize confidence ratings (only 2 steps: unsure vs. sure)
 data$rating <- as.numeric(cut(data$conf, breaks = c(-Inf, 1, Inf), include.lowest = TRUE))
-data$participant = 1
 data$stimulus <- stimulus
 data$discriminability <- discriminability
 data <- data[data$response!=0, ] # drop not finished decision processes

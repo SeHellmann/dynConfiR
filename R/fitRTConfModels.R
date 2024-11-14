@@ -2,7 +2,7 @@
 #'
 #' This function is a wrapper of the function \code{\link{fitConfModel}} (see
 #' there for more information). It calls the function for every possible combination
-#' of model and participant in `model` and \code{data} respectively.
+#' of model and participant/subject in `model` and \code{data} respectively.
 #' Also, see \code{\link{ddynaViTE}}, \code{\link{d2DSD}}, \code{\link{dDDConf}},
 #' and \code{\link{dRM}} for more
 #' information about the parameters.
@@ -17,9 +17,11 @@
 #'   * \code{stimulus} (encoding the stimulus category in a binary choice task),
 #'   * \code{response} (encoding the decision response),
 #'   * \code{correct} (encoding whether the decision was correct; values in 0, 1)
-#' * \code{sbj} (giving the subject ID; the models given in the second argument are fitted for each
+#' * \code{sbj} alternatively `subject` or `participant` (giving the subject ID; the models given in the second argument are fitted for each
 #'   subject individually. (Furthermore, if `logging = TRUE`, the ID is used in files
-#'   saved with interim results and logging messages.))
+#'   saved with interim results and logging messages.) The output data frame reused the
+#'   name of the column in the input (i.e. the output contains a `subject` column, if
+#'   the input contains `subject` instead of `sbj`).)
 #' @param models character vector with following possible elements "dynWEV", "2DSD", "IRM", "PCRM", "IRMt", and "PCRMt"  for the models to be fit.
 #' @param nRatings integer. Number of rating categories. If `NULL`, the maximum of
 #' `rating` and `length(unique(rating))` is used. This argument is especially
@@ -43,7 +45,7 @@
 #' @param logging logical. If `TRUE`, a folder 'autosave/fit**model**' is created and
 #' messages about the process are printed in a logging file and to console (depending
 #' on OS). Additionally intermediate results are saved in a `.RData` file with the
-#' participant ID in the name.
+#' participant/subject ID in the name.
 #' @param parallel "models", "single", "both" or `FALSE`. If `FALSE` no parallelization
 #' is used in the fitting process. If "models" the fitting process is parallelized over
 #' participants and models (i.e. over the calls for fitting functions). If "single"
