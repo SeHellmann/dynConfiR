@@ -150,9 +150,9 @@ subject_modelweights <- function(fits, measure = "BIC"){
   colnames(mlp) <- fits$model[1:K]
 
   mlp <- - mlp/(2)
-  ColMin <- apply(mlp, 1, min)
+  ColMin <- apply(mlp, 1, max)
   mlp <- sweep(mlp, 1, ColMin)
-  u_nk <- exp(-0.5*mlp)
+  u_nk <- exp(mlp)
   u_nk[is.infinite(u_nk)] <- 1e+64
   u_nk_sums <- rowSums(u_nk)
 
