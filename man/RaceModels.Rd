@@ -86,7 +86,7 @@ If both (\code{s1}, \code{s2} and \code{s}) are given, only \code{s1} and \code{
 
 \item{precision}{numerical scalar value. Precision of calculation. Determines the
 step size of integration w.r.t. \code{t0}.
-Represents the number of decimals precisely computet on average. Default is 6.}
+Represents the number of decimals precisely computed on average. Default is 6.}
 
 \item{step_width}{numeric. Alternative way to define the precision of integration
 w.r.t. \code{t0} by directly providing the step size for the integration.}

@@ -53,7 +53,7 @@
 #' @param time_scaled logical. Whether the confidence measure should be time-dependent. See Details.
 #' @param precision numerical scalar value. Precision of calculation. Determines the
 #' step size of integration w.r.t. `t0`.
-#' Represents the number of decimals precisely computet on average. Default is 6.
+#' Represents the number of decimals precisely computed on average. Default is 6.
 #' @param step_width numeric. Alternative way to define the precision of integration
 #' w.r.t. `t0` by directly providing the step size for the integration.
 #'

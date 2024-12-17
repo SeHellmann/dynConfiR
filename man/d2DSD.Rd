@@ -94,7 +94,7 @@ when there is an observable interjudgment time (then \code{simult_conf} should b
 
 \item{precision}{\code{numerical} scalar value. Precision of calculation.
 Determines the the stepsize of integration w.r.t. \code{z} and \code{t0}.
-Represents the number of decimals precisely computet on average. Default is 6.}
+Represents the number of decimals precisely computed on average. Default is 6.}
 
 \item{z_absolute}{logical. Determines whether \code{z} is treated as absolute start point
 (\code{TRUE}) or relative (\code{FALSE}; default) to \code{a}.}

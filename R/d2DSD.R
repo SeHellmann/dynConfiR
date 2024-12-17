@@ -81,7 +81,7 @@
 #' when there is an observable interjudgment time (then `simult_conf` should be `FALSE`).
 #' @param precision \code{numerical} scalar value. Precision of calculation.
 #' Determines the the stepsize of integration w.r.t. `z` and `t0`.
-#' Represents the number of decimals precisely computet on average. Default is 6.
+#' Represents the number of decimals precisely computed on average. Default is 6.
 #' @param z_absolute logical. Determines whether `z` is treated as absolute start point
 #' (`TRUE`) or relative (`FALSE`; default) to `a`.
 #' @param stop_on_error Should the diffusion functions return 0 if the parameters values
