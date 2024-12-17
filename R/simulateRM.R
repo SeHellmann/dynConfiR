@@ -388,9 +388,9 @@ rRM_Kiani <- function (paramDf, n=1e+4, time_scaled=FALSE,
 
   simus$rating <- 1
   simus$rating[simus$response==1] <- as.numeric(as.character(cut(simus$conf[simus$response==1],
-                                                                        breaks=thetas_upper, labels = levels_upper)))
-  simus$rating[simus$response==2] <- as.numeric(as.character(cut(simus$conf[simus$response==2],
                                                                         breaks=thetas_lower, labels = levels_lower)))
+  simus$rating[simus$response==2] <- as.numeric(as.character(cut(simus$conf[simus$response==2],
+                                                                        breaks=thetas_upper, labels = levels_upper)))
 
 
 

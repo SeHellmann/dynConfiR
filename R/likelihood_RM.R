@@ -144,8 +144,8 @@ LogLikRM <- function(data, paramDf, model="IRM", time_scaled =FALSE,
     thetas_1 <- c(1e-32, t(paramDf[,paste("theta",1:(nRatings-1), sep = "")]), 1e+64)
     thetas_2 <- c(1e-32, t(paramDf[,paste("theta",1:(nRatings-1), sep = "")]), 1e+64)
   } else {
-    thetas_1 <- c(1e-32, t(paramDf[,paste("thetaUpper",1:(nRatings-1), sep = "")]), 1e+64)
-    thetas_2 <- c(1e-32, t(paramDf[,paste("thetaLower",1:(nRatings-1), sep="")]), 1e+64)
+    thetas_1 <- c(1e-32, t(paramDf[,paste("thetaLower",1:(nRatings-1), sep = "")]), 1e+64)
+    thetas_2 <- c(1e-32, t(paramDf[,paste("thetaUpper",1:(nRatings-1), sep="")]), 1e+64)
   }
   #### Check for column names given ####
   names_missing <- !(c("condition","response","stimulus","rating", "rt", "sbj", "correct") %in% names(data_names))
