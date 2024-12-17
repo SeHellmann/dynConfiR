@@ -474,7 +474,7 @@ fittingPCRM <- function(df, nConds, nRatings, fixed, sym_thetas, time_scaled,
       # If some rating categories are not used, we fit less thresholds numerically and fill up the
       # rest by the obvious best-fitting thresholds (e.g. +/- Inf for the lowest/highest...)
       res <- fill_thresholds(res, used_cats, actual_nRatings, 0)
-      k <- k+(as.numeric(sym_thetas)+1)*(actual_nRatings-nRatings)
+      k <- k+(as.numeric(!sym_thetas)+1)*(actual_nRatings-nRatings)
       nRatings <- actual_nRatings
     }
     if (length(fixed)>=1) {
