@@ -29,19 +29,19 @@ fittingdynWEV <- function(df, nConds, nRatings, fixed, sym_thetas,
       if (!(is.numeric(restr_tau) && restr_tau >0)) {stop(paste("restr_tau must be numeric and positive, Inf or 'simult_conf'. But restr_tau=", restr_tau, sep=""))}
       tau = seq(0.2*restr_tau,0.9*restr_tau, length.out = 3)
     }
-    init_grid <- expand.grid(a = c(0.5, 1,1.7, 2.5, 5),               ### a = distance btw. upper and lower bound \in (0,\infty)]
+    init_grid <- expand.grid(a = c(0.8, 2, 3.5),               ### a = distance btw. upper and lower bound \in (0,\infty)]
                              vmin = c(0.01, 0.1, 1.3),                ### vmin = mean drift rate in first condition \in (0,\infty)]
-                             vmax = c(1.4, 2.5, 3.7, 5),              ### vmax = mean drift rate in last condition \in (\vmin,\infty)]
-                             sv = c(0.01, 0.8, 1.5),                  ### sv = SD of drift rate (normal distr.) \in (0,\infty)]
+                             vmax = c(1.4, 3, 5),              ### vmax = mean drift rate in last condition \in (\vmin,\infty)]
+                             sv = c(0.1, 1.5),                  ### sv = SD of drift rate (normal distr.) \in (0,\infty)]
                              z = sum((df$response==1)*df$n)/sum(df$n),### z = mean start point (bias) \in [0,1]
                              sz = c(0.1),                             ### sz = range of possible start points (unif ditr.; in units of a-z) \in [0,1]
-                             t0 = c(0.05, 0.2),                       ### t0 = proportion of minimal motor time of minimal total response time \in [0,1)
-                             st0 = c(0.1,  0.2),                      ### st0 = range of possible motor times (unif. distr.) \in [0, t0/2]
+                             t0 = c(0.2, 0.7),                       ### t0 = proportion of minimal motor time of minimal total response time \in [0,1)
+                             st0 = c(0.2),                      ### st0 = range of possible motor times (unif. distr.) \in [0, t0/2]
                              tau = tau,                               ### tau = post-decisional accumulation time (between 0 and 1, if tau has an upper bound)
                              svis = seq(0.01, 0.5, length.out = 2),   ### svis = variability in visibility accumulation process
                              w = seq(0.3, 0.7, length.out = 3),       ### w = weight bewtween evidence and visibility for confidence judgement
-                             sigvis = seq(0.01, 1, length.out = 3),   ### sigivis = between trial variability in drift rate of the visibility process
-                             lambda = c(0, 0.5, 1, 2))                ### lambda = exponent of accumulation time in the denominator of the confidence variable
+                             sigvis = seq(0.01, 1, length.out = 2),   ### sigivis = between trial variability in drift rate of the visibility process
+                             lambda = c(0, 0.7, 2))                ### lambda = exponent of accumulation time in the denominator of the confidence variable
   }
   # Remove columns for fixed parameters
   init_grid <- init_grid[setdiff(names(init_grid), names(fixed))]

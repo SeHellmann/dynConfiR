@@ -22,16 +22,16 @@ fittingPCRM <- function(df, nConds, nRatings, fixed, sym_thetas, time_scaled,
       fitted_weights <- setdiff(c("wx","wrt", "wint"),fixed_ws)[1]
       wx <- 0
       wrt <- 0
-      assign(fitted_weights, c(0.1, 0.5, 0.9)) # Range of fitted parameter: (0,1),
+      assign(fitted_weights, c(0.1, 0.35, 0.65, 0.9)) # Range of fitted parameter: (0,1),
       # but this will be multiplied with max_fit_weight after optimisation
 
     }
     if (length(fixed_ws)==0) { ## If no weight is supplied, two have to be fit
-      wx <- c(0.025, 0.3, 0.8)
+      wx <- c(0.025, 0.3, 0.6, 0.9)
       ## To keep the optimization box-constraint, we fit the second parameter
       ## as proportion of the rest of 1 after considering wx, i.e.
       ## wrt(true weight) = (1-wx)*wrt(fitted parameter)
-      wrt <- c(0.05, 0.5, 0.9)
+      wrt <- c(0.05, 0.4, 0.7, 0.9)
       fitted_weights <- c("wx","wrt")
     }
   }
@@ -41,25 +41,25 @@ fittingPCRM <- function(df, nConds, nRatings, fixed, sym_thetas, time_scaled,
   if (is.null(init_grid)) {
     # (mint0 < 0.2) {mint0 <- 0.2}
       if (time_scaled) {
-        init_grid <- expand.grid(vmin = c(0.01, 0.1,0.8),         ### vmin = drift rate in first condition \in (0,\infty)]
-                                 vmax = c(1, 2, 3.8, 5),          ### vmax = mean drift rate in last condition \in (\vmin,\infty)]
-                                 a = c(0.5, 1.2, 2.8),
-                                 b = c(0.5, 1.2, 2.8),
+        init_grid <- expand.grid(vmin = c(0.01, 0.1,0.8, 1.5),         ### vmin = drift rate in first condition \in (0,\infty)]
+                                 vmax = c( 1, 2.4, 3.8, 5),          ### vmax = mean drift rate in last condition \in (\vmin,\infty)]
+                                 a = c(0.5, 1.2, 2.3),
+                                 b = c(0.5, 1.2, 2.3),
                                  theta0 = c(0.3,1.2, 1.7, 2.5),  ### theta0 = lowest threshold for confidence rating (in difference from threshold / a)
-                                 thetamax = c(1, 3, 3, 4),       ### thetamax = highest threshold for confidence rating (in distance from threshold / a)
-                                 t0 = seq(max(mint0-0.2, 0), max(mint0-0.1, 0)), ### t0 = minimal non-decision time
-                                 st0 = seq(0.07, 1, length.out=3),    ### st0 = range of (uniform dist) non-decision time
+                                 thetamax = c(1,  2,   3,   4),       ### thetamax = highest threshold for confidence rating (in distance from threshold / a)
+                                 t0 = seq(0, max(mint0-0.1, 0), 4), ### t0 = minimal non-decision time
+                                 st0 = seq(0.1, 1.2, length.out=3),    ### st0 = range of (uniform dist) non-decision time
                                  wx = wx,      ### coeff for BoE in conf= wx *(b-xj) + (wrt* 1//sqrt(t)) + (wint* (b-xj)/sqrt(t))
                                  wrt = wrt)      ### coeff for time in conf= wx *(b-xj) + (wrt* 1//sqrt(t)) + (wint* (b-xj)/sqrt(t))
       } else {
-        init_grid <- expand.grid(vmin = c(0.01, 0.1,0.8),         ### vmin = drift rate in first condition \in (0,\infty)]
-                                 vmax = c(1, 2, 3.8, 5),          ### vmax = mean drift rate in last condition \in (\vmin,\infty)]
-                                 a = c(0.5, 1.2, 2.8),
-                                 b = c(0.5, 1.2, 2.8),
+        init_grid <- expand.grid(vmin = c(0.01, 0.1,0.8, 1.5),         ### vmin = drift rate in first condition \in (0,\infty)]
+                                 vmax = c( 1, 2.4, 3.8, 5),          ### vmax = mean drift rate in last condition \in (\vmin,\infty)]
+                                 a = c(0.5, 1.2, 2.3),
+                                 b = c(0.5, 1.2, 2.3),
                                  theta0 = c(0.3,1.2, 1.7, 2.5),  ### theta0 = lowest threshold for confidence rating (in difference from threshold / a)
-                                 thetamax = c(1, 3, 3, 4),       ### thetamax = highest threshold for confidence rating (in distance from threshold / a)
-                                 t0 = seq(max(mint0-0.2, 0), max(mint0-0.1, 0)), ### t0 = minimal non-decision time
-                                 st0 = seq(0.07, 1, length.out=3))    ### st0 = range of (uniform dist) non-decision time
+                                 thetamax = c(1,  2,   3,   4),       ### thetamax = highest threshold for confidence rating (in distance from threshold / a)
+                                 t0 = seq(0, max(mint0-0.1, 0), 4), ### t0 = minimal non-decision time
+                                 st0 = seq(0.1, 1.2, length.out=3))    ### st0 = range of (uniform dist) non-decision time
       }
     }
   init_grid <- init_grid[init_grid$theta0 < init_grid$thetamax,]
