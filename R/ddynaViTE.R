@@ -226,10 +226,10 @@ dWEV <- function (rt, response="upper", th1,th2, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, s
                   stop_on_error=TRUE, stop_on_zero=FALSE) {
   warning("The function dWEV was renamed to ddynaViTE in version 0.1.0 of the package.\\
           It will be removed in future releases of the package!")
-  return(ddynaViTE(rt, response="upper", th1,th2, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, st0=0,
-                   tau=1, w=0.5, muvis=NULL, sigvis=0, svis=1,
-                   lambda = 0, s=1,  simult_conf = FALSE, precision=6, z_absolute = FALSE,
-                   stop_on_error=TRUE, stop_on_zero=FALSE))
+  return(ddynaViTE(rt, response="upper", th1,th2, a,v,t0,z,d,sz,sv, st0,
+                   tau, w, muvis, sigvis, svis,
+                   lambda, s,  simult_conf, precision, z_absolute,
+                   stop_on_error, stop_on_zero))
 }
 
 #' @rdname dynaViTE
@@ -240,10 +240,10 @@ rWEV <- function (n, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, st0=0,
                        z_absolute = FALSE,  stop_on_error=TRUE, process_results=FALSE) {
   warning("The function dWEV was renamed to ddynaViTE in version 0.1.0 of the package.\\
           It will be removed in future releases of the package!")
-  return(rdynaViTE(n, a,v,t0=0,z=0.5,d=0,sz=0,sv=0, st0=0,
-                tau=1, w=0.5, muvis=NULL, sigvis=0, svis=1,
-                lambda=0, s=1, delta=0.01, maxrt=15, simult_conf = FALSE,
-                z_absolute = FALSE,  stop_on_error=TRUE, process_results=FALSE))
+  return(rdynaViTE(n, a,v,t0,z,d,sz,sv, st0,
+                tau, w, muvis, sigvis, svis,
+                lambda, s, delta, maxrt, simult_conf,
+                z_absolute,  stop_on_error, process_results))
 }
 
 
