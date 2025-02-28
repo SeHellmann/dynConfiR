@@ -116,13 +116,15 @@
 
 #' @rdname LogLikWEV
 #' @export
-LogLikWEV <- function(data, paramDf, model="dynaViTE", simult_conf = FALSE, precision=6, stop_on_error = TRUE, data_names = list(), ...) {
+LogLikWEV <- function(data, paramDf, model="dynaViTE", simult_conf = FALSE,
+                      precision=6, stop_on_error = TRUE, data_names = list(), ...) {
   #### Check data formatting ####
   data <- rename(data, ...)
   if ((model %in% c("dynWEV", "2DSD")) && !("lambda" %in% names(paramDf))) paramDf$lambda <- 0
   if (model=="dynWEV") model <- "dynaViTE"
   if (model=="2DSDT") model <- "2DSD"
   if (!("lambda" %in% names(paramDf))) paramDf$lambda <- 0
+
 
 
   #### Get information from paramDf ####
@@ -133,7 +135,6 @@ LogLikWEV <- function(data, paramDf, model="dynaViTE", simult_conf = FALSE, prec
   } else {
     nRatings <- length(grep(pattern = "^thetaUpper[0-9]", names(paramDf)))+1
   }
-
   if (nConds > 0 ) {
     V <- c(t(paramDf[,paste("v",1:(nConds), sep = "")]))
   } else {
@@ -164,13 +165,6 @@ LogLikWEV <- function(data, paramDf, model="dynaViTE", simult_conf = FALSE, prec
     thetas_upper <- c(-1e+32, t(paramDf[,paste("thetaUpper",1:(nRatings-1), sep = "")]), 1e+32)
     thetas_lower <- c(-1e+32, t(paramDf[,paste("thetaLower",1:(nRatings-1), sep="")]), 1e+32)
   }
-  # if (model=="2DSD") {    # For 2DSD the parametrisation for lower thetas is different (different confidence scale)
-  #   thetas_lower <- c(-1e+32, rev(thetas_lower[2:(nRatings)]), 1e+32)
-  #   if (symmetric_confidence_thresholds) {
-  #     thetas_lower <- paramDf$a- rev(thetas_upper)
-  #   }
-  # }
-
   #### Check for column names given ####
   names_missing <- !(c("condition","response","stimulus","rating", "rt", "sbj", "correct") %in% names(data_names))
   data_names <- c(data_names,

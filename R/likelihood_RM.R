@@ -189,19 +189,19 @@ LogLikRM <- function(data, paramDf, model="IRM", time_scaled =FALSE,
     data$wint = 0
   }
   if ("s" %in% names(paramDf)) {
-    data$s = paramDf$s
+    s = paramDf$s
   } else {
-    data$s = 1
+    s = 1
   }
   if (model=="IRM") {
     probs <- dIRM(data$rt, data$response,data$mu1, data$mu2, data$a, data$b,
                   data$th1, data$th2, data$wx,  data$wrt,  data$wint,
-                  data$t0, data$st0, data$s, time_scaled=time_scaled,
+                  data$t0, data$st0, s=s, time_scaled=time_scaled,
                   precision=precision)
   } else {
     probs <- dPCRM(data$rt, data$response,data$mu1, data$mu2, data$a, data$b,
                    data$th1, data$th2, data$wx,  data$wrt,  data$wint,
-                   data$t0, data$st0, data$s, time_scaled=time_scaled,
+                   data$t0, data$st0, s=s, time_scaled=time_scaled,
                    precision=precision)
   }
 
