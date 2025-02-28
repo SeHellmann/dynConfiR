@@ -390,13 +390,13 @@ fitRTConf <- function(data, model = "dynWEV",
                                               restr_tau, precision,
                                               used_cats, actual_nRatings)
   }
-  if (grepl("IRM", model)) res <- fittingIRM(df, nConds, nRatings, fixed,
+  if (grepl("IRM", model)) res <- fittingRMs(df, model="IRM", nConds, nRatings, fixed,
                                              sym_thetas, grepl("t", model),
                                         grid_search, init_grid, optim_method, opts,
                                         logging, filename,
                                         useparallel, n.cores,
                                         used_cats, actual_nRatings, precision)
-  if (grepl("PCRM", model)) res <- fittingPCRM(df, nConds, nRatings, fixed ,
+  if (grepl("PCRM", model)) res <- fittingRMs(df, model="PCRM", nConds, nRatings, fixed ,
                                                sym_thetas, grepl("t", model),
                                           grid_search, init_grid, optim_method, opts,
                                           logging, filename,

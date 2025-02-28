@@ -1,4 +1,4 @@
-fittingPCRM <- function(df, nConds, nRatings, fixed, sym_thetas, time_scaled,
+fittingRMs <- function(df, model, nConds, nRatings, fixed, sym_thetas, time_scaled,
                           grid_search, init_grid=NULL, optim_method, opts,
                           logging, filename,
                           useparallel, n.cores,
@@ -34,45 +34,60 @@ fittingPCRM <- function(df, nConds, nRatings, fixed, sym_thetas, time_scaled,
       wrt <- c(0.05, 0.4, 0.7, 0.9)
       fitted_weights <- c("wx","wrt")
     }
+  } else {
+    fitted_weights <- NULL
   }
   ### 1. Generate initial grid for grid search over possible parameter sets ####
   #### Create grid ####
   mint0 <-  min(df$rt)
   if (is.null(init_grid)) {
     # (mint0 < 0.2) {mint0 <- 0.2}
-      if (time_scaled) {
-        init_grid <- expand.grid(vmin = c(0.01, 0.1,0.8, 1.5),         ### vmin = drift rate in first condition \in (0,\infty)]
-                                 vmax = c( 1, 2.4, 3.8, 5),          ### vmax = mean drift rate in last condition \in (\vmin,\infty)]
-                                 a = c(0.5, 1.2, 2.3),
-                                 b = c(0.5, 1.2, 2.3),
-                                 theta0 = c(0.3,1.2, 1.7, 2.5),  ### theta0 = lowest threshold for confidence rating (in difference from threshold / a)
-                                 thetamax = c(1,  2,   3,   4),       ### thetamax = highest threshold for confidence rating (in distance from threshold / a)
-                                 t0 = seq(0, max(mint0-0.1, 0), 4), ### t0 = minimal non-decision time
-                                 st0 = seq(0.1, 1.2, length.out=3),    ### st0 = range of (uniform dist) non-decision time
-                                 wx = wx,      ### coeff for BoE in conf= wx *(b-xj) + (wrt* 1//sqrt(t)) + (wint* (b-xj)/sqrt(t))
-                                 wrt = wrt)      ### coeff for time in conf= wx *(b-xj) + (wrt* 1//sqrt(t)) + (wint* (b-xj)/sqrt(t))
-      } else {
-        init_grid <- expand.grid(vmin = c(0.01, 0.1,0.8, 1.5),         ### vmin = drift rate in first condition \in (0,\infty)]
-                                 vmax = c( 1, 2.4, 3.8, 5),          ### vmax = mean drift rate in last condition \in (\vmin,\infty)]
-                                 a = c(0.5, 1.2, 2.3),
-                                 b = c(0.5, 1.2, 2.3),
-                                 theta0 = c(0.3,1.2, 1.7, 2.5),  ### theta0 = lowest threshold for confidence rating (in difference from threshold / a)
-                                 thetamax = c(1,  2,   3,   4),       ### thetamax = highest threshold for confidence rating (in distance from threshold / a)
-                                 t0 = seq(0, max(mint0-0.1, 0), 4), ### t0 = minimal non-decision time
-                                 st0 = seq(0.1, 1.2, length.out=3))    ### st0 = range of (uniform dist) non-decision time
-      }
-    }
-  init_grid <- init_grid[init_grid$theta0 < init_grid$thetamax,]
-  # Remove column for weight that will not be fitted
+    init_grid <- expand.grid(vmin = c(0.01, 0.1,0.8, 1.5),         ### vmin = drift rate in first condition \in (0,\infty)]
+                             vmax = c( 1, 2.4, 3.8, 5),          ### vmax = mean drift rate in last condition \in (\vmin,\infty)]
+                             a = c(0.5, 1.2, 2.3),
+                             b = c(0.5, 1.2, 2.3),
+                             #theta0 = c(0.3,1.2, 1.7, 2.5),  ### theta0 = lowest threshold for confidence rating (in difference from threshold / a)
+                             #thetamax = c(1,  2,   3,   4),       ### thetamax = highest threshold for confidence rating (in distance from threshold / a)
+                             t0 = c(0.2, 0.7), ### t0 = minimal non-decision time (proportional to minimum observed RT)
+                             st0 = seq(0.1, 1.2, length.out=3),    ### st0 = range of (uniform dist) non-decision time
+                             wx = wx,      ### coeff for BoE in conf= wx *(b-xj) + (wrt* 1//sqrt(t)) + (wint* (b-xj)/sqrt(t))
+                             wrt = wrt)      ### coeff for time in conf= wx *(b-xj) + (wrt* 1//sqrt(t)) + (wint* (b-xj)/sqrt(t))
+
+  }
+  # Remove column for weight that will not be fitted (including all weights, when time_scaled = FALSE)
   init_grid <- init_grid[c(setdiff(names(init_grid), c("wx","wrt")), fitted_weights)]
+
+
   # Remove columns for fixed parameters
   init_grid <- init_grid[setdiff(names(init_grid), names(fixed))]
   init_grid <- unique(init_grid)
+
+  # Remove rows for which maximum discriminability is lower than minimum discriminability
+  init_grid <- init_grid[init_grid$vmin<init_grid$vmax, ]
+
 
   ### If no grid-search is desired use mean of possible parameters #
   if (!grid_search) {
     init_grid <- as.data.frame(as.list(colMeans(init_grid)))
   }
+
+  ##### span drifts with quadratic distance
+  ###  We assume a different V (mean drift rate) for the different conditions --> nConds parameters
+  if (nConds==1) {
+    init_grid$v1 <- (init_grid$vmin+init_grid$vmax)/2
+  } else {
+    for (i in 0:(nConds-1)){
+      init_grid[paste("v", i+1, sep="")] <- init_grid$vmin+(i/(nConds-1))^2*(init_grid$vmax-init_grid$vmin)
+    }
+  }
+
+  ## Guess suitable confidence thresholds from theoretical distribution of
+  ## the confidence measure and proportion of ratings in the data
+  init_thetas <- get_thetas_for_init_grid_RMs_simulations(init_grid, df, model, nRatings, fixed, time_scaled, fitted_weights)
+
+
+
+
 
   #### 1.1. For Nelder-Mead transform all parameters to real values ####
   if (optim_method=="Nelder-Mead") {
@@ -80,16 +95,12 @@ fittingPCRM <- function(df, nConds, nRatings, fixed, sym_thetas, time_scaled,
     #  span V-parameters between vmin and vmax equidistantly for all conditions
     inits <- data.frame(matrix(data=NA, nrow= nrow(init_grid),
                                ncol = nConds))
-    for (i in 0:(nConds-1)){
-      if (nConds == 1) {
-        inits[,1] <- log((init_grid$vmin+init_grid$vmax)/2)
-      } else {
-        inits[,i+1] <- log(init_grid$vmin+(i/(nConds-1))^3*(init_grid$vmax-init_grid$vmin)) ###  We assume a different V (mean drift rate) for the different conditions --> nConds parameters
-      }
+    for (i in 1:nConds){
+      inits[,i] <- log(init_grid[[paste("v", i, sep="")]])
     }
     if (!("a" %in% names(fixed))) inits <- cbind(inits, log(init_grid$a))
     if (!("b" %in% names(fixed))) inits <- cbind(inits, log(init_grid$b))
-    if (!("t0" %in% names(fixed))) inits <- cbind(inits, log(init_grid$t0))
+    if (!("t0" %in% names(fixed))) inits <- cbind(inits, qnorm(init_grid$t0))
     if (!("st0" %in% names(fixed))) inits <- cbind(inits, log(init_grid$st0))
     if (time_scaled) {
       for (par in fitted_weights) {
@@ -97,18 +108,15 @@ fittingPCRM <- function(df, nConds, nRatings, fixed, sym_thetas, time_scaled,
       }
     }
 
-    inits <- cbind(inits, init_grid$theta0)
+
+    inits <- cbind(inits, init_thetas[,1])
     if (nRatings > 2) {
-      for (i in 1:(nRatings-2)) {
-        inits <- cbind(inits, log((init_grid$thetamax-init_grid$theta0)/(nRatings-2)))
-      }
+      inits <- cbind(inits, log(init_thetas[,-1]))
     }
     if (!sym_thetas) {
-      inits <- cbind(inits, init_grid$theta0)
+      inits <- cbind(inits, init_thetas[,1])
       if (nRatings > 2) {
-        for (i in 1:(nRatings-2)) {
-          inits <- cbind(inits, log((init_grid$thetamax-init_grid$theta0)/(nRatings-2)))
-        }
+        inits <- cbind(inits, log(init_thetas[,-1]))
       }
       cols_theta <- c('thetaLower1', rep(paste("dthetaLower", 2:(nRatings-1), sep=""), times=nRatings>2),
                       'thetaUpper1', rep(paste("dthetaUpper", 2:(nRatings-1), sep=""), times=nRatings>2))
@@ -116,36 +124,28 @@ fittingPCRM <- function(df, nConds, nRatings, fixed, sym_thetas, time_scaled,
       cols_theta <- c("theta1", rep(paste("dtheta", 2:(nRatings-1), sep=""), times=nRatings>2))
     }
 
-    ## replace all +-Inf with big/tiny numbers
+    ##replace all +-Inf with big/tiny numbers
     inits[inits==Inf]<- 1e6
     inits[inits==-Inf]<- -1e6
     parnames <- c(paste("v", 1:nConds, sep=""), 'a', 'b', 't0', 'st0', fitted_weights, cols_theta)
     names(inits) <- setdiff(parnames, names(fixed))
   } else {
     ##### 1.2. For box-constraint optimisation algorithm span drifts and thresholds equidistantly
-    if (nConds==1) {
-      init_grid$v1 <- (init_grid$vmin+init_grid$vmax)/2
-    } else {
-      for (i in 0:(nConds-1)){
-        init_grid[paste("v", i+1, sep="")] <- init_grid$vmin+(i/(nConds-1))^3*(init_grid$vmax-init_grid$vmin)
-      }
-    }
-
     if (sym_thetas) {
-      init_grid["theta1"] <- init_grid$theta0
+      init_grid["theta1"] <- init_thetas[,1]
       if (nRatings > 2) {
         for (i in 2:(nRatings-1)) {
-          init_grid[paste("dtheta", i, sep="")] <- (init_grid$thetamax-init_grid$theta0)/(nRatings-2)
+          init_grid[paste("dtheta", i, sep="")] <- init_thetas[,i]
         }
         cols_theta <- c("theta1", paste("dtheta", 2:(nRatings-1), sep=""))
       } else {
         cols_theta <- c("theta1")
       }
     } else {
-      init_grid[c("thetaUpper1", "thetaLower1")] <- init_grid$theta0
+      init_grid[c("thetaUpper1", "thetaLower1")] <- init_thetas[,1]
       if (nRatings > 2) {
         for (i in 2:(nRatings-1)) {
-          init_grid[paste(c("dthetaUpper", "dthetaLower"), i, sep="")] <- (init_grid$thetamax-init_grid$theta0)/(nRatings-2)
+          init_grid[paste(c("dthetaUpper", "dthetaLower"), i, sep="")] <-  init_thetas[,i]
         }
         cols_theta <- c('thetaLower1', paste("dthetaLower", 2:(nRatings-1), sep=""),
                         'thetaUpper1', paste("dthetaUpper", 2:(nRatings-1), sep=""))
@@ -166,7 +166,7 @@ fittingPCRM <- function(df, nConds, nRatings, fixed, sym_thetas, time_scaled,
       n.cores <- detectCores()-1
     }
     cl <- makeCluster(type="SOCK", n.cores)
-    clusterExport(cl, c("df", "time_scaled",
+    clusterExport(cl, c("df", "time_scaled", "mint0",
                         "nConds","nRatings", "sym_thetas", "fixed", "fitted_weights"), envir = environment())
   }
 
@@ -185,27 +185,27 @@ fittingPCRM <- function(df, nConds, nRatings, fixed, sym_thetas, time_scaled,
       if (useparallel) {
         logL <-
           parApply(cl, inits, MARGIN=1,
-                   function(p) try(neglikelihood_PCRM_free(p, df,
-                                                             time_scaled, nConds, nRatings, fixed, fitted_weights, sym_thetas, precision),
+                   function(p) try(neglikelihood_RMs_free(p, df, model,
+                                                             time_scaled, nConds, nRatings, fixed, mint0, fitted_weights, sym_thetas, precision),
                                    silent=TRUE))
         #stopCluster(cl)
       } else {
         logL <-
           apply(inits, MARGIN = 1,
-                function(p) try(neglikelihood_PCRM_free(p, df, time_scaled, nConds, nRatings, fixed, fitted_weights, sym_thetas, precision),
+                function(p) try(neglikelihood_RMs_free(p, df, model, time_scaled, nConds, nRatings, fixed, mint0, fitted_weights, sym_thetas, precision),
                                 silent = TRUE))
       }
     } else {
       if (useparallel) {
         logL <-
           parApply(cl, inits, MARGIN=1,
-                   function(p) try(neglikelihood_PCRM_bounded(p, df, time_scaled, nConds, nRatings, fixed, fitted_weights, sym_thetas, precision),
+                   function(p) try(neglikelihood_RMs_bounded(p, df, model, time_scaled, nConds, nRatings, fixed, mint0, fitted_weights, sym_thetas, precision),
                                    silent=TRUE))
         #stopCluster(cl)
       } else {
         logL <-
           apply(inits, MARGIN = 1,
-                function(p) try(neglikelihood_PCRM_bounded(p, df, time_scaled, nConds, nRatings, fixed, fitted_weights, sym_thetas, precision),
+                function(p) try(neglikelihood_RMs_bounded(p, df, model, time_scaled, nConds, nRatings, fixed, mint0, fitted_weights, sym_thetas, precision),
                                 silent=TRUE))
       }
     }
@@ -220,8 +220,8 @@ fittingPCRM <- function(df, nConds, nRatings, fixed, sym_thetas, time_scaled,
 
   if (optim_method!="Nelder-Mead") {
                       # a,  b,  t0, st0, wrt and/or wint, (if needed (time_scaled=TRUE)),      v1, v2,....,,   thetaLower1, dthetaLower2.., thetaUpper1... (or theta1,...)
-    lower_optbound <- c(0,  0,  0,  0,   rep(0,length(fitted_weights)*as.numeric(time_scaled)),rep(0, nConds), rep(rep(0, nRatings-1), 2-as.numeric(sym_thetas)))[!(parnames %in% names(fixed))]
-    upper_optbound <- c(Inf,Inf,Inf,Inf, rep(1,length(fitted_weights)*as.numeric(time_scaled)),rep(Inf,nConds),rep(Inf, (2-as.numeric(sym_thetas))*(nRatings-1)))[!(parnames %in% names(fixed))]
+    lower_optbound <- c(0,  0,   0,  0,   rep(0,length(fitted_weights)*as.numeric(time_scaled)),rep(0, nConds), rep(rep(0, nRatings-1), 2-as.numeric(sym_thetas)))[!(parnames %in% names(fixed))]
+    upper_optbound <- c(Inf,Inf, 1,Inf, rep(1,length(fitted_weights)*as.numeric(time_scaled)),rep(Inf,nConds),rep(Inf, (2-as.numeric(sym_thetas))*(nRatings-1)))[!(parnames %in% names(fixed))]
   }
 
 
@@ -238,19 +238,19 @@ fittingPCRM <- function(df, nConds, nRatings, fixed, sym_thetas, time_scaled,
         start <- start + rnorm(length(start), sd=pmax(0.001, abs(t(t(start))/20)))
         if (optim_method == "Nelder-Mead") {
           try(m <- optim(par = start,
-                         fn = neglikelihood_PCRM_free,
-                         data=df, time_scaled=time_scaled, nConds=nConds, nRatings=nRatings,
-                         fixed=fixed, fitted_weights=fitted_weights,
+                         fn = neglikelihood_RMs_free,
+                         data=df, model=model, time_scaled=time_scaled, nConds=nConds, nRatings=nRatings,
+                         fixed=fixed, mint0=mint0, fitted_weights=fitted_weights,
                          sym_thetas=sym_thetas, precision=precision,
                          method="Nelder-Mead",
                          control = list(maxit = opts$maxit, reltol = opts$reltol)))
         } else if (optim_method =="bobyqa") {
           start <- pmax(pmin(start, upper_optbound-1e-6), lower_optbound+1e-6)
           try(m <- bobyqa(par = start,
-                          fn = neglikelihood_PCRM_bounded,
+                          fn = neglikelihood_RMs_bounded,
                           lower = lower_optbound, upper = upper_optbound,
-                          data=df, time_scaled=time_scaled, nConds=nConds, nRatings=nRatings,
-                          fixed=fixed, fitted_weights=fitted_weights,
+                          data=df, model=model, time_scaled=time_scaled, nConds=nConds, nRatings=nRatings,
+                          fixed=fixed, mint0=mint0, fitted_weights=fitted_weights,
                           sym_thetas=sym_thetas, precision=precision,
                           control = list(maxfun=opts$maxfun,
                                          rhobeg = min(0.2, 0.2*max(abs(start))),
@@ -264,10 +264,10 @@ fittingPCRM <- function(df, nConds, nRatings, fixed, sym_thetas, time_scaled,
         } else if (optim_method=="L-BFGS-B") {  ### ToDo: use dfoptim or pracma::grad as gradient!
           start <- pmax(pmin(start, upper_optbound-1e-6), lower_optbound+1e-6)
           try(m <- optim(par = start,
-                         fn = neglikelihood_PCRM_bounded,
+                         fn = neglikelihood_RMs_bounded,
                          lower = lower_optbound, upper = upper_optbound,
-                         data=df,  time_scaled=time_scaled, nConds=nConds, nRatings=nRatings,
-                         fixed=fixed, fitted_weights=fitted_weights,
+                         data=df, model=model,  time_scaled=time_scaled, nConds=nConds, nRatings=nRatings,
+                         fixed=fixed, mint0=mint0, fitted_weights=fitted_weights,
                          sym_thetas=sym_thetas, precision=precision,
                          method="L-BFGS-B",
                          control = list(maxit = opts$maxit, factr = opts$factr)))
@@ -317,22 +317,22 @@ fittingPCRM <- function(df, nConds, nRatings, fixed, sym_thetas, time_scaled,
       start <- c(t(start))
       names(start) <- parnames
       for (l in 1:opts$nRestarts){
-        start <- pmax(pmin(start, upper_optbound-1e-6), lower_optbound+1e-6)
+        start <- start + rnorm(length(start), sd=pmax(0.001, abs(t(t(start))/20)))
         if (optim_method == "Nelder-Mead") {
           try(m <- optim(par = start,
-                         fn = neglikelihood_PCRM_free,
-                         data=df,  time_scaled=time_scaled, nConds=nConds, nRatings=nRatings,
-                         fixed=fixed, fitted_weights=fitted_weights,
+                         fn = neglikelihood_RMs_free,
+                         data=df, model=model,  time_scaled=time_scaled, nConds=nConds, nRatings=nRatings,
+                         fixed=fixed, mint0=mint0, fitted_weights=fitted_weights,
                          sym_thetas=sym_thetas, precision=precision,
                          method="Nelder-Mead",
                          control = list(maxit = opts$maxit, reltol = opts$reltol)))
         } else if (optim_method =="bobyqa") {
           start <- pmax(pmin(start, upper_optbound-1e-6), lower_optbound+1e-6)
           try(m <- bobyqa(par = start,
-                          fn = neglikelihood_PCRM_bounded,
+                          fn = neglikelihood_RMs_bounded,
                           lower = lower_optbound, upper = upper_optbound,
-                          data=df,  time_scaled=time_scaled, nConds=nConds, nRatings=nRatings,
-                          fixed=fixed, fitted_weights=fitted_weights,
+                          data=df, model=model,  time_scaled=time_scaled, nConds=nConds, nRatings=nRatings,
+                          fixed=fixed, mint0=mint0, fitted_weights=fitted_weights,
                           sym_thetas=sym_thetas, precision=precision,
                           control = list(maxfun=opts$maxfun,
                                          rhobeg = min(0.2, 0.2*max(abs(start))),
@@ -347,10 +347,10 @@ fittingPCRM <- function(df, nConds, nRatings, fixed, sym_thetas, time_scaled,
         } else if (optim_method=="L-BFGS-B") {  ### ToDo: use dfoptim or pracma::grad as gradient!
           start <- pmax(pmin(start, upper_optbound-1e-6), lower_optbound+1e-6)
           try(m <- optim(par = start,
-                         fn = neglikelihood_PCRM_bounded,
+                         fn = neglikelihood_RMs_bounded,
                          lower = lower_optbound, upper = upper_optbound,
-                         data=df,  time_scaled=time_scaled, nConds=nConds, nRatings=nRatings,
-                         fixed=fixed, fitted_weights=fitted_weights,
+                         data=df, model=model,  time_scaled=time_scaled, nConds=nConds, nRatings=nRatings,
+                         fixed=fixed, mint0=mint0, fitted_weights=fitted_weights,
                          sym_thetas=sym_thetas, precision=precision,
                          method="L-BFGS-B",
                          control = list(maxit = opts$maxit, factr = opts$factr)))
@@ -402,7 +402,7 @@ fittingPCRM <- function(df, nConds, nRatings, fixed, sym_thetas, time_scaled,
       res[,paste("v",1:(nConds), sep="")] <- exp(p[1:(nConds)])
       if (!("a" %in% names(fixed))) res$a <- exp(p[["a"]])
       if (!("b" %in% names(fixed))) res$b <- exp(p[["b"]])
-      if (!("t0" %in% names(fixed))) res$t0 <- exp(p[["t0"]])
+      if (!("t0" %in% names(fixed))) res$t0 <- pnorm(p[["t0"]])*mint0
       if (!("st0" %in% names(fixed))) res$st0 <- exp(p[["st0"]])
 
       if (time_scaled) {
@@ -439,7 +439,9 @@ fittingPCRM <- function(df, nConds, nRatings, fixed, sym_thetas, time_scaled,
     } else {
       res <-   data.frame(matrix(nrow=1, ncol=length(p)))
       res[1,] <- p
-      names(res) <- names(inits)      # a, b, wrt and wint (maybe), v1, v2,....,, thetaLower1,dthetaLower2-4,   thetaUpper1,dthetaUpper2-4,
+      names(res) <- names(inits)      # a, b, t0, st0, wrt and wint (maybe), v1, v2,....,, thetaLower1,dthetaLower2-4,   thetaUpper1,dthetaUpper2-4,
+      if (!("t0" %in% names(fixed))) res$t0 <- res$t0*mint0
+
       if (time_scaled) {
         if (length(fitted_weights) == 1) {
           res[,fitted_weights] <- res[,fitted_weights]*(1-fixed[[grep("^w", names(fixed), value = TRUE)]])
@@ -477,8 +479,10 @@ fittingPCRM <- function(df, nConds, nRatings, fixed, sym_thetas, time_scaled,
       k <- k+(as.numeric(!sym_thetas)+1)*(actual_nRatings-nRatings)
       nRatings <- actual_nRatings
     }
-    if (length(fixed)>=1) {
-      res <- cbind(res, as.data.frame(fixed))
+
+    temp_fixed <- fixed[!grepl("^w", names(fixed))]
+    if (length(temp_fixed)>=1) {
+      res <- cbind(res, as.data.frame(temp_fixed))
     }
     if (res[['a']] == "b") res$a <- res$b
     if (res[['b']] == "a") res$b <- res$a
@@ -503,9 +507,9 @@ fittingPCRM <- function(df, nConds, nRatings, fixed, sym_thetas, time_scaled,
 }
 
 
-neglikelihood_PCRM_free <-   function(p, data,  time_scaled,
+neglikelihood_RMs_free <-   function(p, data,  model, time_scaled,
                                      nConds, nRatings,
-                                     fixed, fitted_weights, sym_thetas, precision)
+                                     fixed, mint0, fitted_weights, sym_thetas, precision)
 {
   # get parameter vector back from real transformations
   paramDf <-  data.frame(matrix(nrow=1, ncol=0))
@@ -517,10 +521,10 @@ neglikelihood_PCRM_free <-   function(p, data,  time_scaled,
   if (!("b" %in% names(fixed))) paramDf$b <- exp(p[["b"]])
   if (paramDf$a == "b") paramDf$a <- paramDf$b
   if (paramDf$b == "a") paramDf$b <- paramDf$a
-  if (!("t0" %in% names(fixed))) paramDf$t0 <- exp(p[["t0"]])
+  if (!("t0" %in% names(fixed))) paramDf$t0 <- pnorm(p[["t0"]])*mint0
   if (!("st0" %in% names(fixed))) paramDf$st0 <- exp(p[["st0"]])
 
-  if (time_scaled) {
+  if (time_scaled) { # otherwise, the weights will be set within LogLikRM
     if (length(fitted_weights) == 1) {
       paramDf[,fitted_weights] <- pnorm(p[[fitted_weights]])*(1-fixed[[grep("^w", names(fixed), value = TRUE)]])
       paramDf[,grep("^w", names(fixed), value = TRUE)] <- fixed[[grep("^w", names(fixed), value = TRUE)]]
@@ -531,10 +535,6 @@ neglikelihood_PCRM_free <-   function(p, data,  time_scaled,
       paramDf$wrt <- pnorm(p[["wrt"]])*(1-paramDf$wx)
       paramDf$wint <- 1 - paramDf$wx - paramDf$wrt
     }
-  } else {
-    paramDf$wx <- 1
-    paramDf$wrt <- 0
-    paramDf$wint <- 0
   }
   if (nRatings > 2) {
     if (sym_thetas) {
@@ -554,7 +554,7 @@ neglikelihood_PCRM_free <-   function(p, data,  time_scaled,
   if (any(is.infinite(t(paramDf))) || any(is.na(t(paramDf)))) {
     return(1e12)
   }
-  negloglik <- -LogLikRM(data, paramDf, "PCRM", time_scaled, precision)
+  negloglik <- -LogLikRM(data, paramDf, model, time_scaled, precision)
 
   return(negloglik)
 }
@@ -562,9 +562,9 @@ neglikelihood_PCRM_free <-   function(p, data,  time_scaled,
 
 
 
-neglikelihood_PCRM_bounded <-   function(p, data, time_scaled,
+neglikelihood_RMs_bounded <-   function(p, data, model, time_scaled,
                                         nConds, nRatings,
-                                        fixed, fitted_weights, sym_thetas, precision)
+                                        fixed, mint0, fitted_weights, sym_thetas, precision)
 {
   # get parameter vector back from real transformations
   paramDf <-   data.frame(matrix(nrow=1, ncol=length(p)))
@@ -591,11 +591,8 @@ neglikelihood_PCRM_bounded <-   function(p, data, time_scaled,
   }
   if (paramDf$a == "b") paramDf$a <- paramDf$b
   if (paramDf$b == "a") paramDf$b <- paramDf$a
-  if (!time_scaled) {
-    paramDf$wx <- 1
-    paramDf$wrt <- 0
-    paramDf$wint <- 0
-  } else {
+  if (!("t0" %in% names(fixed))) paramDf['t0'] <- paramDf['t0']*mint0
+  if (time_scaled) { # otherwise, the weights will be set within LogLikRM
     if (length(fitted_weights) == 1) {
       paramDf[,fitted_weights] <- paramDf[,fitted_weights]*(1-fixed[[grep("^w", names(fixed), value = TRUE)]])
       paramDf[,grep("^w", names(fixed), value = TRUE)] <- fixed[[grep("^w", names(fixed), value = TRUE)]]
@@ -606,7 +603,7 @@ neglikelihood_PCRM_bounded <-   function(p, data, time_scaled,
       paramDf$wint <- 1 - paramDf$wx - paramDf$wrt
     }
   }
-  negloglik <- -LogLikRM(data, paramDf, "PCRM", time_scaled, precision)
+  negloglik <- -LogLikRM(data, paramDf, model, time_scaled, precision)
   return(negloglik)
 }
 
