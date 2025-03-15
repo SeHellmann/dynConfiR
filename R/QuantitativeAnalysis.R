@@ -159,6 +159,7 @@
 #' @export
 subject_modelweights <- function(fits, measure = "BIC"){
   if (!measure %in% c("BIC", "AIC", "AICc")) stop(paste0("measure=", measure, " must be present as column in fits"))
+  fits <- as.data.frame(fits)
   models <- sort(unique(fits$model))
   sbj_col <- c("sbj", "subject", "participant")
   sbj_col <- sbj_col[which(sbj_col %in% names(fits))]
@@ -194,6 +195,7 @@ subject_modelweights <- function(fits, measure = "BIC"){
 group_BMS_fits <- function(fits, measure = "BIC",
                              opts=list(), alpha0=NULL) {
   if (!measure %in% c("BIC", "AIC", "AICc")) stop(paste0("measure=", measure, " must be present as column in fits"))
+  fits <- as.data.frame(fits)
   models <- sort(unique(fits$model))
   sbj_col <- c("sbj", "subject", "participant")
   sbj_col <- sbj_col[which(sbj_col %in% names(fits))]
