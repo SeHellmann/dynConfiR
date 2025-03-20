@@ -156,7 +156,7 @@
 fitRTConfModels <- function(data, models = c("dynaViTE", "2DSD", "PCRMt"),
                       nRatings = NULL, fixed = list(sym_thetas = FALSE), restr_tau=Inf,
                       grid_search=TRUE,
-                      opts=list(), optim_method = "bobyqa", logging=FALSE, precision=6,
+                      opts=list(), optim_method = "bobyqa", logging=FALSE, precision=3,
                       parallel = TRUE, n.cores=NULL, ...){ #  ?ToDO: vary_sv=FALSE, RRT=NULL, vary_tau=FALSE
   # Check if package 'logger' is installed, if logging is wished
   if (logging && !requireNamespace("logger", quietly = TRUE)) {

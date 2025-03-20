@@ -189,7 +189,7 @@ fitRTConf <- function(data, model = "dynWEV",
                       fixed = list(sym_thetas = FALSE),
                       init_grid = NULL, grid_search = TRUE,
                       data_names = list(), nRatings = NULL, restr_tau =Inf,
-                      precision=6,logging=FALSE, opts=list(), optim_method = "bobyqa",
+                      precision=3,logging=FALSE, opts=list(), optim_method = "bobyqa",
                       useparallel = FALSE, n.cores=NULL, ...){ #  ?ToDO: vary_sv=FALSE, RRT=NULL, vary_tau=FALSE
   # Check if package 'logger' is installed, if logging is wished
   if (logging && !requireNamespace("logger", quietly = TRUE)) {
@@ -373,6 +373,7 @@ fitRTConf <- function(data, model = "dynWEV",
 
   ### Now, call the specific fitting functions:
   if (grepl("2DSD", model)) {
+    fixed <- fixed[!sapply(fixed, is.character)] # drop possible threshold-restriction meant for race models
     if (model=="2DSD") fixed$lambda <- 0
     res <- fitting2DSD(df, nConds, nRatings, fixed, sym_thetas,
                                           grid_search, init_grid, optim_method, opts,
@@ -382,6 +383,7 @@ fitRTConf <- function(data, model = "dynWEV",
                                           used_cats, actual_nRatings)
   }
   if (grepl("dynWEV|dynaViTE",model)) {
+    fixed <- fixed[!sapply(fixed, is.character)] # drop possible threshold-restriction meant for race models
     if (model=="dynWEV") fixed$lambda <- 0
     res <- fittingdynWEV(df, nConds, nRatings, fixed, sym_thetas,
                                               grid_search, init_grid, optim_method, opts,
@@ -402,12 +404,15 @@ fitRTConf <- function(data, model = "dynWEV",
                                           logging, filename,
                                           useparallel, n.cores,
                                           used_cats, actual_nRatings, precision)
-  if (model == "DDConf") res <- fittingDDConf(df, nConds, nRatings, fixed, sym_thetas,
-                                          grid_search, init_grid, opts,
-                                          logging, filename,
-                                          useparallel, n.cores,
-                                          precision,
-                                          used_cats, actual_nRatings, precision)
+  if (model == "DDConf") {
+    fixed <- fixed[!sapply(fixed, is.character)] # drop possible threshold-restriction meant for race models
+    res <- fittingDDConf(df, nConds, nRatings, fixed, sym_thetas,
+                          grid_search, init_grid, opts,
+                          logging, filename,
+                          useparallel, n.cores,
+                          precision,
+                          used_cats, actual_nRatings, precision)
+    }
   if (!exists("res")) stop("Model is unknown.
                            model must contain one of: 'dynaViTE', 'dynWEV',
                            '2DSD', '2DSDT', 'IRM', 'IMRt', 'PCRM', 'PCRMt', or 'DDConf'")
