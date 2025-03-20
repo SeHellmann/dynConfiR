@@ -82,7 +82,7 @@ NumericVector density_IRM (NumericVector rts, NumericVector params, int win=1, d
         double fac = - inv_sqrt_2pi*a/2;
         if (st0==0) {
             for (int i = 0; i < length; i++) {
-                if (rts[i] < 0 ) {
+                if (rts[i] <= 0 ) {
                     out[i] = 0;
                 } else {
                     out[i] = fac * densIRM_equalbounds( rts[i],  th2,  th1, muw,  mul,  a,  b,
@@ -92,7 +92,7 @@ NumericVector density_IRM (NumericVector rts, NumericVector params, int win=1, d
             }
         } else {
             for (int i = 0; i < length; i++) {
-                if (rts[i] < 0 ) {
+                if (rts[i] <= 0 ) {
                     out[i] = 0;
                 } else {
                     out[i] = fac / st0 *
@@ -118,7 +118,7 @@ NumericVector density_IRM (NumericVector rts, NumericVector params, int win=1, d
         Xis.attr("dim") = Dimension(4,2);
         if (st0==0) {
             for (int i = 0; i < length; i++) {
-                if (rts[i] < 0 ) {
+                if (rts[i] <= 0 ) {
                     out[i] = 0;
                 } else {
                     out[i] = fac *  densIRM_differbounds (rts[i], th2,  th1, muw,  mul, wx, wrt, wint,
@@ -128,7 +128,7 @@ NumericVector density_IRM (NumericVector rts, NumericVector params, int win=1, d
             }
         } else {
             for (int i = 0; i < length; i++) {
-                if (rts[i] < 0 ) {
+                if (rts[i] <= 0 ) {
                     out[i] = 0;
                 } else {
                     out[i] = fac / st0 *
