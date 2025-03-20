@@ -94,7 +94,7 @@ fitting2DSD <- function(df, nConds, nRatings, fixed, sym_thetas,
       inits <- cbind(inits, log(init_thetas[,-1]))
     }
     if (!sym_thetas) {
-      inits <- cbind(inits, init_grid$theta0)
+      inits <- cbind(inits, init_thetas[,1])
       if (nRatings > 2) {
         inits <- cbind(inits, log(init_thetas[,-1]))
       }
@@ -377,6 +377,7 @@ fitting2DSD <- function(df, nConds, nRatings, fixed, sym_thetas,
   #### 4. Wrap up results ####
   res <-  data.frame(matrix(nrow=1, ncol=0))
   if(exists("fit") && is.list(fit)){
+    # Save the number of actually fitted parameters by the optimization
     k <- length(fit$par)
     N <- nrow(df)
     p <- fit$par
@@ -442,8 +443,9 @@ fitting2DSD <- function(df, nConds, nRatings, fixed, sym_thetas,
       # If some rating categories are not used, we fit less thresholds numerically and fill up the
       # rest by the obvious best-fitting thresholds (e.g. +/- Inf for the lowest/highest...)
       res <- fill_thresholds(res, used_cats, actual_nRatings, -1e+24)
+      # Get number of truely fitted parameters by adding the added confidence thresholds
+      k <- k + (as.numeric(!sym_thetas)+1)*(actual_nRatings-nRatings)
       nRatings <- actual_nRatings
-      k <- ncol(res)
     }
 
     if (sym_thetas) {

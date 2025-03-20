@@ -316,8 +316,9 @@ fittingDDConf<- function(df, nConds, nRatings, fixed, sym_thetas,
       # If some rating categories are not used, we fit less thresholds numerically and fill up the
       # rest by the obvious best-fitting thresholds (e.g. +/- Inf for the lowest/highest...)
       res <- fill_thresholdsDDM(res, used_cats, actual_nRatings)
+      # Get number of truely fitted parameters by adding the added confidence thresholds
+      k <- k + (as.numeric(!sym_thetas)+1)*(actual_nRatings-nRatings)
       nRatings <- actual_nRatings
-      k <- ncol(res)
     }
 
     if (sym_thetas) {

@@ -385,10 +385,11 @@ fittingdynWEV <- function(df, nConds, nRatings, fixed, sym_thetas,
   #### 4. Wrap up results ####
   res <-  data.frame(matrix(nrow=1, ncol=0))
   if(exists("fit") && is.list(fit)){
+    # Save the number of actually fitted parameters by the optimization
     k <- length(fit$par)
     N <- sum(df$n)
-
     p <- fit$par
+
     if (optim_method=="Nelder-Mead") {
       res[,paste("v",1:(nConds), sep="")] <- exp(p[1:(nConds)])
       if (length(fixed)>=1) res <- cbind(res, as.data.frame(fixed))
@@ -453,8 +454,10 @@ fittingdynWEV <- function(df, nConds, nRatings, fixed, sym_thetas,
       # If some rating categories are not used, we fit less thresholds numerically and fill up the
       # rest by the obvious best-fitting thresholds (e.g. +/- Inf for the lowest/highest...)
       res <- fill_thresholds(res, used_cats, actual_nRatings, -1e+24)
+
+      # Get number of truely fitted parameters by adding the added confidence thresholds
+      k <- k + (as.numeric(!sym_thetas)+1)*(actual_nRatings-nRatings)
       nRatings <- actual_nRatings
-      k <- ncol(res)
     }
     if (sym_thetas) {
       parnames <- c(paste("v", 1:nConds, sep=""), 'sv', 'a', 'z', 'sz', 't0','st0', paste("theta", 1:(nRatings-1), sep=""), 'tau', 'w', 'svis','sigvis', 'lambda')
