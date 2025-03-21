@@ -119,7 +119,8 @@
 LogLikWEV <- function(data, paramDf, model="dynaViTE", simult_conf = FALSE,
                       precision=6, stop_on_error = TRUE, data_names = list(), ...) {
   #### Check data formatting ####
-  data <- rename(data, ...)
+  tryCatch(data <- rename(data, ...),
+           error = function(e) stop(paste0("Error renaming data columns. Probably a column name does not exist, or we tried to overwrite an already existing column.\nCheck whether an argument was misspelled and data name pairs are given in the form expected_name = true_name.\nUsed input for renaming columns:\n", paste(names(list(...)), list(...), sep="=", collapse = ", "))))
   if ((model %in% c("dynWEV", "2DSD")) && !("lambda" %in% names(paramDf))) paramDf$lambda <- 0
   if (model=="dynWEV") model <- "dynaViTE"
   if (model=="2DSDT") model <- "2DSD"

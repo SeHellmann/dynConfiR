@@ -210,7 +210,7 @@ fitRTConf <- function(data, model = "dynWEV",
   # colrenames <- colrenames[colrenames %in% names(data)]
   # data <- rename(data, colrenames)
   tryCatch(data <- rename(data, ...),
-           error = function(e) stop("Error renaming data columns. Probably a column name does not exist.\nCheck whether an argument was misspelled and data name pairs are given in the form expected_name = true_name."))
+           error = function(e) stop(paste0("Error renaming data columns. Probably a column name does not exist, or we tried to overwrite an already existing column.\nCheck whether an argument was misspelled and data name pairs are given in the form expected_name = true_name.\nUsed input for renaming columns:\n", paste(names(list(...)), list(...), sep="=", collapse = ", "))))
 
 
 
