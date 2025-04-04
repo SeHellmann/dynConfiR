@@ -177,19 +177,19 @@ computations.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">predictedResponses</span> <span class="op">&lt;-</span> </span>
 <span>  <span class="fu"><a href="../reference/predictWEV.html">predictWEV_Conf</a></span><span class="op">(</span><span class="va">parfit</span>, <span class="st">"dynWEV"</span>, simult_conf <span class="op">=</span> <span class="cn">TRUE</span>, </span>
-<span>                  precision <span class="op">=</span> <span class="fl">6</span>, maxrt <span class="op">=</span> <span class="fl">5</span>, subdivisions <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></span>
+<span>                  precision <span class="op">=</span> <span class="fl">3</span>, maxrt <span class="op">=</span> <span class="fl">5</span>, subdivisions <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></span>
 <span><span class="va">predictedRTdist</span> <span class="op">&lt;-</span> </span>
 <span>  <span class="fu"><a href="../reference/predictWEV.html">predictWEV_RT</a></span><span class="op">(</span><span class="va">parfit</span>, <span class="st">"dynWEV"</span>, simult_conf <span class="op">=</span> <span class="cn">TRUE</span>, </span>
-<span>  maxrt <span class="op">=</span> <span class="fl">5</span>, precision <span class="op">=</span> <span class="fl">6</span>, subdivisions <span class="op">=</span> <span class="fl">50</span>,</span>
+<span>  maxrt <span class="op">=</span> <span class="fl">5</span>, precision <span class="op">=</span> <span class="fl">3</span>, subdivisions <span class="op">=</span> <span class="fl">50</span>,</span>
 <span>  scaled<span class="op">=</span><span class="cn">TRUE</span>, DistConf <span class="op">=</span> <span class="va">predictedResponses</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">predictedResponses</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   condition stimulus response correct rating          p info          err</span></span>
-<span><span class="co">#&gt; 1         1        1        1       1      1 0.26599498   OK 1.544742e-05</span></span>
-<span><span class="co">#&gt; 2         2        1        1       1      1 0.26720606   OK 1.550751e-05</span></span>
-<span><span class="co">#&gt; 3         3        1        1       1      1 0.22919780   OK 1.373719e-05</span></span>
-<span><span class="co">#&gt; 4         4        1        1       1      1 0.08020440   OK 1.028647e-04</span></span>
-<span><span class="co">#&gt; 5         5        1        1       1      1 0.01567631   OK 2.744803e-05</span></span>
-<span><span class="co">#&gt; 6         1       -1        1       0      1 0.26691047   OK 1.581052e-05</span></span>
+<span><span class="co">#&gt; 1         1        1        1       1      1 0.26553382   OK 1.526246e-05</span></span>
+<span><span class="co">#&gt; 2         2        1        1       1      1 0.26674285   OK 1.531710e-05</span></span>
+<span><span class="co">#&gt; 3         3        1        1       1      1 0.22877983   OK 1.365249e-05</span></span>
+<span><span class="co">#&gt; 4         4        1        1       1      1 0.07992721   OK 6.266401e-06</span></span>
+<span><span class="co">#&gt; 5         5        1        1       1      1 0.01556712   OK 4.351377e-05</span></span>
+<span><span class="co">#&gt; 6         1       -1        1       0      1 0.26641226   OK 1.552454e-05</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">predictedRTdist</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   condition stimulus response correct rating         rt dens densscaled</span></span>
 <span><span class="co">#&gt; 1         1        1        1       1      1 0.01379258    0          0</span></span>

@@ -34,13 +34,14 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.1.0" id="dynconfir-010-june-2024">dynConfiR 0.1.0 (June 2024)<a class="anchor" aria-label="anchor" href="#dynconfir-010-june-2024"></a></h2>
-<ul><li>change in the precision argument for all models. It is now an integer argument representing the approximate precision of the density in digits. Default is 6 for all models.</li>
+<h2 class="pkg-version" data-toc-text="1.0.0" id="dynconfir-100-june-2024">dynConfiR 1.0.0 (June 2024)<a class="anchor" aria-label="anchor" href="#dynconfir-100-june-2024"></a></h2>
+<ul><li>change in the precision argument for all models. It is now an integer argument representing the approximate precision of the density in digits. Default is 6 for all models in the density functions.</li>
+<li>Added precision argument in the fitting functions. With default to 3</li>
 <li>renamed the DDMConf model to DDConf to align with published literature</li>
 <li>renamed the functions for dynaViTE model (ddynaViTE and rdynaViTE);</li>
 <li>the functions dWEV and rWEV will be kept for now but maybe removed in future releases of the package, they will produce a deprecation warning now</li>
 <li>Minor changes:
-<ul><li>Bug fix in fitting Race Models with time-dependend confidence variable. Before, the weight wrt was bound from above by the weight wx because of a bug.</li>
+<ul><li>Bug fix in fitting Race Models with time-dependend confidence variable. Before, the weight ‘wrt’ was bound from above by the weight ‘wx’ because of a bug.</li>
 <li>Added a UserInterrupt() call in all longer-running C-functions.</li>
 </ul></li>
 </ul></div>
