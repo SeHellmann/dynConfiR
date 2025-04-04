@@ -93,10 +93,10 @@ After fitting the parameters to the empirical data, these parameters are used to
 ```{r}
 predictedResponses <- 
   predictWEV_Conf(parfit, "dynWEV", simult_conf = TRUE, 
-                  precision = 6, maxrt = 5, subdivisions = 50)
+                  precision = 3, maxrt = 5, subdivisions = 50)
 predictedRTdist <- 
   predictWEV_RT(parfit, "dynWEV", simult_conf = TRUE, 
-  maxrt = 5, precision = 6, subdivisions = 50,
+  maxrt = 5, precision = 3, subdivisions = 50,
   scaled=TRUE, DistConf = predictedResponses)
 print(head(predictedResponses))
 print(head(predictedRTdist))
