@@ -1,10 +1,11 @@
-# dynConfiR 0.1.0 (June 2024)
-- change in the precision argument for all models. It is now an integer argument representing the approximate precision of the density in digits. Default is 6 for all models.
+# dynConfiR 1.0.0 (June 2024)
+- change in the precision argument for all models. It is now an integer argument representing the approximate precision of the density in digits. Default is 6 for all models in the density functions.
+- Added precision argument in the fitting functions. With default to 3
 - renamed the DDMConf model to DDConf to align with published literature
 - renamed the functions for dynaViTE model (ddynaViTE and rdynaViTE);
 - the functions dWEV and rWEV will be kept for now but maybe removed in future releases of the package, they will produce a deprecation warning now
 - Minor changes: 
-  - Bug fix in fitting Race Models with time-dependend confidence variable. Before, the weight wrt was bound from above by the weight wx because of a bug. 
+  - Bug fix in fitting Race Models with time-dependend confidence variable. Before, the weight 'wrt' was bound from above by the weight 'wx' because of a bug. 
   - Added a UserInterrupt() call in all longer-running C-functions. 
 
 # dynConfiR 0.0.4 (January 2024)

@@ -25,7 +25,9 @@ knitr::opts_knit$set(base.url=paste(gitrep,gitbranch, sep="/"))
 
 # dynConfiR: R package for sequential sampling models of decision confidence
 
-This package includes implementation for several sequential sampling models of decision making and confidence judgments. The package includes density functions for decision, confidence and response time outcomes for following models: Dynamic visibility, time, and evidence model (dynaViTE), Dynamic weighted evidence and visibility (dynWEV), two-stage signal detection (2DSD), inpedendent and partially-correlated race models (IRM/PCRM) (see [Hellmann et al. 2023)](https://doi.org/10.1037/rev0000411) for details; Preprint available [here](https://osf.io/9jfqr)). In addition, the package includes functions for parameter fitting, prediction and simulation of data.
+This package includes implementation for several sequential sampling models of decision making and confidence judgments. The package includes density functions for decision, confidence and response time outcomes for following models: Dynamic visibility, time, and evidence model (dynaViTE), Dynamic weighted evidence and visibility (dynWEV), two-stage signal detection (2DSD), inpedendent and partially-correlated race models (IRM/PCRM). In addition, the package includes functions for parameter fitting, prediction and simulation of data.
+See the Preprint (Hellmann et al., 2025) for more information about implemented models and usage.
+
 
 ## Installation
 
@@ -153,7 +155,9 @@ Implementation of a simulation of observations in the Leaky Competing Accumulato
 
 ## References
 
-Hellmann S, Zehetleitner M, Rausch M. Simultaneous modeling of choice, confidence, and response time in visual perception. Psychol Rev. 2023 Mar 13. doi: [10.1037/rev0000411](https://doi.org/10.1037/rev0000411). Epub ahead of print. PMID: 36913292.
+Hellmann, S., Zehetleitner, M., & Rausch, M. (2023). Simultaneous modeling of choice, confidence, and response time in visual perception. Psychological Review, 130(6), 1521–1543.  doi: [10.1037/rev0000411](https://doi.org/10.1037/rev0000411)
+
+Hellmann, S., Zehetleitner, M. & Rausch, M. (2024). Confidence Is Influenced by Evidence Accumulation Time in Dynamical Decision Models. Comput Brain Behav 7, 287–313. doi: [10.1007/s42113-024-00205-9](https://doi.org/10.1007/s42113-024-00205-9)
 
 ## Contact
 

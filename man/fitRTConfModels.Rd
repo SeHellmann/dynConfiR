@@ -7,7 +7,7 @@
 fitRTConfModels(data, models = c("dynaViTE", "2DSD", "PCRMt"),
   nRatings = NULL, fixed = list(sym_thetas = FALSE), restr_tau = Inf,
   grid_search = TRUE, opts = list(), optim_method = "bobyqa",
-  logging = FALSE, precision = 6, parallel = TRUE, n.cores = NULL, ...)
+  logging = FALSE, precision = 3, parallel = TRUE, n.cores = NULL, ...)
 }
 \arguments{
 \item{data}{a \code{data.frame} where each row is one trial, containing following
