@@ -27,7 +27,10 @@ knitr::include_graphics("ressources/Workflow.png")
 
 ```{r setup}
 library(dynConfiR)
-library(tidyverse)
+library(ggplot2)
+library(dplyr)
+library(magrittr)
+library(tidyr)
 ```
 
 
