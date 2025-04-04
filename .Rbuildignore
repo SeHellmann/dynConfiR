@@ -23,6 +23,7 @@ cran_prep.RData
 
 CRANlogs
 Spielplatz
+example
 ChecksDebugs
 script_fit_test.R
 autosave

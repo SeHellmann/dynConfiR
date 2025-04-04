@@ -1,11 +1,8 @@
 ---
 title: "Illustration of the workflow for a modelling study using dynConfiR"
 author: "Sebastian Hellmann"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{Illustration of the workflow for a modelling study using dynConfiR}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+output: rmarkdown::html_notebook
+
 ---
 
 ```{r, include = FALSE}
@@ -15,26 +12,23 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
-library(dynConfiR)
-library(tidyverse)
-
-```
-
-## Workflow of model comparison studies
+#### For dynConfiR version 1.0.0
 
 This vignette illustrates the whole workflow for a modelling study using the `dynConfiR` package. 
+A detailed description of the package and the implemented models can be found in Hellmann et al. (preprint).
 The basic workflow of a modelling study is illustrated together with the respective functions implemented in the package in the following chart:
 
 ```{r, out.width="95%", include=TRUE, fig.align="center", fig.cap=c("Workflow of modeling study using dynConfiR"), echo=FALSE}
 #knitr::include_graphics("Workflow.pdf")
-knitr::include_graphics("Workflow.png")
+knitr::include_graphics("ressources/Workflow.png")
 # Or in text: <--- ![Workflow of modeling study using dynConfiR](Workflow.png){width=95%} --->
 ```
 
+```{r setup}
+library(dynConfiR)
+library(tidyverse)
+```
 
-
-A detailed description of the package and the implemented models can be found in Hellmann et al. (preprint).
 
 ## Step 0: Data preparation
 
@@ -105,7 +99,7 @@ In the following code, we comment the actual fitting call and load pre-fitted pa
 #                            parallel="models", n.cores = 20,
 #                            condition="SOA", rating="confidence")
 # save(parfits, file="saved_parfits.RData")
-load("saved_parfits.RData")
+load("ressources/saved_parfits.RData")
 head(parfits)
 ```
 
@@ -119,7 +113,7 @@ We can also include parameter restrictions into our models using the `fixed` arg
 #                            parallel="models", n.cores = 20,
 #                            condition="SOA", rating="confidence")
 # save(parfits_restricted, file="saved_parfits_restricted.RData")
-load("saved_parfits_restricted.RData")
+load("ressources/saved_parfits_restricted.RData")
 parfits_restricted$model <-  paste0(parfits_restricted$model, "_restricted")
 head(parfits_restricted)
 ```
@@ -166,7 +160,7 @@ We can directly use the output of the fitting function to compute predictions fo
 # predictedRTdist <-
 #   predictRTModels(parfits, maxrt=9, simult_conf=TRUE)
 # save(predictedResponses, predictedRTdist, file="predictions.RData")
-load("predictions.RData")
+load("ressources/predictions.RData")
 print(head(predictedResponses))
 print(head(predictedRTdist))
 
