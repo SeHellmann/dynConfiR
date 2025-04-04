@@ -33,3 +33,4 @@ run_examples.R
 ^_pkgdown\.yml$
 ^docs$
 ^\.github$
+^vignettes/articles$

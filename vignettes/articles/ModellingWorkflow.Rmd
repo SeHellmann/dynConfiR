@@ -1,0 +1,326 @@
+---
+title: "Illustration of the workflow for a modelling study using dynConfiR"
+author: "Sebastian Hellmann"
+output: 
+  html_document: 
+    keep_md: yes
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE, fig.align="center",
+  comment = "#>"
+)
+```
+
+#### For dynConfiR version 1.0.0
+
+This vignette illustrates the whole workflow for a modelling study using the `dynConfiR` package. 
+A detailed description of the package and the implemented models can be found in Hellmann et al. (preprint).
+The basic workflow of a modelling study is illustrated together with the respective functions implemented in the package in the following chart:
+
+```{r, out.width="95%", include=TRUE, fig.align="center", fig.cap=c("Workflow of modeling study using dynConfiR"), echo=FALSE}
+#knitr::include_graphics("Workflow.pdf")
+knitr::include_graphics("ressources/Workflow.png")
+# Or in text: <--- ![Workflow of modeling study using dynConfiR](Workflow.png){width=95%} --->
+```
+
+```{r setup}
+library(dynConfiR)
+library(tidyverse)
+```
+
+
+## Step 0: Data preparation
+
+For this illustration, we load the `ConfidenceOrientation` dataset, which is contained in the `dynConfiR` package.
+The dataset contains results from an orientation discrimination experiment with simultaneous confidence judgments. The data set includes results from 16 participants and 3 sessions each. The task was to identify the orientation (horizontal ("waagrecht") or vertical ("senkrecht")) of a grid that was briefly visible and then covered by a mask in form of a checkerboard pattern. The stimulus-onset-asynchrony (SOA) was manipulated in 5 steps. Confidence was reported using a joystick on a continuous visual analogue scale with values between -1 and 1. 
+
+```{r, echo=TRUE}
+data("ConfidenceOrientation")
+data <- ConfidenceOrientation %>%
+  select(participant, SOA, stimulus, response, correct, rt, cont_rating)
+head(ConfidenceOrientation)
+head(data)
+```
+There are several steps of data preparation, which are either necessary or recommended. 
+First, the models implemented in `dynConfiR` all require confidence to be measured on a discrete scale, so we discretize the contionuous confidence rating. We do this using equidistant breaks. The functions would be fine with any integer or factor column, so we simply use the cut function.  
+
+```{r, echo=TRUE}
+data <- data %>%
+  mutate(confidence = cut(cont_rating, breaks = seq(-1, 1, length.out=6), include.lowest = TRUE,
+                          labels=1:5))
+head(data)
+```
+Second, it is recommended to exclude trials with very fast and slow response times. We do this using a sharp threshold of 300ms for fast response times and an individual upper threshold for each participant equal to the mean plus three times standard deviation. 
+In addition, we exclude participants that showed guessing-level performance in the identification judgment, defined by the critical threshold of a binomial test. Finally, we exclude participants, which showed no variation in their confidence judgments, defined by reporting the same discrete confidence in at least 90% of the trials.
+```{r}
+### Exclusion of participants
+exclusion_crit <- data %>% group_by(participant) %>%
+  reframe(bad_performance = binom.test(sum(correct), n(), p=0.5, alternative="greater")$p.value,
+          prob_mode_conf = max(table(confidence))/n()) %>%
+  mutate(bad_performance = bad_performance > 0.05, 
+         no_conf_variation = prob_mode_conf>.90)
+print(t(exclusion_crit))
+excluded_parts <- exclusion_crit %>% filter(bad_performance | no_conf_variation) %>% 
+  pull(participant)
+data <- data %>% filter(!participant %in% excluded_parts)
+### Result: No participant was excluded
+
+### Exclusion of trials:
+nrow_tot <- nrow(data)
+data <- data %>% group_by(participant) %>% 
+  filter((rt > 0.3) & (rt <mean(rt)+3*sd(rt)))
+cat("We excluded ", 1- nrow(data)/nrow_tot, " of all trials because of RT's.\n")
+```
+
+
+*************************************
+
+
+
+## Step 1: Parameter fitting 
+
+The fitting function expects the data to come in a tidy data frame, with each row representing one trial. The data frame should include the following columns (expected column names in parentheses): true stimulus identity (`stimulus`), binary decision response (`response`), categorical confidence judgment (`rating`), and response time (`rt`). As an alternative to the stimulus or response column, a column for accuracy (`correct`) may be provided. 
+In addition, a column for the experimental manipulation of discriminability of the stimulus (`condition`) may be included, which is the SOA in our example.
+The columns `stimulus` and `response` should have the same possible values ("senkrecht" and "waagrecht" in our case). 
+Instead of renaming columns in the data frame, alternative column names may be added as arguments of the form `rating = "confidence"`, to tell the function that the confidence rating is contained in the column `confidence`. Similarly, we add the argument `condition="SOA"` to identify the column that represents our experimental manipulation. 
+Any column named `sbj`, `subject`, or `participant` will be used to fit the models independently to individual subjects. 
+
+Provided the data is prepared in such a format the desired models may be fitted to the data with one simple function call to `fitRTConfModels`. There are some possible specifications in the fitting procedure, like using only the single best parameter set (identified by a grid_search) using `nAttempts=1` and only one optimization call (`nRestarts=1`) to speed up the model fitting.
+For diffusion-based models, the argument `restr_tau="simult_conf"` tells the function that the amount of post-decisional evidence accumulation should be naturally bound by the empirical response time, since confidence was reported simultaneously with the identification judgment. 
+
+In the following code, we comment the actual fitting call and load pre-fitted parameters, because the fitting would take some time (about 1.5 hours on a 2.4GHz processor, given there are 20 cores available). 
+
+```{r}
+# parfits <- fitRTConfModels(data, models=c("2DSD", "IRMt"), 
+#                            restr_tau = "simult_conf", 
+#                            opts = list(nAttempts=1, nRestarts=1), 
+#                            logging = FALSE, 
+#                            parallel="models", n.cores = 20,
+#                            condition="SOA", rating="confidence")
+# save(parfits, file="saved_parfits.RData")
+load("ressources/saved_parfits.RData")
+head(parfits)
+```
+
+We can also include parameter restrictions into our models using the `fixed` argument. For example, the starting point can be fixed to 0.5 to implement the assumption of unbiased observers. For race models (IRMt and PCRMt), this would be included by specifying that the response thresholds for both accumulators should be equal (`a="b"`). For unbiased observers, it may be reasonable to assume that the confidence thresholds for both responses coincide (`sym_thetas=TRUE`). Also, the between-trial variabilities of non-decision time and starting point may be set to 0 (which leads to much faster fitting). 
+```{r}
+# parfits_restricted <- fitRTConfModels(data, models=c("dynaViTE", "2DSD"), 
+#                            restr_tau = "simult_conf", 
+#                            fixed = list(sym_thetas=TRUE, z=0.5, sz=0, st0=0), 
+#                            opts = list(nAttempts=1, nRestarts=1), 
+#                            logging = FALSE, 
+#                            parallel="models", n.cores = 20,
+#                            condition="SOA", rating="confidence")
+# save(parfits_restricted, file="saved_parfits_restricted.RData")
+load("ressources/saved_parfits_restricted.RData")
+parfits_restricted$model <-  paste0(parfits_restricted$model, "_restricted")
+head(parfits_restricted)
+```
+
+## Step 2: Quantitative model comparison
+Quantitative model comparison are often based on difference in information criteria, like BIC and AIC. The package includes two important functions to compare the model fits quantitatively. 
+First, on an individual level, one may compute model weights based on information criteria, using the function `subject_modelweights`. This allows to investigate individual variability in group comparisons or studies about individual differences. It would also be possible to calculate individual Bayes Factors, which is sometimes easier to interpret. 
+
+Second, to calculate group averages, the function `group_BMS_fits` performs a Bayesian model selection based on a random effects model on model weights (see Dauzineau et al., 2014, for more detail). 
+The function also provides the output of a fixed effects model, which is equivalent to adding up individual BIC differences (or multiplying individual Bayes Factors), however, we recommend the random effects model weight. It is also possible to calculate Bayes Factors for a binary comparison using the output but as a comparison between two models, only, is rather seldom, the output is formatted for multiple models. 
+
+In our example, we first visualize the BIC values across different models (with lines for each participant). We already see that the dynaViTE model has the lowest BIC for all participants and the IRMt performs worse. Then, we apply `subject_modelweights` function and visualize the individual model weights. This plot again shows that for each individual subject, the dynaViTE performs clearly better.  Accordingly, the protected exceedence probability (PEP) clearly favours the dynaViTE model in the group-level comparison. 
+
+```{r, fig.width=6, fig.height=2.5}
+all_parfits <- bind_rows(parfits, parfits_restricted)
+ggplot(all_parfits, aes(x=model, y=BIC))+
+  geom_violin()+geom_line(aes(group=participant))
+
+individual_weights <- subject_modelweights(all_parfits)
+print(head(individual_weights))
+individual_weights %>% pivot_longer(cols=1:5, names_to="Model", values_to="Model weight") %>% 
+  ggplot(aes(x=as.factor(participant), y=`Model weight`, fill=Model))+
+  geom_bar(stat="identity")
+
+group_weights <- group_BMS_fits(all_parfits)
+print(head(group_weights$model_weights))
+
+```
+
+*************************************
+
+## Step 3: Model Checks: Predictions and visual comparison
+
+Checking whether the best-fitting model (or any other model) can actually account for the observed data is an important step in every modelling study. Sometimes, there is a particular data pattern that is at the core of the study, but even if not, we should always check, whether the model can sufficiently account for the key data patterns, e.g. the relationship between discriminability and confidence. 
+
+Predictions on a group-level can be computed in two different ways. 
+First, it is possible to aggregate the fitted parameters (using the mean oder median) first and then only compute predictions for these group-level parameters. However, we recommend the second way: Computing the predicted distributions for each individual with the respective parameters and then aggregate the predictions in the same way as the empirical data. We think that this will in general give more robust results, because computing the mean of parameters independently ignores possible interactions that these parameters could have on the outcomes. 
+
+We can directly use the output of the fitting function to compute predictions for our fitted parameters for each individual using the function `predictConfModels` (for the discrete response distributions) and `predictRTModels` (for the response time density). 
+
+```{r}
+# predictedResponses <- 
+#   predictConfModels(parfits, simult_conf = TRUE) 
+# predictedRTdist <-
+#   predictRTModels(parfits, maxrt=9, simult_conf=TRUE)
+# save(predictedResponses, predictedRTdist, file="predictions.RData")
+load("ressources/predictions.RData")
+print(head(predictedResponses))
+print(head(predictedRTdist))
+
+```
+
+
+The predicted distributions may be visually compared to the empirical distributions to check how accurately the model fits the data. Therefore, we transform the condition column in the prediction data sets to fit the one in the empirical data. 
+```{r}
+predictedResponses <- mutate(predictedResponses, SOA = factor(condition, labels=sort(unique(data$SOA))))
+predictedRTdist <- mutate(predictedRTdist, SOA = factor(condition, labels=sort(unique(data$SOA))))
+data <- mutate(data, SOA= factor(SOA, levels=sort(unique(SOA))))
+
+```
+
+Afterward, we use different aggregations to visualize different aspects of the data. First the increase in response accuracy with increasing SOA: 
+
+```{r, fig.width=6, fig.height=2.5}
+###########    Plot accuracies    #######
+Data_Acc <- data %>% group_by(participant, SOA) %>%
+  summarise(Acc = mean(correct), .groups="drop") %>%
+  summarise(Acc = mean(Acc), .by = SOA) %>% mutate(SOA=as.factor(SOA))
+Preds_Acc <- predictedResponses %>% 
+  group_by(participant, model, SOA) %>%
+  reframe(Acc = sum(p*correct)/(2))%>% 
+  group_by(model, SOA) %>%
+  reframe(Acc = mean(Acc))  
+
+## Figure: Plot of Fitted Accuracy                    ----
+p_Acc <- ggplot(Data_Acc, aes(x=SOA, y=Acc)) +
+  geom_line(data=Preds_Acc, aes(linetype="Predicted", group=model), linewidth=1)+
+  geom_point(aes(shape="Observed"), fill="white")+
+  facet_wrap(.~model, nrow=1)+ ylab("Mean Accuracy")+
+  scale_linetype_manual(name="", values=1) +
+  scale_shape_manual(values=c(21),name = "")  +
+  guides(shape=guide_legend(order=3), color=guide_legend(order=3))+
+  theme_bw() +
+  theme(legend.position = "right", panel.spacing=unit(0, "lines"))
+p_Acc
+```
+
+Next, we inspect the relationship between task difficulty and confidence and its modulation by accuracy. We see that the data shows an increase in confidence with longer SOA's for both correct and incorrect decisions. The dynaViTE model is the only model that produces this behavior in the model fits. 
+```{r, fig.width=6, fig.height=2.5}
+two_colors_correct <- c("#1b9e77", "#fc8d62")
+
+###### Plot mean confidence ratings across conditions and accuracy    #####
+Data_MRating_corr_cond_part <- data %>% 
+  group_by(participant, SOA, correct) %>%
+  reframe(meanRating = mean(as.numeric(confidence)))
+Data_MRating_corr_cond <- Data_MRating_corr_cond_part %>% 
+  reframe(meanRating=mean(meanRating),.by=c(SOA, correct)) %>%
+  mutate(SOA=as.factor(SOA), correct=as.factor(correct))
+Preds_MRating_corr_cond <- predictedResponses %>% 
+  group_by(model, participant, SOA, correct) %>%
+  reframe(meanRating = sum(p*rating)/(sum(p))) %>%
+  reframe(meanRating = mean(meanRating), .by = c(model, SOA, correct)) %>%
+  mutate(correct=as.factor(correct))
+
+ggplot(Data_MRating_corr_cond,
+                    aes(x=SOA, y=meanRating, group = correct, shape=correct)) +
+  geom_line(data=Preds_MRating_corr_cond, aes(color=correct), linewidth=0.8)+
+  geom_point(fill="white", size=1.8)+ ylab("Mean Confidence")+
+  facet_wrap(.~model, nrow=1)+ #, dir="v"
+  scale_color_manual(values= two_colors_correct, breaks=c(1,0),
+                     name = "Predicted", labels=c("Correct", "Wrong")) +
+  scale_fill_manual(values= two_colors_correct, breaks=c(1,0),
+                    name = "Predicted", labels=c("Correct", "Wrong")) +
+  scale_shape_manual(values=c(21,17),breaks=c(1,0),
+                     name = "Observed", labels=c("Correct", "Wrong"))  +
+  theme_bw() +
+  theme(legend.position = "right", panel.spacing=unit(0, "lines"),
+        axis.text.x = element_text(angle=30))
+
+```
+
+When it comes to response times it is important to use the same way of aggregation for the empirical data and the predictions. We want to compute the response time quantiles for all trials put into one set, depending on the accuracy and the confidence rating or the accuracy and SOA, respectively. 
+To get equivalent quantiles for the prediction, for which we only have the densities for different values of the response times, we have to compute a weighted average of these densities with weights equal to the relative proportion in the data for the respective participant. 
+
+```{r}
+Ns_part <- data %>% 
+  group_by(participant) %>% 
+  reframe(N=n(), MinRT = min(rt))  %>%
+  select(participant, N)
+Preds_RTdens_corr_cond_rating <- predictedRTdist %>% 
+  left_join(Ns_part, by="participant") %>%
+  group_by(rating, SOA, model, correct, rt) %>%
+  reframe(dens = sum(dens*N)/nrow(data))
+```
+
+For computing the quantiles given the densities (probability density function; pdf), the `dynConfiR` package offers the `PDFtoQuantiles` function, which computes the quantiles for the column `rt` determined by the column `dens` for each subgroup of the data determined by all other columns present. In the following situation, we get the quantiles for each model, accuracy, and confidence rating independently:
+
+```{r, fig.width=7, fig.height=5}
+# Reaction Time Quantiles of the Data grouped by rating and accuracy  
+Data_RTQuants_corr_rating <- data %>% 
+  mutate(rating=confidence) %>% 
+  group_by(rating, correct) %>%
+  reframe(p=c(.1,.5,.9), q = quantile(rt, probs = c(.1,.5,.9))) 
+
+### g) Prediction response time quantiles                ----
+Preds_RTQuants_corr_rating <- Preds_RTdens_corr_cond_rating %>% 
+  group_by(model, rt, correct, rating) %>%
+  reframe(dens = mean(dens)) %>%
+  PDFtoQuantiles(p=c(.1,.5,.9)) 
+
+## Figure 7: RTQuantiles accross correct X rating          ----
+ggplot()+
+  geom_line(data=mutate(Preds_RTQuants_corr_rating, 
+                        correct=factor(correct, labels=c("Wrong", "Correct")),
+                        rating = as.factor(rating)),
+            aes(x=rating, y=log(q), group=as.factor(p),color=correct), linewidth=0.7)+
+  geom_point(data=mutate(Data_RTQuants_corr_rating, 
+                         correct=factor(correct, labels=c("Wrong", "Correct")),
+                         rating = as.factor(rating)),
+             aes(x=rating, y=log(q), shape=correct),
+             size=1.2, fill="white")+
+  scale_color_manual(values= two_colors_correct, breaks=c("Correct", "Wrong"),
+                     name = "Predicted", labels=c("Correct", "Wrong")) +
+  scale_shape_manual(values=c(21,17),breaks=c("Correct", "Wrong"),
+                     name = "Observed", labels=c("Correct", "Wrong"))  +
+  scale_x_discrete(name="Confidence rating", breaks=1:5)+
+  scale_y_continuous(name="Reaction time quantiles [s] (log scaled)")+
+  facet_grid(model ~correct)+ #correct~model
+  theme_bw() +
+  theme(legend.box = "horizontal", legend.position = "bottom",
+        legend.direction = "horizontal",
+        panel.spacing=unit(0, "lines"))
+```
+Similarly, we can visualize the response time distribution for the different levels of the SOA manipulation.
+```{r, fig.width=7, fig.height=5}
+# Reaction Time Quantiles of the Data grouped by SOA and accuracy  
+Data_RTQuants_corr_cond <- data %>%
+  group_by(SOA, correct) %>%
+  reframe(p=c(.1,.5,.9), q = quantile(rt, probs = c(.1,.5,.9))) 
+### Prediction response time quantiles 
+Preds_RTQuants_corr_cond <-   Preds_RTdens_corr_cond_rating %>%
+  group_by(model, rt, correct, SOA) %>%
+  reframe(dens = sum(dens)) %>%
+  PDFtoQuantiles(p=c(.1,.5,.9))
+
+## Figure 7: RTQuantiles accross correct X SOA          ----
+ggplot()+
+  geom_line(data=mutate(Preds_RTQuants_corr_cond, correct=factor(correct, labels=c("Wrong", "Correct")),
+                        SOA = as.factor(SOA)),
+            aes(x=SOA, y=log(q), group=as.factor(p),color=correct), linewidth=0.7)+
+  geom_point(data=mutate(Data_RTQuants_corr_cond, correct=factor(correct, labels=c("Wrong", "Correct")),
+                         SOA = as.factor(SOA)),
+             aes(x=SOA, y=log(q), shape=correct),
+             size=1.2, fill="white")+
+  scale_color_manual(values= two_colors_correct, breaks=c("Correct", "Wrong"),
+                     name = "Predicted",
+                     labels=c("Correct", "Wrong")) +
+  scale_shape_manual(values=c(21,17),breaks=c("Correct", "Wrong"),
+                     name = "Observed",
+                     labels=c("Correct", "Wrong"))  +
+  scale_y_continuous(name="Reaction time quantiles [s] (log scaled)")+
+  facet_grid(model ~correct)+ #correct~model
+  theme_bw() +
+  theme(legend.box = "horizontal", legend.position = "bottom",
+        legend.direction = "horizontal", panel.spacing=unit(0, "lines"))
+```
+
+
+***********************************
