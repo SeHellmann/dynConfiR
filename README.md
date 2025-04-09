@@ -13,11 +13,10 @@ density functions for decision, confidence and response time outcomes
 for following models: Dynamic visibility, time, and evidence model
 (dynaViTE), Dynamic weighted evidence and visibility (dynWEV), two-stage
 signal detection (2DSD), inpedendent and partially-correlated race
-models (IRM/PCRM) (see [Hellmann et
-al. 2023)](https://doi.org/10.1037/rev0000411) for details; Preprint
-available [here](https://osf.io/9jfqr)). In addition, the package
-includes functions for parameter fitting, prediction and simulation of
-data.
+models (IRM/PCRM). In addition, the package includes functions for
+parameter fitting, prediction and simulation of data. See the Preprint
+(Hellmann et al., 2025) for more information about implemented models
+and usage.
 
 ## Installation
 
@@ -40,7 +39,7 @@ d2DSD(rt=0.7, th1=1, th2=2.5, response="lower",
       a=2, v=0.7, t0=0, z =0.5, sv=0, st0=0.1, tau=1, lambda=0.5)
 ```
 
-    ## [1] 0.02387629
+    ## [1] 0.02387657
 
 ``` r
 ddynaViTE(rt=2.7, th1=1, th2=2.5, response="lower", 
@@ -48,21 +47,21 @@ ddynaViTE(rt=2.7, th1=1, th2=2.5, response="lower",
      simult_conf = TRUE)
 ```
 
-    ## [1] 0.0143774
+    ## [1] 0.01437747
 
 ``` r
 dIRM(1.2, response=2, mu1=0.5, mu2=-0.5, a=0.8, b=0.5, th1=-0.5, th2=2, 
      wx=0.5, wrt=0.2, wint=0.3, t0=0.3, st0=0.2)
 ```
 
-    ## [1] 0.07616855
+    ## [1] 0.07616836
 
 ``` r
 dPCRM(1.2, response=2, mu1=0.5, mu2=-0.5, a=0.8, b=0.5, th1=-0.5, th2=2, 
      wx=0.5, wrt=0.2, wint=0.3, t0=0.3, st0=0.2)
 ```
 
-    ## [1] 0.08346152
+    ## [1] 0.0834613
 
 ## Workflow for data analysis
 
@@ -177,12 +176,63 @@ distributions.
 Implementation of a simulation of observations in the Leaky Competing
 Accumulator model (see `rLCA`).
 
+# Contributing to the package
+
+The package is under active development. We are planning to implement
+new models of decision confidence when they are published. Please feel
+free to [contact us](mailto:sebastian.hellmann@tum.de) to suggest new
+models to implement in the package, or to volunteer adding additional
+models.
+
+**Implementing custom models of decision confidence is only recommended
+for users with experience in cognitive modelling!** For readers who want
+to use our open code to implement models of confidence themselves, the
+following steps need to be taken:
+
+- Derive the likelihood of a binary response ($R=-1, 1$) at response
+  time ($T$) and a specific level of confidence ($C=1,...K$) according
+  to the custom model and a set of parameters ($\theta$), given the
+  binary stimulus ($S=-1, 1$), i.e. $P(R, T, C | S, \theta)$.
+- Write a corresponding density function ‘d*yourmodelname*’ based on the
+  available densities.
+- Use one of the files named ‘likelihood\_*model*.R’ from the package
+  sources and adapt the likelihood function according to your model.
+  According to our convention, name the new file a
+  ‘likelihood\_*yourmodelname*.R’.
+- Use one of the files ‘int_fitting\_*model*.R’ from the package sources
+  and adapt the fitting function to reflect the new model.
+  - The initial grid used during the grid search should include a
+    plausible range of all parameters of your model.
+  - If you want to use a Nelder-Mead algorithm, constraint parameters of
+    the initial grid need be transformed so the parameter vector for
+    optimization is real-valued).
+  - If applicable, the parameter vector i obtained during optimization
+    needs to back-transformation for the the output object `res`.
+  - Name the new file according to the convention
+    ‘int_fitting\_*yourmodelname*.R’.
+- Add your model and fitting-functions to the high-level functions
+  `fitRTConf` and `fitRTConfModels`.
+- Add prediction functions for your model based on one of the files
+  ‘predictratingdist\_*model*.R’. The file should include a function for
+  computing the discrete rating distribution ‘predict*yourmodel*\_Conf’
+  and a function computing the density across a range of response times
+  ‘predict*yourmodel*\_RT’.
+- Add your prediction function to the high-level functions
+  `predictConf`/`predictConfModels`, and `predictRT`/`predictRTModels`.
+- Optional: Add simulation functions for your model based on one of the
+  files ‘simulate*model*.R’
+
 ## References
 
-Hellmann S, Zehetleitner M, Rausch M. Simultaneous modeling of choice,
-confidence, and response time in visual perception. Psychol Rev. 2023
-Mar 13. doi: [10.1037/rev0000411](https://doi.org/10.1037/rev0000411).
-Epub ahead of print. PMID: 36913292.
+Hellmann, S., Zehetleitner, M., & Rausch, M. (2023). Simultaneous
+modeling of choice, confidence, and response time in visual perception.
+Psychological Review, 130(6), 1521–1543. doi:
+[10.1037/rev0000411](https://doi.org/10.1037/rev0000411)
+
+Hellmann, S., Zehetleitner, M. & Rausch, M. (2024). Confidence Is
+Influenced by Evidence Accumulation Time in Dynamical Decision Models.
+Comput Brain Behav 7, 287–313. doi:
+[10.1007/s42113-024-00205-9](https://doi.org/10.1007/s42113-024-00205-9)
 
 ## Contact
 

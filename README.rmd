@@ -153,6 +153,25 @@ fitted_pars %>%
 
 Implementation of a simulation of observations in the Leaky Competing Accumulator model (see `rLCA`).
 
+# Contributing to the package 
+The package is under active development. We are planning to implement new models of decision confidence when they are published. Please feel free to [contact us](mailto:sebastian.hellmann@tum.de) to suggest new models to implement in the package, or to volunteer adding additional models. 
+ 
+__Implementing custom models of decision confidence is only recommended for users with experience in cognitive modelling!__
+For readers who want to use our open code to implement models of confidence themselves, the following steps need to be taken: 
+
+- Derive the likelihood of a binary response ($R=-1, 1$) at response time ($T$) and a specific level of confidence ($C=1,...K$) according to the custom model and a set of parameters ($\theta$), given the binary stimulus ($S=-1, 1$), i.e. $P(R, T, C | S, \theta)$. 
+- Write a corresponding density function 'd*yourmodelname*' based on the available densities.
+- Use one of the files named 'likelihood_*model*.R' from the package sources and adapt the likelihood function according to your model. According to our convention, name the new file a 'likelihood_*yourmodelname*.R'. 
+- Use one of the files 'int_fitting_*model*.R'  from the package sources and adapt the fitting function to reflect the new model. 
+  - The initial grid used during the grid search should include a plausible range of all  parameters of your model. 
+  - If you want to use a Nelder-Mead algorithm, constraint parameters of the initial grid need be transformed so the parameter vector for optimization is real-valued).
+  - If applicable, the parameter vector i obtained during optimization needs to back-transformation for the the output object `res`. 
+  - Name the new file according to the convention 'int_fitting_*yourmodelname*.R'.
+- Add your model and fitting-functions to the high-level functions `fitRTConf` and `fitRTConfModels`. 
+- Add prediction functions for your model based on one of the files 'predictratingdist_*model*.R'. The file should include a function for computing the discrete rating distribution 'predict*yourmodel*_Conf' and a function computing the density across a range of response times 'predict*yourmodel*_RT'. 
+- Add your prediction function to the high-level functions `predictConf`/`predictConfModels`, and `predictRT`/`predictRTModels`.
+- Optional: Add simulation functions for your model based on one of the files 'simulate*model*.R'
+
 ## References
 
 Hellmann, S., Zehetleitner, M., & Rausch, M. (2023). Simultaneous modeling of choice, confidence, and response time in visual perception. Psychological Review, 130(6), 1521–1543.  doi: [10.1037/rev0000411](https://doi.org/10.1037/rev0000411)
