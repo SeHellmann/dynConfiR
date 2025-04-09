@@ -58,7 +58,7 @@
 <div class="section level1">
 <div class="page-header"><h1 id="dynconfir-r-package-for-sequential-sampling-models-of-decision-confidence">dynConfiR: R package for sequential sampling models of decision confidence<a class="anchor" aria-label="anchor" href="#dynconfir-r-package-for-sequential-sampling-models-of-decision-confidence"></a>
 </h1></div>
-<p>This package includes implementation for several sequential sampling models of decision making and confidence judgments. The package includes density functions for decision, confidence and response time outcomes for following models: Dynamic visibility, time, and evidence model (dynaViTE), Dynamic weighted evidence and visibility (dynWEV), two-stage signal detection (2DSD), inpedendent and partially-correlated race models (IRM/PCRM) (see <a href="https://doi.org/10.1037/rev0000411" class="external-link">Hellmann et al. 2023)</a> for details; Preprint available <a href="https://osf.io/9jfqr" class="external-link">here</a>). In addition, the package includes functions for parameter fitting, prediction and simulation of data.</p>
+<p>This package includes implementation for several sequential sampling models of decision making and confidence judgments. The package includes density functions for decision, confidence and response time outcomes for following models: Dynamic visibility, time, and evidence model (dynaViTE), Dynamic weighted evidence and visibility (dynWEV), two-stage signal detection (2DSD), inpedendent and partially-correlated race models (IRM/PCRM). In addition, the package includes functions for parameter fitting, prediction and simulation of data. See the Preprint (Hellmann et al., 2025) for more information about implemented models and usage.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
@@ -77,20 +77,20 @@
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/SeHellmann/dynConfiR" class="external-link">dynConfiR</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/d2DSD.html">d2DSD</a></span><span class="op">(</span>rt<span class="op">=</span><span class="fl">0.7</span>, th1<span class="op">=</span><span class="fl">1</span>, th2<span class="op">=</span><span class="fl">2.5</span>, response<span class="op">=</span><span class="st">"lower"</span>, </span>
 <span>      a<span class="op">=</span><span class="fl">2</span>, v<span class="op">=</span><span class="fl">0.7</span>, t0<span class="op">=</span><span class="fl">0</span>, z <span class="op">=</span><span class="fl">0.5</span>, sv<span class="op">=</span><span class="fl">0</span>, st0<span class="op">=</span><span class="fl">0.1</span>, tau<span class="op">=</span><span class="fl">1</span>, lambda<span class="op">=</span><span class="fl">0.5</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="do">## [1] 0.02387629</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="do">## [1] 0.02387657</span></span></code></pre></div>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/dynaViTE.html">ddynaViTE</a></span><span class="op">(</span>rt<span class="op">=</span><span class="fl">2.7</span>, th1<span class="op">=</span><span class="fl">1</span>, th2<span class="op">=</span><span class="fl">2.5</span>, response<span class="op">=</span><span class="st">"lower"</span>, </span>
 <span>      tau<span class="op">=</span><span class="fl">1</span>, a<span class="op">=</span><span class="fl">2</span>, v<span class="op">=</span><span class="fl">0.7</span>, t0<span class="op">=</span><span class="fl">0</span>, z <span class="op">=</span><span class="fl">0.5</span>, sv<span class="op">=</span><span class="fl">0</span>, st0<span class="op">=</span><span class="fl">0.1</span>, lambda<span class="op">=</span><span class="fl">0.2</span>,</span>
 <span>     simult_conf <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb5"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="do">## [1] 0.0143774</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="do">## [1] 0.01437747</span></span></code></pre></div>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/RaceModels.html">dIRM</a></span><span class="op">(</span><span class="fl">1.2</span>, response<span class="op">=</span><span class="fl">2</span>, mu1<span class="op">=</span><span class="fl">0.5</span>, mu2<span class="op">=</span><span class="op">-</span><span class="fl">0.5</span>, a<span class="op">=</span><span class="fl">0.8</span>, b<span class="op">=</span><span class="fl">0.5</span>, th1<span class="op">=</span><span class="op">-</span><span class="fl">0.5</span>, th2<span class="op">=</span><span class="fl">2</span>, </span>
 <span>     wx<span class="op">=</span><span class="fl">0.5</span>, wrt<span class="op">=</span><span class="fl">0.2</span>, wint<span class="op">=</span><span class="fl">0.3</span>, t0<span class="op">=</span><span class="fl">0.3</span>, st0<span class="op">=</span><span class="fl">0.2</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb7"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="do">## [1] 0.07616855</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="do">## [1] 0.07616836</span></span></code></pre></div>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/RaceModels.html">dPCRM</a></span><span class="op">(</span><span class="fl">1.2</span>, response<span class="op">=</span><span class="fl">2</span>, mu1<span class="op">=</span><span class="fl">0.5</span>, mu2<span class="op">=</span><span class="op">-</span><span class="fl">0.5</span>, a<span class="op">=</span><span class="fl">0.8</span>, b<span class="op">=</span><span class="fl">0.5</span>, th1<span class="op">=</span><span class="op">-</span><span class="fl">0.5</span>, th2<span class="op">=</span><span class="fl">2</span>, </span>
 <span>     wx<span class="op">=</span><span class="fl">0.5</span>, wrt<span class="op">=</span><span class="fl">0.2</span>, wint<span class="op">=</span><span class="fl">0.3</span>, t0<span class="op">=</span><span class="fl">0.3</span>, st0<span class="op">=</span><span class="fl">0.2</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb9"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="do">## [1] 0.08346152</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="do">## [1] 0.0834613</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -168,10 +168,34 @@ Package workflow for model comparison
 </h2>
 <p>Implementation of a simulation of observations in the Leaky Competing Accumulator model (see <code>rLCA</code>).</p>
 </div>
+</div>
+<div class="section level1">
+<h1 id="contributing-to-the-package">Contributing to the package<a class="anchor" aria-label="anchor" href="#contributing-to-the-package"></a>
+</h1>
+<p>The package is under active development. We are planning to implement new models of decision confidence when they are published. Please feel free to <a href="mailto:sebastian.hellmann@tum.de">contact us</a> to suggest new models to implement in the package, or to volunteer adding additional models.</p>
+<p><strong>Implementing custom models of decision confidence is only recommended for users with experience in cognitive modelling!</strong> For readers who want to use our open code to implement models of confidence themselves, the following steps need to be taken:</p>
+<ul>
+<li>Derive the likelihood of a binary response (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>R</mi><mo>=</mo><mo>−</mo><mn>1</mn><mo>,</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">R=-1, 1</annotation></semantics></math>) at response time (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>T</mi><annotation encoding="application/x-tex">T</annotation></semantics></math>) and a specific level of confidence (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>C</mi><mo>=</mo><mn>1</mn><mo>,</mo><mi>.</mi><mi>.</mi><mi>.</mi><mi>K</mi></mrow><annotation encoding="application/x-tex">C=1,...K</annotation></semantics></math>) according to the custom model and a set of parameters (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>θ</mi><annotation encoding="application/x-tex">\theta</annotation></semantics></math>), given the binary stimulus (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><mo>=</mo><mo>−</mo><mn>1</mn><mo>,</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">S=-1, 1</annotation></semantics></math>), i.e. <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>R</mi><mo>,</mo><mi>T</mi><mo>,</mo><mi>C</mi><mo stretchy="false" form="prefix">|</mo><mi>S</mi><mo>,</mo><mi>θ</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">P(R, T, C | S, \theta)</annotation></semantics></math>.</li>
+<li>Write a corresponding density function ‘d<em>yourmodelname</em>’ based on the available densities.</li>
+<li>Use one of the files named ‘likelihood_<em>model</em>.R’ from the package sources and adapt the likelihood function according to your model. According to our convention, name the new file a ‘likelihood_<em>yourmodelname</em>.R’.</li>
+<li>Use one of the files ‘int_fitting_<em>model</em>.R’ from the package sources and adapt the fitting function to reflect the new model.
+<ul>
+<li>The initial grid used during the grid search should include a plausible range of all parameters of your model.</li>
+<li>If you want to use a Nelder-Mead algorithm, constraint parameters of the initial grid need be transformed so the parameter vector for optimization is real-valued).</li>
+<li>If applicable, the parameter vector i obtained during optimization needs to back-transformation for the the output object <code>res</code>.</li>
+<li>Name the new file according to the convention ‘int_fitting_<em>yourmodelname</em>.R’.</li>
+</ul>
+</li>
+<li>Add your model and fitting-functions to the high-level functions <code>fitRTConf</code> and <code>fitRTConfModels</code>.</li>
+<li>Add prediction functions for your model based on one of the files ‘predictratingdist_<em>model</em>.R’. The file should include a function for computing the discrete rating distribution ‘predict<em>yourmodel</em>_Conf’ and a function computing the density across a range of response times ‘predict<em>yourmodel</em>_RT’.</li>
+<li>Add your prediction function to the high-level functions <code>predictConf</code>/<code>predictConfModels</code>, and <code>predictRT</code>/<code>predictRTModels</code>.</li>
+<li>Optional: Add simulation functions for your model based on one of the files ‘simulate<em>model</em>.R’</li>
+</ul>
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<p>Hellmann S, Zehetleitner M, Rausch M. Simultaneous modeling of choice, confidence, and response time in visual perception. Psychol Rev. 2023 Mar 13. doi: <a href="https://doi.org/10.1037/rev0000411" class="external-link">10.1037/rev0000411</a>. Epub ahead of print. PMID: 36913292.</p>
+<p>Hellmann, S., Zehetleitner, M., &amp; Rausch, M. (2023). Simultaneous modeling of choice, confidence, and response time in visual perception. Psychological Review, 130(6), 1521–1543. doi: <a href="https://doi.org/10.1037/rev0000411" class="external-link">10.1037/rev0000411</a></p>
+<p>Hellmann, S., Zehetleitner, M. &amp; Rausch, M. (2024). Confidence Is Influenced by Evidence Accumulation Time in Dynamical Decision Models. Comput Brain Behav 7, 287–313. doi: <a href="https://doi.org/10.1007/s42113-024-00205-9" class="external-link">10.1007/s42113-024-00205-9</a></p>
 </div>
 <div class="section level2">
 <h2 id="contact">Contact<a class="anchor" aria-label="anchor" href="#contact"></a>
