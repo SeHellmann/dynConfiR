@@ -1,9 +1,9 @@
 Type: Package
 Package: dynConfiR
 Title: Dynamic Models for Confidence and Response Time Distributions
-Version: 0.1.0
+Version: 1.0.0
 Authors@R: c(
-    person("Sebastian", "Hellmann", , "sebastian.hellmann@ku.de", role = c("aut", "cre"),
+    person("Sebastian", "Hellmann", , "sebastian.hellmann@tum.de", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-3621-6343")),
     person("Manuel", "Rausch", , "manuel.rausch@ku.de", role = c("aut", "fnd"),
            comment = c(ORCID = "0000-0002-5805-5544"))
@@ -47,11 +47,9 @@ LinkingTo:
 VignetteBuilder: 
     knitr
 Config/testthat/edition: 3
-Date/Publication: 2022-05-16
 Encoding: UTF-8
 LazyData: true
 NeedsCompilation: yes
-Packaged: 2023-03-17
 Repository: CRAN
 Roxygen: list(old_usage = TRUE, markdown=TRUE)
 RoxygenNote: 7.3.1

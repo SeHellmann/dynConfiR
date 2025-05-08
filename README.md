@@ -146,6 +146,20 @@ head(fitted_pars)
     ## 30 1862.12 NA  NA    NA
     ## 31 1334.68 NA  NA    NA
 
+### Quantitative Model Comparison
+
+The output of the fitting function includes different information
+criteria, which could be used for a quantitative model comparison
+(namely: BIC, AIC, and AICc). The package also offers functions to
+conduct the quantitative comparison either on the level of single
+individuals or on a group level. For the individual level, the function
+`subject_modelweights` computes individual model weights for all fitted
+models directly from the output of the fitting function. Similarly, for
+a group-level comparison, the function `group_BMS_fits` directly uses
+the output of the fitting function and conducts a group-level Bayesian
+model selection based on a random effects model of model prevalence
+across subjects (Rigoux et al., 2014).
+
 ### Prediction
 
 For prediction the functions `predictConf` and `predictRT` are used,
@@ -234,8 +248,13 @@ Influenced by Evidence Accumulation Time in Dynamical Decision Models.
 Comput Brain Behav 7, 287–313. doi:
 [10.1007/s42113-024-00205-9](https://doi.org/10.1007/s42113-024-00205-9)
 
+Rigoux, L., Stephan, K. E., Friston, K. J., & Daunizeau, J. (2014).
+Bayesian model selection for group studies - revisited. NeuroImage, 84,
+971–985. doi:
+[10.1016/j.neuroimage.2013.08.065](https://doi.org/10.1016/j.neuroimage.2013.08.065)
+
 ## Contact
 
 For comments, remarks, and questions please contact me:
-<sebastian.hellmann@ku.de> or [submit an
+<sebastian.hellmann@tum.de> or [submit an
 issue](https://github.com/SeHellmann/dynConfiR/issues).
