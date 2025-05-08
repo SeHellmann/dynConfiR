@@ -100,7 +100,7 @@ paramDf2 <- data.frame(model="PCRMt", a=2,b=2, v1=0.5, v2=1, t0=0.1,st0=0,
 paramDf <- full_join(paramDf1, paramDf2)
 paramDf  # each model parameters sets hat its relevant parameters
 # Split paramDf by model (maybe also other columns) and simulate data
-simus <- paramDf |> group_by(model) |>
+simus <- paramDf \%>\% group_by(model) \%>\%
  reframe(simulateRTConf(cbind(cur_group(), pick(everything())), n=200, simult_conf = TRUE))
 head(simus)
 
