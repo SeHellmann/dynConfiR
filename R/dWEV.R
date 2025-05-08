@@ -169,7 +169,7 @@
 #' @examples
 #' # Plot rt distribution ignoring confidence
 #' curve(ddynaViTE(x, "upper", -Inf, Inf, tau=1, a=2, v=0.4, sz=0.2, sv=0.9), xlim=c(0, 2), lty=2)
-#' curve(ddynaViTE(x, "lower", -Inf, Inf,tau=1, a=2, v=0.4, sz=0.2, sv=0.9), col="red", lty=2, add=TRUE)
+#' curve(ddynaViTE(x, "lower", -Inf, Inf,tau=1, a=2, v=0.4, sz=0.2, sv=0.9))
 #' curve(ddynaViTE(x, "upper", -Inf, Inf,  tau=1, a=2, v=0.4),add=TRUE)
 #' curve(ddynaViTE(x, "lower", -Inf, Inf, tau=1, a=2, v=0.4), col="red", add=TRUE)
 #' # Generate a random sample

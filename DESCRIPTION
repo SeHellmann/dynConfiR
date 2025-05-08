@@ -8,7 +8,7 @@ Authors@R: c(
     person("Manuel", "Rausch", , "manuel.rausch@ku.de", role = c("aut", "fnd"),
            comment = c(ORCID = "0000-0002-5805-5544"))
   )
-Maintainer: Sebastian Hellmann <sebastian.hellmann@ku.de>
+Maintainer: Sebastian Hellmann <sebastian.hellmann@tum.de>
 Description: Provides density functions for the joint distribution of
     choice, response time and confidence for discrete confidence judgments
     as well as functions for parameter fitting, prediction and simulation
@@ -21,7 +21,7 @@ Description: Provides density functions for the joint distribution of
 License: GPL (>= 3)
 URL: https://github.com/SeHellmann/dynConfiR,
     https://sehellmann.github.io/dynConfiR/
-BugReports: https://github.com/SeHellmann/dynConfiR
+BugReports: https://github.com/SeHellmann/dynConfiR/issues
 Depends: 
     R (>= 4.0)
 Imports: 

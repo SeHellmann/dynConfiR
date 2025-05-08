@@ -314,7 +314,7 @@ package \code{rtdists} for the Ratcliff diffusion model.
 \examples{
 # Plot rt distribution ignoring confidence
 curve(ddynaViTE(x, "upper", -Inf, Inf, tau=1, a=2, v=0.4, sz=0.2, sv=0.9), xlim=c(0, 2), lty=2)
-curve(ddynaViTE(x, "lower", -Inf, Inf,tau=1, a=2, v=0.4, sz=0.2, sv=0.9), col="red", lty=2, add=TRUE)
+curve(ddynaViTE(x, "lower", -Inf, Inf,tau=1, a=2, v=0.4, sz=0.2, sv=0.9))
 curve(ddynaViTE(x, "upper", -Inf, Inf,  tau=1, a=2, v=0.4),add=TRUE)
 curve(ddynaViTE(x, "lower", -Inf, Inf, tau=1, a=2, v=0.4), col="red", add=TRUE)
 # Generate a random sample
@@ -364,8 +364,8 @@ curve(ddynaViTE(x, "upper", -Inf, Inf, tau=1, a=2, v=0.4,
 curve(ddynaViTE(x, "lower", -Inf, Inf,tau=1, a=2, v=0.4,
                     sz=0.2, sv=0.9),
      col="red", lty=2, add=TRUE)
-curve(ddynaViTE(x, "upper", -Inf, Inf,  tau=1, a=2, v=0.4),add=TRUE)
-curve(ddynaViTE(x, "lower", -Inf, Inf, tau=1, a=2, v=0.4), col="red", add=TRUE)
+curve(ddynaViTE(x, "upper", -Inf, Inf,  tau=1, a=2, v=0.4), add=TRUE)
+curve(ddynaViTE(x, "lower", -Inf, Inf, tau=1, a=2, v=0.4), add=TRUE)
 # Generate a random sample
 df1 <- rdynaViTE(5000, a=2,v=0.5,t0=0,z=0.5,d=0,sz=0,sv=0, st0=0,  tau=1, s=1, w=0.9)
 # Same RT and response distribution but different confidence distribution
