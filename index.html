@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">dynConfiR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -148,6 +148,11 @@ Package workflow for model comparison
 <span id="cb14-21"><a href="#cb14-21" tabindex="-1"></a><span class="do">## 31 1334.68 NA  NA    NA</span></span></code></pre></div>
 </div>
 <div class="section level3">
+<h3 id="quantitative-model-comparison">Quantitative Model Comparison<a class="anchor" aria-label="anchor" href="#quantitative-model-comparison"></a>
+</h3>
+<p>The output of the fitting function includes different information criteria, which could be used for a quantitative model comparison (namely: BIC, AIC, and AICc). The package also offers functions to conduct the quantitative comparison either on the level of single individuals or on a group level. For the individual level, the function <code>subject_modelweights</code> computes individual model weights for all fitted models directly from the output of the fitting function. Similarly, for a group-level comparison, the function <code>group_BMS_fits</code> directly uses the output of the fitting function and conducts a group-level Bayesian model selection based on a random effects model of model prevalence across subjects (Rigoux et al., 2014).</p>
+</div>
+<div class="section level3">
 <h3 id="prediction">Prediction<a class="anchor" aria-label="anchor" href="#prediction"></a>
 </h3>
 <p>For prediction the functions <code>predictConf</code> and <code>predictRT</code> are used, together with parameter sets for the respective models. For multiple participants and models, the output data frame from the function <code>fitRTConfModels</code> may be used in the functions <code>predictConfModels</code> and <code>predictRTModels</code> to simultaneously (and in parallel) predict the distributions.</p>
@@ -196,11 +201,12 @@ Package workflow for model comparison
 </h2>
 <p>Hellmann, S., Zehetleitner, M., &amp; Rausch, M. (2023). Simultaneous modeling of choice, confidence, and response time in visual perception. Psychological Review, 130(6), 1521–1543. doi: <a href="https://doi.org/10.1037/rev0000411" class="external-link">10.1037/rev0000411</a></p>
 <p>Hellmann, S., Zehetleitner, M. &amp; Rausch, M. (2024). Confidence Is Influenced by Evidence Accumulation Time in Dynamical Decision Models. Comput Brain Behav 7, 287–313. doi: <a href="https://doi.org/10.1007/s42113-024-00205-9" class="external-link">10.1007/s42113-024-00205-9</a></p>
+<p>Rigoux, L., Stephan, K. E., Friston, K. J., &amp; Daunizeau, J. (2014). Bayesian model selection for group studies - revisited. NeuroImage, 84, 971–985. doi: <a href="https://doi.org/10.1016/j.neuroimage.2013.08.065" class="external-link">10.1016/j.neuroimage.2013.08.065</a></p>
 </div>
 <div class="section level2">
 <h2 id="contact">Contact<a class="anchor" aria-label="anchor" href="#contact"></a>
 </h2>
-<p>For comments, remarks, and questions please contact me: <a href="mailto:sebastian.hellmann@ku.de" class="email">sebastian.hellmann@ku.de</a> or <a href="https://github.com/SeHellmann/dynConfiR/issues" class="external-link">submit an issue</a>.</p>
+<p>For comments, remarks, and questions please contact me: <a href="mailto:sebastian.hellmann@tum.de" class="email">sebastian.hellmann@tum.de</a> or <a href="https://github.com/SeHellmann/dynConfiR/issues" class="external-link">submit an issue</a>.</p>
 </div>
 </div>
 
@@ -231,8 +237,8 @@ Package workflow for model comparison
 <div class="developers">
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li>Sebastian Hellmann <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0002-3621-6343" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
-<li>Manuel Rausch <br><small class="roles"> Author, funder </small> <a href="https://orcid.org/0000-0002-5805-5544" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Sebastian Hellmann <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0002-3621-6343" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>  </li>
+<li>Manuel Rausch <br><small class="roles"> Author, funder </small> <a href="https://orcid.org/0000-0002-5805-5544" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>  </li>
 </ul>
 </div>
 
@@ -252,7 +258,7 @@ Package workflow for model comparison
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
 </div>
 
     </footer>
