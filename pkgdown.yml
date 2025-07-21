@@ -1,10 +1,10 @@
 pandoc: 3.1.11
-pkgdown: 2.1.2
+pkgdown: 2.1.3
 pkgdown_sha: ~
 articles:
   dynConfiR: dynConfiR.html
   articles/ModellingWorkflow: ModellingWorkflow.html
-last_built: 2025-05-16T11:26Z
+last_built: 2025-07-21T10:11Z
 urls:
   reference: https://sehellmann.github.io/dynConfiR/reference
   article: https://sehellmann.github.io/dynConfiR/articles

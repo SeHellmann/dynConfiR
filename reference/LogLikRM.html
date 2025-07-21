@@ -44,7 +44,7 @@ for individual usage in other contexts."></head><body>
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Log-Likelihood functions for the independent and partially anti-correlated race models of confidence</h1>
-      <small class="dont-index">Source: <a href="https://github.com/SeHellmann/dynConfiR/blob/v1.0.0/R/likelihood_RM.R" class="external-link"><code>R/likelihood_RM.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/SeHellmann/dynConfiR/blob/main/R/likelihood_RM.R" class="external-link"><code>R/likelihood_RM.R</code></a></small>
       <div class="d-none name"><code>LogLikRM.Rd</code></div>
     </div>
 
@@ -161,12 +161,12 @@ boundary first.</p>
 <span class="r-in"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">[</span>,<span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>,<span class="fl">4</span><span class="op">)</span><span class="op">]</span> <span class="co"># drop xl and conf measure (unobservable variable)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     rt response rating stimulus discriminability</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 1.18        1      2        1                2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 6.15        1      2        1                2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 2.23        2      2        2                1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4 1.08        1      1        1                2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5 2.81        1      2        1                2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6 2.36        2      1        2                1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 5.06        2      2        2                1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 2.47        1      2        1                2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 2.12        1      1        1                2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 1.81        2      2        2                1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 2.13        1      1        1                1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6 2.05        1      2        1                1</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># 2. Define some parameter set in a data.frame</span></span></span>
 <span class="r-in"><span><span class="va">paramDf</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>a<span class="op">=</span><span class="fl">2</span>,b<span class="op">=</span><span class="fl">2</span>, v1<span class="op">=</span><span class="fl">0.5</span>, v2<span class="op">=</span><span class="fl">1</span>, t0<span class="op">=</span><span class="fl">0.1</span>,st0<span class="op">=</span><span class="fl">0</span>,</span></span>
@@ -175,17 +175,17 @@ boundary first.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># 3. Compute log likelihood for parameter and data</span></span></span>
 <span class="r-in"><span><span class="fu">LogLikRM</span><span class="op">(</span><span class="va">data</span>, <span class="va">paramDf</span>, model<span class="op">=</span><span class="st">"PCRMt"</span>, condition<span class="op">=</span><span class="st">"discriminability"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -645.0707</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -639.5667</span>
 <span class="r-in"><span><span class="co"># same result</span></span></span>
 <span class="r-in"><span><span class="fu">LogLikRM</span><span class="op">(</span><span class="va">data</span>, <span class="va">paramDf</span>, model<span class="op">=</span><span class="st">"PCRM"</span>, time_scaled<span class="op">=</span><span class="cn">TRUE</span>,condition<span class="op">=</span><span class="st">"discriminability"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -645.0707</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -639.5667</span>
 <span class="r-in"><span><span class="co"># different</span></span></span>
 <span class="r-in"><span><span class="fu">LogLikRM</span><span class="op">(</span><span class="va">data</span>, <span class="va">paramDf</span>, model<span class="op">=</span><span class="st">"PCRM"</span>, condition<span class="op">=</span><span class="st">"discriminability"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -525.5195</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -524.4316</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># same parameters used for IRM model</span></span></span>
 <span class="r-in"><span><span class="fu">LogLikRM</span><span class="op">(</span><span class="va">data</span>, <span class="va">paramDf</span>, model<span class="op">=</span><span class="st">"IRMt"</span>, condition<span class="op">=</span><span class="st">"discriminability"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -667.6278</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -679.7434</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
@@ -198,7 +198,7 @@ boundary first.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer></div>

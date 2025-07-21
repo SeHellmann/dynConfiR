@@ -66,7 +66,7 @@ wint for the computation of the confidence measure are required (see Details).">
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Independent and partially anti-correlated Race Model for Decision Confidence</h1>
-      <small class="dont-index">Source: <a href="https://github.com/SeHellmann/dynConfiR/blob/v1.0.0/R/RaceModels.R" class="external-link"><code>R/RaceModels.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/SeHellmann/dynConfiR/blob/main/R/RaceModels.R" class="external-link"><code>R/RaceModels.R</code></a></small>
       <div class="d-none name"><code>RaceModels.Rd</code></div>
     </div>
 
@@ -319,13 +319,13 @@ correlated neuronal integrators. Neural Computation, 22(7), 1786–1811. doi:10.
 <span class="r-in"><span><span class="va">df2</span> <span class="op">&lt;-</span> <span class="fu">rPCRM</span><span class="op">(</span><span class="fl">5000</span>,  mu1<span class="op">=</span><span class="fl">0.2</span>, mu2<span class="op">=</span><span class="op">-</span><span class="fl">0.2</span>, a<span class="op">=</span><span class="fl">1</span>, b<span class="op">=</span><span class="fl">1</span>, t0<span class="op">=</span><span class="fl">0.1</span>,</span></span>
 <span class="r-in"><span>             wint <span class="op">=</span> <span class="fl">0.2</span>, wrt<span class="op">=</span><span class="fl">0.8</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">df1</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     rt response         xl     conf</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 0.35        2 -1.4898545 2.489854</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 0.43        2 -0.6207259 1.620726</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 5.98        1 -2.4262392 3.426239</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4 0.70        2 -1.6651475 2.665147</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5 0.53        2 -0.3311425 1.331143</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6 4.93        1 -1.3308991 2.330899</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      rt response         xl      conf</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1  1.63        1 -0.8054427 1.8054427</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2  0.70        1 -0.2618345 1.2618345</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3  0.34        2 -0.4655898 1.4655898</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4  0.29        1 -0.9871993 1.9871993</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5  0.62        1  0.0587367 0.9412633</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6 15.11        0 -3.4225708 4.4225708</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Compute density with rt and response as separate arguments</span></span></span>
 <span class="r-in"><span><span class="fu">dPCRM</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2</span>, by <span class="op">=</span><span class="fl">0.4</span><span class="op">)</span>, response<span class="op">=</span> <span class="fl">2</span>, mu1<span class="op">=</span><span class="fl">0.2</span>, mu2<span class="op">=</span><span class="op">-</span><span class="fl">0.2</span>, a<span class="op">=</span><span class="fl">1</span>, b<span class="op">=</span><span class="fl">1</span>, th1<span class="op">=</span><span class="fl">0.5</span>,</span></span>
@@ -334,15 +334,15 @@ correlated neuronal integrators. Neural Computation, 22(7), 1786–1811. doi:10.
 <span class="r-in"><span><span class="co"># Compute density with rt and response in data.frame argument</span></span></span>
 <span class="r-in"><span><span class="va">df1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">df1</span>, <span class="va">response</span> <span class="op">!=</span><span class="fl">0</span><span class="op">)</span> <span class="co"># drop trials where no accumulation hit its boundary</span></span></span>
 <span class="r-in"><span><span class="fu">dPCRM</span><span class="op">(</span><span class="va">df1</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="op">]</span>, mu1<span class="op">=</span><span class="fl">0.2</span>, mu2<span class="op">=</span><span class="op">-</span><span class="fl">0.2</span>, a<span class="op">=</span><span class="fl">1</span>, b<span class="op">=</span><span class="fl">1</span>, th1<span class="op">=</span><span class="fl">0</span>, th2<span class="op">=</span><span class="cn">Inf</span>, t0<span class="op">=</span><span class="fl">0.1</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.350849172 0.371535318 0.008044021 0.273396974 0.346348026</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.1200311 0.4180900 0.3434690 0.4216678 0.4678468</span>
 <span class="r-in"><span><span class="co"># s1 and s2 scale other decision relevant parameters</span></span></span>
 <span class="r-in"><span> <span class="va">s</span> <span class="op">&lt;-</span> <span class="fl">2</span>  <span class="co"># common (equal) standard deviation</span></span></span>
 <span class="r-in"><span><span class="fu">dPCRM</span><span class="op">(</span><span class="va">df1</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="op">]</span>, mu1<span class="op">=</span><span class="fl">0.2</span><span class="op">*</span><span class="va">s</span>, mu2<span class="op">=</span><span class="op">-</span><span class="fl">0.2</span><span class="op">*</span><span class="va">s</span>, a<span class="op">=</span><span class="fl">1</span><span class="op">*</span><span class="va">s</span>, b<span class="op">=</span><span class="fl">1</span><span class="op">*</span><span class="va">s</span>, th1<span class="op">=</span><span class="fl">0</span>, th2<span class="op">=</span><span class="cn">Inf</span>, t0<span class="op">=</span><span class="fl">0.1</span>, s1<span class="op">=</span><span class="va">s</span>, s2<span class="op">=</span><span class="va">s</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.350849172 0.371535318 0.008044021 0.273396974 0.346348026</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.1200311 0.4180900 0.3434690 0.4216678 0.4678468</span>
 <span class="r-in"><span><span class="va">s1</span> <span class="op">&lt;-</span> <span class="fl">2</span>  <span class="co"># different standard deviations</span></span></span>
 <span class="r-in"><span><span class="va">s2</span> <span class="op">&lt;-</span> <span class="fl">1.5</span></span></span>
 <span class="r-in"><span><span class="fu">dPCRM</span><span class="op">(</span><span class="va">df1</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="op">]</span>, mu1<span class="op">=</span><span class="fl">0.2</span><span class="op">*</span><span class="va">s1</span>, mu2<span class="op">=</span><span class="op">-</span><span class="fl">0.2</span><span class="op">*</span><span class="va">s2</span>, a<span class="op">=</span><span class="fl">1</span><span class="op">*</span><span class="va">s1</span>, b<span class="op">=</span><span class="fl">1</span><span class="op">*</span><span class="va">s2</span>, th1<span class="op">=</span><span class="fl">0</span>, th2<span class="op">=</span><span class="cn">Inf</span>, t0<span class="op">=</span><span class="fl">0.1</span>, s1<span class="op">=</span><span class="va">s1</span>, s2<span class="op">=</span><span class="va">s2</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.350849172 0.371535318 0.008044021 0.273396974 0.346348026</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.1200311 0.4180900 0.3434690 0.4216678 0.4678468</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># s1 and s2 scale also confidence parameters</span></span></span>
@@ -351,13 +351,13 @@ correlated neuronal integrators. Neural Computation, 22(7), 1786–1811. doi:10.
 <span class="r-in"><span><span class="co"># the right variation parameter (the one of the loosing accumulator)</span></span></span>
 <span class="r-in"><span><span class="fu">dPCRM</span><span class="op">(</span><span class="va">df1</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="op">]</span>, mu1<span class="op">=</span><span class="fl">0.2</span>, mu2<span class="op">=</span><span class="op">-</span><span class="fl">0.2</span>, a<span class="op">=</span><span class="fl">1</span>, b<span class="op">=</span><span class="fl">1</span>,</span></span>
 <span class="r-in"><span>     th1<span class="op">=</span><span class="fl">0.5</span>, th2<span class="op">=</span><span class="fl">2</span>, wx <span class="op">=</span> <span class="fl">0.3</span>, wint<span class="op">=</span><span class="fl">0.4</span>, wrt<span class="op">=</span><span class="fl">0.1</span>, t0<span class="op">=</span><span class="fl">0.1</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.22557811 0.28285801 0.00233084 0.23678687 0.28650686</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.06084658 0.23678687 0.21318574 0.13314787 0.26333991</span>
 <span class="r-in"><span><span class="fu">dPCRM</span><span class="op">(</span><span class="va">df1</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="op">]</span>, mu1<span class="op">=</span><span class="fl">0.2</span><span class="op">*</span><span class="va">s1</span>, mu2<span class="op">=</span><span class="op">-</span><span class="fl">0.2</span><span class="op">*</span><span class="va">s2</span>, a<span class="op">=</span><span class="fl">1</span><span class="op">*</span><span class="va">s1</span>, b<span class="op">=</span><span class="fl">1</span><span class="op">*</span><span class="va">s2</span>,</span></span>
 <span class="r-in"><span>      th1<span class="op">=</span><span class="fl">0.5</span>, th2<span class="op">=</span><span class="fl">2</span>, wx <span class="op">=</span> <span class="fl">0.3</span><span class="op">/</span><span class="va">s1</span>, wint <span class="op">=</span> <span class="fl">0.4</span><span class="op">/</span><span class="va">s1</span>, wrt <span class="op">=</span> <span class="fl">0.1</span>, t0<span class="op">=</span><span class="fl">0.1</span>, s1<span class="op">=</span><span class="va">s1</span>, s2<span class="op">=</span><span class="va">s2</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.22557811 0.28285801 0.00233084 0.23678687 0.28650686</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.06084658 0.23678687 0.21318574 0.13314787 0.26333991</span>
 <span class="r-in"><span><span class="fu">dPCRM</span><span class="op">(</span><span class="va">df1</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="op">]</span>, mu1<span class="op">=</span><span class="fl">0.2</span><span class="op">*</span><span class="va">s1</span>, mu2<span class="op">=</span><span class="op">-</span><span class="fl">0.2</span><span class="op">*</span><span class="va">s2</span>, a<span class="op">=</span><span class="fl">1</span><span class="op">*</span><span class="va">s1</span>, b<span class="op">=</span><span class="fl">1</span><span class="op">*</span><span class="va">s2</span>,</span></span>
 <span class="r-in"><span>      th1<span class="op">=</span><span class="fl">0.5</span><span class="op">*</span><span class="va">s1</span>, th2<span class="op">=</span><span class="fl">2</span><span class="op">*</span><span class="va">s1</span>, wx <span class="op">=</span> <span class="fl">0.3</span>, wint <span class="op">=</span> <span class="fl">0.4</span>, wrt <span class="op">=</span> <span class="fl">0.1</span><span class="op">*</span><span class="va">s1</span>, t0<span class="op">=</span><span class="fl">0.1</span>, s1<span class="op">=</span><span class="va">s1</span>, s2<span class="op">=</span><span class="va">s2</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.22557811 0.28285801 0.00233084 0.23678687 0.28650686</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.06084658 0.23678687 0.21318574 0.13314787 0.26333991</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">two_samples</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">df1</span>, ws<span class="op">=</span><span class="st">"BoE"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                   <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">df2</span>, ws<span class="op">=</span><span class="st">"RT"</span><span class="op">)</span><span class="op">)</span></span></span>
@@ -378,7 +378,7 @@ correlated neuronal integrators. Neural Computation, 22(7), 1786–1811. doi:10.
 <span class="r-in"><span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_grid.html" class="external-link">facet_grid</a></span><span class="op">(</span>cols<span class="op">=</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">ws</span><span class="op">)</span>, rows<span class="op">=</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">response</span><span class="op">)</span>, labeller <span class="op">=</span> <span class="st">"label_both"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required package: ggplot2</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 6390 rows containing non-finite outside the scale range</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 6410 rows containing non-finite outside the scale range</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> (`stat_density2d()`).</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 1584 rows containing missing values or values outside the scale range</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_raster()`).</span>
@@ -386,7 +386,7 @@ correlated neuronal integrators. Neural Computation, 22(7), 1786–1811. doi:10.
 <span class="r-in"><span><span class="co"># Restricting to specific confidence region</span></span></span>
 <span class="r-in"><span><span class="va">df1</span> <span class="op">&lt;-</span> <span class="va">df1</span><span class="op">[</span><span class="va">df1</span><span class="op">$</span><span class="va">conf</span> <span class="op">&gt;</span><span class="fl">0</span> <span class="op">&amp;</span> <span class="va">df1</span><span class="op">$</span><span class="va">conf</span> <span class="op">&lt;</span><span class="fl">1</span>,<span class="op">]</span></span></span>
 <span class="r-in"><span><span class="fu">dPCRM</span><span class="op">(</span><span class="va">df1</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="op">]</span>, th1<span class="op">=</span><span class="fl">0</span>, th2<span class="op">=</span><span class="fl">1</span>,mu1<span class="op">=</span><span class="fl">0.2</span>, mu2<span class="op">=</span><span class="op">-</span><span class="fl">0.2</span>, a<span class="op">=</span><span class="fl">1</span>, b<span class="op">=</span><span class="fl">1</span>, t0<span class="op">=</span><span class="fl">0.1</span>,wx <span class="op">=</span> <span class="fl">1</span> <span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.05720326 0.03965520 0.06187721 0.06378198 0.01928813</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.058845417 0.049663264 0.010006832 0.076744083 0.009398597</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
@@ -399,7 +399,7 @@ correlated neuronal integrators. Neural Computation, 22(7), 1786–1811. doi:10.
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer></div>
