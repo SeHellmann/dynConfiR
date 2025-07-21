@@ -36,6 +36,8 @@ fittingRMs <- function(df, model, nConds, nRatings, fixed, sym_thetas, time_scal
     }
   } else {
     fitted_weights <- NULL
+    wx = 1
+    wrt = 0
   }
   ### 1. Generate initial grid for grid search over possible parameter sets ####
   #### Create grid ####
