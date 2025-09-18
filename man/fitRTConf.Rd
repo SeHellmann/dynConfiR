@@ -34,7 +34,7 @@ and logging messages;
 if non-unique or missing and \code{logging =TRUE}, 999 will be used then)
 }}
 
-\item{model}{character scalar. One of "dynWEV", "2DSD", "IRM", "PCRM", "IRMt", "PCRMt", or "DDConf" for the model to be fit.}
+\item{model}{character scalar. One of "dynWEV", "2DSD", "IRM", "PCRM", "IRMt", "PCRMt", "MTLNR", or "DDConf" for the model to be fit.}
 
 \item{fixed}{list. List with parameter-value pairs for parameters that should not be fitted. See Details.}
 
@@ -99,7 +99,8 @@ the 2DSD model (Pleskac & Busemeyer, 2010), dynWEV, DDConf, and various
 flavors of race models (Hellmann et al., 2023). Which model to fit is
 specified by the argument \code{model}.
 Only a ML method is implemented.
-See \code{\link{ddynaViTE}}, \code{\link{d2DSD}}, and \code{\link{dRM}} for more
+See \code{\link{ddynaViTE}}, \code{\link{d2DSD}}, \code{\link{dRM}}, and
+\code{\link{dMTLNR}} for more
 information about the parameters and Details for not-fitted parameters.
 }
 \details{
@@ -145,14 +146,25 @@ should include the parameters of the desired model, which are the following for 
 \code{a}, \code{vmin} and \code{vmax} (will be equidistantly spanned across conditions), \code{sv}, \code{z} (as the
 relative starting point between 0 and \code{a}), \code{sz} (also in relative terms), \code{t0}, \code{st0}, \code{theta0}
 (minimal threshold), \code{thetamax} (maximal threshold; the others will be equidistantly
-spanned symmetrically for both decisions), and \code{tau}. For dynWEV,
-additionally \code{w} , \code{svis}, and \code{sigvis} are required. For the race models the parameters
+spanned symmetrically for both decisions), and \code{tau}.
+For dynWEV, additionally \code{w} , \code{svis}, and \code{sigvis} are required.
+
+For the race models the parameters
 are: \code{vmin}, \code{vmax} (will be equidistantly
 spanned across conditions), \code{a} and \code{b} (decision thresholds), \code{t0}, \code{st0}, \code{theta0}
 (minimal threshold), \code{thetamax} (maximal threshold;
 the others will be equidistantly spanned symmetrically for both decisions), and for
 time-dependent confidence race models
 additionally \code{wrt} and \code{wint} (as weights compared to \code{wx=1}).
+
+For the multiple-threshold log-normal race model (MTLNR) the parameters
+are: \code{vmin}, \code{vmax} (will be equidistantly
+spanned across conditions), \code{mu_d1} and \code{mu_d2} (mean pars for boundary distance),
+\code{s_v1}, \code{s_v2}, \code{s_d1}, \code{s_d2} (variance parameters for the accumulation rates (v) and
+boundary distances (d)), \code{rho_v} and \code{rho_d} (correlation parameters for the correlation
+of accumulation rates and boundary distances between accumulators), \code{t0}, \code{st0}, \code{theta0}
+(minimal threshold), \code{thetamax} (maximal threshold;
+the others will be equidistantly spanned symmetrically for both decisions).
 
 \strong{opts}. A list with numerical values. Possible options are listed below
 (together with the optimization method they are used for).

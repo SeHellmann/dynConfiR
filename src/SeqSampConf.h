@@ -59,6 +59,7 @@ static double Phi(double x); //CDF of standard normal distribution
 // PDF and RNG for DDConf
 #include "Density_DDConf.h"
 
+#include "Density_MTLNR.h"
 
 static double Phi (double x)  // The distribution function of the standard normal distribution.
 {

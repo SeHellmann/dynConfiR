@@ -9,7 +9,7 @@
 \title{Prediction of Confidence Rating and Response Time Distribution in dynaViTE,
 dynWEV, and 2DSD confidence models}
 \usage{
-predictWEV_Conf(paramDf, model = "dynaViTE", maxrt = 15,
+predictWEV_Conf(paramDf, model = "dynaViTE", maxrt = Inf,
   subdivisions = 100L, simult_conf = FALSE, stop.on.error = FALSE,
   precision = 3, .progress = TRUE)
 

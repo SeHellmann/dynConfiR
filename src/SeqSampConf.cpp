@@ -716,4 +716,224 @@ NumericVector r_DDConf (int n, NumericVector params, double delta=0.01, double m
 
 }
 
+
+
+
+// Simulation for the multiple threshold log-normal race model
+// [[Rcpp::export]]
+NumericVector r_MT_LNR (int n, NumericVector params,
+                        NumericVector thresholds)
+{
+  double mu_d1 = params[0];
+  double mu_d2 = params[1];
+  double mu_v1 = params[2];
+  double mu_v2 = params[3];
+  double s_d1  = params[4];
+  double s_d2  = params[5];
+  double s_v1  = params[6];
+  double s_v2  = params[7];
+  double rho_d = params[8];
+  double rho_v = params[9];
+  double t0    = params[10];
+  double st0   = params[11];
+
+  int N_thresh = thresholds.length()/2;
+
+
+  double s_1 = sqrt(s_d1*s_d1+s_v1*s_v1);
+  double s_2 = sqrt(s_d2*s_d2+s_v2*s_v2);
+  double rho12 = (s_d1*s_d2*rho_d + s_v1*s_v2*rho_v) / (s_1*s_2);
+
+
+  NumericMatrix out(n, 5);
+
+  double rand_1, rand_2, logT1, logT2, T_dec, logT_ratio;
+  int resp, rating;
+
+  for (int i=0; i < n; i++) {
+    rand_1 = R::rnorm(0,1);
+    rand_2 = R::rnorm(0,1);
+    logT1 = mu_d1 - mu_v1 + s_1 * rand_1;
+    logT2 = mu_d2 - mu_v2 + s_2 * (rho12 * rand_1 + sqrt(1-rho12*rho12) * rand_2);
+
+    if (logT1 < logT2) {
+      resp = 1;
+      T_dec = exp(logT1);
+      logT_ratio = logT2-logT1;
+      rating = 1;
+      for (int k=0; k < N_thresh; k++) {
+        if (logT_ratio > thresholds[k]) {
+          rating = rating + 1;
+        }
+      }
+    } else {
+      resp = 2;
+      T_dec = exp(logT2);
+      logT_ratio = logT1-logT2;
+      rating = 1;
+      for (int k=0; k < N_thresh; k++) {
+        if (logT_ratio > thresholds[ k+N_thresh]) {
+          rating = rating + 1;
+        }
+      }
+    }
+    out( i , 0 ) = T_dec  + t0 + R::runif(0, st0);   // RT
+    out( i , 1 ) = resp;        // response
+    out( i , 2 ) = T_dec;       // decision time
+    out( i , 3 ) = logT_ratio;  // confidence variable
+    out( i , 4 ) = rating;        // discrete confidence rating
+
+    if (i % 200 ==0 ) Rcpp::checkUserInterrupt();
+
+  }
+
+  return out;
+
+}
+
+
+
+
+
+
+// // Simulation for the multiple threshold log-normal race model - without any simplifications
+// // [[Rcpp::export]]
+// NumericVector r_MT_LNR_raw (int n, NumericVector params,
+//                         NumericVector thresholds)
+// {
+//   double mu_d1 = params[0];
+//   double mu_d2 = params[1];
+//   double mu_v1 = params[2];
+//   double mu_v2 = params[3];
+//   double s_d1  = params[4];
+//   double s_d2  = params[5];
+//   double s_v1  = params[6];
+//   double s_v2  = params[7];
+//   double rho_d = params[8];
+//   double rho_v = params[9];
+//   double t0    = params[10];
+//   double st0   = params[11];
+//
+//   int N_thresh = thresholds.length()/2;
+//
+//   NumericMatrix out(n, 5);
+//
+//   double rand_d1, rand_d2, rand_v1, rand_v2, logT1, logT2, T_dec, logT_ratio;
+//   int resp, rating;
+//
+//   for (int i=0; i < n; i++) {
+//     rand_d1 = R::rnorm(0,1);
+//     rand_d2 = mu_d2 + s_d2 * (rho_d* rand_d1 + sqrt(1-rho_d*rho_d) * R::rnorm(0,1));
+//     rand_d1 = mu_d1 + s_d1 * rand_d1;
+//
+//     rand_v1 = R::rnorm(0,1);
+//     rand_v2 = mu_v2 + s_v2 * (rho_v* rand_v1 + sqrt(1-rho_v*rho_v) * R::rnorm(0,1));
+//     rand_v1 = mu_v1 + s_v1 * rand_v1;
+//
+//     logT1 = rand_d1 - rand_v1;
+//     logT2 = rand_d2 - rand_v2;
+//
+//     if (logT1 < logT2) {
+//       resp = 1;
+//       T_dec = exp(logT1);
+//       logT_ratio = logT2-logT1;
+//       rating = 1;
+//       for (int k=0; k < N_thresh; k++) {
+//         if (logT_ratio > thresholds[k]) {
+//           rating = rating + 1;
+//         }
+//       }
+//     } else {
+//       resp = 2;
+//       T_dec = exp(logT2);
+//       logT_ratio = logT1-logT2;
+//       rating = 1;
+//       for (int k=0; k < N_thresh; k++) {
+//         if (logT_ratio > thresholds[ k+N_thresh]) {
+//           rating = rating + 1;
+//         }
+//       }
+//     }
+//     out( i , 0 ) = T_dec  + t0 + R::runif(0, st0);   // RT
+//     out( i , 1 ) = resp;        // response
+//     out( i , 2 ) = T_dec;       // decision time
+//     out( i , 3 ) = logT_ratio;  // confidence variable
+//     out( i , 4 ) = rating;        // discrete confidence rating
+//
+//
+//     if (i % 200 ==0 ) Rcpp::checkUserInterrupt();
+//
+//   }
+//
+//   return out;
+//
+// }
+
+
+// Probability distribution function for the multiple threshold log-normal race model
+// [[Rcpp::export]]
+NumericVector d_MT_LNR (NumericVector rts, NumericVector rating,
+                        NumericVector params,
+                        NumericVector thresholds,
+                        int win = 1,
+                        double step_width = 0.0001)
+{
+  if (params.length()!= 12) {Rcpp::stop ("Wrong number of parameters given. (Must be 12)\n"); }
+  if ((win < 1) || (win > 2)) { Rcpp::stop ("Boundary must be either 2 or 1!\n"); }
+
+  double mu_d1 = params[0];
+  double mu_d2 = params[1];
+  double mu_v1 = params[2];
+  double mu_v2 = params[3];
+  double s_d1  = params[4];
+  double s_d2  = params[5];
+  double s_v1  = params[6];
+  double s_v2  = params[7];
+  double rho_d = params[8];
+  double rho_v = params[9];
+  double t0    = params[10];
+  double st0   = params[11];
+  if (st0 < EPSILON) {
+    st0 = 0;
+  }
+
+  // int N_thresh = thresholds.length()/2;
+  // NumericVector thresholds_1 = head(thresholds, N_thresh); // first N_thresh entries
+  // NumericVector thresholds_2 = tail(thresholds, N_thresh); // last N_thresh entries
+  double mu_win, s_win, mu_los, s_los;
+  if (win == 1) {
+    mu_win = mu_d1 - mu_v1;
+    s_win  = sqrt(s_d1*s_d1 + s_v1*s_v1);
+    mu_los = mu_d2 - mu_v2;
+    s_los  = sqrt(s_d2*s_d2 + s_v2*s_v2);
+  } else {
+    mu_win = mu_d2 - mu_v2;
+    s_win  = sqrt(s_d2*s_d2 + s_v2*s_v2);
+    mu_los = mu_d1 - mu_v1;
+    s_los  = sqrt(s_d1*s_d1 + s_v1*s_v1);
+  }
+  double rho_12 = (s_d1*s_d2*rho_d + s_v1*s_v2*rho_v) / (s_win*s_los);
+  double th1, th2;
+  int length = rts.length();
+
+  NumericVector out(length, 0.0);  // Should default to 0s when creating NumericVector, but just in case..
+  for (int i=0; i < length; i++) {
+    if (rts[i]-t0 <= 0 ) {
+      out[i] = 0;
+    } else {
+      th2= thresholds[rating[i]];
+      th1= thresholds[rating[i]-1];
+      out[i] = density_MTLNR (rts[i]-t0, th1, th2,
+                              mu_win, mu_los,
+                              s_win, s_los, rho_12,
+                              t0, st0, step_width);
+    }
+    if (i % 200 ==0 ) Rcpp::checkUserInterrupt();
+  }
+  return out;
+
+}
+
+
+
 // End CPP

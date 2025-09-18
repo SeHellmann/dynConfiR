@@ -8,7 +8,7 @@
 \alias{predictRM_RT}
 \title{Prediction of Confidence Rating and Reaction Time Distribution in race models of confidence}
 \usage{
-predictRM_Conf(paramDf, model = "IRM", time_scaled = FALSE, maxrt = 15,
+predictRM_Conf(paramDf, model = "IRM", time_scaled = FALSE, maxrt = Inf,
   subdivisions = 100L, stop.on.error = FALSE, .progress = TRUE)
 
 predictRM_RT(paramDf, model = "IRM", time_scaled = FALSE, maxrt = 9,

@@ -6,17 +6,17 @@
 #' specified by the argument \code{model}, given specific parameter constellations.
 #' This function calls the respective functions for diffusion based
 #' models (dynWEV and 2DSD: \code{\link{predictWEV}}) and race models (IRM, PCRM,
-#' IRMt, and PCRMt: \code{\link{predictRM}}).
+#' IRMt, and PCRMt: \code{\link{predictRM}}; and MTLNR: \code{\link{predictMTLNR}}).
 #'
 #' @param paramDf a list or dataframe with one row. Column names should match the
 #' names of the respective model parameters. For different stimulus
-#' quality/mean drift rates, names should be `v1`, `v2`, `v3`,.... Different `s` parameters
-#' are possible with `s1`, `s2`, `s3`... with equally many steps as for drift rates (same
-#' for `sv` parameter in dynWEV and 2DSD).
+#' quality/mean drift rates, names should be `v1`, `v2`, `v3`,....
+#' Different `s` parameters are possible with `s1`, `s2`, `s3`... with equally many steps as for drift rates (same
+#' for `sv` parameter in dynWEV and 2DSD), except for MTLNR.
 #' Additionally, the confidence thresholds should be given by names with
 #' `thetaUpper1`, `thetaUpper2`,..., `thetaLower1`,... or,
 #' for symmetric thresholds only by `theta1`, `theta2`,....
-#' @param model character scalar. One of "2DSD", "dynWEV", "IRM", "PCRM", "IRMt", or "PCRMt".
+#' @param model character scalar. One of "2DSD", "dynWEV", "IRM", "PCRM", "IRMt", "PCRMt", or "MTLNR".
 #' @param maxrt numeric. The maximum RT for the
 #' integration/density computation. Default: 15 (for \code{predictConf} (integration)),
 #' 9 (for \code{predictRT}).
@@ -62,7 +62,7 @@
 #'
 #' @note Different parameters for different conditions are only allowed for drift rate,
 #' \code{v}, drift rate variability, \code{sv} (in dynWEV and 2DSD), and process variability
-#' `s`. All other parameters are used for all conditions.
+#' `s` (not for MTLNR). All other parameters are used for all conditions.
 #'
 #' @author Sebastian Hellmann.
 #'
@@ -125,7 +125,7 @@
 #' @rdname predictRTConf
 #' @export
 predictConf <- function(paramDf, model=NULL,
-                           maxrt=15, subdivisions = 100L, simult_conf = FALSE, stop.on.error=FALSE,
+                           maxrt=Inf, subdivisions = 100L, simult_conf = FALSE, stop.on.error=FALSE,
                            .progress=TRUE){
   paramDf <- as.data.frame(paramDf)
   paramDf <- paramDf[,!is.na(paramDf)]
@@ -141,6 +141,8 @@ predictConf <- function(paramDf, model=NULL,
     res <- predictWEV_Conf(paramDf, model, maxrt, subdivisions,simult_conf, stop.on.error, .progress=.progress)
   } else if (grepl("DDConf", model)) {
     res <- predictDDConf_Conf(paramDf,  maxrt, subdivisions, stop.on.error, .progress)
+  } else if (grepl("LNR", model)) {
+    res <- predictMTLNR_Conf(paramDf,  maxrt, subdivisions, stop.on.error, .progress)
   } else { stop("model not known.")}
   return(res)
 }
@@ -165,6 +167,8 @@ predictRT <- function(paramDf, model=NULL,
     res <- predictWEV_RT(paramDf, model, maxrt, subdivisions, minrt, simult_conf, scaled, DistConf, .progress=.progress)
   } else if (grepl("DDConf", model)) {
     res <- predictDDConf_RT(paramDf, maxrt, subdivisions,  minrt, scaled, DistConf, .progress)
+  } else if (grepl("LNR", model)) {
+    res <- predictMTLNR_RT(paramDf, maxrt, subdivisions,  minrt, scaled, DistConf, .progress)
   } else { stop("model not known.")}
   return(res)
 }

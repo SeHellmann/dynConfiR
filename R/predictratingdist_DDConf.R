@@ -109,7 +109,7 @@
 #' @rdname predictDDConf
 #' @export
 predictDDConf_Conf <- function(paramDf,
-                                maxrt=15, subdivisions = 100L, stop.on.error=FALSE,
+                                maxrt=Inf, subdivisions = 100L, stop.on.error=FALSE,
                                 .progress=TRUE){
 
   nConds <- length(grep(pattern = "^v[0-9]", names(paramDf), value = T))

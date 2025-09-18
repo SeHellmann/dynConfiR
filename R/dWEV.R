@@ -197,11 +197,11 @@
 #' # but different confidence distributions
 #' boxplot(conf~w+response, data=two_samples)
 #' if (requireNamespace("ggplot2", quietly = TRUE)) {
-#'   require(ggplot2)
-#'   ggplot(two_samples, aes(x=rt, y=conf))+
-#'     stat_density_2d(aes(fill = after_stat(density)), geom = "raster", contour = FALSE) +
-#'     xlim(c(0, 2))+ ylim(c(-1.5, 4))+
-#'     facet_grid(cols=vars(w), rows=vars(response), labeller = "label_both")
+#'  require(ggplot2)
+#'  ggplot(two_samples, aes(x=rt, y=conf))+
+#'   stat_density_2d(aes(fill = after_stat(density)), geom = "raster", contour = FALSE, na.rm=TRUE) +
+#'   xlim(c(0, 2))+ ylim(c(-1.5, 4))+
+#'   facet_grid(cols=vars(w), rows=vars(response), labeller = "label_both")
 #' }
 #'
 #' # Restricting to specific confidence region

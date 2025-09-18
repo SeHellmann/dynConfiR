@@ -7,7 +7,7 @@
 \title{Prediction of confidence and RT distributions for several sequential
 sampling confidence models and parameter constellations in parallel}
 \usage{
-predictConfModels(paramDf, maxrt = 15, subdivisions = 100L,
+predictConfModels(paramDf, maxrt = Inf, subdivisions = 100L,
   simult_conf = FALSE, stop.on.error = FALSE, .progress = TRUE,
   parallel = FALSE, n.cores = NULL)
 
@@ -19,10 +19,9 @@ predictRTModels(paramDf, maxrt = 9, subdivisions = 100L, minrt = NULL,
 \item{paramDf}{a dataframe with one row per combination of model and
 participant/parameter set. Columns may include a \code{participant} (\code{sbj}, or
 \code{subject}) column, and must include a \code{model} column and the names of the model parameters.
-For different stimulus
-quality/mean drift rates, names should be \code{v1}, \code{v2}, \code{v3},.... Different \code{s} parameters
-are possible with \code{s1}, \code{s2}, \code{s3}... with equally many steps as for drift rates (same
-for \code{sv} parameter in dynWEV and 2DSD).
+For different stimulus quality/mean drift rates, names should be \code{v1}, \code{v2}, \code{v3},....
+Different \code{s} parameters are possible with \code{s1}, \code{s2}, \code{s3}... with equally many steps as for drift rates (same
+for \code{sv} parameter in dynWEV and 2DSD), except for MTLNR.
 Additionally, the confidence thresholds should be given by names with
 \code{thetaUpper1}, \code{thetaUpper2},..., \code{thetaLower1},... or,
 for symmetric thresholds only by \code{theta1}, \code{theta2},....}
@@ -86,8 +85,8 @@ there for more information). It calls the respective function for predicting the
 response distribution (discrete decision and rating outcomes) and the rt density
 (density for decision, rating and response time) for every model and
 participant/subject combination in \code{paramDf}.
-Also, see \code{\link{ddynaViTE}}, \code{\link{d2DSD}}, and \code{\link{dRM}} for more
-information about the parameters.
+Also, see \code{\link{ddynaViTE}}, \code{\link{d2DSD}}, \code{\link{dMTLNR}},
+and \code{\link{dRM}} for more information about the parameters.
 }
 \details{
 These functions merely split the input data frame by model participants combinations,
@@ -103,7 +102,7 @@ consists merely of an integration of the reaction time density or the given mode
 The function \code{\link{predictRT}} (called by \code{predictRTModels}) wraps these
 density functions to a parameter set input and a data.frame output. '
 Note, that the encoding for stimulus identity is different between diffusion based models
-(2DSD, dynWEV) and race models (IRM(t), PCRM(t)). Therefore, in the columns stimulus and
+(2DSD, dynWEV) and race models (IRM(t), PCRM(t), and MTLNR). Therefore, in the columns stimulus and
 response there will be a mix of encodings: -1/1 for diffusion based models and 1/2 for
 race models. This, usually is not important, since for further aggregation models will
 not be mixed.
@@ -111,7 +110,7 @@ not be mixed.
 \note{
 Different parameters for different conditions are only allowed for drift rate
 \code{v}, drift rate variability \code{sv} (only dynWEV and 2DSD), and process variability
-\code{s}. All other parameters are used for all conditions.
+\code{s} (not for MTLNR). All other parameters are used for all conditions.
 }
 \examples{
 # First example for 2 participant and the "dynWEV" model

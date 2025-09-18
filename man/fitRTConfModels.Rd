@@ -30,7 +30,7 @@ name of the column in the input (i.e. the output contains a \code{subject} colum
 the input contains \code{subject} instead of \code{sbj}).)
 }}
 
-\item{models}{character vector with following possible elements "dynWEV", "2DSD", "IRM", "PCRM", "IRMt", and "PCRMt"  for the models to be fit.}
+\item{models}{character vector with following possible elements "dynWEV", "2DSD", "IRM", "PCRM", "IRMt", "PCRMt", and "MTLNR"  for the models to be fit.}
 
 \item{nRatings}{integer. Number of rating categories. If \code{NULL}, the maximum of
 \code{rating} and \code{length(unique(rating))} is used. This argument is especially
@@ -96,7 +96,7 @@ This function is a wrapper of the function \code{\link{fitConfModel}} (see
 there for more information). It calls the function for every possible combination
 of model and participant/subject in \code{model} and \code{data} respectively.
 Also, see \code{\link{ddynaViTE}}, \code{\link{d2DSD}}, \code{\link{dDDConf}},
-and \code{\link{dRM}} for more
+\code{\link{dRM}}, and \code{\link{dMTLNR}} for more
 information about the parameters.
 }
 \details{

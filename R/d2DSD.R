@@ -179,7 +179,7 @@
 #' if (requireNamespace("ggplot2", quietly = TRUE)) {
 #'   require(ggplot2)
 #'   ggplot(dfu, aes(x=rt, y=conf))+
-#'     stat_density_2d(aes(fill = after_stat(density)), geom = "raster", contour = FALSE) +
+#'     stat_density_2d(aes(fill = after_stat(density)), geom = "raster", contour = FALSE, na.rm=TRUE) +
 #'     facet_wrap(~response)
 #' }
 #' boxplot(conf~response, data=dfu)

@@ -17,7 +17,7 @@ simulateRTConf(paramDf, n = 10000, model = NULL, gamma = FALSE,
 Total number of samples is \code{n*nConditions*length(stimulus)}.}
 
 \item{model}{character scalar. One of "dynaViTE", "dynWEV", "2DSD", "2DSDT",
-"IRM", "PCRM", "IRMt", or "PCRMt". Could also be passed as a column in the paramDf argument.}
+"IRM", "PCRM", "IRMt", "PCRMt", or "MTLNR". Could also be passed as a column in the paramDf argument.}
 
 \item{gamma}{logical. If TRUE, the gamma correlation between confidence ratings, rt and accuracy is
 computed.}
@@ -64,8 +64,8 @@ together with a discrete confidence judgment for the sequential sampling confide
 specified by the argument \code{model}, given specific parameter constellations.
 This function is a wrapper that calls the respective functions for diffusion based
 models (dynaViTE and 2DSD: \code{\link{simulateWEV}}) and race models (IRM, PCRM,
-IRMt, and PCRMt: \code{\link{simulateRM}}. It also computes the Gamma rank correlation
-between the confidence ratings and
+IRMt, and PCRMt: \code{\link{simulateRM}}; and MTLNR: \code{\link{simulateMTLNR}}).
+It also computes the Gamma rank correlation between the confidence ratings and
 condition (task difficulty), reaction times and accuracy in the simulated output.
 }
 \details{
@@ -75,9 +75,10 @@ function for diffusion based models, i.e. dynaViTE and 2DSD (\code{\link{simulat
 i.e. IRM(t) and PCRM(t), (\code{\link{simulateRM}}). See there for more information.
 
 \strong{Simulation Method:} The simulation is done by simulating normal variables
-in discretized steps until
-the processes reach the boundary. If no boundary is met within the maximum time,
-response is set to 0.
+in discretized steps until the processes reach the boundary.
+If no boundary is met within the maximum time, response is set to 0.
+The MTLNR model is simulated without discretization, but simply by simulating the
+necessary log-normally distributed random variables.
 
 \strong{Gamma correlations:} The Gamma coefficients are computed separately for
 correct/incorrect responses for the correlation of confidence ratings with condition and rt

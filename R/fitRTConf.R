@@ -5,7 +5,8 @@
 #' flavors of race models (Hellmann et al., 2023). Which model to fit is
 #' specified by the argument \code{model}.
 #' Only a ML method is implemented.
-#' See \code{\link{ddynaViTE}}, \code{\link{d2DSD}}, and \code{\link{dRM}} for more
+#' See \code{\link{ddynaViTE}}, \code{\link{d2DSD}}, \code{\link{dRM}}, and
+#' \code{\link{dMTLNR}} for more
 #' information about the parameters and Details for not-fitted parameters.
 #'
 #' @param data a `data.frame` where each row is one trial, containing following
@@ -22,7 +23,7 @@
 #'                                                       if unique the ID is used in saved files with interim results
 #'                                                       and logging messages;
 #'                                                       if non-unique or missing and `logging =TRUE`, 999 will be used then)
-#' @param model character scalar. One of "dynWEV", "2DSD", "IRM", "PCRM", "IRMt", "PCRMt", or "DDConf" for the model to be fit.
+#' @param model character scalar. One of "dynWEV", "2DSD", "IRM", "PCRM", "IRMt", "PCRMt", "MTLNR", or "DDConf" for the model to be fit.
 #' @param fixed list. List with parameter-value pairs for parameters that should not be fitted. See Details.
 #' @param init_grid data.frame or `NULL`. Grid for the initial parameter search. Each row is one parameter constellation.
 #' See details for more information. If \code{NULL} a default grid will be used.
@@ -107,14 +108,25 @@
 #' `a`, `vmin` and `vmax` (will be equidistantly spanned across conditions), `sv`, `z` (as the
 #' relative starting point between 0 and `a`), `sz` (also in relative terms), `t0`, `st0`, `theta0`
 #' (minimal threshold), `thetamax` (maximal threshold; the others will be equidistantly
-#' spanned symmetrically for both decisions), and `tau`. For dynWEV,
-#' additionally `w` , `svis`, and `sigvis` are required. For the race models the parameters
+#' spanned symmetrically for both decisions), and `tau`.
+#' For dynWEV, additionally `w` , `svis`, and `sigvis` are required.
+#'
+#' For the race models the parameters
 #' are: `vmin`, `vmax` (will be equidistantly
 #' spanned across conditions), `a` and `b` (decision thresholds), `t0`, `st0`, `theta0`
 #' (minimal threshold), `thetamax` (maximal threshold;
 #' the others will be equidistantly spanned symmetrically for both decisions), and for
 #' time-dependent confidence race models
 #' additionally `wrt` and `wint` (as weights compared to `wx=1`).
+#'
+#' For the multiple-threshold log-normal race model (MTLNR) the parameters
+#' are: `vmin`, `vmax` (will be equidistantly
+#' spanned across conditions), `mu_d1` and `mu_d2` (mean pars for boundary distance),
+#' `s_v1`, `s_v2`, `s_d1`, `s_d2` (variance parameters for the accumulation rates (v) and
+#' boundary distances (d)), `rho_v` and `rho_d` (correlation parameters for the correlation
+#' of accumulation rates and boundary distances between accumulators), `t0`, `st0`, `theta0`
+#' (minimal threshold), `thetamax` (maximal threshold;
+#' the others will be equidistantly spanned symmetrically for both decisions).
 #'
 #'  \strong{opts}. A list with numerical values. Possible options are listed below
 #'  (together with the optimization method they are used for).
@@ -285,7 +297,7 @@ fitRTConf <- function(data, model = "dynWEV",
     }
   }
 
-  if (grepl("RM", model)) {         # If Race Models are used, re-code lower(-1) and upper(+1) boundary to first(1) and second(2) accumulator
+  if (grepl("RM", model) || grepl("LNR", model)) {         # If Race Models are used, re-code lower(-1) and upper(+1) boundary to first(1) and second(2) accumulator
     stimulus <- (stimulus/2 +1.5)   # Diffusion-based models (dynWEV; 2DSD): -1    1
     response <- (response/2 +1.5)   # Race-based models (IRM(t), PCRM(t)):    1    2
   }
@@ -362,6 +374,7 @@ fitRTConf <- function(data, model = "dynWEV",
     logger::log_threshold(logger::DEBUG, index=2)
     logger::log_threshold(logger::DEBUG)
     logger::log_layout(logger, index=2)
+    logger::log_errors()
   }
 
 
@@ -404,6 +417,13 @@ fitRTConf <- function(data, model = "dynWEV",
                                           logging, filename,
                                           useparallel, n.cores,
                                           used_cats, actual_nRatings, precision)
+  if (grepl("LNR", model)) res <- fittingMTLNR(df, nConds, nRatings, fixed,
+                                             sym_thetas,
+                                             grid_search, init_grid, optim_method, opts,
+                                             logging, filename,
+                                             useparallel, n.cores,
+                                             used_cats, actual_nRatings, precision)
+
   if (model == "DDConf") {
     fixed <- fixed[!sapply(fixed, is.character)] # drop possible threshold-restriction meant for race models
     res <- fittingDDConf(df, nConds, nRatings, fixed, sym_thetas,
@@ -415,7 +435,7 @@ fitRTConf <- function(data, model = "dynWEV",
     }
   if (!exists("res")) stop("Model is unknown.
                            model must contain one of: 'dynaViTE', 'dynWEV',
-                           '2DSD', '2DSDT', 'IRM', 'IMRt', 'PCRM', 'PCRMt', or 'DDConf'")
+                           '2DSD', '2DSDT', 'IRM', 'IMRt', 'PCRM', 'PCRMt', 'MTLNR', or 'DDConf'")
 
 
   return(res)

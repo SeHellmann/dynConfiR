@@ -6,16 +6,15 @@
 #' response distribution (discrete decision and rating outcomes) and the rt density
 #' (density for decision, rating and response time) for every model and
 #' participant/subject combination in \code{paramDf}.
-#' Also, see \code{\link{ddynaViTE}}, \code{\link{d2DSD}}, and \code{\link{dRM}} for more
-#' information about the parameters.
+#' Also, see \code{\link{ddynaViTE}}, \code{\link{d2DSD}}, \code{\link{dMTLNR}},
+#' and \code{\link{dRM}} for more information about the parameters.
 #'
 #' @param paramDf a dataframe with one row per combination of model and
 #' participant/parameter set. Columns may include a `participant` (`sbj`, or
 #' `subject`) column, and must include a `model` column and the names of the model parameters.
-#' For different stimulus
-#' quality/mean drift rates, names should be `v1`, `v2`, `v3`,.... Different `s` parameters
-#' are possible with `s1`, `s2`, `s3`... with equally many steps as for drift rates (same
-#' for `sv` parameter in dynWEV and 2DSD).
+#' For different stimulus quality/mean drift rates, names should be `v1`, `v2`, `v3`,....
+#' Different `s` parameters are possible with `s1`, `s2`, `s3`... with equally many steps as for drift rates (same
+#' for `sv` parameter in dynWEV and 2DSD), except for MTLNR.
 #' Additionally, the confidence thresholds should be given by names with
 #' `thetaUpper1`, `thetaUpper2`,..., `thetaLower1`,... or,
 #' for symmetric thresholds only by `theta1`, `theta2`,....
@@ -76,14 +75,14 @@
 #' The function \code{\link{predictRT}} (called by \code{predictRTModels}) wraps these
 #' density functions to a parameter set input and a data.frame output. '
 #' Note, that the encoding for stimulus identity is different between diffusion based models
-#' (2DSD, dynWEV) and race models (IRM(t), PCRM(t)). Therefore, in the columns stimulus and
+#' (2DSD, dynWEV) and race models (IRM(t), PCRM(t), and MTLNR). Therefore, in the columns stimulus and
 #' response there will be a mix of encodings: -1/1 for diffusion based models and 1/2 for
 #' race models. This, usually is not important, since for further aggregation models will
 #' not be mixed.
 #'
 #' @note Different parameters for different conditions are only allowed for drift rate
 #' \code{v}, drift rate variability \code{sv} (only dynWEV and 2DSD), and process variability
-#' \code{s}. All other parameters are used for all conditions.
+#' \code{s} (not for MTLNR). All other parameters are used for all conditions.
 #'
 #'
 #' @author Sebastian Hellmann.
@@ -138,7 +137,7 @@
 #' @rdname predictRTConfModels
 #' @export
 predictConfModels <- function(paramDf,
-                              maxrt=15, subdivisions = 100L, simult_conf = FALSE,
+                              maxrt=Inf, subdivisions = 100L, simult_conf = FALSE,
                               stop.on.error=FALSE,
                               .progress=TRUE,
                               parallel = FALSE, n.cores=NULL){
@@ -150,8 +149,8 @@ predictConfModels <- function(paramDf,
     models[models=="DDMConf"] = "DDConf"
   }
 
-  if (!all(grepl("dynWEV|2DSD|IRM|PCRM|DDConf|dynaViTE", models))) {
-    stop("model must contain 'dynaViTE', 'dynWEV', '2DSD', 'DDConf', 'IRM', 'PCRM', 'IRMt', or 'PCRMt'")
+  if (!all(grepl("dynWEV|2DSD|IRM|PCRM|DDConf|dynaViTE|LNR", models))) {
+    stop("model must contain 'dynaViTE', 'dynWEV', '2DSD', 'DDConf', 'IRM', 'PCRM', 'IRMt', 'PCRMt', or 'MTLNR'")
   }
   sbjcol <- c("subject", "participant", "sbj")[which(c("subject", "participant", "sbj") %in% names(paramDf))]
   if (length(sbjcol)==0) {
@@ -235,8 +234,8 @@ predictRTModels <- function(paramDf,
     models[models=="DDMConf"] = "DDConf"
   }
 
-  if (!all(grepl("dynWEV|2DSD|IRM|PCRM|DDConf|dynaViTE", models))) {
-    stop("model must contain 'dynaViTE', 'dynWEV', '2DSD', 'DDConf', 'IRM', 'PCRM', 'IRMt', or 'PCRMt'")
+  if (!all(grepl("dynWEV|2DSD|IRM|PCRM|DDConf|dynaViTE|LNR", models))) {
+    stop("model must contain 'dynaViTE', 'dynWEV', '2DSD', 'DDConf', 'IRM', 'PCRM', 'IRMt', 'PCRMt', or 'MTLNR'")
   }
   sbjcol <- c("subject", "participant", "sbj")[which(c("subject", "participant", "sbj") %in% names(paramDf))]
   if (length(sbjcol)==0) {

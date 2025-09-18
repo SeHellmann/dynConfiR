@@ -6,7 +6,7 @@
 \alias{predictDDConf_RT}
 \title{Prediction of Confidence Rating and Reaction Time Distribution in the drift diffusion confidence model}
 \usage{
-predictDDConf_Conf(paramDf, maxrt = 15, subdivisions = 100L,
+predictDDConf_Conf(paramDf, maxrt = Inf, subdivisions = 100L,
   stop.on.error = FALSE, .progress = TRUE)
 
 predictDDConf_RT(paramDf, maxrt = 9, subdivisions = 100L, minrt = NULL,

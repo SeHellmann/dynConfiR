@@ -2,7 +2,7 @@ fill_thresholds <- function(res, used_cats, actual_nRatings, min_conf) {
   ### This function fills up the missing confidence thresholds with the best/easiest choices
   ### for the not identifiable or not reasonably fittable thresholds because some confidence
   ### categories are not used by the subject
-  ### min_conf : theoretical minimum of confidence measure (depending on model: 0 or -Inf (then -1e+24 should be used))
+  ### min_conf : theoretical minimum of confidence measure (depending on model: 0, 1, or -Inf (then -1e+24 should be used))
   ### ToDo:   For sym_thetas==FALSE, use different nRatings for lower and upper responses in fitting
   symmetric_confidence_thresholds <- length(grep(pattern = "thetaUpper", names(res), value = T))<1
   if (symmetric_confidence_thresholds) {

@@ -134,7 +134,7 @@
 #' @rdname predictWEV
 #' @export
 predictWEV_Conf <- function(paramDf, model="dynaViTE",
-                            maxrt=15, subdivisions = 100L, simult_conf = FALSE,
+                            maxrt=Inf, subdivisions = 100L, simult_conf = FALSE,
                             stop.on.error = FALSE,
                             precision=3,
                             .progress=TRUE){

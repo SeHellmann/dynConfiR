@@ -4,7 +4,7 @@
 #' there for more information). It calls the function for every possible combination
 #' of model and participant/subject in `model` and \code{data} respectively.
 #' Also, see \code{\link{ddynaViTE}}, \code{\link{d2DSD}}, \code{\link{dDDConf}},
-#' and \code{\link{dRM}} for more
+#'  \code{\link{dRM}}, and \code{\link{dMTLNR}} for more
 #' information about the parameters.
 #'
 #' @param data a `data.frame` where each row is one trial, containing following
@@ -22,7 +22,7 @@
 #'   saved with interim results and logging messages.) The output data frame reused the
 #'   name of the column in the input (i.e. the output contains a `subject` column, if
 #'   the input contains `subject` instead of `sbj`).)
-#' @param models character vector with following possible elements "dynWEV", "2DSD", "IRM", "PCRM", "IRMt", and "PCRMt"  for the models to be fit.
+#' @param models character vector with following possible elements "dynWEV", "2DSD", "IRM", "PCRM", "IRMt", "PCRMt", and "MTLNR"  for the models to be fit.
 #' @param nRatings integer. Number of rating categories. If `NULL`, the maximum of
 #' `rating` and `length(unique(rating))` is used. This argument is especially
 #' important for data sets where not the whole range of rating categories is realized.
@@ -171,10 +171,10 @@ fitRTConfModels <- function(data, models = c("dynaViTE", "2DSD", "PCRMt"),
     warning("DDMConf was renamed DDConf in version 1.0.0! DDConf will be fitted instead!")
     models[models=="DDMConf"] = "DDConf"
   }
-  if (any(!grepl("dynaViTE|IRM|PCRM|IRMt|PCRMt|dynWEV|2DSD|DDConf", models))) {
+  if (any(!grepl("dynaViTE|IRM|PCRM|IRMt|PCRMt|dynWEV|2DSD|MTLNR|DDConf", models))) {
     stop("all models must be one of:
     'dynaViTE', 'dynWEV', '2DSDT', '2DSD',
-    'DDConf', 'IRM', 'IRMt', 'PCRM', or 'PCRMt'")
+    'DDConf', 'IRM', 'IRMt', 'PCRM', 'PCRMt', or 'MTLNR'")
   }
 
   ### Maybe later: use ...-argument für renaming data-columns and to pass other arguments
@@ -265,7 +265,8 @@ fitRTConfModels <- function(data, models = c("dynaViTE", "2DSD", "PCRMt"),
                   paste("v", 1:nConds, sep=""),
                   paste("theta", 1:(nRatings-1), sep=""),
                   "wrt", "wint", "wx", "b", "a",
-                  "z", "sz", "sv", "tau", "w", "svis", "sigvis", "lambda")
+                  "z", "sz", "sv", "tau", "w", "svis", "sigvis", "lambda",
+                  "mu_d1","mu_d2","s_v1","s_v2", "s_d1","s_d2" ,"rho_d","rho_v")
     #outnames <- outnames[!(outnames %in% names(fixed))]
   } else {
     outnames <- c("model", "sbj", "negLogLik", "N", "k", "BIC", "AICc", "AIC", "fixed",
@@ -274,7 +275,8 @@ fitRTConfModels <- function(data, models = c("dynaViTE", "2DSD", "PCRMt"),
                   paste("thetaLower", 1:(nRatings-1), sep=""),
                   paste("thetaUpper", 1:(nRatings-1), sep=""),
                   "wrt", "wint", "wx", "b", "a",
-                  "z", "sz", "sv", "tau", "w", "svis", "sigvis", "lambda")
+                  "z", "sz", "sv", "tau", "w", "svis", "sigvis", "lambda",
+                  "mu_d1","mu_d2","s_v1","s_v2", "s_d1","s_d2" ,"rho_d","rho_v")
     #outnames <- outnames[!(outnames %in% names(fixed))]
   }
 

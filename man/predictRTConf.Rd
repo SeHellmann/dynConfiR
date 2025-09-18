@@ -6,7 +6,7 @@
 \alias{predictRT}
 \title{Prediction of confidence rating and response time distribution for sequential sampling confidence models}
 \usage{
-predictConf(paramDf, model = NULL, maxrt = 15, subdivisions = 100L,
+predictConf(paramDf, model = NULL, maxrt = Inf, subdivisions = 100L,
   simult_conf = FALSE, stop.on.error = FALSE, .progress = TRUE)
 
 predictRT(paramDf, model = NULL, maxrt = 9, subdivisions = 100L,
@@ -16,14 +16,14 @@ predictRT(paramDf, model = NULL, maxrt = 9, subdivisions = 100L,
 \arguments{
 \item{paramDf}{a list or dataframe with one row. Column names should match the
 names of the respective model parameters. For different stimulus
-quality/mean drift rates, names should be \code{v1}, \code{v2}, \code{v3},.... Different \code{s} parameters
-are possible with \code{s1}, \code{s2}, \code{s3}... with equally many steps as for drift rates (same
-for \code{sv} parameter in dynWEV and 2DSD).
+quality/mean drift rates, names should be \code{v1}, \code{v2}, \code{v3},....
+Different \code{s} parameters are possible with \code{s1}, \code{s2}, \code{s3}... with equally many steps as for drift rates (same
+for \code{sv} parameter in dynWEV and 2DSD), except for MTLNR.
 Additionally, the confidence thresholds should be given by names with
 \code{thetaUpper1}, \code{thetaUpper2},..., \code{thetaLower1},... or,
 for symmetric thresholds only by \code{theta1}, \code{theta2},....}
 
-\item{model}{character scalar. One of "2DSD", "dynWEV", "IRM", "PCRM", "IRMt", or "PCRMt".}
+\item{model}{character scalar. One of "2DSD", "dynWEV", "IRM", "PCRM", "IRMt", "PCRMt", or "MTLNR".}
 
 \item{maxrt}{numeric. The maximum RT for the
 integration/density computation. Default: 15 (for \code{predictConf} (integration)),
@@ -75,7 +75,7 @@ RT distribution (density) for the sequential sampling confidence model
 specified by the argument \code{model}, given specific parameter constellations.
 This function calls the respective functions for diffusion based
 models (dynWEV and 2DSD: \code{\link{predictWEV}}) and race models (IRM, PCRM,
-IRMt, and PCRMt: \code{\link{predictRM}}).
+IRMt, and PCRMt: \code{\link{predictRM}}; and MTLNR: \code{\link{predictMTLNR}}).
 }
 \details{
 The function \code{predictConf} consists merely of an integration of
@@ -88,7 +88,7 @@ with the respective model may be used.
 \note{
 Different parameters for different conditions are only allowed for drift rate,
 \code{v}, drift rate variability, \code{sv} (in dynWEV and 2DSD), and process variability
-\code{s}. All other parameters are used for all conditions.
+\code{s} (not for MTLNR). All other parameters are used for all conditions.
 }
 \examples{
 # Examples for "dynWEV" model (equivalent applicable for

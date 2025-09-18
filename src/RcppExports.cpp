@@ -219,6 +219,35 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// r_MT_LNR
+NumericVector r_MT_LNR(int n, NumericVector params, NumericVector thresholds);
+RcppExport SEXP _dynConfiR_r_MT_LNR(SEXP nSEXP, SEXP paramsSEXP, SEXP thresholdsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type thresholds(thresholdsSEXP);
+    rcpp_result_gen = Rcpp::wrap(r_MT_LNR(n, params, thresholds));
+    return rcpp_result_gen;
+END_RCPP
+}
+// d_MT_LNR
+NumericVector d_MT_LNR(NumericVector rts, NumericVector rating, NumericVector params, NumericVector thresholds, int win, double step_width);
+RcppExport SEXP _dynConfiR_d_MT_LNR(SEXP rtsSEXP, SEXP ratingSEXP, SEXP paramsSEXP, SEXP thresholdsSEXP, SEXP winSEXP, SEXP step_widthSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type rts(rtsSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type rating(ratingSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type thresholds(thresholdsSEXP);
+    Rcpp::traits::input_parameter< int >::type win(winSEXP);
+    Rcpp::traits::input_parameter< double >::type step_width(step_widthSEXP);
+    rcpp_result_gen = Rcpp::wrap(d_MT_LNR(rts, rating, params, thresholds, win, step_width));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_dynConfiR_d_2DSD", (DL_FUNC) &_dynConfiR_d_2DSD, 6},
@@ -235,6 +264,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_dynConfiR_r_RM_Kiani", (DL_FUNC) &_dynConfiR_r_RM_Kiani, 6},
     {"_dynConfiR_r_LCA", (DL_FUNC) &_dynConfiR_r_LCA, 4},
     {"_dynConfiR_r_DDConf", (DL_FUNC) &_dynConfiR_r_DDConf, 5},
+    {"_dynConfiR_r_MT_LNR", (DL_FUNC) &_dynConfiR_r_MT_LNR, 3},
+    {"_dynConfiR_d_MT_LNR", (DL_FUNC) &_dynConfiR_d_MT_LNR, 6},
     {NULL, NULL, 0}
 };
 

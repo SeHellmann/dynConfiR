@@ -83,10 +83,13 @@ simus <- rLCA(n=1000, mu1 = 2.5, mu2=1, th1=1.5, th2=1.6,
                wx=0.8, wrt=0.2, wint=0, t0=0.2, st0=0.1,
                pi=0.2, sig=1)
 if (requireNamespace("ggplot2", quietly = TRUE)) {
-  require(ggplot2)
-  ggplot(simus, aes(x=rt, y=conf))+
-    stat_density_2d(aes(fill = after_stat(density)), geom = "raster", contour = FALSE) +
-    facet_wrap(~response)
+  if (requireNamespace("MASS", quietly = TRUE)) {
+    require(MASS)
+    require(ggplot2)
+    ggplot(simus, aes(x=rt, y=conf))+
+      geom_bin2d()+
+      facet_wrap(~response)
+  }
 }
 boxplot(conf~response, data=simus)
 

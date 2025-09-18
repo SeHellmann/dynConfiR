@@ -57,3 +57,11 @@ r_DDConf <- function(n, params, delta = 0.01, maxT = 9, stop_on_error = TRUE) {
     .Call(`_dynConfiR_r_DDConf`, n, params, delta, maxT, stop_on_error)
 }
 
+r_MT_LNR <- function(n, params, thresholds) {
+    .Call(`_dynConfiR_r_MT_LNR`, n, params, thresholds)
+}
+
+d_MT_LNR <- function(rts, rating, params, thresholds, win = 1L, step_width = 0.0001) {
+    .Call(`_dynConfiR_d_MT_LNR`, rts, rating, params, thresholds, win, step_width)
+}
+
