@@ -1,7 +1,7 @@
 Type: Package
 Package: dynConfiR
 Title: Dynamic Models for Confidence and Response Time Distributions
-Version: 1.0.0
+Version: 1.0.0.9000
 Authors@R: c(
     person("Sebastian", "Hellmann", , "sebastian.hellmann@tum.de", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-3621-6343")),
@@ -33,7 +33,8 @@ Imports:
     Rcpp,
     rlang,
     stats
-Suggests: 
+Suggests:
+    MASS,
     covr,
     ggplot2,
     Hmisc,
@@ -52,4 +53,4 @@ LazyData: true
 NeedsCompilation: yes
 Repository: CRAN
 Roxygen: list(old_usage = TRUE, markdown=TRUE)
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.3

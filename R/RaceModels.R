@@ -175,11 +175,14 @@
 #' boxplot(rt~ws+response, data=two_samples)
 #' # but different confidence distributions
 #' boxplot(conf~ws+response, data=two_samples)
-#' if (requireNamespace("ggplot2", quietly = TRUE)) {
-#' require(ggplot2)
+#' if (requireNamespace("ggplot2", quietly = TRUE) &&
+#'     requireNamespace("MASS", quietly = TRUE)) {
+#' library(MASS)
+#' library(ggplot2)
 #' ggplot(two_samples, aes(x=rt, y=conf))+
 #'   stat_density_2d(aes(fill = after_stat(density)),
-#'                   geom = "raster", contour = FALSE, h=c(0.3, 0.7)) +
+#'                   geom = "raster", contour = FALSE, h=c(0.3, 0.7),
+#'                   na.rm = TRUE) +
 #'   xlim(c(0.2, 1.3))+ ylim(c(0, 2.5))+
 #'   facet_grid(cols=vars(ws), rows=vars(response), labeller = "label_both")
 #' }
