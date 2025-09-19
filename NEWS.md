@@ -1,3 +1,7 @@
+# dynConfiR 1.1.0 (September 2025)
+- bug fix in the example to throw no error with ggplot 4.0.0
+- New model implemented: the multiple-threshold correlated log-normal race model (MTLNR) (see Reynolds et al.; 2020; JMP)
+
 # dynConfiR 1.0.0 (May 2025)
 - change in the precision argument for all models. It is now an integer argument representing the approximate precision of the density in digits. Default is 6 for all models in the density functions.
 - Added precision argument in the fitting functions. With default to 3

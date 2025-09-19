@@ -25,7 +25,7 @@ knitr::opts_knit$set(base.url=paste(gitrep,gitbranch, sep="/"))
 
 # dynConfiR: R package for sequential sampling models of decision confidence
 
-This package includes implementation for several sequential sampling models of decision making and confidence judgments. The package includes density functions for decision, confidence and response time outcomes for following models: Dynamic visibility, time, and evidence model (dynaViTE), Dynamic weighted evidence and visibility (dynWEV), two-stage signal detection (2DSD), inpedendent and partially-correlated race models (IRM/PCRM). In addition, the package includes functions for parameter fitting, prediction and simulation of data.
+This package includes implementation for several sequential sampling models of decision making and confidence judgments. The package includes density functions for decision, confidence and response time outcomes for following models: Dynamic visibility, time, and evidence model (dynaViTE), Dynamic weighted evidence and visibility (dynWEV), two-stage signal detection (2DSD), inpedendent and partially-correlated race models (IRM/PCRM), and the multiple-threshold correlated log-normal race model (MRLNR). In addition, the package includes functions for parameter fitting, prediction and simulation of data.
 See the Preprint (Hellmann et al., 2025) for more information about implemented models and usage.
 
 

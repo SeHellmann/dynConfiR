@@ -13,10 +13,10 @@ density functions for decision, confidence and response time outcomes
 for following models: Dynamic visibility, time, and evidence model
 (dynaViTE), Dynamic weighted evidence and visibility (dynWEV), two-stage
 signal detection (2DSD), inpedendent and partially-correlated race
-models (IRM/PCRM). In addition, the package includes functions for
-parameter fitting, prediction and simulation of data. See the Preprint
-(Hellmann et al., 2025) for more information about implemented models
-and usage.
+models (IRM/PCRM), and the multiple-threshold correlated log-normal race
+model (MRLNR). In addition, the package includes functions for parameter
+fitting, prediction and simulation of data. See the Preprint (Hellmann
+et al., 2025) for more information about implemented models and usage.
 
 ## Installation
 
@@ -203,10 +203,11 @@ for users with experience in cognitive modelling!** For readers who want
 to use our open code to implement models of confidence themselves, the
 following steps need to be taken:
 
-- Derive the likelihood of a binary response ($R=-1, 1$) at response
-  time ($T$) and a specific level of confidence ($C=1,...K$) according
-  to the custom model and a set of parameters ($\theta$), given the
-  binary stimulus ($S=-1, 1$), i.e. $P(R, T, C | S, \theta)$.
+- Derive the likelihood of a binary response ($`R=-1, 1`$) at response
+  time ($`T`$) and a specific level of confidence ($`C=1,...K`$)
+  according to the custom model and a set of parameters ($`\theta`$),
+  given the binary stimulus ($`S=-1, 1`$),
+  i.e. $`P(R, T, C | S, \theta)`$.
 - Write a corresponding density function ‘d*yourmodelname*’ based on the
   available densities.
 - Use one of the files named ‘likelihood\_*model*.R’ from the package
