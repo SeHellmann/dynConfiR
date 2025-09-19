@@ -4,15 +4,15 @@ together with a discrete confidence judgment for the sequential sampling confide
 specified by the argument model, given specific parameter constellations.
 This function is a wrapper that calls the respective functions for diffusion based
 models (dynaViTE and 2DSD: simulateWEV) and race models (IRM, PCRM,
-IRMt, and PCRMt: simulateRM. It also computes the Gamma rank correlation
-between the confidence ratings and
+IRMt, and PCRMt: simulateRM; and MTLNR: simulateMTLNR).
+It also computes the Gamma rank correlation between the confidence ratings and
 condition (task difficulty), reaction times and accuracy in the simulated output."><meta property="og:description" content="Simulates the decision responses, reaction times and confidence measure
 together with a discrete confidence judgment for the sequential sampling confidence model
 specified by the argument model, given specific parameter constellations.
 This function is a wrapper that calls the respective functions for diffusion based
 models (dynaViTE and 2DSD: simulateWEV) and race models (IRM, PCRM,
-IRMt, and PCRMt: simulateRM. It also computes the Gamma rank correlation
-between the confidence ratings and
+IRMt, and PCRMt: simulateRM; and MTLNR: simulateMTLNR).
+It also computes the Gamma rank correlation between the confidence ratings and
 condition (task difficulty), reaction times and accuracy in the simulated output."></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
@@ -21,7 +21,7 @@ condition (task difficulty), reaction times and accuracy in the simulated output
 
     <a class="navbar-brand me-2" href="../index.html">dynConfiR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -58,8 +58,8 @@ together with a discrete confidence judgment for the sequential sampling confide
 specified by the argument <code>model</code>, given specific parameter constellations.
 This function is a wrapper that calls the respective functions for diffusion based
 models (dynaViTE and 2DSD: <code><a href="simulateWEV.html">simulateWEV</a></code>) and race models (IRM, PCRM,
-IRMt, and PCRMt: <code><a href="simulateRM.html">simulateRM</a></code>. It also computes the Gamma rank correlation
-between the confidence ratings and
+IRMt, and PCRMt: <code><a href="simulateRM.html">simulateRM</a></code>; and MTLNR: <code><a href="simulateMTLNR.html">simulateMTLNR</a></code>).
+It also computes the Gamma rank correlation between the confidence ratings and
 condition (task difficulty), reaction times and accuracy in the simulated output.</p>
     </div>
 
@@ -85,7 +85,7 @@ Total number of samples is <code>n*nConditions*length(stimulus)</code>.</p></dd>
 
 <dt id="arg-model">model<a class="anchor" aria-label="anchor" href="#arg-model"></a></dt>
 <dd><p>character scalar. One of "dynaViTE", "dynWEV", "2DSD", "2DSDT",
-"IRM", "PCRM", "IRMt", or "PCRMt". Could also be passed as a column in the paramDf argument.</p></dd>
+"IRM", "PCRM", "IRMt", "PCRMt", or "MTLNR". Could also be passed as a column in the paramDf argument.</p></dd>
 
 
 <dt id="arg-gamma">gamma<a class="anchor" aria-label="anchor" href="#arg-gamma"></a></dt>
@@ -147,9 +147,10 @@ fits the argument <code>paramDf</code> for simulation. The function calls the re
 function for diffusion based models, i.e. dynaViTE and 2DSD (<code><a href="simulateWEV.html">simulateWEV</a></code>) or race models,
 i.e. IRM(t) and PCRM(t), (<code><a href="simulateRM.html">simulateRM</a></code>). See there for more information.</p>
 <p><strong>Simulation Method:</strong> The simulation is done by simulating normal variables
-in discretized steps until
-the processes reach the boundary. If no boundary is met within the maximum time,
-response is set to 0.</p>
+in discretized steps until the processes reach the boundary.
+If no boundary is met within the maximum time, response is set to 0.
+The MTLNR model is simulated without discretization, but simply by simulating the
+necessary log-normally distributed random variables.</p>
 <p><strong>Gamma correlations:</strong> The Gamma coefficients are computed separately for
 correct/incorrect responses for the correlation of confidence ratings with condition and rt
 and separately for conditions for the correlation of accuracy and confidence. The resulting
@@ -170,6 +171,9 @@ Gamma coefficient.</p>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Attaching package: ‘dplyr’</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The following object is masked from ‘package:MASS’:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>     select</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> The following objects are masked from ‘package:stats’:</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>     filter, lag</span>
@@ -198,12 +202,12 @@ Gamma coefficient.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 6 × 8</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   model condition stimulus response correct    rt  conf rating</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> PCRMt         1        1        2       0 5.56   1.69      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> PCRMt         1        1        1       1 1.34   3.08      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> PCRMt         1        1        2       0 0.800  2.81      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> PCRMt         1        1        1       1 1.61   2.97      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> PCRMt         1        1        2       0 4.71   1.70      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> PCRMt         1        1        1       1 8.57   2.86      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> PCRMt         1        1        1       1  4.02  1.81      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> PCRMt         1        1        1       1  3.86  2.96      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> PCRMt         1        1        1       1  3.08  2.70      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> PCRMt         1        1        1       1  4.14  5.18      2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> PCRMt         1        1        1       1  4.37  3.90      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> PCRMt         1        1        1       1  5.25  1.89      1</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

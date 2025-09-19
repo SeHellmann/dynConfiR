@@ -21,7 +21,7 @@ exported for individual usage in other contexts."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">dynConfiR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -178,12 +178,12 @@ if stimulus is -1, and <code>"upper"</code>, if stimulus is 1.</p>
 <span class="r-in"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">[</span>,<span class="op">-</span><span class="fl">3</span><span class="op">]</span> <span class="co"># drop conf measure (unobservable variable)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     rt response rating stimulus discriminability</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 0.48        1      2       -1                1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 1.00        1      2        1                2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 1.29       -1      2       -1                2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4 0.51        1      2        1                2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5 0.99        1      2        1                2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6 1.54       -1      1        1                1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 0.76       -1      2        1                1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 0.66        1      1       -1                1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 0.53       -1      2        1                1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 0.53       -1      2       -1                2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 0.69        1      2        1                2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6 0.59        1      2        1                2</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># 2. Define some parameter set in a data.frame</span></span></span>
 <span class="r-in"><span><span class="va">paramDf</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>a<span class="op">=</span><span class="fl">2.5</span>,v1<span class="op">=</span><span class="fl">0.5</span>, v2<span class="op">=</span><span class="fl">1</span>, t0<span class="op">=</span><span class="fl">0.1</span>,z<span class="op">=</span><span class="fl">0.7</span>,</span></span>
@@ -192,18 +192,18 @@ if stimulus is -1, and <code>"upper"</code>, if stimulus is 1.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># 3. Compute log likelihood for parameter and data</span></span></span>
 <span class="r-in"><span><span class="fu">LogLikWEV</span><span class="op">(</span><span class="va">data</span>, <span class="va">paramDf</span>, model<span class="op">=</span><span class="st">"dynWEV"</span>, condition<span class="op">=</span><span class="st">"discriminability"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -390.9572</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -405.2209</span>
 <span class="r-in"><span><span class="co"># adding the hypothetical interjudgment time to response times</span></span></span>
 <span class="r-in"><span><span class="co"># results in the same log likelihood as before when simult_conf=TRUE</span></span></span>
 <span class="r-in"><span><span class="va">data</span><span class="op">$</span><span class="va">rt</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">$</span><span class="va">rt</span> <span class="op">+</span> <span class="va">paramDf</span><span class="op">$</span><span class="va">tau</span></span></span>
 <span class="r-in"><span><span class="fu">LogLikWEV</span><span class="op">(</span><span class="va">data</span>, <span class="va">paramDf</span>, model<span class="op">=</span><span class="st">"dynWEV"</span>, condition<span class="op">=</span><span class="st">"discriminability"</span>, simult_conf<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -390.9572</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -405.2209</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># the same function for "2DSD" model</span></span></span>
 <span class="r-in"><span><span class="va">paramDf</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>a<span class="op">=</span><span class="fl">2.5</span>,v1<span class="op">=</span><span class="fl">0.5</span>, v2<span class="op">=</span><span class="fl">1</span>, t0<span class="op">=</span><span class="fl">0.1</span>,z<span class="op">=</span><span class="fl">0.7</span>,</span></span>
 <span class="r-in"><span>                      sz<span class="op">=</span><span class="fl">0</span>,sv<span class="op">=</span><span class="fl">0.2</span>, st0<span class="op">=</span><span class="fl">0</span>,  tau<span class="op">=</span><span class="fl">3</span>, theta1<span class="op">=</span><span class="fl">0.8</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">LogLikWEV</span><span class="op">(</span><span class="va">data</span>, <span class="va">paramDf</span>, model<span class="op">=</span><span class="st">"2DSD"</span>, condition<span class="op">=</span><span class="st">"discriminability"</span>, simult_conf<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -414.9727</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -414.171</span>
 <span class="r-in"><span><span class="co"># this results in the same log likelihood as before</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

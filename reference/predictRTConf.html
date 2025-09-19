@@ -5,13 +5,13 @@ RT distribution (density) for the sequential sampling confidence model
 specified by the argument model, given specific parameter constellations.
 This function calls the respective functions for diffusion based
 models (dynWEV and 2DSD: predictWEV) and race models (IRM, PCRM,
-IRMt, and PCRMt: predictRM)."><meta property="og:description" content="predictConf predicts the categorical response distribution of
+IRMt, and PCRMt: predictRM; and MTLNR: predictMTLNR)."><meta property="og:description" content="predictConf predicts the categorical response distribution of
 decision and confidence ratings, predictRT computes the predicted
 RT distribution (density) for the sequential sampling confidence model
 specified by the argument model, given specific parameter constellations.
 This function calls the respective functions for diffusion based
 models (dynWEV and 2DSD: predictWEV) and race models (IRM, PCRM,
-IRMt, and PCRMt: predictRM)."></head><body>
+IRMt, and PCRMt: predictRM; and MTLNR: predictMTLNR)."></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -19,7 +19,7 @@ IRMt, and PCRMt: predictRM)."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">dynConfiR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -57,12 +57,12 @@ RT distribution (density) for the sequential sampling confidence model
 specified by the argument <code>model</code>, given specific parameter constellations.
 This function calls the respective functions for diffusion based
 models (dynWEV and 2DSD: <code><a href="predictWEV.html">predictWEV</a></code>) and race models (IRM, PCRM,
-IRMt, and PCRMt: <code><a href="predictRM.html">predictRM</a></code>).</p>
+IRMt, and PCRMt: <code><a href="predictRM.html">predictRM</a></code>; and MTLNR: <code><a href="predictMTLNR.html">predictMTLNR</a></code>).</p>
     </div>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">predictConf</span><span class="op">(</span><span class="va">paramDf</span>, model <span class="op">=</span> <span class="cn">NULL</span>, maxrt <span class="op">=</span> <span class="fl">15</span>, subdivisions <span class="op">=</span> <span class="fl">100L</span>,</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">predictConf</span><span class="op">(</span><span class="va">paramDf</span>, model <span class="op">=</span> <span class="cn">NULL</span>, maxrt <span class="op">=</span> <span class="cn">Inf</span>, subdivisions <span class="op">=</span> <span class="fl">100L</span>,</span>
 <span>  simult_conf <span class="op">=</span> <span class="cn">FALSE</span>, stop.on.error <span class="op">=</span> <span class="cn">FALSE</span>, .progress <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">predictRT</span><span class="op">(</span><span class="va">paramDf</span>, model <span class="op">=</span> <span class="cn">NULL</span>, maxrt <span class="op">=</span> <span class="fl">9</span>, subdivisions <span class="op">=</span> <span class="fl">100L</span>,</span>
@@ -77,16 +77,16 @@ IRMt, and PCRMt: <code><a href="predictRM.html">predictRM</a></code>).</p>
 <dl><dt id="arg-paramdf">paramDf<a class="anchor" aria-label="anchor" href="#arg-paramdf"></a></dt>
 <dd><p>a list or dataframe with one row. Column names should match the
 names of the respective model parameters. For different stimulus
-quality/mean drift rates, names should be <code>v1</code>, <code>v2</code>, <code>v3</code>,.... Different <code>s</code> parameters
-are possible with <code>s1</code>, <code>s2</code>, <code>s3</code>... with equally many steps as for drift rates (same
-for <code>sv</code> parameter in dynWEV and 2DSD).
+quality/mean drift rates, names should be <code>v1</code>, <code>v2</code>, <code>v3</code>,....
+Different <code>s</code> parameters are possible with <code>s1</code>, <code>s2</code>, <code>s3</code>... with equally many steps as for drift rates (same
+for <code>sv</code> parameter in dynWEV and 2DSD), except for MTLNR.
 Additionally, the confidence thresholds should be given by names with
 <code>thetaUpper1</code>, <code>thetaUpper2</code>,..., <code>thetaLower1</code>,... or,
 for symmetric thresholds only by <code>theta1</code>, <code>theta2</code>,....</p></dd>
 
 
 <dt id="arg-model">model<a class="anchor" aria-label="anchor" href="#arg-model"></a></dt>
-<dd><p>character scalar. One of "2DSD", "dynWEV", "IRM", "PCRM", "IRMt", or "PCRMt".</p></dd>
+<dd><p>character scalar. One of "2DSD", "dynWEV", "IRM", "PCRM", "IRMt", "PCRMt", or "MTLNR".</p></dd>
 
 
 <dt id="arg-maxrt">maxrt<a class="anchor" aria-label="anchor" href="#arg-maxrt"></a></dt>
@@ -162,7 +162,7 @@ with the respective model may be used.</p>
     <h2 id="note">Note<a class="anchor" aria-label="anchor" href="#note"></a></h2>
     <p>Different parameters for different conditions are only allowed for drift rate,
 <code>v</code>, drift rate variability, <code>sv</code> (in dynWEV and 2DSD), and process variability
-<code>s</code>. All other parameters are used for all conditions.</p>
+<code>s</code> (not for MTLNR). All other parameters are used for all conditions.</p>
     </div>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>

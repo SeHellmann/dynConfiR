@@ -4,13 +4,15 @@ the 2DSD model (Pleskac &amp;amp; Busemeyer, 2010), dynWEV, DDConf, and various
 flavors of race models (Hellmann et al., 2023). Which model to fit is
 specified by the argument model.
 Only a ML method is implemented.
-See ddynaViTE, d2DSD, and dRM for more
+See ddynaViTE, d2DSD, dRM, and
+dMTLNR for more
 information about the parameters and Details for not-fitted parameters."><meta property="og:description" content="Fits the parameters of different models of response time and confidence, including
 the 2DSD model (Pleskac &amp;amp; Busemeyer, 2010), dynWEV, DDConf, and various
 flavors of race models (Hellmann et al., 2023). Which model to fit is
 specified by the argument model.
 Only a ML method is implemented.
-See ddynaViTE, d2DSD, and dRM for more
+See ddynaViTE, d2DSD, dRM, and
+dMTLNR for more
 information about the parameters and Details for not-fitted parameters."></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
@@ -19,7 +21,7 @@ information about the parameters and Details for not-fitted parameters."></head>
 
     <a class="navbar-brand me-2" href="../index.html">dynConfiR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -56,7 +58,8 @@ the 2DSD model (Pleskac &amp; Busemeyer, 2010), dynWEV, DDConf, and various
 flavors of race models (Hellmann et al., 2023). Which model to fit is
 specified by the argument <code>model</code>.
 Only a ML method is implemented.
-See <code><a href="dynaViTE.html">ddynaViTE</a></code>, <code><a href="d2DSD.html">d2DSD</a></code>, and <code><a href="RaceModels.html">dRM</a></code> for more
+See <code><a href="dynaViTE.html">ddynaViTE</a></code>, <code><a href="d2DSD.html">d2DSD</a></code>, <code><a href="RaceModels.html">dRM</a></code>, and
+<code><a href="MTLNR.html">dMTLNR</a></code> for more
 information about the parameters and Details for not-fitted parameters.</p>
     </div>
 
@@ -91,7 +94,7 @@ if non-unique or missing and <code>logging =TRUE</code>, 999 will be used then)<
 
 
 <dt id="arg-model">model<a class="anchor" aria-label="anchor" href="#arg-model"></a></dt>
-<dd><p>character scalar. One of "dynWEV", "2DSD", "IRM", "PCRM", "IRMt", "PCRMt", or "DDConf" for the model to be fit.</p></dd>
+<dd><p>character scalar. One of "dynWEV", "2DSD", "IRM", "PCRM", "IRMt", "PCRMt", "MTLNR", or "DDConf" for the model to be fit.</p></dd>
 
 
 <dt id="arg-fixed">fixed<a class="anchor" aria-label="anchor" href="#arg-fixed"></a></dt>
@@ -215,14 +218,23 @@ should include the parameters of the desired model, which are the following for 
 <code>a</code>, <code>vmin</code> and <code>vmax</code> (will be equidistantly spanned across conditions), <code>sv</code>, <code>z</code> (as the
 relative starting point between 0 and <code>a</code>), <code>sz</code> (also in relative terms), <code>t0</code>, <code>st0</code>, <code>theta0</code>
 (minimal threshold), <code>thetamax</code> (maximal threshold; the others will be equidistantly
-spanned symmetrically for both decisions), and <code>tau</code>. For dynWEV,
-additionally <code>w</code> , <code>svis</code>, and <code>sigvis</code> are required. For the race models the parameters
+spanned symmetrically for both decisions), and <code>tau</code>.
+For dynWEV, additionally <code>w</code> , <code>svis</code>, and <code>sigvis</code> are required.</p>
+<p>For the race models the parameters
 are: <code>vmin</code>, <code>vmax</code> (will be equidistantly
 spanned across conditions), <code>a</code> and <code>b</code> (decision thresholds), <code>t0</code>, <code>st0</code>, <code>theta0</code>
 (minimal threshold), <code>thetamax</code> (maximal threshold;
 the others will be equidistantly spanned symmetrically for both decisions), and for
 time-dependent confidence race models
 additionally <code>wrt</code> and <code>wint</code> (as weights compared to <code>wx=1</code>).</p>
+<p>For the multiple-threshold log-normal race model (MTLNR) the parameters
+are: <code>vmin</code>, <code>vmax</code> (will be equidistantly
+spanned across conditions), <code>mu_d1</code> and <code>mu_d2</code> (mean pars for boundary distance),
+<code>s_v1</code>, <code>s_v2</code>, <code>s_d1</code>, <code>s_d2</code> (variance parameters for the accumulation rates (v) and
+boundary distances (d)), <code>rho_v</code> and <code>rho_d</code> (correlation parameters for the correlation
+of accumulation rates and boundary distances between accumulators), <code>t0</code>, <code>st0</code>, <code>theta0</code>
+(minimal threshold), <code>thetamax</code> (maximal threshold;
+the others will be equidistantly spanned symmetrically for both decisions).</p>
 <p><strong>opts</strong>. A list with numerical values. Possible options are listed below
 (together with the optimization method they are used for).</p><ul><li><p><code>nAttempts</code> (all) number of best performing initial parameter sets used for
 optimization; default 5, if <code>grid_search</code> is <code>TRUE</code>.
@@ -266,13 +278,13 @@ from top to bottom
 <span class="r-in"><span><span class="va">threshs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="cn">Inf</span>, <span class="fl">1</span>, <span class="fl">2</span>, <span class="cn">Inf</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">data</span><span class="op">$</span><span class="va">rating</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cut.html" class="external-link">cut</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">conf</span>, breaks <span class="op">=</span> <span class="va">threshs</span>, include.lowest <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     rt response       conf stimulus condition rating</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 1.90    upper  4.4907731    upper         1      3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 2.57    lower  0.9263875    upper         1      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 1.38    upper  2.0384228    upper         1      3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4 0.74    lower -0.7951406    upper         1      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5 1.15    upper  1.1012016    upper         1      2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6 0.95    upper  4.3890929    upper         1      3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     rt response      conf stimulus condition rating</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 3.23    upper 0.4455081    upper         1      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 2.51    upper 1.9373025    upper         1      2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 6.31    upper 9.4040388    upper         1      3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 0.45    upper 4.6879129    upper         1      3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 1.07    upper 3.0843956    upper         1      3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6 0.64    upper 1.4316841    upper         1      2</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># 2. Use fitting function</span></span></span>
 <span class="r-in"><span><span class="co"># Fitting the model with these opts results in a pretty bad fit</span></span></span>
@@ -281,14 +293,14 @@ from top to bottom
 <span class="r-in"><span>   <span class="fu">fitRTConf</span><span class="op">(</span><span class="va">data</span>, <span class="st">"dynWEV"</span>, fixed<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>sym_thetas<span class="op">=</span><span class="cn">TRUE</span>, z<span class="op">=</span><span class="fl">0.5</span>, st0<span class="op">=</span><span class="fl">0</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>            grid_search <span class="op">=</span> <span class="cn">FALSE</span>, logging<span class="op">=</span><span class="cn">FALSE</span>,</span></span>
 <span class="r-in"><span>            opts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>nAttempts<span class="op">=</span><span class="fl">1</span>, nRestarts<span class="op">=</span><span class="fl">2</span>, maxfun<span class="op">=</span><span class="fl">2000</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>          v1           sv        a   z        sz        t0 st0    theta1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 0.7237271 2.163498e-07 2.207412 0.5 0.1604164 0.2433265   0 0.9039504</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     theta2        tau        w         svis       sigvis lambda</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 1.033637 0.08584601 0.946706 8.170381e-06 2.144561e-06      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         v1       sv        a   z          sz        t0 st0  theta1   theta2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 1.172035 1.440472 2.713945 0.5 1.09681e-05 0.1975105   0 3.07273 3.731652</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       tau         w         svis    sigvis lambda</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 1.90583 0.4827312 1.079601e-06 0.3595828      0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                     fixed negLogLik   N  k      BIC     AICc</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 sym_thetas=TRUE, z=0.5, st0=0, lambda=0  268.8461 120 11 590.3547 561.7293</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 sym_thetas=TRUE, z=0.5, st0=0, lambda=0  290.5894 120 11 633.8413 605.2159</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        AIC</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 559.6922</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 603.1789</span>
 <span class="r-in"><span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

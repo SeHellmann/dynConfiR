@@ -4,14 +4,14 @@ there for more information). It calls the respective function for predicting the
 response distribution (discrete decision and rating outcomes) and the rt density
 (density for decision, rating and response time) for every model and
 participant/subject combination in paramDf.
-Also, see ddynaViTE, d2DSD, and dRM for more
-information about the parameters."><meta property="og:description" content="This function is a wrapper around the functions predictRTConf (see
+Also, see ddynaViTE, d2DSD, dMTLNR,
+and dRM for more information about the parameters."><meta property="og:description" content="This function is a wrapper around the functions predictRTConf (see
 there for more information). It calls the respective function for predicting the
 response distribution (discrete decision and rating outcomes) and the rt density
 (density for decision, rating and response time) for every model and
 participant/subject combination in paramDf.
-Also, see ddynaViTE, d2DSD, and dRM for more
-information about the parameters."></head><body>
+Also, see ddynaViTE, d2DSD, dMTLNR,
+and dRM for more information about the parameters."></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -19,7 +19,7 @@ information about the parameters."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">dynConfiR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -56,13 +56,13 @@ there for more information). It calls the respective function for predicting the
 response distribution (discrete decision and rating outcomes) and the rt density
 (density for decision, rating and response time) for every model and
 participant/subject combination in <code>paramDf</code>.
-Also, see <code><a href="dynaViTE.html">ddynaViTE</a></code>, <code><a href="d2DSD.html">d2DSD</a></code>, and <code><a href="RaceModels.html">dRM</a></code> for more
-information about the parameters.</p>
+Also, see <code><a href="dynaViTE.html">ddynaViTE</a></code>, <code><a href="d2DSD.html">d2DSD</a></code>, <code><a href="MTLNR.html">dMTLNR</a></code>,
+and <code><a href="RaceModels.html">dRM</a></code> for more information about the parameters.</p>
     </div>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">predictConfModels</span><span class="op">(</span><span class="va">paramDf</span>, maxrt <span class="op">=</span> <span class="fl">15</span>, subdivisions <span class="op">=</span> <span class="fl">100L</span>,</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">predictConfModels</span><span class="op">(</span><span class="va">paramDf</span>, maxrt <span class="op">=</span> <span class="cn">Inf</span>, subdivisions <span class="op">=</span> <span class="fl">100L</span>,</span>
 <span>  simult_conf <span class="op">=</span> <span class="cn">FALSE</span>, stop.on.error <span class="op">=</span> <span class="cn">FALSE</span>, .progress <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  parallel <span class="op">=</span> <span class="cn">FALSE</span>, n.cores <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
 <span></span>
@@ -79,10 +79,9 @@ information about the parameters.</p>
 <dd><p>a dataframe with one row per combination of model and
 participant/parameter set. Columns may include a <code>participant</code> (<code>sbj</code>, or
 <code>subject</code>) column, and must include a <code>model</code> column and the names of the model parameters.
-For different stimulus
-quality/mean drift rates, names should be <code>v1</code>, <code>v2</code>, <code>v3</code>,.... Different <code>s</code> parameters
-are possible with <code>s1</code>, <code>s2</code>, <code>s3</code>... with equally many steps as for drift rates (same
-for <code>sv</code> parameter in dynWEV and 2DSD).
+For different stimulus quality/mean drift rates, names should be <code>v1</code>, <code>v2</code>, <code>v3</code>,....
+Different <code>s</code> parameters are possible with <code>s1</code>, <code>s2</code>, <code>s3</code>... with equally many steps as for drift rates (same
+for <code>sv</code> parameter in dynWEV and 2DSD), except for MTLNR.
 Additionally, the confidence thresholds should be given by names with
 <code>thetaUpper1</code>, <code>thetaUpper2</code>,..., <code>thetaLower1</code>,... or,
 for symmetric thresholds only by <code>theta1</code>, <code>theta2</code>,....</p></dd>
@@ -176,7 +175,7 @@ consists merely of an integration of the reaction time density or the given mode
 The function <code><a href="predictRTConf.html">predictRT</a></code> (called by <code>predictRTModels</code>) wraps these
 density functions to a parameter set input and a data.frame output. '
 Note, that the encoding for stimulus identity is different between diffusion based models
-(2DSD, dynWEV) and race models (IRM(t), PCRM(t)). Therefore, in the columns stimulus and
+(2DSD, dynWEV) and race models (IRM(t), PCRM(t), and MTLNR). Therefore, in the columns stimulus and
 response there will be a mix of encodings: -1/1 for diffusion based models and 1/2 for
 race models. This, usually is not important, since for further aggregation models will
 not be mixed.</p>
@@ -185,7 +184,7 @@ not be mixed.</p>
     <h2 id="note">Note<a class="anchor" aria-label="anchor" href="#note"></a></h2>
     <p>Different parameters for different conditions are only allowed for drift rate
 <code>v</code>, drift rate variability <code>sv</code> (only dynWEV and 2DSD), and process variability
-<code>s</code>. All other parameters are used for all conditions.</p>
+<code>s</code> (not for MTLNR). All other parameters are used for all conditions.</p>
     </div>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>
@@ -272,38 +271,38 @@ not be mixed.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2 0.2</span>
 <span class="r-in"><span>  <span class="fu">predictConfModels</span><span class="op">(</span><span class="va">paramDf</span>, parallel<span class="op">=</span><span class="cn">FALSE</span>, .progress<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    condition stimulus response correct rating            p info          err</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1          1        1        1       1      1 2.753728e-01   OK 9.315581e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2          2        1        1       1      1 5.679774e-02   OK 7.626811e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3          1       -1        1       0      1 2.681096e-01   OK 3.040260e-06</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4          2       -1        1       0      1 1.194356e-01   OK 3.490771e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5          1        1       -1       0      1 2.415522e-01   OK 4.021249e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6          2        1       -1       0      1 1.011203e-01   OK 3.051408e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7          1       -1       -1       1      1 2.525716e-01   OK 3.781411e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8          2       -1       -1       1      1 5.262146e-02   OK 7.040260e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9          1        1        1       1      2 3.103602e-01   OK 3.966579e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10         2        1        1       1      2 7.521672e-01   OK 1.051311e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11         1       -1        1       0      2 1.837507e-01   OK 2.564741e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12         2       -1        1       0      2 1.004053e-01   OK 1.091082e-06</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13         1        1       -1       0      2 1.727156e-01   OK 2.049118e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14         2        1       -1       0      2 9.037236e-02   OK 6.383621e-06</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15         1       -1       -1       1      2 2.955683e-01   OK 3.556178e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16         2       -1       -1       1      2 7.275378e-01   OK 1.068380e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17         1        1        1       1      1 7.417137e-01   OK 2.745013e-06</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18         2        1        1       1      1 8.157263e-01   OK 7.653117e-06</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19         1        2        1       0      1 9.326453e-02   OK 2.393541e-07</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20         2        2        1       0      1 1.477359e-02   OK 8.495599e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21         1        1        2       0      1 9.326453e-02   OK 2.393541e-07</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22         2        1        2       0      1 1.477359e-02   OK 8.495599e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23         1        2        2       1      1 7.417137e-01   OK 2.745013e-06</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 24         2        2        2       1      1 8.157263e-01   OK 7.653117e-06</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25         1        1        1       1      2 1.474394e-01   OK 1.112900e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26         2        1        1       1      2 1.693368e-01   OK 6.823879e-06</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27         1        2        1       0      2 2.130333e-03   OK 1.111883e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 28         2        2        1       0      2 8.926463e-05   OK 8.605212e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 29         1        1        2       0      2 2.130333e-03   OK 1.111883e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 30         2        1        2       0      2 8.926463e-05   OK 8.605212e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 31         1        2        2       1      2 1.474394e-01   OK 1.112900e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 32         2        2        2       1      2 1.693368e-01   OK 6.823879e-06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1          1        1        1       1      1 2.753724e-01   OK 2.295258e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2          2        1        1       1      1 5.679751e-02   OK 6.160096e-06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3          1       -1        1       0      1 2.681096e-01   OK 2.300382e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4          2       -1        1       0      1 1.194353e-01   OK 1.140607e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5          1        1       -1       0      1 2.415522e-01   OK 1.297594e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6          2        1       -1       0      1 1.011203e-01   OK 1.020735e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7          1       -1       -1       1      1 2.525716e-01   OK 1.371182e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8          2       -1       -1       1      1 5.262161e-02   OK 3.489823e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9          1        1        1       1      2 3.103598e-01   OK 2.172831e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10         2        1        1       1      2 7.521661e-01   OK 6.074326e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11         1       -1        1       0      2 1.837505e-01   OK 9.683325e-06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12         2       -1        1       0      2 1.004053e-01   OK 1.279651e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13         1        1       -1       0      2 1.727156e-01   OK 7.955309e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14         2        1       -1       0      2 8.991603e-02   OK 5.907873e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15         1       -1       -1       1      2 2.955683e-01   OK 1.358866e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16         2       -1       -1       1      2 7.275378e-01   OK 3.705280e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17         1        1        1       1      1 7.443159e-01   OK 4.685177e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18         2        1        1       1      1 8.157293e-01   OK 4.983466e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19         1        2        1       0      1 9.342758e-02   OK 6.084905e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20         2        2        1       0      1 1.477360e-02   OK 4.904424e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21         1        1        2       0      1 9.342758e-02   OK 6.084905e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22         2        1        2       0      1 1.477360e-02   OK 4.904424e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23         1        2        2       1      1 7.443159e-01   OK 4.685177e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24         2        2        2       1      1 8.157293e-01   OK 4.983466e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25         1        1        1       1      2 1.600872e-01   OK 2.708790e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26         2        1        1       1      2 1.694080e-01   OK 8.276688e-06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27         1        2        1       0      2 2.169329e-03   OK 9.443649e-06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28         2        2        1       0      2 8.921261e-05   OK 3.114930e-06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29         1        1        2       0      2 2.169329e-03   OK 9.443649e-06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30         2        1        2       0      2 8.921261e-05   OK 3.114930e-06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31         1        2        2       1      2 1.600872e-01   OK 2.708790e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 32         2        2        2       1      2 1.694080e-01   OK 8.276688e-06</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     model sbj</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1  dynWEV   1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2  dynWEV   1</span>

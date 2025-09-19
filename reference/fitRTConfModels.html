@@ -3,12 +3,12 @@
 there for more information). It calls the function for every possible combination
 of model and participant/subject in model and data respectively.
 Also, see ddynaViTE, d2DSD, dDDConf,
-and dRM for more
+dRM, and dMTLNR for more
 information about the parameters."><meta property="og:description" content="This function is a wrapper of the function fitConfModel (see
 there for more information). It calls the function for every possible combination
 of model and participant/subject in model and data respectively.
 Also, see ddynaViTE, d2DSD, dDDConf,
-and dRM for more
+dRM, and dMTLNR for more
 information about the parameters."></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
@@ -17,7 +17,7 @@ information about the parameters."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">dynConfiR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -53,7 +53,7 @@ information about the parameters."></head><body>
 there for more information). It calls the function for every possible combination
 of model and participant/subject in <code>model</code> and <code>data</code> respectively.
 Also, see <code><a href="dynaViTE.html">ddynaViTE</a></code>, <code><a href="d2DSD.html">d2DSD</a></code>, <code><a href="dDDConf.html">dDDConf</a></code>,
-and <code><a href="RaceModels.html">dRM</a></code> for more
+<code><a href="RaceModels.html">dRM</a></code>, and <code><a href="MTLNR.html">dMTLNR</a></code> for more
 information about the parameters.</p>
     </div>
 
@@ -88,7 +88,7 @@ the input contains <code>subject</code> instead of <code>sbj</code>).)</p></li>
 
 
 <dt id="arg-models">models<a class="anchor" aria-label="anchor" href="#arg-models"></a></dt>
-<dd><p>character vector with following possible elements "dynWEV", "2DSD", "IRM", "PCRM", "IRMt", and "PCRMt"  for the models to be fit.</p></dd>
+<dd><p>character vector with following possible elements "dynWEV", "2DSD", "IRM", "PCRM", "IRMt", "PCRMt", and "MTLNR"  for the models to be fit.</p></dd>
 
 
 <dt id="arg-nratings">nRatings<a class="anchor" aria-label="anchor" href="#arg-nratings"></a></dt>
@@ -236,12 +236,12 @@ leads to identical upper bounds on the decision processes, which is the equivale
 <span class="r-in"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">[</span>,<span class="op">-</span><span class="fl">3</span><span class="op">]</span> <span class="co"># drop conf measure (unobservable variable)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     rt response rating participant stimulus discriminability</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 1.31        1      1           1        1                1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 1.84       -1      1           1       -1                1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 5.16       -1      2           1        1                1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4 1.20       -1      2           1       -1                1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5 0.46        1      2           1        1                2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6 1.77        1      2           1       -1                1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 0.40        1      2           1        1                2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 0.46       -1      2           1       -1                2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 1.06       -1      2           1       -1                2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 1.92       -1      2           1       -1                2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 0.77       -1      2           1       -1                1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6 0.75        1      2           1        1                2</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># 2. Use fitting function</span></span></span>

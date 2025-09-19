@@ -17,7 +17,7 @@ and parameters."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">dynConfiR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -59,7 +59,7 @@ and parameters.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">predictRM_Conf</span><span class="op">(</span><span class="va">paramDf</span>, model <span class="op">=</span> <span class="st">"IRM"</span>, time_scaled <span class="op">=</span> <span class="cn">FALSE</span>, maxrt <span class="op">=</span> <span class="fl">15</span>,</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">predictRM_Conf</span><span class="op">(</span><span class="va">paramDf</span>, model <span class="op">=</span> <span class="st">"IRM"</span>, time_scaled <span class="op">=</span> <span class="cn">FALSE</span>, maxrt <span class="op">=</span> <span class="cn">Inf</span>,</span>
 <span>  subdivisions <span class="op">=</span> <span class="fl">100L</span>, stop.on.error <span class="op">=</span> <span class="cn">FALSE</span>, .progress <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">predictRM_RT</span><span class="op">(</span><span class="va">paramDf</span>, model <span class="op">=</span> <span class="st">"IRM"</span>, time_scaled <span class="op">=</span> <span class="cn">FALSE</span>, maxrt <span class="op">=</span> <span class="fl">9</span>,</span>
@@ -187,12 +187,12 @@ conditions.</p>
 <span class="r-in"><span><span class="va">preds_Conf</span> <span class="op">&lt;-</span> <span class="fu">predictRM_Conf</span><span class="op">(</span><span class="va">paramDf</span>, <span class="st">"PCRMt"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">preds_Conf</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   condition stimulus response correct rating          p info          err</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1         1        1        1       1      1 0.74171372   OK 2.745013e-06</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2         2        1        1       1      1 0.81572631   OK 7.653117e-06</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3         1        2        1       0      1 0.09326453   OK 2.393541e-07</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4         2        2        1       0      1 0.01477359   OK 8.495599e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5         1        1        2       0      1 0.09326453   OK 2.393541e-07</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6         2        1        2       0      1 0.01477359   OK 8.495599e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1         1        1        1       1      1 0.74431586   OK 4.685177e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2         2        1        1       1      1 0.81572926   OK 4.983466e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3         1        2        1       0      1 0.09342758   OK 6.084905e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4         2        2        1       0      1 0.01477360   OK 4.904424e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5         1        1        2       0      1 0.09342758   OK 6.084905e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6         2        1        2       0      1 0.01477360   OK 4.904424e-05</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># 3. Compute RT density</span></span></span>
 <span class="r-in"><span><span class="va">preds_RT</span> <span class="op">&lt;-</span> <span class="fu">predictRM_RT</span><span class="op">(</span><span class="va">paramDf</span>, <span class="st">"PCRMt"</span>, maxrt<span class="op">=</span><span class="fl">7</span>, subdivisions<span class="op">=</span><span class="fl">50</span><span class="op">)</span></span></span>
@@ -209,11 +209,11 @@ conditions.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6         1        1        1       1      1 0.8040816 1.892959e-01</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     densscaled</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1 0.000000e+00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 1.958247e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 1.428018e-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4 8.490129e-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5 1.783561e-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6 2.552142e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 1.951401e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 1.423025e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 8.460447e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 1.777326e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6 2.543220e-01</span>
 <span class="r-in"><span><span class="co"># \donttest{</span></span></span>
 <span class="r-in"><span>  <span class="co"># produces a warning, if scaled=TRUE and DistConf missing</span></span></span>
 <span class="r-in"><span>  <span class="va">preds_RT</span> <span class="op">&lt;-</span> <span class="fu">predictRM_RT</span><span class="op">(</span><span class="va">paramDf</span>, <span class="st">"PCRMt"</span>, maxrt<span class="op">=</span><span class="fl">7</span>, subdivisions<span class="op">=</span><span class="fl">50</span>,</span></span>
