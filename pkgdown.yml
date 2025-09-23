@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   dynConfiR: dynConfiR.html
   articles/ModellingWorkflow: ModellingWorkflow.html
-last_built: 2025-09-19T12:12Z
+last_built: 2025-09-23T11:35Z
 urls:
   reference: https://sehellmann.github.io/dynConfiR/reference
   article: https://sehellmann.github.io/dynConfiR/articles
