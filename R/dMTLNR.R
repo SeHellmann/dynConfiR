@@ -285,12 +285,11 @@ dMTLNR_multiple_ratings <-
   }
 
   if (is.null(step_width)) {
-    step_width = 0.4578627727708822 * exp(-0.8466054539598147*precision)
-    #step_width = 0.089045 * exp(-1.037580*precision)
-    # step_width = 0.089045 * exp(-1.037580*4)
+    step_width = 0.0261340758264572 * exp(-1.8679517655369526*precision)
+    #step_width = 0.0026429982940339 * exp(-1.4098310241966778*step_width)
   } else if (step_width>1) {
-    step_width = 0.4578627727708822 * exp(-0.8466054539598147*step_width)
-    #step_width = 0.089045 * exp(-1.037580*step_width)
+    step_width = 0.0261340758264572 * exp(-1.8679517655369526*step_width)
+    #step_width = 0.0026429982940339 * exp(-1.4098310241966778*step_width)
   }
 
   # print(step_width)
