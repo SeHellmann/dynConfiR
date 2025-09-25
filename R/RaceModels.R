@@ -177,11 +177,10 @@
 #' boxplot(conf~ws+response, data=two_samples)
 #' if (requireNamespace("ggplot2", quietly = TRUE)) {
 #'  require(ggplot2)
-#'  ggplot(two_samples, aes(x=rt, y=conf))+
-#'      stat_density_2d(aes(fill = after_stat(density)),
-#'         geom = "raster", contour = FALSE, na.rm=TRUE) +
-#'       xlim(c(0.2, 1.3))+ ylim(c(0, 2.5))+
-#'       facet_grid(cols=vars(ws), rows=vars(response), labeller = "label_both")
+#'  ggplot(two_samples, aes(x=rt, y=conf,fill = after_stat(density)))+
+#'    stat_density_2d(geom="raster",contour=FALSE,na.rm=TRUE)+
+#'    xlim(c(0.2, 1.3))+ ylim(c(0, 2.5))+
+#'    facet_grid(cols=vars(ws), rows=vars(response), labeller = "label_both")
 #' }
 #' # Restricting to specific confidence region
 #' df1 <- df1[df1$conf >0 & df1$conf <1,]

@@ -169,6 +169,39 @@ Roger Ratcliff and others. Usually \code{s} is not specified as the other parame
 The function code is basically an extension of the \code{ddiffusion} function from the
 package \code{rtdists} for the Ratcliff diffusion model.
 }
+\examples{
+# Plot rt distribution ignoring confidence
+curve(dDDConf(x, "upper", 0, Inf, a=2, v=0.4, sz=0.2, sv=0.9), xlim=c(0, 2), lty=2, n=40)
+curve(dDDConf(x, "lower", 0, Inf, a=2, v=0.4, sz=0.2, sv=0.9), col="red", lty=2, add=TRUE, n=40)
+curve(dDDConf(x, "upper", 0, Inf, a=2, v=0.4),add=TRUE, n=40)
+curve(dDDConf(x, "lower", 0, Inf, a=2, v=0.4), col="red", add=TRUE, n=40)
+# Generate a random sample
+dfu <- rDDConf(5000, a=2,v=0.5,t0=0,z=0.5,d=0,sz=0,sv=0, st0=1, s=1)
+# Same RT distribution but upper and lower responses changed
+dfl <- rDDConf(50, a=2,v=-0.5,t0=0,z=0.5,d=0,sz=0,sv=0, st0=1, s=1)
+head(dfu)
+
+dDDConf(dfu, th1=0.5, th2=2.5, a=2, v=.5, st0=1)[1:5]
+# Scaling diffusion parameters leads do same density values
+s <- 2
+dDDConf(dfu, th1=0.5, th2=2.5, a=2*s, v=.5*s, s=2, st0=1)[1:5]
+if (requireNamespace("ggplot2", quietly = TRUE)) {
+ require(ggplot2)
+ ggplot(dfu, aes(x=rt, y=conf))+
+  stat_density_2d(aes(fill = after_stat(density)), geom = "raster", contour = FALSE, na.rm=TRUE) +
+  facet_wrap(~response)
+}
+boxplot(conf~response, data=dfu)
+
+# Restricting to specific confidence region
+dfu <- dfu[dfu$conf >0 & dfu$conf <1,]
+dDDConf(dfu, th1=0, th2=1, a=2, v=0.5, st0=1)[1:5]
+
+# If lower confidence threshold is higher than the upper, the function throws an error,
+# except when stop_on_error is FALSE
+dDDConf(dfu[1:5,], th1=1, th2=0, a=2, v=0.5, stop_on_error = FALSE)
+
+}
 \references{
 Ratcliff, R., & McKoon, G. (2008). The diffusion decision model: Theory and data for two-choice decision tasks. \emph{Neural Computation}, 20(4), 873-922.
 
