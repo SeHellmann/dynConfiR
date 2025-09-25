@@ -374,7 +374,7 @@ fitRTConf <- function(data, model = "dynWEV",
     logger::log_threshold(logger::DEBUG, index=2)
     logger::log_threshold(logger::DEBUG)
     logger::log_layout(logger, index=2)
-    logger::log_errors()
+    #logger::log_errors() # does not work with parallellization
   }
 
 
