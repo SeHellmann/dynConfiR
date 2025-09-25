@@ -168,13 +168,13 @@ the final state is used for the computation of confidence.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># minimal arguments</span></span></span>
 <span class="r-in"><span><span class="va">simus</span><span class="op">&lt;-</span> <span class="fu">rLCA</span><span class="op">(</span>n<span class="op">=</span><span class="fl">20</span>, mu1<span class="op">=</span><span class="fl">1</span>, mu2<span class="op">=</span><span class="op">-</span><span class="fl">0.5</span>, th1<span class="op">=</span><span class="fl">1</span>, th2<span class="op">=</span><span class="fl">0.8</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">simus</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     rt response        xl        x1        x2       conf</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 0.13        2 0.3959609 0.3959609 0.8104973 -0.3959609</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 0.79        1 0.0000000 1.1019010 0.0000000  0.0000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 0.18        2 0.0000000 0.0000000 0.8650580  0.0000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4 0.66        1 0.4349276 1.1130583 0.4349276 -0.4349276</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5 0.29        2 0.7820767 0.7820767 0.9219732 -0.7820767</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6 0.96        1 0.2407891 1.0284946 0.2407891 -0.2407891</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     rt response         xl         x1        x2        conf</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 0.39        2 0.35884292 0.35884292 0.8126700 -0.35884292</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 1.31        1 0.54393363 1.09505398 0.5439336 -0.54393363</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 0.31        1 0.00000000 1.13091114 0.0000000  0.00000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 0.69        2 0.02857892 0.02857892 0.8080685 -0.02857892</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 0.43        1 0.24243542 1.12924969 0.2424354 -0.24243542</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6 0.27        2 0.12968651 0.12968651 0.8626124 -0.12968651</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># specifying all relevant parameters</span></span></span>
 <span class="r-in"><span><span class="va">simus</span> <span class="op">&lt;-</span> <span class="fu">rLCA</span><span class="op">(</span>n<span class="op">=</span><span class="fl">1000</span>, mu1 <span class="op">=</span> <span class="fl">2.5</span>, mu2<span class="op">=</span><span class="fl">1</span>, th1<span class="op">=</span><span class="fl">1.5</span>, th2<span class="op">=</span><span class="fl">1.6</span>,</span></span>
