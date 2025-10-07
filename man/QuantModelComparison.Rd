@@ -72,7 +72,8 @@ that may be used for other analyses:
 Bayesian omnibus risks: \code{bor} (random effects model against the
 null model), \code{bor_fixed} (fixed effects model against the
 null model), and \code{bor_re_fixed} (random effects model
-against the fixed effects model), and
+against the fixed effects model) (higher values indicating a
+simpler model), and
 estimations of the Free Energy of the Dirichlet
 distribution \code{FE} (random effects model), \code{FE0} (null model),
 and \code{FEfixed} (fixed effects model)

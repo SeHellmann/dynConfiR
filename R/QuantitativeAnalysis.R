@@ -56,7 +56,8 @@
 #'                     Bayesian omnibus risks: `bor` (random effects model against the
 #'                     null model), `bor_fixed` (fixed effects model against the
 #'                     null model), and `bor_re_fixed` (random effects model
-#'                     against the fixed effects model), and
+#'                     against the fixed effects model) (higher values indicating a
+#'                     simpler model), and
 #'                     estimations of the Free Energy of the Dirichlet
 #'                     distribution `FE` (random effects model), `FE0` (null model),
 #'                    and `FEfixed` (fixed effects model)
@@ -223,13 +224,22 @@ group_BMS <- function(mlp, opts=list(), alpha0=NULL) {
   n <- ncol(mlp)
   if (is.null(alpha0)) alpha0 <- rep(1, K)
 
+  ## Compute Free Energy for the Null model (all models equal probability)
+  ## as implemented in the function FE_null at
+  ## https://github.com/MBB-team/VBA-toolbox/blob/master/VBA_groupBMC.m [29.09.2025]
+  ## This corresponds to equation (A17) in Rigoux et al.
   modelprobs_Null <- function(x) { # function for each n (x is a K-vector)
     g <- x - max(x)
-    g <- exp(g)/sum(exp(g))
+    g <- exp(g)/sum(exp(g))   #w_ik as in eq (A19) in Rigoux et al.
     res <- sum(g*(x - log(g+opts$eps) - log(K)))
     return(res)
   }
   FreeEnergyNull <- sum(apply(mlp, 2, modelprobs_Null))
+
+  ## Compute Free Energy for the "fixed-effect" model (unequal but constant model
+  ## probabilities across subjects)
+  ## as implemented in the function FE_ffx at
+  ## https://github.com/MBB-team/VBA-toolbox/blob/master/VBA_groupBMC.m [29.09.2025]
 
   #% derive probabilities and free energy of the 'fixed-effect' analysis
   ss <-  rowSums(mlp) + log(1/K)
@@ -238,22 +248,31 @@ group_BMS <- function(mlp, opts=list(), alpha0=NULL) {
   fixed_effects_postprobs  <- z
   FreeEnergy_fixed <- sum(z * ss) - sum(z * log(z+opts$eps))
 
+
   alpha <- alpha0
   FreeEnergy <- 0
   #Full_FEs <- NULL
   #ln_p_y_mk # log(p(y_n | m_nk)) = - BIC/2
   for ( i in 1:opts$maxiter) {
-    digamma_stuff <- digamma(alpha) - digamma(sum(alpha))
+    digamma_stuff <- digamma(alpha) - digamma(sum(alpha)) # FE bound F_1 in Rigoux et al. (A20)
+    ## Also note that this is the expected value of the log of a Beta-distr. variable with
+    ## alpha =  alpha  and beta = sum(alpha)-alpha
+    ## (which is implemented in VBA's   ElogBeta function)
+
+    ## Update defined in Equation (A21) in Rigoux et al:
     logu_nk <- mlp + matrix(digamma_stuff, nrow=K, ncol=n, byrow=FALSE)
-    ColMin <- apply(logu_nk, 2, min)
-    logu_nk <- sweep(logu_nk, 2, ColMin)
-    u_nk <- exp(logu_nk)
+    ColMax <- apply(logu_nk, 2, max)
+    logu_nk_normed <- sweep(logu_nk, 2, ColMax)
+    u_nk <- exp(logu_nk_normed)
 
     u_nk[is.infinite(u_nk)] <- 1e+64
     model_sums <- colSums(u_nk)
     beta_nk <- sweep(u_nk, 2, model_sums, FUN="/")# z_nk bei Rigoux et al. (2014)
     # posterior.r in VBA toolbox
 
+    ## Compute current free energy bound
+    ## Implemented according to the FE function at
+    ## https://github.com/MBB-team/VBA-toolbox/blob/master/VBA_groupBMC.m [29.09.2025]
     Old_FreeEnergy <- FreeEnergy
     Sqf <- sum(lgamma(alpha)) - lgamma(sum(alpha)) - sum((alpha-1)*digamma_stuff)
     Sqm <- - sum(beta_nk * log(beta_nk + opts$eps))
@@ -261,6 +280,7 @@ group_BMS <- function(mlp, opts=list(), alpha0=NULL) {
     ELJ <- ELJ + sum( beta_nk* (logu_nk))
     FreeEnergy <- Sqf + Sqm + ELJ
 
+    ## Actual Updating:
     beta_k <- rowSums(beta_nk)
     alpha <- alpha0 + beta_k
     #Full_FEs[i] <- FreeEnergy
@@ -305,5 +325,6 @@ group_BMS <- function(mlp, opts=list(), alpha0=NULL) {
   out$model_weights <- model_weights
   out$summary_stats <- c(bor=bor, FE=FreeEnergy, FE0=FreeEnergyNull,
                          FEfixed=FreeEnergy_fixed, bor_fixed=bor_fixed, bor_re_fixed = bor_re_fixed)
+  #out$all_FEs <- Full_FEs
   return(out)
 }
