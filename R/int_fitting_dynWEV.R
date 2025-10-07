@@ -65,7 +65,7 @@ fittingdynWEV <- function(df, nConds, nRatings, fixed, sym_thetas,
   ## Guess suitable confidence thresholds from theoretical distribution of
   ## the confidence measure and proportion of ratings in the data
   init_thetas <- get_thetas_for_init_grid_dynWEV_simulations(init_grid, df, nRatings, simult_conf, fixed, mint0)
-
+  init_grid
 
   #### 1.1. For Nelder-Mead transform all parameters to real values ####
   if (optim_method=="Nelder-Mead") {
