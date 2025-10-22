@@ -1,0 +1,16 @@
+# PR 1 – Optional Parameter Defaults (merged)
+- Scope: `predictWEV_*`, `predictRM_*`, `predictMTLNR_*`, `predictDDConf_*`, simulator wrappers.
+- Fixes: ensure optional columns like `st0`, `sv`, `sz` are filled via `fill_optional_params()` before use; handle missing `theta*` columns safely (including single-rating cases).
+- Status: ✅ Tests pass (`testthat::test_dir("tests/testthat")`).
+
+# PR 2 – Multi-Model Dispatchers (merged)
+- Scope: `predictConfModels()`, `predictRTModels()`.
+- Fixes: replace `apply()` job dispatch with index-safe iteration; restore subject/model columns to the front of the result.
+- Status: ✅ Tests pass.
+
+# PR 3 – rLCA simult_conf Handling (merged)
+- Scope: `rLCA()`.
+- Fixes: add `tau` only to the RT column for every simulated row while leaving accumulator state columns unchanged.
+- Status: ✅ Tests pass.
+
+Keep this structure for tracking future work; append new PR sections as new issues arise.

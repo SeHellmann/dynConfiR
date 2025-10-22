@@ -106,14 +106,14 @@ rLCA <- function (n, mu1, mu2, th1, th2,
     } else {
       res[ok_rows,6] <- -out[,3]
     }
-    # Add non-decision time to response time
-    out[,1] <- out[,1] + pars$params[ok_rows[1],12] + runif(current_n, 0, pars$params[ok_rows[1],13])
-
-    # Add inter-rating time if confidence was reported simultaneously with decision
+    # Add non-decision time (and optional simult_conf delay) to RT without touching other columns
+    rt <- out[, 1] + pars$params[ok_rows[1], 12] +
+      runif(current_n, 0, pars$params[ok_rows[1], 13])
     if (simult_conf) {
-      out[1,] <- out[1,] + pars$params[ok_rows[1], 8]
+      rt <- rt + pars$params[ok_rows[1], 8]
     }
-    res[ok_rows,1:5] <- out
+    res[ok_rows, 1] <- rt
+    res[ok_rows, 2:5] <- out[, 2:5, drop = FALSE]
   }
   res <- as.data.frame(res)
   names(res) <- c("rt", "response", "xl", "x1", "x2", "conf")
@@ -194,4 +194,3 @@ prepare_LCA_parameter <- function(nn, mu1, mu2, th1, th2,
     , parameter_indices = parameter_indices
   )
 }
-
