@@ -109,8 +109,9 @@
 #' @rdname predictDDConf
 #' @export
 predictDDConf_Conf <- function(paramDf,
-                                maxrt=Inf, subdivisions = 100L, stop.on.error=FALSE,
-                                .progress=TRUE){
+                                  maxrt=Inf, subdivisions = 100L, stop.on.error=FALSE,
+                                  .progress=TRUE){
+  paramDf <- fill_optional_params(paramDf, c(st0 = 0, sz = 0, sv = 0))
 
   nConds <- length(grep(pattern = "^v[0-9]", names(paramDf), value = T))
   symmetric_confidence_thresholds <- length(grep(pattern = "thetaUpper", names(paramDf), value = T))<1
@@ -144,11 +145,32 @@ predictDDConf_Conf <- function(paramDf,
   }
   ## Recover confidence thresholds
   if (symmetric_confidence_thresholds) {
-    thetas_upper <- c(0, t(paramDf[,paste("theta",(nRatings-1):1, sep = "")]), 1e+64)
-    thetas_lower <- c(0, t(paramDf[,paste("theta",(nRatings-1):1, sep = "")]), 1e+64)
+    theta_cols <- grep("^theta[0-9]", names(paramDf), value = TRUE)
+    theta_cols <- theta_cols[order(as.integer(sub("^theta", "", theta_cols)))]
+    if (length(theta_cols) == 0L) {
+      theta_vals <- numeric(0)
+    } else {
+      theta_vals <- t(paramDf[, rev(theta_cols), drop = FALSE])
+    }
+    thetas_upper <- c(0, theta_vals, 1e+64)
+    thetas_lower <- c(0, theta_vals, 1e+64)
   } else {
-    thetas_upper <- c(0, t(paramDf[,paste("thetaUpper",(nRatings-1):1, sep = "")]), 1e+64)
-    thetas_lower <- c(0, t(paramDf[,paste("thetaLower",(nRatings-1):1, sep="")]), 1e+64)
+    theta_upper_cols <- grep("^thetaUpper[0-9]", names(paramDf), value = TRUE)
+    theta_upper_cols <- theta_upper_cols[order(as.integer(sub("^thetaUpper", "", theta_upper_cols)))]
+    theta_lower_cols <- grep("^thetaLower[0-9]", names(paramDf), value = TRUE)
+    theta_lower_cols <- theta_lower_cols[order(as.integer(sub("^thetaLower", "", theta_lower_cols)))]
+    if (length(theta_upper_cols) == 0L) {
+      theta_upper_vals <- numeric(0)
+    } else {
+      theta_upper_vals <- t(paramDf[, rev(theta_upper_cols), drop = FALSE])
+    }
+    if (length(theta_lower_cols) == 0L) {
+      theta_lower_vals <- numeric(0)
+    } else {
+      theta_lower_vals <- t(paramDf[, rev(theta_lower_cols), drop = FALSE])
+    }
+    thetas_upper <- c(0, theta_upper_vals, 1e+64)
+    thetas_lower <- c(0, theta_lower_vals, 1e+64)
   }
   # Because we integrate over the response time, st0 does not matter
   # So, to speed up computations for high values of st0, we set it to 0
@@ -200,6 +222,7 @@ predictDDConf_RT <- function(paramDf,
                               maxrt=9, subdivisions = 100L,  minrt=NULL,
                               scaled = FALSE, DistConf=NULL,
                               .progress = TRUE) {
+  paramDf <- fill_optional_params(paramDf, c(st0 = 0, sz = 0, sv = 0))
   if (scaled && is.null(DistConf)) {
     message(paste("scaled is TRUE and DistConf is NULL. The rating distribution will",
                   " be computed, which will take additional time.", sep=""))
@@ -236,11 +259,32 @@ predictDDConf_RT <- function(paramDf,
   }
   ## Recover confidence thresholds
   if (symmetric_confidence_thresholds) {
-    thetas_upper <- c(0, t(paramDf[,paste("theta",(nRatings-1):1, sep = "")]), 1e+64)
-    thetas_lower <- c(0, t(paramDf[,paste("theta",(nRatings-1):1, sep = "")]), 1e+64)
+    theta_cols <- grep("^theta[0-9]", names(paramDf), value = TRUE)
+    theta_cols <- theta_cols[order(as.integer(sub("^theta", "", theta_cols)))]
+    if (length(theta_cols) == 0L) {
+      theta_vals <- numeric(0)
+    } else {
+      theta_vals <- t(paramDf[, rev(theta_cols), drop = FALSE])
+    }
+    thetas_upper <- c(0, theta_vals, 1e+64)
+    thetas_lower <- c(0, theta_vals, 1e+64)
   } else {
-    thetas_upper <- c(0, t(paramDf[,paste("thetaUpper",(nRatings-1):1, sep = "")]), 1e+64)
-    thetas_lower <- c(0, t(paramDf[,paste("thetaLower",(nRatings-1):1, sep="")]), 1e+64)
+    theta_upper_cols <- grep("^thetaUpper[0-9]", names(paramDf), value = TRUE)
+    theta_upper_cols <- theta_upper_cols[order(as.integer(sub("^thetaUpper", "", theta_upper_cols)))]
+    theta_lower_cols <- grep("^thetaLower[0-9]", names(paramDf), value = TRUE)
+    theta_lower_cols <- theta_lower_cols[order(as.integer(sub("^thetaLower", "", theta_lower_cols)))]
+    if (length(theta_upper_cols) == 0L) {
+      theta_upper_vals <- numeric(0)
+    } else {
+      theta_upper_vals <- t(paramDf[, rev(theta_upper_cols), drop = FALSE])
+    }
+    if (length(theta_lower_cols) == 0L) {
+      theta_lower_vals <- numeric(0)
+    } else {
+      theta_lower_vals <- t(paramDf[, rev(theta_lower_cols), drop = FALSE])
+    }
+    thetas_upper <- c(0, theta_upper_vals, 1e+64)
+    thetas_lower <- c(0, theta_lower_vals, 1e+64)
   }
 
   if (is.null(minrt)) minrt <- paramDf$t0

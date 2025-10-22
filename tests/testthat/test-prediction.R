@@ -43,5 +43,101 @@ test_that("Prediction sums to 1", {
 
 
 
+# Regression coverage for optional parameters ---------------------------------
+
+test_that("model-specific predictors tolerate missing optional parameters", {
+  wev_params <- data.frame(
+    a = 1, v = 0.3, t0 = 0.2, z = 0.5, tau = 0.1, w = 0.5,
+    svis = 0.1, sigvis = 0.05
+  )
+  expect_silent(
+    predictWEV_Conf(
+      wev_params, model = "dynWEV", maxrt = 1, subdivisions = 10,
+      simult_conf = FALSE, stop.on.error = FALSE, precision = 2,
+      .progress = FALSE
+    )
+  )
+  expect_silent(
+    predictWEV_RT(
+      wev_params, model = "dynWEV", maxrt = 1, subdivisions = 10,
+      minrt = wev_params$t0, simult_conf = FALSE, scaled = FALSE,
+      DistConf = NULL, precision = 2, .progress = FALSE
+    )
+  )
+
+  rm_params <- data.frame(a = 1, b = 1.2, v = 0.4, t0 = 0.2, theta1 = 0.5)
+  expect_silent(
+    predictRM_Conf(
+      rm_params, model = "IRM", maxrt = 1, subdivisions = 10,
+      stop.on.error = FALSE, .progress = FALSE
+    )
+  )
+  expect_silent(
+    predictRM_RT(
+      rm_params, model = "IRM", maxrt = 1, subdivisions = 10,
+      minrt = rm_params$t0, scaled = FALSE, DistConf = NULL,
+      .progress = FALSE
+    )
+  )
+
+  mtl_params <- data.frame(
+    v = 0.4, t0 = 0.2,
+    mu_d1 = 0, mu_d2 = 0,
+    s_v1 = 1, s_v2 = 1,
+    s_d1 = 1, s_d2 = 1,
+    rho_v = 0, rho_d = 0
+  )
+  expect_silent(
+    predictMTLNR_Conf(
+      mtl_params, maxrt = 1, subdivisions = 10,
+      stop.on.error = FALSE, .progress = FALSE
+    )
+  )
+  expect_silent(
+    predictMTLNR_RT(
+      mtl_params, maxrt = 1, subdivisions = 10,
+      minrt = mtl_params$t0, scaled = FALSE, DistConf = NULL,
+      .progress = FALSE
+    )
+  )
+
+  dd_params <- data.frame(a = 1, v = 0.2, t0 = 0.2, z = 0.5, sz = NA_real_, sv = NA_real_)
+  expect_silent(
+    predictDDConf_Conf(
+      dd_params, maxrt = 1, subdivisions = 10,
+      stop.on.error = FALSE, .progress = FALSE
+    )
+  )
+  expect_silent(
+    predictDDConf_RT(
+      dd_params, maxrt = 1, subdivisions = 10,
+      minrt = dd_params$t0, scaled = FALSE, DistConf = NULL,
+      .progress = FALSE
+    )
+  )
+})
+
+
+test_that("predictConfModels and predictRTModels keep identifiers leading", {
+  params <- data.frame(
+    model = "dynWEV", sbj = 1,
+    a = 1, v = 0.4, t0 = 0.2, z = 0.5, tau = 0.1,
+    w = 0.5, svis = 0.1, sigvis = 0.05, theta1 = 0.6
+  )
+  conf_dist <- predictConfModels(
+    params, maxrt = 1, subdivisions = 5,
+    simult_conf = FALSE, stop.on.error = FALSE,
+    .progress = FALSE, parallel = FALSE
+  )
+  expect_identical(names(conf_dist)[1:2], c("sbj", "model"))
+
+  rt_dist <- predictRTModels(
+    params, maxrt = 1, subdivisions = 5, minrt = params$t0,
+    simult_conf = FALSE, scaled = FALSE, DistConf = NULL,
+    .progress = FALSE, parallel = FALSE
+  )
+  expect_identical(names(rt_dist)[1:2], c("sbj", "model"))
+})
+
 
 #as.matrix(jobs)[2,]

@@ -101,7 +101,6 @@ simulateRTConf <- function (paramDf, n=1e+4,  model = NULL,
 {
   gc(verbose = FALSE, full=FALSE)
   if (nrow(paramDf)>1) stop("paramDf must have one row.")
-  paramDf <- paramDf[,c(!is.na(paramDf))]
   if (is.null(model) && ("model" %in% names(paramDf))) model <- paramDf$model
   if ((model %in% c("dynaViTE", "dynWEV", "WEVmu", "2DSD", "2DSDT")) && identical(stimulus, c(1,2))) stimulus <- c(-1,1)
   if (grepl("RM", model)) {

@@ -165,6 +165,7 @@ simulateMTLNR <- function (paramDf, n=1e+4, gamma = FALSE, agg_simus=FALSE,
   if (!is.null(seed)) {
     set.seed(seed)
   }
+  paramDf <- fill_optional_params(paramDf, c(st0 = 0))
 
   if (!(all(stimulus %in% c(1, 2)))) {
     stop(paste("Not accepted value for stimulus: ", paste(stimulus, collapse=", "),". Must be either 1, 2, or c(1, 2).", sep=""))
