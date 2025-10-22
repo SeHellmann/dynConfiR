@@ -168,9 +168,9 @@ predictConfModels <- function(paramDf,
   ### Determine number of jobs, i.e. model-participant-combinations
   nJobs <- nrow(paramDf)
 
-  call_predfct <- function(X) {
-    cur_model <- models[X[1]]
-    cur_sbj <- X[2]
+  call_predfct <- function(job) {
+    cur_model <- models[as.integer(job$model)]
+    cur_sbj <- job$sbj
     sbj <- NULL # to omit a note because of an unbound variable
     model <- NULL # to omit a note because of an unbound variable
     params <- subset(paramDf, sbj==cur_sbj & model==cur_model)
@@ -184,13 +184,13 @@ predictConfModels <- function(paramDf,
     return(res)
   }
 
-  jobs <- expand.grid(model=1:length(models), sbj=subjects)
+  jobs <- expand.grid(model=seq_along(models), sbj=subjects, stringsAsFactors = FALSE)
   if (nrow(jobs) < nJobs) stop("model and participant don't produce distinct rows!\nThere should be only one row per participant and model combination")
 
   if (parallel) {
     listjobs <- list()
-    for (i in 1:nrow(jobs)) {
-      listjobs[[i]] <- c(model = jobs[["model"]][i], sbj = jobs[["sbj"]][i])
+    for (i in seq_len(nrow(jobs))) {
+      listjobs[[i]] <- list(model = jobs[["model"]][i], sbj = jobs[["sbj"]][i])
     }
     if (is.null(n.cores)) {
       n.cores <- detectCores()-1
@@ -205,12 +205,13 @@ predictConfModels <- function(paramDf,
     res <- clusterApplyLB(cl, listjobs, fun=call_predfct)
     stopCluster(cl)
   } else {
-    res <- apply(jobs, 1, call_predfct)
+    res <- lapply(seq_len(nrow(jobs)), function(i) call_predfct(list(model = jobs$model[i], sbj = jobs$sbj[i])))
   }
   res <- do.call(rbind, res)
 
   # Put sbj and model column to the front
-  res[,c(ncol(res),(ncol(res)-1), 1:(ncol(res)-2))]
+  leading_cols <- c(sbjcol, "model")
+  res <- res[, c(leading_cols, setdiff(names(res), leading_cols))]
   return(res)
 }
 
@@ -290,9 +291,9 @@ predictRTModels <- function(paramDf,
       minrt <- min(minrt, pars_diffmodels$t0+pars_diffmodels$tau)
     }
   }
-  call_predfct <- function(X) {
-    cur_model <- models[X[1]]
-    cur_sbj <- X[2]
+  call_predfct <- function(job) {
+    cur_model <- models[as.integer(job$model)]
+    cur_sbj <- job$sbj
     sbj <- NULL # to omit a note because of an unbound variable
     model <- NULL # to omit a note because of an unbound variable
     params <- subset(paramDf, sbj==cur_sbj & model==cur_model)
@@ -310,13 +311,13 @@ predictRTModels <- function(paramDf,
     res[[sbjcol]] <- cur_sbj
     return(res)
   }
-  jobs <- expand.grid(model=1:length(models), sbj=subjects)
+  jobs <- expand.grid(model=seq_along(models), sbj=subjects, stringsAsFactors = FALSE)
   if (nrow(jobs) < nJobs) stop("model and participant don't produce distinct rows!\nThere should be only one row per participant and model combination")
 
   if (parallel) {
     listjobs <- list()
-    for (i in 1:nrow(jobs)) {
-      listjobs[[i]] <- c(model = jobs[["model"]][i], sbj = jobs[["sbj"]][i])
+    for (i in seq_len(nrow(jobs))) {
+      listjobs[[i]] <- list(model = jobs[["model"]][i], sbj = jobs[["sbj"]][i])
     }
     cl <- makeCluster(type="SOCK", n.cores)
     clusterExport(cl, c("paramDf", "sbjcol", "models",
@@ -327,11 +328,12 @@ predictRTModels <- function(paramDf,
     res <- clusterApplyLB(cl, listjobs, fun=call_predfct)
     stopCluster(cl)
   } else {
-    res <- apply(jobs, 1, call_predfct)
+    res <- lapply(seq_len(nrow(jobs)), function(i) call_predfct(list(model = jobs$model[i], sbj = jobs$sbj[i])))
   }
   res <- do.call(rbind, res)
 
   # Put sbj and model column to the front
-  res[,c(ncol(res),(ncol(res)-1), 1:(ncol(res)-2))]
+  leading_cols <- c(sbjcol, "model")
+  res <- res[, c(leading_cols, setdiff(names(res), leading_cols))]
   return(res)
 }
