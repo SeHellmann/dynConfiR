@@ -154,6 +154,7 @@ predictMTLNR_Conf <- function(paramDf,
                                 maxrt=Inf, subdivisions = 100L, stop.on.error=FALSE,
                                 .progress=TRUE){
 
+  paramDf <- fill_optional_params(paramDf, c(st0 = 0))
   nConds <- length(grep(pattern = "^v[0-9]", names(paramDf), value = T))
   symmetric_confidence_thresholds <- length(grep(pattern = "thetaUpper", names(paramDf), value = T))<1
   if (symmetric_confidence_thresholds) {
@@ -233,6 +234,7 @@ predictMTLNR_RT <- function(paramDf,
                                  scaled = FALSE, DistConf=NULL,
                                 .progress = TRUE) {
 
+  paramDf <- fill_optional_params(paramDf, c(st0 = 0))
   if (scaled && is.null(DistConf)) {
     message(paste("scaled is TRUE and DistConf is NULL. The rating distribution will",
     " be computed, which will take additional time.", sep=""))

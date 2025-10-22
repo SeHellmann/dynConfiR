@@ -155,6 +155,7 @@ simulateRM <- function (paramDf, n=1e+4,  model = "IRM", time_scaled=FALSE,
     model = "PCRM"
     time_scaled=TRUE
   }
+  paramDf <- fill_optional_params(paramDf, c(st0 = 0, wx = 1, wrt = 0, wint = 0))
   if (!model %in% c("IRM", "PCRM")) stop("model must be 'IRM', 'PCRM', 'IRMt' or 'PCRMt'")
 
   if (!(all(stimulus %in% c(1,2)))) {
@@ -426,7 +427,6 @@ rRM_Kiani <- function (paramDf, n=1e+4, time_scaled=FALSE,
     return(simus)
   }
 }
-
 
 
 

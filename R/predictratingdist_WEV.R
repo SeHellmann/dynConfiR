@@ -150,6 +150,8 @@ predictWEV_Conf <- function(paramDf, model="dynaViTE",
   if (grepl("2DSD", model)) model <- "2DSD"
   if ("model" %in% names(paramDf)) paramDf$model <- NULL
 
+  paramDf <- fill_optional_params(paramDf, c(st0 = 0, sz = 0, sv = 0))
+
   nConds <- length(grep(pattern = "^v[0-9]", names(paramDf), value = T))
   symmetric_confidence_thresholds <- length(grep(pattern = "thetaUpper", names(paramDf), value = T))<1
   if (symmetric_confidence_thresholds) {
@@ -182,13 +184,34 @@ predictWEV_Conf <- function(paramDf, model="dynaViTE",
   }
   ## Recover confidence thresholds
   if (symmetric_confidence_thresholds) {
-    thetas_upper <- c(-1e+32, t(paramDf[,paste("theta",1:(nRatings-1), sep = "")]), 1e+32)
-    thetas_lower <- c(-1e+32, t(paramDf[,paste("theta",1:(nRatings-1), sep = "")]), 1e+32)
+    theta_cols <- grep("^theta[0-9]", names(paramDf), value = TRUE)
+    theta_cols <- theta_cols[order(as.integer(sub("^theta", "", theta_cols)))]
+    if (length(theta_cols) == 0L) {
+      theta_vals <- numeric(0)
+    } else {
+      theta_vals <- t(paramDf[, theta_cols, drop = FALSE])
+    }
+    thetas_upper <- c(-1e+32, theta_vals, 1e+32)
+    thetas_lower <- c(-1e+32, theta_vals, 1e+32)
   } else {
-    thetas_upper <- c(-1e+32, t(paramDf[,paste("thetaUpper",1:(nRatings-1), sep = "")]), 1e+32)
-    thetas_lower <- c(-1e+32, t(paramDf[,paste("thetaLower",1:(nRatings-1), sep="")]), 1e+32)
+    theta_upper_cols <- grep("^thetaUpper[0-9]", names(paramDf), value = TRUE)
+    theta_upper_cols <- theta_upper_cols[order(as.integer(sub("^thetaUpper", "", theta_upper_cols)))]
+    theta_lower_cols <- grep("^thetaLower[0-9]", names(paramDf), value = TRUE)
+    theta_lower_cols <- theta_lower_cols[order(as.integer(sub("^thetaLower", "", theta_lower_cols)))]
+    if (length(theta_upper_cols) == 0L) {
+      theta_upper_vals <- numeric(0)
+    } else {
+      theta_upper_vals <- t(paramDf[, theta_upper_cols, drop = FALSE])
+    }
+    if (length(theta_lower_cols) == 0L) {
+      theta_lower_vals <- numeric(0)
+    } else {
+      theta_lower_vals <- t(paramDf[, theta_lower_cols, drop = FALSE])
+    }
+    thetas_upper <- c(-1e+32, theta_upper_vals, 1e+32)
+    thetas_lower <- c(-1e+32, theta_lower_vals, 1e+32)
   }
-  if (thetas_lower[2]>thetas_lower[3]) {
+  if (length(thetas_lower) >= 3 && thetas_lower[2]>thetas_lower[3]) {
     # For 2DSD the parametrization for lower thetas is different (different confidence scale)
     thetas_lower <- c(-1e+32, rev(thetas_lower[2:(nRatings)]), 1e+32)
     if (symmetric_confidence_thresholds) {
@@ -277,6 +300,7 @@ predictWEV_RT <- function(paramDf, model=NULL,
   if (grepl("2DSD", model)) model <- "2DSD"
   if ("model" %in% names(paramDf)) paramDf$model <- NULL
 
+  paramDf <- fill_optional_params(paramDf, c(st0 = 0, sz = 0, sv = 0))
 
   nConds <- length(grep(pattern = "^v[0-9]", names(paramDf), value = T))
   symmetric_confidence_thresholds <- length(grep(pattern = "thetaUpper", names(paramDf), value = T))<1
@@ -311,13 +335,34 @@ predictWEV_RT <- function(paramDf, model=NULL,
 
   ## Recover confidence thresholds
   if (symmetric_confidence_thresholds) {
-    thetas_upper <- c(-1e+32, t(paramDf[,paste("theta",1:(nRatings-1), sep = "")]), 1e+32)
-    thetas_lower <- c(-1e+32, t(paramDf[,paste("theta",1:(nRatings-1), sep = "")]), 1e+32)
+    theta_cols <- grep("^theta[0-9]", names(paramDf), value = TRUE)
+    theta_cols <- theta_cols[order(as.integer(sub("^theta", "", theta_cols)))]
+    if (length(theta_cols) == 0L) {
+      theta_vals <- numeric(0)
+    } else {
+      theta_vals <- t(paramDf[, theta_cols, drop = FALSE])
+    }
+    thetas_upper <- c(-1e+32, theta_vals, 1e+32)
+    thetas_lower <- c(-1e+32, theta_vals, 1e+32)
   } else {
-    thetas_upper <- c(-1e+32, t(paramDf[,paste("thetaUpper",1:(nRatings-1), sep = "")]), 1e+32)
-    thetas_lower <- c(-1e+32, t(paramDf[,paste("thetaLower",1:(nRatings-1), sep="")]), 1e+32)
+    theta_upper_cols <- grep("^thetaUpper[0-9]", names(paramDf), value = TRUE)
+    theta_upper_cols <- theta_upper_cols[order(as.integer(sub("^thetaUpper", "", theta_upper_cols)))]
+    theta_lower_cols <- grep("^thetaLower[0-9]", names(paramDf), value = TRUE)
+    theta_lower_cols <- theta_lower_cols[order(as.integer(sub("^thetaLower", "", theta_lower_cols)))]
+    if (length(theta_upper_cols) == 0L) {
+      theta_upper_vals <- numeric(0)
+    } else {
+      theta_upper_vals <- t(paramDf[, theta_upper_cols, drop = FALSE])
+    }
+    if (length(theta_lower_cols) == 0L) {
+      theta_lower_vals <- numeric(0)
+    } else {
+      theta_lower_vals <- t(paramDf[, theta_lower_cols, drop = FALSE])
+    }
+    thetas_upper <- c(-1e+32, theta_upper_vals, 1e+32)
+    thetas_lower <- c(-1e+32, theta_lower_vals, 1e+32)
   }
-  if (thetas_lower[2]>thetas_lower[3]) {
+  if (length(thetas_lower) >= 3 && thetas_lower[2]>thetas_lower[3]) {
     # For 2DSD the parametrization for lower thetas is different (different confidence scale)
     thetas_lower <- c(-1e+32, rev(thetas_lower[2:(nRatings)]), 1e+32)
     if (symmetric_confidence_thresholds) {

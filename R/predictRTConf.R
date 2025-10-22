@@ -128,7 +128,6 @@ predictConf <- function(paramDf, model=NULL,
                            maxrt=Inf, subdivisions = 100L, simult_conf = FALSE, stop.on.error=FALSE,
                            .progress=TRUE){
   paramDf <- as.data.frame(paramDf)
-  paramDf <- paramDf[,!is.na(paramDf)]
   if (is.null(model) && ("model" %in% names(paramDf))) model <- paramDf$model
   if (model =="DDMConf") {
     warning("DDMConf was renamed DDConf in version 1.0.0! DDConf will be predicted!")
@@ -157,7 +156,6 @@ predictRT <- function(paramDf, model=NULL,
                          scaled = FALSE, DistConf=NULL,
                          .progress = TRUE) {
   paramDf <- as.data.frame(paramDf)
-  paramDf <- paramDf[,!is.na(paramDf)]
   if (is.null(model) && ("model" %in% names(paramDf))) model <- paramDf$model
 
   #### Check model argument

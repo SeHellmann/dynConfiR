@@ -154,6 +154,7 @@ simulateWEV <- function (paramDf, n=1e+4,  model = "dynWEV", simult_conf = FALSE
   if (!is.null(seed)) {
     set.seed(seed)
   }
+  paramDf <- fill_optional_params(paramDf, c(st0 = 0, sz = 0, sv = 0))
   if (!("lambda" %in% names(paramDf))) {
     if (model %in% c("dynaViTE", "2DSDT")) warning("No lambda specified in paramDf. lambda=0 used")
     lambda <- 0
@@ -257,11 +258,32 @@ simulateWEV <- function (paramDf, n=1e+4,  model = "dynWEV", simult_conf = FALSE
   if (!process_results) simus <- select(simus, -c("dec", "vis", "mu"))
 
   if (symmetric_confidence_thresholds) {
-    thetas_upper <- c(-Inf, t(paramDf[,paste("theta",1:(nRatings-1), sep = "")]), Inf)
-    thetas_lower <- c(-Inf, t(paramDf[,paste("theta",1:(nRatings-1), sep = "")]), Inf)
+    theta_cols <- grep("^theta[0-9]", names(paramDf), value = TRUE)
+    theta_cols <- theta_cols[order(as.integer(sub("^theta", "", theta_cols)))]
+    if (length(theta_cols) == 0L) {
+      theta_vals <- numeric(0)
+    } else {
+      theta_vals <- t(paramDf[, theta_cols, drop = FALSE])
+    }
+    thetas_upper <- c(-Inf, theta_vals, Inf)
+    thetas_lower <- c(-Inf, theta_vals, Inf)
   } else {
-    thetas_upper <- c(-Inf, t(paramDf[,paste("thetaUpper",1:(nRatings-1), sep = "")]), Inf)
-    thetas_lower <- c(-Inf, t(paramDf[,paste("thetaLower",1:(nRatings-1), sep="")]), Inf)
+    theta_upper_cols <- grep("^thetaUpper[0-9]", names(paramDf), value = TRUE)
+    theta_upper_cols <- theta_upper_cols[order(as.integer(sub("^thetaUpper", "", theta_upper_cols)))]
+    theta_lower_cols <- grep("^thetaLower[0-9]", names(paramDf), value = TRUE)
+    theta_lower_cols <- theta_lower_cols[order(as.integer(sub("^thetaLower", "", theta_lower_cols)))]
+    if (length(theta_upper_cols) == 0L) {
+      theta_upper_vals <- numeric(0)
+    } else {
+      theta_upper_vals <- t(paramDf[, theta_upper_cols, drop = FALSE])
+    }
+    if (length(theta_lower_cols) == 0L) {
+      theta_lower_vals <- numeric(0)
+    } else {
+      theta_lower_vals <- t(paramDf[, theta_lower_cols, drop = FALSE])
+    }
+    thetas_upper <- c(-Inf, theta_upper_vals, Inf)
+    thetas_lower <- c(-Inf, theta_lower_vals, Inf)
   }
 
   levels_lower <- cumsum(as.numeric(table(thetas_lower)))

@@ -133,6 +133,7 @@
 predictRM_Conf <- function(paramDf, model="IRM", time_scaled = FALSE,
                                 maxrt=Inf, subdivisions = 100L, stop.on.error=FALSE,
                                 .progress=TRUE){
+  paramDf <- fill_optional_params(paramDf, c(st0 = 0, wx = 1, wrt = 0, wint = 0))
   #### Check model argument
   if (grepl("IRMt",model)) {
     time_scaled=TRUE
@@ -255,6 +256,7 @@ predictRM_RT <- function(paramDf, model="IRM", time_scaled = FALSE,
                                  maxrt=9, subdivisions = 100L,  minrt=NULL,
                                  scaled = FALSE, DistConf=NULL,
                                 .progress = TRUE) {
+  paramDf <- fill_optional_params(paramDf, c(st0 = 0, wx = 1, wrt = 0, wint = 0))
   #### Check model argument
   if (grepl("IRMt",model)) {
     time_scaled=TRUE
