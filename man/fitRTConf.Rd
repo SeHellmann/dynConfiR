@@ -216,7 +216,7 @@ Hellmann, S., Zehetleitner, M., & Rausch, M. (2023). Simultaneous modeling of ch
 
 \url{https://nashjc.wordpress.com/2016/11/10/why-optim-is-out-of-date/}
 
-\url{https://www.damtp.cam.ac.uk/user/na/NA_papers/NA2009_06.pdf}
+Powell, M.J. (2009). The BOBYQA algorithm for bound constrained optimization without derivatives. Report DAMTP 2009/NA06 \url{https://optimization-online.org/?p=11137}
 }
 \author{
 Sebastian Hellmann.
