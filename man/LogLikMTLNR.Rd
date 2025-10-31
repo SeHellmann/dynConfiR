@@ -18,12 +18,22 @@ LogLikMTLNR(data, paramDf, precision = 6, data_names = list(), ...)
 
 }}
 
-\item{paramDf}{a list or data frame with one row. Column names should match the names of
-\link{dMTLNR} parameter names (only \code{mu_v1} and \code{mu_v2} are not used in this context but
-replaced by the parameter \code{v}). For different stimulus quality/mean
-drift rates, names should be \code{v1}, \code{v2}, \code{v3},....
-Additionally, the confidence
-thresholds should be given by names with \code{thetaUpper1}, \code{thetaUpper2},..., \code{thetaLower1},... or,
+\item{paramDf}{a list or data frame with one row. Column names should
+match the following names (see \link{dMTLNR}):
+For different stimulus quality/mean
+drift rates, names should be \code{v1}, \code{v2}, \code{v3},.... (corresponding to the mean
+parameter for the accumulation rate for the stimulus-corresponding accumulator,
+therefore \code{mu_v1} and \code{mu_v2} are not used in this context but
+replaced by the parameter \code{v}); \code{mu_d1} and \code{mu_d2} correspond to the mean
+parameters for boundary distance of the two accumulators;
+\code{s1} and \code{s2} correspond to the variance parameters of the first and
+second boundary hitting time;
+\code{rho} corresponds to the correlation of boundary hitting times.
+Note that \code{s_v1},\code{s_v2},\code{rho_v},\code{s_d1},\code{s_d2}, and \code{rho_d} are not used in this
+context, although the accumulation rate-related parameters can be used to replace
+the above-mentioned variance parameters.
+Additionally, the confidence thresholds should be given by names with
+\code{thetaUpper1}, \code{thetaUpper2},..., \code{thetaLower1},... or,
 for symmetric thresholds only by \code{theta1}, \code{theta2},.... (see Details for the correspondence to the data)}
 
 \item{precision}{numerical scalar. Precision of calculation for integration over t0.}
@@ -89,10 +99,8 @@ head(data)
 # 2. Define some parameter set in a data.frame
 paramDf <- data.frame(v1=0.5, v2=1.0, t0=0.1, st0=0,
                       mu_d1=1, mu_d2=1,
-                      s_v1=0.5, s_v2=0.5,
-                      s_d1=0.3, s_d2=0.3,
-                      rho_v=0.2, rho_d=0.1,
-                      theta1=2.5)
+                      s1=0.5, s2=0.5,
+                      rho=0.2, theta1=2.5)
 
 # 3. Compute log likelihood for parameter and data
 LogLikMTLNR(data, paramDf, condition="discriminability")

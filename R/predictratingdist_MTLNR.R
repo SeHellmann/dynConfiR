@@ -8,12 +8,22 @@
 #' constellations. See \code{\link{dMTLNR}} for more information about the models
 #' and parameters.
 #'
-#' @param paramDf a list or data frame with one row. Column names should match the names of
-#' \link{dMTLNR} parameter names (only `mu_v1` and `mu_v2` are not used in this context but
-#' replaced by the parameter `v`). For different stimulus quality/mean
-#' drift rates, names should be `v1`, `v2`, `v3`,....
-#' Additionally, the confidence
-#' thresholds should be given by names with `thetaUpper1`, `thetaUpper2`,..., `thetaLower1`,... or,
+#' @param paramDf a list or data frame with one row. Column names should
+#' match the following names (see \link{dMTLNR}):
+#' For different stimulus quality/mean
+#' drift rates, names should be `v1`, `v2`, `v3`,.... (corresponding to the mean
+#' parameter for the accumulation rate for the stimulus-corresponding accumulator,
+#' therefore `mu_v1` and `mu_v2` are not used in this context but
+#' replaced by the parameter `v`); `mu_d1` and `mu_d2` correspond to the mean
+#' parameters for boundary distance of the two accumulators;
+#' `s1` and `s2` correspond to the variance parameters of the first and
+#' second boundary hitting time;
+#' `rho` corresponds to the correlation of boundary hitting times.
+#' Note that `s_v1`,`s_v2`,`rho_v`,`s_d1`,`s_d2`, and `rho_d` are not used in this
+#' context, although the accumulation rate-related parameters can be used to replace
+#' the above-mentioned variance parameters.
+#' Additionally, the confidence thresholds should be given by names with
+#' `thetaUpper1`, `thetaUpper2`,..., `thetaLower1`,... or,
 #' for symmetric thresholds only by `theta1`, `theta2`,.... (see Details for the correspondence to the data)
 #' @param maxrt numeric. The maximum RT for the
 #' integration/density computation. Default: 15 (for `predictMTLNR_Conf`
@@ -79,9 +89,7 @@
 #' # 1. Define some parameter set in a data.frame
 #' paramDf <- data.frame(v1=0.5, v2=1.0, t0=0.1, st0=0,
 #'                       mu_d1=1, mu_d2=1,
-#'                       s_v1=0.5, s_v2=0.5,
-#'                       s_d1=0.3, s_d2=0.3,
-#'                       rho_v=0.2, rho_d=0.1,
+#'                       s1=0.5, s2=0.5, rho=0.2,
 #'                       theta1=0.8, theta2=1.5)
 #'
 #' # 2. Predict discrete Choice x Confidence distribution:
@@ -127,9 +135,7 @@
 #' # Example with asymmetric confidence thresholds
 #' paramDf_asym <- data.frame(v1=0.5, v2=1.0, t0=0.1, st0=0,
 #'                           mu_d1=1, mu_d2=1,
-#'                           s_v1=0.5, s_v2=0.5,
-#'                           s_d1=0.3, s_d2=0.3,
-#'                           rho_v=0.2, rho_d=0.1,
+#'                           s1=0.5, s2=0.5, rho=0.2,
 #'                           thetaLower1=0.5, thetaLower2=1.2,
 #'                           thetaUpper1=0.7, thetaUpper2=1.8)
 #'
@@ -139,9 +145,7 @@
 #' # Example with multiple conditions
 #' paramDf_multi <- data.frame(v1=0.3, v2=0.6, v3=1.2, t0=0.1, st0=0,
 #'                            mu_d1=1, mu_d2=1,
-#'                            s_v1=0.5, s_v2=0.5,
-#'                            s_d1=0.3, s_d2=0.3,
-#'                            rho_v=0.2, rho_d=0.1,
+#'                            s1=0.5, s2=0.5, rho=0.2,
 #'                            theta1=0.8, theta2=1.5)
 #'
 #' preds_Conf_multi <- predictMTLNR_Conf(paramDf_multi, maxrt=7, subdivisions=50)
@@ -181,6 +185,11 @@ predictMTLNR_Conf <- function(paramDf,
     thetas_1 <- c(0, t(paramDf[,paste("thetaLower",1:(nRatings-1), sep = "")]), 1e+64)
     thetas_2 <- c(0, t(paramDf[,paste("thetaUpper",1:(nRatings-1), sep="")]), 1e+64)
   }
+
+  if ("s_v1" %in% names(paramDf)) paramDf$s1 <- paramDf$s_v1
+  if ("s_v2" %in% names(paramDf)) paramDf$s2 <- paramDf$s_v2
+  if ("rho_v" %in% names(paramDf)) paramDf$rho <- paramDf$rho_v
+
   # Because we integrate over the response time, st0 does not matter
   # So, to speed up computations for high values of st0, we set it to 0
   # but add the constant to maxrt
@@ -202,11 +211,10 @@ predictMTLNR_Conf <- function(paramDf,
     p <- integrate(function(rt) return(dMTLNR(rt, response=row$response,
                                               th1=th1, th2=th2,
                                             mu_v1=mu1, mu_v2 = mu2,
-                                            s_v1=paramDf$s_v1, s_v2=paramDf$s_v2,
-                                            rho_v=paramDf$rho_v,
+                                            s_v1=paramDf$s1, s_v2=paramDf$s2,
+                                            rho_v=paramDf$rho,
                                             mu_d1=paramDf$mu_d1, mu_d2=paramDf$mu_d2,
-                                            s_d1=paramDf$s_d1, s_d2=paramDf$s_d2,
-                                            rho_d=paramDf$rho_d,
+                                            s_d1=0, s_d2=0,rho_d=0,
             # as we integrate over t0, setting st0=0  does not change results
             # but speeds up the integration considerably
                                             t0=0,st0 = 0)),
@@ -266,6 +274,10 @@ predictMTLNR_RT <- function(paramDf,
     thetas_2 <- c(0, t(paramDf[,paste("thetaUpper",1:(nRatings-1), sep="")]), 1e+64)
   }
 
+  if ("s_v1" %in% names(paramDf)) paramDf$s1 <- paramDf$s_v1
+  if ("s_v2" %in% names(paramDf)) paramDf$s2 <- paramDf$s_v2
+  if ("rho_v" %in% names(paramDf)) paramDf$rho <- paramDf$rho_v
+
   if (is.null(minrt)) minrt <- paramDf$t0
   rt = seq(minrt, maxrt, length.out = subdivisions)
   df <- expand.grid(rt = rt,
@@ -301,11 +313,10 @@ predictMTLNR_RT <- function(paramDf,
       dMTLNR(rt, cur_row$response,
              th1 = th1, th2=th2,
              mu_v1=mu1, mu_v2 = mu2,
-             s_v1=paramDf$s_v1, s_v2=paramDf$s_v2,
-             rho_v=paramDf$rho_v,
+             s_v1=paramDf$s1, s_v2=paramDf$s2,
+             rho_v=paramDf$rho,
              mu_d1=paramDf$mu_d1, mu_d2=paramDf$mu_d2,
-             s_d1=paramDf$s_d1, s_d2=paramDf$s_d2,
-             rho_d=paramDf$rho_d,
+             s_d1=0, s_d2=0, rho_d=0,
            t0  = paramDf$t0, st0 = paramDf$st0)
 
     if (scaled) {

@@ -266,7 +266,7 @@ fitRTConfModels <- function(data, models = c("dynaViTE", "2DSD", "PCRMt"),
                   paste("theta", 1:(nRatings-1), sep=""),
                   "wrt", "wint", "wx", "b", "a",
                   "z", "sz", "sv", "tau", "w", "svis", "sigvis", "lambda",
-                  "mu_d1","mu_d2","s_v1","s_v2", "s_d1","s_d2" ,"rho_d","rho_v")
+                  "mu_d1","mu_d2","s1","s2", "rho")
     #outnames <- outnames[!(outnames %in% names(fixed))]
   } else {
     outnames <- c("model", "sbj", "negLogLik", "N", "k", "BIC", "AICc", "AIC", "fixed",
@@ -276,7 +276,7 @@ fitRTConfModels <- function(data, models = c("dynaViTE", "2DSD", "PCRMt"),
                   paste("thetaUpper", 1:(nRatings-1), sep=""),
                   "wrt", "wint", "wx", "b", "a",
                   "z", "sz", "sv", "tau", "w", "svis", "sigvis", "lambda",
-                  "mu_d1","mu_d2","s_v1","s_v2", "s_d1","s_d2" ,"rho_d","rho_v")
+                  "mu_d1","mu_d2","s1","s2", "rho")
     #outnames <- outnames[!(outnames %in% names(fixed))]
   }
 

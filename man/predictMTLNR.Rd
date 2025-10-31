@@ -14,12 +14,22 @@ predictMTLNR_RT(paramDf, maxrt = 9, subdivisions = 100L, minrt = NULL,
   scaled = FALSE, DistConf = NULL, .progress = TRUE)
 }
 \arguments{
-\item{paramDf}{a list or data frame with one row. Column names should match the names of
-\link{dMTLNR} parameter names (only \code{mu_v1} and \code{mu_v2} are not used in this context but
-replaced by the parameter \code{v}). For different stimulus quality/mean
-drift rates, names should be \code{v1}, \code{v2}, \code{v3},....
-Additionally, the confidence
-thresholds should be given by names with \code{thetaUpper1}, \code{thetaUpper2},..., \code{thetaLower1},... or,
+\item{paramDf}{a list or data frame with one row. Column names should
+match the following names (see \link{dMTLNR}):
+For different stimulus quality/mean
+drift rates, names should be \code{v1}, \code{v2}, \code{v3},.... (corresponding to the mean
+parameter for the accumulation rate for the stimulus-corresponding accumulator,
+therefore \code{mu_v1} and \code{mu_v2} are not used in this context but
+replaced by the parameter \code{v}); \code{mu_d1} and \code{mu_d2} correspond to the mean
+parameters for boundary distance of the two accumulators;
+\code{s1} and \code{s2} correspond to the variance parameters of the first and
+second boundary hitting time;
+\code{rho} corresponds to the correlation of boundary hitting times.
+Note that \code{s_v1},\code{s_v2},\code{rho_v},\code{s_d1},\code{s_d2}, and \code{rho_d} are not used in this
+context, although the accumulation rate-related parameters can be used to replace
+the above-mentioned variance parameters.
+Additionally, the confidence thresholds should be given by names with
+\code{thetaUpper1}, \code{thetaUpper2},..., \code{thetaLower1},... or,
 for symmetric thresholds only by \code{theta1}, \code{theta2},.... (see Details for the correspondence to the data)}
 
 \item{maxrt}{numeric. The maximum RT for the
@@ -92,9 +102,7 @@ conditions.
 # 1. Define some parameter set in a data.frame
 paramDf <- data.frame(v1=0.5, v2=1.0, t0=0.1, st0=0,
                       mu_d1=1, mu_d2=1,
-                      s_v1=0.5, s_v2=0.5,
-                      s_d1=0.3, s_d2=0.3,
-                      rho_v=0.2, rho_d=0.1,
+                      s1=0.5, s2=0.5, rho=0.2,
                       theta1=0.8, theta2=1.5)
 
 # 2. Predict discrete Choice x Confidence distribution:
@@ -140,9 +148,7 @@ head(preds_RT)
 # Example with asymmetric confidence thresholds
 paramDf_asym <- data.frame(v1=0.5, v2=1.0, t0=0.1, st0=0,
                           mu_d1=1, mu_d2=1,
-                          s_v1=0.5, s_v2=0.5,
-                          s_d1=0.3, s_d2=0.3,
-                          rho_v=0.2, rho_d=0.1,
+                          s1=0.5, s2=0.5, rho=0.2,
                           thetaLower1=0.5, thetaLower2=1.2,
                           thetaUpper1=0.7, thetaUpper2=1.8)
 
@@ -152,9 +158,7 @@ head(preds_Conf_asym)
 # Example with multiple conditions
 paramDf_multi <- data.frame(v1=0.3, v2=0.6, v3=1.2, t0=0.1, st0=0,
                            mu_d1=1, mu_d2=1,
-                           s_v1=0.5, s_v2=0.5,
-                           s_d1=0.3, s_d2=0.3,
-                           rho_v=0.2, rho_d=0.1,
+                           s1=0.5, s2=0.5, rho=0.2,
                            theta1=0.8, theta2=1.5)
 
 preds_Conf_multi <- predictMTLNR_Conf(paramDf_multi, maxrt=7, subdivisions=50)

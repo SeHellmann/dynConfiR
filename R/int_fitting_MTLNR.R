@@ -15,25 +15,19 @@ fittingMTLNR <- function(df, nConds, nRatings, fixed, sym_thetas,
                              vmax = c( 1, 3, 5),          ### vmax = mean drift rate in last condition \in (\vmin,\infty)]
                              mu_d1 = c(-0.5,0.5),
                              mu_d2 = c(-0.5, 0.5),
-                             s_v1= c(0.5,3),
-                             s_v2= c(0.5, 3),
-                             s_d1= c(0.5, 3),
-                             s_d2= c(0.5, 3),
-                             rho_d= c(-0.4, 0.4),
-                             rho_v= c(-0.4, 0.4),
+                             s1= c(0.1, 1, 3),
+                             s2= c(0.1, 1, 3),
+                             rho= c(-0.8, -.2, .2, .8),
                              t0 = c(0.2, 0.7), ### t0 = minimal non-decision time (proportional to minimum observed RT)
                              st0 = seq(0.1, 1.2, length.out=3))    ### st0 = range of (uniform dist) non-decision time
-    # init_grid <- expand.grid(vmin = c(0.01, 0.1,0.8, 1.5),         ### vmin = drift rate in first condition \in (0,\infty)]
-    #                          vmax = c( 1, 2.4, 3.8, 5, 8, 12),          ### vmax = mean drift rate in last condition \in (\vmin,\infty)]
-    #                          mu_d1 = c(-0.5, 0, 0.5),
-    #                          mu_d2 = c(-0.5, 0, 0.5),
-    #                          s_v1= c(0.5, 1.4, 3),
-    #                          s_v2= c(0.5, 1.4, 3),
-    #                          s_d1= c(0.5, 1.4, 3),
-    #                          s_d2= c(0.5, 1.4, 3),
-    #                          rho_d= c(-0.5, 0, 0.5),
-    #                          rho_v= c(-0.5, 0, 0.5),
-    #                          t0 = c(0.2, 0.7), ### t0 = minimal non-decision time (proportional to minimum observed RT)
+    # init_grid <- expand.grid(vmin = c(0.1, 0.8, 3),         ### vmin = drift rate in first condition \in (0,\infty)]
+    #                          vmax = c( 1, 3, 5),          ### vmax = mean drift rate in last condition \in (\vmin,\infty)]
+    #                          mu_d1 = c(-1,0, 1),
+    #                          mu_d2 = c(-1,0, 1),
+    #                          s1= c(0.5, 1, 3),
+    #                          s2= c(0.5, 1, 3),
+    #                          rho= c(-0.4, 0.4),
+    #                          t0 = c(0.2, 0.5, 0.8), ### t0 = minimal non-decision time (proportional to minimum observed RT)
     #                          st0 = seq(0.1, 1.2, length.out=3))    ### st0 = range of (uniform dist) non-decision time
   }
   # Remove columns for fixed parameters
@@ -79,12 +73,9 @@ fittingMTLNR <- function(df, nConds, nRatings, fixed, sym_thetas,
 
     if (!("mu_d1" %in% names(fixed))) inits <- cbind(inits, init_grid$mu_d1)
     if (!("mu_d2" %in% names(fixed))) inits <- cbind(inits, init_grid$mu_d2)
-    if (!("s_v1"  %in% names(fixed))) inits <- cbind(inits, log(init_grid$s_v1 ))
-    if (!("s_v2"  %in% names(fixed))) inits <- cbind(inits, log(init_grid$s_v2 ))
-    if (!("s_d1"  %in% names(fixed))) inits <- cbind(inits, log(init_grid$s_d1 ))
-    if (!("s_d2"  %in% names(fixed))) inits <- cbind(inits, log(init_grid$s_d2 ))
-    if (!("rho_d" %in% names(fixed))) inits <- cbind(inits, qnorm(init_grid$rho_d))
-    if (!("rho_v" %in% names(fixed))) inits <- cbind(inits, qnorm(init_grid$rho_v))
+    if (!("s1"  %in% names(fixed))) inits <- cbind(inits, log(init_grid$s1 ))
+    if (!("s2"  %in% names(fixed))) inits <- cbind(inits, log(init_grid$s2 ))
+    if (!("rho" %in% names(fixed))) inits <- cbind(inits, qnorm(init_grid$rho))
     if (!("t0"    %in% names(fixed))) inits <- cbind(inits, qnorm(init_grid$t0   ))
     if (!("st0"   %in% names(fixed))) inits <- cbind(inits, log(init_grid$st0  ))
 
@@ -107,8 +98,8 @@ fittingMTLNR <- function(df, nConds, nRatings, fixed, sym_thetas,
     ##replace all +-Inf with big/tiny numbers
     inits[inits==Inf]<- 1e6
     inits[inits==-Inf]<- -1e6
-    parnames <- c(paste("v", 1:nConds, sep=""), 'mu_d1','mu_d2','s_v1','s_v2',
-                  's_d1','s_d2' ,'rho_d','rho_v','t0','st0', cols_theta)
+    parnames <- c(paste("v", 1:nConds, sep=""), 'mu_d1','mu_d2','s1','s2',
+                  'rho', 't0','st0', cols_theta)
     names(inits) <- setdiff(parnames, names(fixed))
   } else {
     ##### 1.2. For box-constraint optimisation algorithm span drifts and thresholds equidistantly
@@ -135,8 +126,8 @@ fittingMTLNR <- function(df, nConds, nRatings, fixed, sym_thetas,
       }
     }
     #parnames <- c('a', 'b', 't0', 'st0', fitted_weights, paste("v", 1:nConds, sep=""), cols_theta)
-    parnames <- c(paste("v", 1:nConds, sep=""), 'mu_d1','mu_d2','s_v1','s_v2',
-                  's_d1','s_d2' ,'rho_d','rho_v','t0','st0', cols_theta)
+    parnames <- c(paste("v", 1:nConds, sep=""), 'mu_d1','mu_d2','s1','s2',
+                  'rho','t0','st0', cols_theta)
     inits <- init_grid[, setdiff(parnames, names(fixed))]
   }
   # remove init_grid
@@ -201,9 +192,9 @@ fittingMTLNR <- function(df, nConds, nRatings, fixed, sym_thetas,
   }
 
   if (optim_method!="Nelder-Mead") {
-    #                   "v(1:nConds)",    mu_d1,mu_d2,s_v1,s_v2,s_d1,s_d2,rho_d,rho_v,t0,st0, thetaLower1, dthetaLower2.., thetaUpper1... (or theta1,...)
-    lower_optbound <- c(rep(-Inf, nConds), -Inf,-Inf,    0,   0,   0,  0,  -1,   -1,  0, 0,   rep(rep(0, nRatings-1), 2-as.numeric(sym_thetas)))[!(parnames %in% names(fixed))]
-    upper_optbound <- c(rep( Inf, nConds),  Inf, Inf,  Inf, Inf, Inf, Inf,  1,    1,  1, Inf, rep(Inf, (2-as.numeric(sym_thetas))*(nRatings-1)))[!(parnames %in% names(fixed))]
+    #                   "v(1:nConds)",    mu_d1,mu_d2, s1, s2,rho,t0,st0, thetaLower1, dthetaLower2.., thetaUpper1... (or theta1,...)
+    lower_optbound <- c(rep(-Inf, nConds), -Inf,-Inf,   0,  0, -1, 0,  0,   rep(rep(0, nRatings-1), 2-as.numeric(sym_thetas)))[!(parnames %in% names(fixed))]
+    upper_optbound <- c(rep( Inf, nConds),  Inf, Inf, Inf,Inf,  1, 1,Inf, rep(Inf, (2-as.numeric(sym_thetas))*(nRatings-1)))[!(parnames %in% names(fixed))]
   }
 
 
@@ -217,9 +208,9 @@ fittingMTLNR <- function(df, nConds, nRatings, fixed, sym_thetas,
       start <- c(t(inits[i,]))
       names(start) <- names(inits)
       for (l in 1:opts$nRestarts){
-        start <- start + rnorm(length(start), sd=pmax(0.001, abs(t(t(start))/20)))
         if (optim_method == "Nelder-Mead") {
-          try(m <- optim(par = start,
+          start <- start + rnorm(length(start), sd=pmax(0.001, abs(t(t(start))/20)))
+          m <- try(optim(par = start,
                          fn = neglikelihood_MTLNR_free,
                          data=df, nConds=nConds, nRatings=nRatings,
                          fixed=fixed, mint0=mint0,
@@ -228,7 +219,7 @@ fittingMTLNR <- function(df, nConds, nRatings, fixed, sym_thetas,
                          control = list(maxit = opts$maxit, reltol = opts$reltol)))
         } else if (optim_method =="bobyqa") {
           start <- pmax(pmin(start, upper_optbound-1e-6), lower_optbound+1e-6)
-          try(m <- bobyqa(par = start,
+          m <- try(bobyqa(par = start,
                           fn = neglikelihood_MTLNR_bounded,
                           lower = lower_optbound, upper = upper_optbound,
                           data=df, nConds=nConds, nRatings=nRatings,
@@ -245,7 +236,7 @@ fittingMTLNR <- function(df, nConds, nRatings, fixed, sym_thetas,
           }
         } else if (optim_method=="L-BFGS-B") {  ### ToDo: use dfoptim or pracma::grad as gradient!
           start <- pmax(pmin(start, upper_optbound-1e-6), lower_optbound+1e-6)
-          try(m <- optim(par = start,
+          m <- try(optim(par = start,
                          fn = neglikelihood_MTLNR_bounded,
                          lower = lower_optbound, upper = upper_optbound,
                          data=df, nConds=nConds, nRatings=nRatings,
@@ -301,7 +292,7 @@ fittingMTLNR <- function(df, nConds, nRatings, fixed, sym_thetas,
       for (l in 1:opts$nRestarts){
         start <- start + rnorm(length(start), sd=pmax(0.001, abs(t(t(start))/20)))
         if (optim_method == "Nelder-Mead") {
-          try(m <- optim(par = start,
+          m <- try(optim(par = start,
                          fn = neglikelihood_MTLNR_free,
                          data=df, nConds=nConds, nRatings=nRatings,
                          fixed=fixed, mint0=mint0,
@@ -310,7 +301,7 @@ fittingMTLNR <- function(df, nConds, nRatings, fixed, sym_thetas,
                          control = list(maxit = opts$maxit, reltol = opts$reltol)))
         } else if (optim_method =="bobyqa") {
           start <- pmax(pmin(start, upper_optbound-1e-6), lower_optbound+1e-6)
-          try(m <- bobyqa(par = start,
+          m <- try(bobyqa(par = start,
                           fn = neglikelihood_MTLNR_bounded,
                           lower = lower_optbound, upper = upper_optbound,
                           data=df, nConds=nConds, nRatings=nRatings,
@@ -328,7 +319,7 @@ fittingMTLNR <- function(df, nConds, nRatings, fixed, sym_thetas,
           }
         } else if (optim_method=="L-BFGS-B") {  ### ToDo: use dfoptim or pracma::grad as gradient!
           start <- pmax(pmin(start, upper_optbound-1e-6), lower_optbound+1e-6)
-          try(m <- optim(par = start,
+          m <- try(optim(par = start,
                          fn = neglikelihood_MTLNR_bounded,
                          lower = lower_optbound, upper = upper_optbound,
                          data=df, nConds=nConds, nRatings=nRatings,
@@ -385,12 +376,9 @@ fittingMTLNR <- function(df, nConds, nRatings, fixed, sym_thetas,
 
       if (!("mu_d1" %in% names(fixed))) res$mu_d1 <- p[["mu_d1"]]
       if (!("mu_d2" %in% names(fixed))) res$mu_d2 <- p[["mu_d2"]]
-      if (!("s_v1"  %in% names(fixed))) res$s_v1  <- exp(p[["s_v1" ]])
-      if (!("s_v2"  %in% names(fixed))) res$s_v2  <- exp(p[["s_v2" ]])
-      if (!("s_d1"  %in% names(fixed))) res$s_d1  <- exp(p[["s_d1" ]])
-      if (!("s_d2"  %in% names(fixed))) res$s_d2  <- exp(p[["s_d2" ]])
-      if (!("rho_d" %in% names(fixed))) res$rho_d <- pnorm(p[["rho_d"]])
-      if (!("rho_v" %in% names(fixed))) res$rho_v <- pnorm(p[["rho_v"]])
+      if (!("s1"  %in% names(fixed))) res$s1  <- exp(p[["s1" ]])
+      if (!("s2"  %in% names(fixed))) res$s2  <- exp(p[["s2" ]])
+      if (!("rho" %in% names(fixed))) res$rho <- pnorm(p[["rho"]])
       if (!("t0"    %in% names(fixed))) res$t0    <- pnorm(p[["t0"   ]])*mint0
       if (!("st0"   %in% names(fixed))) res$st0   <- exp(p[["st0"  ]])
 
@@ -439,9 +427,9 @@ fittingMTLNR <- function(df, nConds, nRatings, fixed, sym_thetas,
     # if (res[['b']] == "a") res$b <- res$a
     if (sym_thetas) {
 
-      res <- res[,c(paste("v", 1:nConds, sep=""), 'mu_d1','mu_d2','s_v1','s_v2', 's_d1','s_d2' ,'rho_d','rho_v','t0','st0', paste("theta", 1:(nRatings-1), sep=""))]
+      res <- res[,c(paste("v", 1:nConds, sep=""), 'mu_d1','mu_d2','s1','s2', 'rho','t0','st0', paste("theta", 1:(nRatings-1), sep=""))]
     } else {
-      res <- res[,c(paste("v", 1:nConds, sep=""), 'mu_d1','mu_d2','s_v1','s_v2', 's_d1','s_d2' ,'rho_d','rho_v','t0','st0', paste("thetaLower", 1:(nRatings-1), sep=""), paste("thetaUpper", 1:(nRatings-1), sep=""))]
+      res <- res[,c(paste("v", 1:nConds, sep=""), 'mu_d1','mu_d2','s1','s2', 'rho','t0','st0', paste("thetaLower", 1:(nRatings-1), sep=""), paste("thetaUpper", 1:(nRatings-1), sep=""))]
     }
     res$fixed <- paste(c("sym_thetas", names(fixed)), c(sym_thetas,fixed), sep="=", collapse = ", ")
     res$negLogLik <- fit$value
@@ -471,12 +459,9 @@ neglikelihood_MTLNR_free <-   function(p, data,
   paramDf[,paste("v",1:(nConds), sep="")] <- p[1:(nConds)]
   if (!("mu_d1" %in% names(fixed))) paramDf$mu_d1 <- p[["mu_d1"]]
   if (!("mu_d2" %in% names(fixed))) paramDf$mu_d2 <- p[["mu_d2"]]
-  if (!("s_v1"  %in% names(fixed))) paramDf$s_v1  <- exp(p[["s_v1" ]])
-  if (!("s_v2"  %in% names(fixed))) paramDf$s_v2  <- exp(p[["s_v2" ]])
-  if (!("s_d1"  %in% names(fixed))) paramDf$s_d1  <- exp(p[["s_d1" ]])
-  if (!("s_d2"  %in% names(fixed))) paramDf$s_d2  <- exp(p[["s_d2" ]])
-  if (!("rho_d" %in% names(fixed))) paramDf$rho_d <- pnorm(p[["rho_d"]])
-  if (!("rho_v" %in% names(fixed))) paramDf$rho_v <- pnorm(p[["rho_v"]])
+  if (!("s1"  %in% names(fixed))) paramDf$s1  <- exp(p[["s1" ]])
+  if (!("s2"  %in% names(fixed))) paramDf$s2  <- exp(p[["s2" ]])
+  if (!("rho" %in% names(fixed))) paramDf$rho <- pnorm(p[["rho"]])
   if (!("t0"    %in% names(fixed))) paramDf$t0    <- pnorm(p[["t0"   ]])*mint0
   if (!("st0"   %in% names(fixed))) paramDf$st0   <- exp(p[["st0"  ]])
   # if (paramDf$a == "b") paramDf$a <- paramDf$b

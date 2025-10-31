@@ -15,12 +15,22 @@
 #'   \item response     (values at least convertible to c(1,2); direction of decision; (index of accumulator reaching the boundary first))
 #'
 #' }
-#' @param paramDf a list or data frame with one row. Column names should match the names of
-#' \link{dMTLNR} parameter names (only `mu_v1` and `mu_v2` are not used in this context but
-#' replaced by the parameter `v`). For different stimulus quality/mean
-#' drift rates, names should be `v1`, `v2`, `v3`,....
-#' Additionally, the confidence
-#' thresholds should be given by names with `thetaUpper1`, `thetaUpper2`,..., `thetaLower1`,... or,
+#' @param paramDf a list or data frame with one row. Column names should
+#' match the following names (see \link{dMTLNR}):
+#' For different stimulus quality/mean
+#' drift rates, names should be `v1`, `v2`, `v3`,.... (corresponding to the mean
+#' parameter for the accumulation rate for the stimulus-corresponding accumulator,
+#' therefore `mu_v1` and `mu_v2` are not used in this context but
+#' replaced by the parameter `v`); `mu_d1` and `mu_d2` correspond to the mean
+#' parameters for boundary distance of the two accumulators;
+#' `s1` and `s2` correspond to the variance parameters of the first and
+#' second boundary hitting time;
+#' `rho` corresponds to the correlation of boundary hitting times.
+#' Note that `s_v1`,`s_v2`,`rho_v`,`s_d1`,`s_d2`, and `rho_d` are not used in this
+#' context, although the accumulation rate-related parameters can be used to replace
+#' the above-mentioned variance parameters.
+#' Additionally, the confidence thresholds should be given by names with
+#' `thetaUpper1`, `thetaUpper2`,..., `thetaLower1`,... or,
 #' for symmetric thresholds only by `theta1`, `theta2`,.... (see Details for the correspondence to the data)
 #' @param precision numerical scalar. Precision of calculation for integration over t0.
 #' @param data_names list. Possibility of giving alternative column names for the variables in the data. By default column names are identical to the
@@ -86,10 +96,8 @@
 #' # 2. Define some parameter set in a data.frame
 #' paramDf <- data.frame(v1=0.5, v2=1.0, t0=0.1, st0=0,
 #'                       mu_d1=1, mu_d2=1,
-#'                       s_v1=0.5, s_v2=0.5,
-#'                       s_d1=0.3, s_d2=0.3,
-#'                       rho_v=0.2, rho_d=0.1,
-#'                       theta1=2.5)
+#'                       s1=0.5, s2=0.5,
+#'                       rho=0.2, theta1=2.5)
 #'
 #' # 3. Compute log likelihood for parameter and data
 #' LogLikMTLNR(data, paramDf, condition="discriminability")
@@ -160,14 +168,17 @@ LogLikMTLNR <- function(data, paramDf,
                          th2 = case_when(.data$response==1 ~ thetas_1[(.data$rating+1)],
                                          .data$response==2 ~ thetas_2[(.data$rating+1)]))
 
+  if ("s_v1" %in% names(paramDf)) paramDf$s1 <- paramDf$s_v1
+  if ("s_v2" %in% names(paramDf)) paramDf$s2 <- paramDf$s_v2
+  if ("rho_v" %in% names(paramDf)) paramDf$rho <- paramDf$rho_v
   probs <- dMTLNR(
     data$rt, data$response, data$th1, data$th2,
      mu_v1=data$mu1, mu_v2=data$mu2,
-     s_v1=paramDf$s_v1, s_v2=paramDf$s_v2,
-     rho_v=paramDf$rho_v,
+     s_v1=paramDf$s1, s_v2=paramDf$s2,
+     rho=paramDf$rho,
      mu_d1=paramDf$mu_d1, mu_d2=paramDf$mu_d2,
-     s_d1=paramDf$s_d1, s_d2=paramDf$s_d2,
-     rho_d=paramDf$rho_d,
+     s_d1=0, s_d2=0,
+     rho_d=0,
      t0=paramDf$t0, st0=paramDf$st0,
      precision=precision)
 
@@ -176,7 +187,7 @@ LogLikMTLNR <- function(data, paramDf,
   # if (any(probs<=0)) {
   #   return(-1e12)
   # }
-  probs[probs==0] <- .Machine$double.xmin
+  probs[probs==0 | is.na(probs)] <- .Machine$double.xmin
 
   if ("n" %in% names(data)) {
     logl <- sum(log(probs)*data$n)
