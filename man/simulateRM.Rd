@@ -112,7 +112,7 @@ simus <- simulateRM(paramDf, model="PCRMt")
   simus$rating <- factor(simus$rating, labels=c("unsure", "sure"))
   ggplot(simus, aes(x=rt, group=interaction(correct, rating),
                     color=as.factor(correct), linetype=rating))+
-    geom_density(linewidth=1.2)+
+    geom_density(linewidth=1.2, na.rm=TRUE)+
     facet_grid(rows=vars(condition), labeller = "label_both")
 }
 
