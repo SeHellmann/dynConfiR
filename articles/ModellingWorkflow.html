@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">dynConfiR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -143,8 +143,8 @@ continuous visual analogue scale with values between -1 and 1.</p>
 <p>There are several steps of data preparation, which are either
 necessary or recommended. First, the models implemented in
 <code>dynConfiR</code> all require confidence to be measured on a
-discrete scale, so we discretize the contionuous confidence rating. We
-do this using equidistant breaks. The functions would be fine with any
+discrete scale, so we discretize the continuous confidence rating. We do
+this using equidistant breaks. The functions would be fine with any
 integer or factor column, so we simply use the cut function.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="va">data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
@@ -415,12 +415,12 @@ favours the dynaViTE model in the group-level comparison.</p>
 <code class="sourceCode R"><span></span>
 <span><span class="va">group_weights</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/QuantModelComparison.html">group_BMS_fits</a></span><span class="op">(</span><span class="va">all_parfits</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">group_weights</span><span class="op">$</span><span class="va">model_weights</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                     alpha          r     ep    pep fx_prob</span></span>
-<span><span class="co">#&gt; 2DSD                    2 0.09523810 0.0003 0.0003       0</span></span>
-<span><span class="co">#&gt; 2DSD_restricted         1 0.04761905 0.0000 0.0000       0</span></span>
-<span><span class="co">#&gt; dynaViTE               16 0.76190476 0.9997 0.9997       1</span></span>
-<span><span class="co">#&gt; dynaViTE_restricted     1 0.04761905 0.0000 0.0000       0</span></span>
-<span><span class="co">#&gt; IRMt                    1 0.04761905 0.0000 0.0000       0</span></span></code></pre></div>
+<span><span class="co">#&gt;                     alpha          r ep          pep fx_prob</span></span>
+<span><span class="co">#&gt; 2DSD                    1 0.04761905  0 6.350438e-09       0</span></span>
+<span><span class="co">#&gt; 2DSD_restricted         1 0.04761905  0 6.350438e-09       0</span></span>
+<span><span class="co">#&gt; dynaViTE               17 0.80952381  1 1.000000e+00       1</span></span>
+<span><span class="co">#&gt; dynaViTE_restricted     1 0.04761905  0 6.350438e-09       0</span></span>
+<span><span class="co">#&gt; IRMt                    1 0.04761905  0 6.350438e-09       0</span></span></code></pre></div>
 <hr>
 </div>
 <div class="section level2">

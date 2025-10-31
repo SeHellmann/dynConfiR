@@ -15,7 +15,7 @@ for individual usage in other contexts."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">dynConfiR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -73,12 +73,22 @@ for individual usage in other contexts.</p>
 
 
 <dt id="arg-paramdf">paramDf<a class="anchor" aria-label="anchor" href="#arg-paramdf"></a></dt>
-<dd><p>a list or data frame with one row. Column names should match the names of
-<a href="MTLNR.html">dMTLNR</a> parameter names (only <code>mu_v1</code> and <code>mu_v2</code> are not used in this context but
-replaced by the parameter <code>v</code>). For different stimulus quality/mean
-drift rates, names should be <code>v1</code>, <code>v2</code>, <code>v3</code>,....
-Additionally, the confidence
-thresholds should be given by names with <code>thetaUpper1</code>, <code>thetaUpper2</code>,..., <code>thetaLower1</code>,... or,
+<dd><p>a list or data frame with one row. Column names should
+match the following names (see <a href="MTLNR.html">dMTLNR</a>):
+For different stimulus quality/mean
+drift rates, names should be <code>v1</code>, <code>v2</code>, <code>v3</code>,.... (corresponding to the mean
+parameter for the accumulation rate for the stimulus-corresponding accumulator,
+therefore <code>mu_v1</code> and <code>mu_v2</code> are not used in this context but
+replaced by the parameter <code>v</code>); <code>mu_d1</code> and <code>mu_d2</code> correspond to the mean
+parameters for boundary distance of the two accumulators;
+<code>s1</code> and <code>s2</code> correspond to the variance parameters of the first and
+second boundary hitting time;
+<code>rho</code> corresponds to the correlation of boundary hitting times.
+Note that <code>s_v1</code>,<code>s_v2</code>,<code>rho_v</code>,<code>s_d1</code>,<code>s_d2</code>, and <code>rho_d</code> are not used in this
+context, although the accumulation rate-related parameters can be used to replace
+the above-mentioned variance parameters.
+Additionally, the confidence thresholds should be given by names with
+<code>thetaUpper1</code>, <code>thetaUpper2</code>,..., <code>thetaLower1</code>,... or,
 for symmetric thresholds only by <code>theta1</code>, <code>theta2</code>,.... (see Details for the correspondence to the data)</p></dd>
 
 
@@ -161,14 +171,12 @@ boundary first.</p>
 <span class="r-in"><span><span class="co"># 2. Define some parameter set in a data.frame</span></span></span>
 <span class="r-in"><span><span class="va">paramDf</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>v1<span class="op">=</span><span class="fl">0.5</span>, v2<span class="op">=</span><span class="fl">1.0</span>, t0<span class="op">=</span><span class="fl">0.1</span>, st0<span class="op">=</span><span class="fl">0</span>,</span></span>
 <span class="r-in"><span>                      mu_d1<span class="op">=</span><span class="fl">1</span>, mu_d2<span class="op">=</span><span class="fl">1</span>,</span></span>
-<span class="r-in"><span>                      s_v1<span class="op">=</span><span class="fl">0.5</span>, s_v2<span class="op">=</span><span class="fl">0.5</span>,</span></span>
-<span class="r-in"><span>                      s_d1<span class="op">=</span><span class="fl">0.3</span>, s_d2<span class="op">=</span><span class="fl">0.3</span>,</span></span>
-<span class="r-in"><span>                      rho_v<span class="op">=</span><span class="fl">0.2</span>, rho_d<span class="op">=</span><span class="fl">0.1</span>,</span></span>
-<span class="r-in"><span>                      theta1<span class="op">=</span><span class="fl">2.5</span><span class="op">)</span></span></span>
+<span class="r-in"><span>                      s1<span class="op">=</span><span class="fl">0.5</span>, s2<span class="op">=</span><span class="fl">0.5</span>,</span></span>
+<span class="r-in"><span>                      rho<span class="op">=</span><span class="fl">0.2</span>, theta1<span class="op">=</span><span class="fl">2.5</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># 3. Compute log likelihood for parameter and data</span></span></span>
 <span class="r-in"><span><span class="fu">LogLikMTLNR</span><span class="op">(</span><span class="va">data</span>, <span class="va">paramDf</span>, condition<span class="op">=</span><span class="st">"discriminability"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -856.2309</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -1083.7</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

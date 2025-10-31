@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">dynConfiR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,6 +38,12 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.1.1" id="dynconfir-111-october-2025">dynConfiR 1.1.1 (October 2025)<a class="anchor" aria-label="anchor" href="#dynconfir-111-october-2025"></a></h2>
+<ul><li>Re-parametrized the MTLNR for fitting (see Package paper)</li>
+<li>Minor stability improvement in the fitting process, when try returns an error for all models</li>
+<li>Release version for the updated pre-print (31. October 2025)</li>
+</ul></div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.1.0" id="dynconfir-110-september-2025">dynConfiR 1.1.0 (September 2025)<a class="anchor" aria-label="anchor" href="#dynconfir-110-september-2025"></a></h2><p class="text-muted">CRAN release: 2025-09-19</p>
 <ul><li>bug fix in the example to throw no error with ggplot 4.0.0</li>
 <li>New model implemented: the multiple-threshold correlated log-normal race model (MTLNR) (see Reynolds et al.; 2020; JMP)</li>
@@ -51,7 +57,7 @@
 <li>Added functions for quantitative model comparison (see <code>?group_BMS?</code>)</li>
 <li>the functions dWEV and rWEV will be kept for now but maybe removed in future releases of the package, they will produce a deprecation warning now</li>
 <li>Minor changes:
-<ul><li>Bug fix in fitting Race Models with time-dependend confidence variable. Before, the weight ‘wrt’ was bound from above by the weight ‘wx’ because of a bug.</li>
+<ul><li>Bug fix in fitting Race Models with time-depended confidence variable. Before, the weight ‘wrt’ was bound from above by the weight ‘wx’ because of a bug.</li>
 <li>Added a UserInterrupt() call in all longer-running C-functions.</li>
 </ul></li>
 </ul></div>

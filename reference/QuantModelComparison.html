@@ -25,7 +25,7 @@ approximate the model evidence."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">dynConfiR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -142,7 +142,8 @@ that may be used for other analyses:
 Bayesian omnibus risks: <code>bor</code> (random effects model against the
 null model), <code>bor_fixed</code> (fixed effects model against the
 null model), and <code>bor_re_fixed</code> (random effects model
-against the fixed effects model), and
+against the fixed effects model) (higher values indicating a
+simpler model), and
 estimations of the Free Energy of the Dirichlet
 distribution <code>FE</code> (random effects model), <code>FE0</code> (null model),
 and <code>FEfixed</code> (fixed effects model)</p></li>
@@ -251,14 +252,16 @@ Bayesian model selection for group studies - revisited. <em>NeuroImage</em>,
 <span class="r-in"><span><span class="co"># Conduct group-level Bayesian model selection based on BIC</span></span></span>
 <span class="r-in"><span><span class="fu">group_BMS_fits</span><span class="op">(</span><span class="va">fits</span>, measure<span class="op">=</span><span class="st">"BIC"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $model_weights</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             alpha         r     ep    pep fx_prob</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2DSD     1.998461 0.1816782 0.0250 0.0250       0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> PCRMt    1.500000 0.1363636 0.0142 0.0142       1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> dynaViTE 7.501539 0.6819581 0.9608 0.9608       0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            alpha         r     ep       pep fx_prob</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2DSD     1.99879 0.1817082 0.0476 0.2005117       0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> PCRMt    3.00000 0.2727273 0.1377 0.2423942       1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> dynaViTE 6.00121 0.5455646 0.8147 0.5570941       0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $summary_stats</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>          bor           FE          FE0      FEfixed    bor_fixed bor_re_fixed </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        0.000     1715.178   -13010.289   -13433.099        1.000        0.000 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            bor             FE            FE0        FEfixed      bor_fixed </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   5.351552e-01  -1.301043e+04  -1.301029e+04  -1.343310e+04   1.000000e+00 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   bor_re_fixed </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2.735901e-184 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
@@ -271,14 +274,16 @@ Bayesian model selection for group studies - revisited. <em>NeuroImage</em>,
 <span class="r-in"><span><span class="co"># conduct group BMS:</span></span></span>
 <span class="r-in"><span><span class="fu">group_BMS</span><span class="op">(</span><span class="va">mlp</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $model_weights</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             alpha         r     ep    pep fx_prob</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> dynaViTE 7.501539 0.6819581 0.9686 0.9686       0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2DSD     1.998461 0.1816782 0.0237 0.0237       0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> PCRMt    1.500000 0.1363636 0.0077 0.0077       1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            alpha         r     ep       pep fx_prob</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> dynaViTE 6.00121 0.5455646 0.8204 0.5597438       0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2DSD     1.99879 0.1817082 0.0486 0.2009765       0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> PCRMt    3.00000 0.2727273 0.1310 0.2392797       1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $summary_stats</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>          bor           FE          FE0      FEfixed    bor_fixed bor_re_fixed </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        0.000     1715.178   -13010.289   -13433.099        1.000        0.000 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            bor             FE            FE0        FEfixed      bor_fixed </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   5.351552e-01  -1.301043e+04  -1.301029e+04  -1.343310e+04   1.000000e+00 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   bor_re_fixed </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2.735901e-184 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 </code></pre></div>
     </div>

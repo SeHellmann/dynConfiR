@@ -17,7 +17,7 @@ and parameters."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">dynConfiR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -71,12 +71,22 @@ and parameters.</p>
 
 
 <dl><dt id="arg-paramdf">paramDf<a class="anchor" aria-label="anchor" href="#arg-paramdf"></a></dt>
-<dd><p>a list or data frame with one row. Column names should match the names of
-<a href="MTLNR.html">dMTLNR</a> parameter names (only <code>mu_v1</code> and <code>mu_v2</code> are not used in this context but
-replaced by the parameter <code>v</code>). For different stimulus quality/mean
-drift rates, names should be <code>v1</code>, <code>v2</code>, <code>v3</code>,....
-Additionally, the confidence
-thresholds should be given by names with <code>thetaUpper1</code>, <code>thetaUpper2</code>,..., <code>thetaLower1</code>,... or,
+<dd><p>a list or data frame with one row. Column names should
+match the following names (see <a href="MTLNR.html">dMTLNR</a>):
+For different stimulus quality/mean
+drift rates, names should be <code>v1</code>, <code>v2</code>, <code>v3</code>,.... (corresponding to the mean
+parameter for the accumulation rate for the stimulus-corresponding accumulator,
+therefore <code>mu_v1</code> and <code>mu_v2</code> are not used in this context but
+replaced by the parameter <code>v</code>); <code>mu_d1</code> and <code>mu_d2</code> correspond to the mean
+parameters for boundary distance of the two accumulators;
+<code>s1</code> and <code>s2</code> correspond to the variance parameters of the first and
+second boundary hitting time;
+<code>rho</code> corresponds to the correlation of boundary hitting times.
+Note that <code>s_v1</code>,<code>s_v2</code>,<code>rho_v</code>,<code>s_d1</code>,<code>s_d2</code>, and <code>rho_d</code> are not used in this
+context, although the accumulation rate-related parameters can be used to replace
+the above-mentioned variance parameters.
+Additionally, the confidence thresholds should be given by names with
+<code>thetaUpper1</code>, <code>thetaUpper2</code>,..., <code>thetaLower1</code>,... or,
 for symmetric thresholds only by <code>theta1</code>, <code>theta2</code>,.... (see Details for the correspondence to the data)</p></dd>
 
 
@@ -168,21 +178,19 @@ conditions.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># 1. Define some parameter set in a data.frame</span></span></span>
 <span class="r-in"><span><span class="va">paramDf</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>v1<span class="op">=</span><span class="fl">0.5</span>, v2<span class="op">=</span><span class="fl">1.0</span>, t0<span class="op">=</span><span class="fl">0.1</span>, st0<span class="op">=</span><span class="fl">0</span>,</span></span>
 <span class="r-in"><span>                      mu_d1<span class="op">=</span><span class="fl">1</span>, mu_d2<span class="op">=</span><span class="fl">1</span>,</span></span>
-<span class="r-in"><span>                      s_v1<span class="op">=</span><span class="fl">0.5</span>, s_v2<span class="op">=</span><span class="fl">0.5</span>,</span></span>
-<span class="r-in"><span>                      s_d1<span class="op">=</span><span class="fl">0.3</span>, s_d2<span class="op">=</span><span class="fl">0.3</span>,</span></span>
-<span class="r-in"><span>                      rho_v<span class="op">=</span><span class="fl">0.2</span>, rho_d<span class="op">=</span><span class="fl">0.1</span>,</span></span>
+<span class="r-in"><span>                      s1<span class="op">=</span><span class="fl">0.5</span>, s2<span class="op">=</span><span class="fl">0.5</span>, rho<span class="op">=</span><span class="fl">0.2</span>,</span></span>
 <span class="r-in"><span>                      theta1<span class="op">=</span><span class="fl">0.8</span>, theta2<span class="op">=</span><span class="fl">1.5</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># 2. Predict discrete Choice x Confidence distribution:</span></span></span>
 <span class="r-in"><span><span class="va">preds_Conf</span> <span class="op">&lt;-</span> <span class="fu">predictMTLNR_Conf</span><span class="op">(</span><span class="va">paramDf</span>, maxrt<span class="op">=</span><span class="fl">7</span>, subdivisions<span class="op">=</span><span class="fl">50</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">preds_Conf</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   condition stimulus response correct rating          p info          err</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1         1        1        1       1      1 0.40261536   OK 8.139278e-07</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2         2        1        1       1      1 0.30366063   OK 2.334342e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3         1        2        1       0      1 0.21062110   OK 8.047182e-08</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4         2        2        1       0      1 0.08291896   OK 3.123715e-06</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5         1        1        2       0      1 0.21062110   OK 8.047182e-08</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6         2        1        2       0      1 0.08291896   OK 3.123715e-06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1         1        1        1       1      1 0.46765851   OK 7.238266e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2         2        1        1       1      1 0.31898699   OK 2.250406e-06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3         1        2        1       0      1 0.19460644   OK 1.672521e-07</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4         2        2        1       0      1 0.05470778   OK 1.205534e-06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5         1        1        2       0      1 0.19460644   OK 1.672521e-07</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6         2        1        2       0      1 0.05470778   OK 1.205534e-06</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># 3. Compute RT density</span></span></span>
 <span class="r-in"><span><span class="va">preds_RT</span> <span class="op">&lt;-</span> <span class="fu">predictMTLNR_RT</span><span class="op">(</span><span class="va">paramDf</span>, maxrt<span class="op">=</span><span class="fl">7</span>, subdivisions<span class="op">=</span><span class="fl">50</span><span class="op">)</span></span></span>
@@ -192,18 +200,18 @@ conditions.</p>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">preds_RT</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   condition stimulus response correct rating        rt         dens</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1         1        1        1       1      1 0.1000000 0.000000e+00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2         1        1        1       1      1 0.2408163 8.369956e-07</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3         1        1        1       1      1 0.3816327 5.247208e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4         1        1        1       1      1 0.5224490 7.734335e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5         1        1        1       1      1 0.6632653 3.234912e-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6         1        1        1       1      1 0.8040816 7.480043e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2         1        1        1       1      1 0.2408163 1.033943e-08</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3         1        1        1       1      1 0.3816327 6.292158e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4         1        1        1       1      1 0.5224490 2.452989e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5         1        1        1       1      1 0.6632653 1.749839e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6         1        1        1       1      1 0.8040816 5.609321e-02</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     densscaled</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1 0.000000e+00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 2.078896e-06</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 1.303281e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4 1.921023e-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5 8.034747e-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6 1.857863e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 2.210893e-08</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 1.345460e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 5.245256e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 3.741702e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6 1.199448e-01</span>
 <span class="r-in"><span><span class="co"># \donttest{</span></span></span>
 <span class="r-in"><span>  <span class="co"># produces a warning, if scaled=TRUE and DistConf missing</span></span></span>
 <span class="r-in"><span>  <span class="va">preds_RT</span> <span class="op">&lt;-</span> <span class="fu">predictMTLNR_RT</span><span class="op">(</span><span class="va">paramDf</span>, maxrt<span class="op">=</span><span class="fl">7</span>, subdivisions<span class="op">=</span><span class="fl">50</span>,</span></span>
@@ -244,52 +252,48 @@ conditions.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span>         1        1        1       1 unsure   0.1 1.09 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span>         1        1        1       1 unsure   0.3 1.51 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span>         1        1        1       1 unsure   0.5 1.79 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span>         1        1        1       1 unsure   0.7 2.35 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span>         1        1        1       1 unsure   0.9 3.20 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span>         1        1        1       1 unsure   0.7 2.21 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span>         1        1        1       1 unsure   0.9 2.92 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span>         1        1        1       1 medium   0.1 0.804</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span>         1        1        1       1 medium   0.3 1.09 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span>         1        1        1       1 medium   0.5 1.37 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span>         1        1        1       1 medium   0.7 1.65 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span>         1        1        1       1 medium   0.9 2.35 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span>         1        1        1       1 medium   0.9 2.21 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 110 more rows</span></span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Example with asymmetric confidence thresholds</span></span></span>
 <span class="r-in"><span><span class="va">paramDf_asym</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>v1<span class="op">=</span><span class="fl">0.5</span>, v2<span class="op">=</span><span class="fl">1.0</span>, t0<span class="op">=</span><span class="fl">0.1</span>, st0<span class="op">=</span><span class="fl">0</span>,</span></span>
 <span class="r-in"><span>                          mu_d1<span class="op">=</span><span class="fl">1</span>, mu_d2<span class="op">=</span><span class="fl">1</span>,</span></span>
-<span class="r-in"><span>                          s_v1<span class="op">=</span><span class="fl">0.5</span>, s_v2<span class="op">=</span><span class="fl">0.5</span>,</span></span>
-<span class="r-in"><span>                          s_d1<span class="op">=</span><span class="fl">0.3</span>, s_d2<span class="op">=</span><span class="fl">0.3</span>,</span></span>
-<span class="r-in"><span>                          rho_v<span class="op">=</span><span class="fl">0.2</span>, rho_d<span class="op">=</span><span class="fl">0.1</span>,</span></span>
+<span class="r-in"><span>                          s1<span class="op">=</span><span class="fl">0.5</span>, s2<span class="op">=</span><span class="fl">0.5</span>, rho<span class="op">=</span><span class="fl">0.2</span>,</span></span>
 <span class="r-in"><span>                          thetaLower1<span class="op">=</span><span class="fl">0.5</span>, thetaLower2<span class="op">=</span><span class="fl">1.2</span>,</span></span>
 <span class="r-in"><span>                          thetaUpper1<span class="op">=</span><span class="fl">0.7</span>, thetaUpper2<span class="op">=</span><span class="fl">1.8</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">preds_Conf_asym</span> <span class="op">&lt;-</span> <span class="fu">predictMTLNR_Conf</span><span class="op">(</span><span class="va">paramDf_asym</span>, maxrt<span class="op">=</span><span class="fl">7</span>, subdivisions<span class="op">=</span><span class="fl">50</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">preds_Conf_asym</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   condition stimulus response correct rating          p info          err</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1         1        1        1       1      1 0.24718299   OK 1.669805e-07</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2         2        1        1       1      1 0.16124674   OK 6.257019e-06</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3         1        2        1       0      1 0.16097535   OK 1.241295e-07</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4         2        2        1       0      1 0.06839111   OK 1.582488e-06</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5         1        1        2       0      1 0.19735343   OK 4.172561e-09</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6         2        1        2       0      1 0.07941819   OK 2.778639e-06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1         1        1        1       1      1 0.28529543   OK 4.470529e-08</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2         2        1        1       1      1 0.15767025   OK 6.721306e-06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3         1        2        1       0      1 0.15760155   OK 5.377537e-08</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4         2        2        1       0      1 0.04806803   OK 1.215319e-06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5         1        1        2       0      1 0.18563319   OK 4.151935e-08</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6         2        1        2       0      1 0.05332629   OK 1.364018e-06</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Example with multiple conditions</span></span></span>
 <span class="r-in"><span><span class="va">paramDf_multi</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>v1<span class="op">=</span><span class="fl">0.3</span>, v2<span class="op">=</span><span class="fl">0.6</span>, v3<span class="op">=</span><span class="fl">1.2</span>, t0<span class="op">=</span><span class="fl">0.1</span>, st0<span class="op">=</span><span class="fl">0</span>,</span></span>
 <span class="r-in"><span>                           mu_d1<span class="op">=</span><span class="fl">1</span>, mu_d2<span class="op">=</span><span class="fl">1</span>,</span></span>
-<span class="r-in"><span>                           s_v1<span class="op">=</span><span class="fl">0.5</span>, s_v2<span class="op">=</span><span class="fl">0.5</span>,</span></span>
-<span class="r-in"><span>                           s_d1<span class="op">=</span><span class="fl">0.3</span>, s_d2<span class="op">=</span><span class="fl">0.3</span>,</span></span>
-<span class="r-in"><span>                           rho_v<span class="op">=</span><span class="fl">0.2</span>, rho_d<span class="op">=</span><span class="fl">0.1</span>,</span></span>
+<span class="r-in"><span>                           s1<span class="op">=</span><span class="fl">0.5</span>, s2<span class="op">=</span><span class="fl">0.5</span>, rho<span class="op">=</span><span class="fl">0.2</span>,</span></span>
 <span class="r-in"><span>                           theta1<span class="op">=</span><span class="fl">0.8</span>, theta2<span class="op">=</span><span class="fl">1.5</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">preds_Conf_multi</span> <span class="op">&lt;-</span> <span class="fu">predictMTLNR_Conf</span><span class="op">(</span><span class="va">paramDf_multi</span>, maxrt<span class="op">=</span><span class="fl">7</span>, subdivisions<span class="op">=</span><span class="fl">50</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">preds_Conf_multi</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   condition stimulus response correct rating          p info          err</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1         1        1        1       1      1 0.40207742   OK 1.096812e-07</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2         2        1        1       1      1 0.39311988   OK 2.923146e-06</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3         3        1        1       1      1 0.24208572   OK 8.452775e-06</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4         1        2        1       0      1 0.27256417   OK 1.021176e-07</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5         2        2        1       0      1 0.18063605   OK 3.876010e-07</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6         3        2        1       0      1 0.05089761   OK 3.140383e-06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   condition stimulus response correct rating         p info          err</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1         1        1        1       1      1 0.4674598   OK 5.029158e-09</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2         2        1        1       1      1 0.4526283   OK 5.287527e-06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3         3        1        1       1      1 0.2346539   OK 5.435887e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4         1        2        1       0      1 0.2763932   OK 2.497661e-08</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5         2        2        1       0      1 0.1579229   OK 7.914209e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6         3        2        1       0      1 0.0281067   OK 4.146674e-07</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
