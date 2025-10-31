@@ -1,3 +1,8 @@
+# dynConfiR 1.1.1 (October 2025)
+- Re-parametrized the MTLNR for fitting (see Package paper)
+- Minor stability improvement in the fitting process, when try returns an error for all models
+- Release version for the updated pre-print (31. October 2025)
+
 # dynConfiR 1.1.0 (September 2025)
 - bug fix in the example to throw no error with ggplot 4.0.0
 - New model implemented: the multiple-threshold correlated log-normal race model (MTLNR) (see Reynolds et al.; 2020; JMP)
