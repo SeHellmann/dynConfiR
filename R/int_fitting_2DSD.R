@@ -219,7 +219,7 @@ fitting2DSD <- function(df, nConds, nRatings, fixed, sym_thetas,
       for (l in 1:opts$nRestarts){
         start <- start + rnorm(length(start), sd=pmax(0.001, abs(t(t(start))/20)))
         if (optim_method == "Nelder-Mead") {
-          try(m <- optim(par = start,
+          m <- try(optim(par = start,
                          fn = neglikelihood_2DSD_free,
                          data=df, restr_tau = restr_tau, nConds=nConds, nRatings=nRatings,
                          fixed = fixed,  mint0 =mint0,
@@ -228,7 +228,7 @@ fitting2DSD <- function(df, nConds, nRatings, fixed, sym_thetas,
                          control = list(maxit = opts$maxit, reltol = opts$reltol)))
         } else if (optim_method =="bobyqa") {
           start <- pmax(pmin(start, upper_optbound-1e-6), lower_optbound+1e-6)
-          try(m <- bobyqa(par = start,
+          m <- try(bobyqa(par = start,
                           fn = neglikelihood_2DSD_bounded,
                           lower = lower_optbound, upper = upper_optbound,
                           data=df, restr_tau = restr_tau, nConds=nConds, nRatings=nRatings,
@@ -242,12 +242,13 @@ fitting2DSD <- function(df, nConds, nRatings, fixed, sym_thetas,
           ##                   --> so we use min(0.2*restr_tau, 0.2, 0.2*max(abs(par))).
           ##                   Default would be: min(0.95, 0.2*max(abs(par))), respectively 0.2*max(upper_optbound-lower_optbound)
           ## rhoend: use default of 1e-6*rhobeg
-          if (exists("m") && !inherits(m, "try-error")){
+          if (exists("m") && !inherits(m, "try-error") && !is.na(m$fval)){
+
             m$value <- m$fval
           }
         } else if (optim_method=="L-BFGS-B") {  ### ToDo: use dfoptim or pracma::grad as gradient!
           start <- pmax(pmin(start, upper_optbound-1e-6), lower_optbound+1e-6)
-          try(m <- optim(par = start,
+          m <- try(optim(par = start,
                          fn = neglikelihood_2DSD_bounded,
                          lower = lower_optbound, upper = upper_optbound,
                          data=df,  restr_tau = restr_tau, nConds=nConds, nRatings=nRatings,
@@ -261,7 +262,7 @@ fitting2DSD <- function(df, nConds, nRatings, fixed, sym_thetas,
         if (logging==TRUE) {
           logger::log_info(paste("Finished attempt No.", i, " restart no. ", l))
         }
-        if (!exists("m") || inherits(m, "try-error")){
+        if (!exists("m") || inherits(m, "try-error") || is.na(m$fval)){
           if (logging==TRUE) {
             logger::log_error(paste("No fit obtained at attempt No.", i))
             logger::log_error(paste("Used parameter set", paste(start, sep="", collapse=" "), sep=" ", collapse = ""))
@@ -303,7 +304,7 @@ fitting2DSD <- function(df, nConds, nRatings, fixed, sym_thetas,
         start <- start + rnorm(length(start), sd=pmax(0.001, abs(t(t(start))/20)))
         names(start) <- parnames
         if (optim_method == "Nelder-Mead") {
-          try(m <- optim(par = start,
+          m <- try(optim(par = start,
                          fn = neglikelihood_2DSD_free,
                          data=df,  restr_tau = restr_tau, nConds=nConds, nRatings=nRatings,
                          fixed = fixed,  mint0 =mint0,
@@ -312,7 +313,7 @@ fitting2DSD <- function(df, nConds, nRatings, fixed, sym_thetas,
                          control = list(maxit = opts$maxit, reltol = opts$reltol)))
         } else if (optim_method =="bobyqa") {
           start <- pmax(pmin(start, upper_optbound-1e-6), lower_optbound+1e-6)
-          try(m <- bobyqa(par = start,
+          m <- try(bobyqa(par = start,
                           fn = neglikelihood_2DSD_bounded,
                           lower = lower_optbound, upper = upper_optbound,
                           data=df,  restr_tau = restr_tau, nConds=nConds, nRatings=nRatings,
@@ -327,12 +328,12 @@ fitting2DSD <- function(df, nConds, nRatings, fixed, sym_thetas,
           ##                   --> so we use min(0.2*restr_tau, 0.2, 0.2*max(abs(par))).
           ##                   Default would be: min(0.95, 0.2*max(abs(par))), respectively 0.2*max(upper_optbound-lower_optbound)
           ## rhoend: use default of 1e-6*rhobeg
-          if (exists("m") && !inherits(m, "try-error")){
+          if (exists("m") && !inherits(m, "try-error") && !is.na(m$fval)){
             m$value <- m$fval
           }
         } else if (optim_method=="L-BFGS-B") {  ### ToDo: use dfoptim or pracma::grad as gradient!
           start <- pmax(pmin(start, upper_optbound-1e-6), lower_optbound+1e-6)
-          try(m <- optim(par = start,
+          m <- try(optim(par = start,
                          fn = neglikelihood_2DSD_bounded,
                          lower = lower_optbound, upper = upper_optbound,
                          data=df,  restr_tau = restr_tau, nConds=nConds, nRatings=nRatings,
@@ -343,7 +344,7 @@ fitting2DSD <- function(df, nConds, nRatings, fixed, sym_thetas,
         } else {
           stop(paste("Not implemented or unknown method: ", optim_method, ". Use 'bobyqa', Nelder-Mead' or 'L-BFGS-B' instead.", sep=""))
         }
-        if (!exists("m") || inherits(m, "try-error")){
+        if (!exists("m") || inherits(m, "try-error") || is.na(m$fval)){
           break
         }
         if (exists("m") && is.list(m)){

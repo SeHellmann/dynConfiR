@@ -173,7 +173,7 @@ fittingDDConf<- function(df, nConds, nRatings, fixed, sym_thetas,
       start <- c(t(inits[i,]))
       names(start) <- names(inits)
       for (l in 1:opts$nRestarts){
-        try(m <- bobyqa(par = start,
+        m <- try(bobyqa(par = start,
                         fn = neglikelihood_DDConf_bounded,
                         lower = lower_optbound, upper = upper_optbound,
                         data=df, nConds=nConds, nRatings=nRatings,
@@ -232,7 +232,7 @@ fittingDDConf<- function(df, nConds, nRatings, fixed, sym_thetas,
       start <- c(t(start))
       names(start) <- parnames
       for (l in 1:opts$nRestarts){
-        try(m <- bobyqa(par = start,
+        m <- try(bobyqa(par = start,
                         fn = neglikelihood_DDConf_bounded,
                         lower = lower_optbound, upper = upper_optbound,
                         data=df,  nConds=nConds, nRatings=nRatings,

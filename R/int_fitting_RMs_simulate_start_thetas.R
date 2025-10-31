@@ -239,7 +239,7 @@ fittingRMs <- function(df, model, nConds, nRatings, fixed, sym_thetas, time_scal
       for (l in 1:opts$nRestarts){
         start <- start + rnorm(length(start), sd=pmax(0.001, abs(t(t(start))/20)))
         if (optim_method == "Nelder-Mead") {
-          try(m <- optim(par = start,
+          m <- try(optim(par = start,
                          fn = neglikelihood_RMs_free,
                          data=df, model=model, time_scaled=time_scaled, nConds=nConds, nRatings=nRatings,
                          fixed=fixed, mint0=mint0, fitted_weights=fitted_weights,
@@ -248,7 +248,7 @@ fittingRMs <- function(df, model, nConds, nRatings, fixed, sym_thetas, time_scal
                          control = list(maxit = opts$maxit, reltol = opts$reltol)))
         } else if (optim_method =="bobyqa") {
           start <- pmax(pmin(start, upper_optbound-1e-6), lower_optbound+1e-6)
-          try(m <- bobyqa(par = start,
+          m <- try(bobyqa(par = start,
                           fn = neglikelihood_RMs_bounded,
                           lower = lower_optbound, upper = upper_optbound,
                           data=df, model=model, time_scaled=time_scaled, nConds=nConds, nRatings=nRatings,
@@ -265,7 +265,7 @@ fittingRMs <- function(df, model, nConds, nRatings, fixed, sym_thetas, time_scal
           }
         } else if (optim_method=="L-BFGS-B") {  ### ToDo: use dfoptim or pracma::grad as gradient!
           start <- pmax(pmin(start, upper_optbound-1e-6), lower_optbound+1e-6)
-          try(m <- optim(par = start,
+          m <- try(optim(par = start,
                          fn = neglikelihood_RMs_bounded,
                          lower = lower_optbound, upper = upper_optbound,
                          data=df, model=model,  time_scaled=time_scaled, nConds=nConds, nRatings=nRatings,
@@ -321,7 +321,7 @@ fittingRMs <- function(df, model, nConds, nRatings, fixed, sym_thetas, time_scal
       for (l in 1:opts$nRestarts){
         start <- start + rnorm(length(start), sd=pmax(0.001, abs(t(t(start))/20)))
         if (optim_method == "Nelder-Mead") {
-          try(m <- optim(par = start,
+          m <- try(optim(par = start,
                          fn = neglikelihood_RMs_free,
                          data=df, model=model,  time_scaled=time_scaled, nConds=nConds, nRatings=nRatings,
                          fixed=fixed, mint0=mint0, fitted_weights=fitted_weights,
@@ -330,7 +330,7 @@ fittingRMs <- function(df, model, nConds, nRatings, fixed, sym_thetas, time_scal
                          control = list(maxit = opts$maxit, reltol = opts$reltol)))
         } else if (optim_method =="bobyqa") {
           start <- pmax(pmin(start, upper_optbound-1e-6), lower_optbound+1e-6)
-          try(m <- bobyqa(par = start,
+          m <- try(bobyqa(par = start,
                           fn = neglikelihood_RMs_bounded,
                           lower = lower_optbound, upper = upper_optbound,
                           data=df, model=model,  time_scaled=time_scaled, nConds=nConds, nRatings=nRatings,
@@ -348,7 +348,7 @@ fittingRMs <- function(df, model, nConds, nRatings, fixed, sym_thetas, time_scal
           }
         } else if (optim_method=="L-BFGS-B") {  ### ToDo: use dfoptim or pracma::grad as gradient!
           start <- pmax(pmin(start, upper_optbound-1e-6), lower_optbound+1e-6)
-          try(m <- optim(par = start,
+          m <- try(optim(par = start,
                          fn = neglikelihood_RMs_bounded,
                          lower = lower_optbound, upper = upper_optbound,
                          data=df, model=model,  time_scaled=time_scaled, nConds=nConds, nRatings=nRatings,

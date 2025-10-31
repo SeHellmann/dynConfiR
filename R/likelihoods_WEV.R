@@ -219,7 +219,7 @@ LogLikWEV <- function(data, paramDf, model="dynaViTE", simult_conf = FALSE,
   # if (any(probs<=0)) {
   #   return(-1e12)
   # }
-  probs[probs==0] <- .Machine$double.xmin
+  probs[probs==0 | is.na(probs)] <- .Machine$double.xmin
   if ("n" %in% names(data)) {
     logl <- sum(log(probs)*data$n)
   } else {

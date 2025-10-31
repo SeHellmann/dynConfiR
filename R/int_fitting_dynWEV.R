@@ -226,7 +226,7 @@ fittingdynWEV <- function(df, nConds, nRatings, fixed, sym_thetas,
       for (l in 1:opts$nRestarts){
         start <- start + rnorm(length(start), sd=pmax(0.001, abs(t(t(start))/20)))
         if (optim_method == "Nelder-Mead") {
-          try(m <- optim(par = start,
+          m <- try(optim(par = start,
                          fn = neglikelihood_dynWEV_free,
                          data=df, restr_tau = restr_tau, nConds=nConds, nRatings=nRatings,
                          fixed=fixed, mint0=mint0, simult_conf=simult_conf,
@@ -235,7 +235,7 @@ fittingdynWEV <- function(df, nConds, nRatings, fixed, sym_thetas,
                          control = list(maxit = opts$maxit, reltol = opts$reltol)))
         } else if (optim_method =="bobyqa") {
           start <- pmax(pmin(start, upper_optbound-1e-6), lower_optbound+1e-6)
-          try(m <- bobyqa(par = start,
+          m <- try(bobyqa(par = start,
                           fn = neglikelihood_dynWEV_bounded,
                           lower = lower_optbound, upper = upper_optbound,
                           data=df, restr_tau = restr_tau, nConds=nConds, nRatings=nRatings,
@@ -254,7 +254,7 @@ fittingdynWEV <- function(df, nConds, nRatings, fixed, sym_thetas,
           }
         } else if (optim_method=="L-BFGS-B") {  ### ToDo: use dfoptim or pracma::grad as gradient!
           start <- pmax(pmin(start, upper_optbound-1e-6), lower_optbound+1e-6)
-          try(m <- optim(par = start,
+          m <- try(optim(par = start,
                          fn = neglikelihood_dynWEV_bounded,
                          lower = lower_optbound, upper = upper_optbound,
                          data=df,  restr_tau = restr_tau, nConds=nConds, nRatings=nRatings,
@@ -268,7 +268,7 @@ fittingdynWEV <- function(df, nConds, nRatings, fixed, sym_thetas,
         if (logging==TRUE) {
           logger::log_info(paste("Finished attempt No.", i, " restart no. ", l))
         }
-        if (!exists("m") || inherits(m, "try-error")){
+        if (!exists("m") || inherits(m, "try-error") || is.na(m$fval)){
           if (logging==TRUE) {
             logger::log_error(paste("No fit obtained at attempt No.", i))
             logger::log_error(paste("Used parameter set", paste(start, sep="", collapse=" "), sep=" ", collapse = ""))
@@ -338,7 +338,7 @@ fittingdynWEV <- function(df, nConds, nRatings, fixed, sym_thetas,
           }
         } else if (optim_method=="L-BFGS-B") {  ### ToDo: use dfoptim or pracma::grad as gradient!
           start <- pmax(pmin(start, upper_optbound-1e-6), lower_optbound+1e-6)
-          try(m <- optim(par = start,
+          m <- try(optim(par = start,
                          fn = neglikelihood_dynWEV_bounded,
                          lower = lower_optbound, upper = upper_optbound,
                          data=df,  restr_tau = restr_tau, nConds=nConds, nRatings=nRatings,
