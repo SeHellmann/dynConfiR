@@ -15,7 +15,7 @@
 - Added functions for quantitative model comparison (see `?group_BMS?`)
 - the functions dWEV and rWEV will be kept for now but maybe removed in future releases of the package, they will produce a deprecation warning now
 - Minor changes: 
-  - Bug fix in fitting Race Models with time-dependend confidence variable. Before, the weight 'wrt' was bound from above by the weight 'wx' because of a bug. 
+  - Bug fix in fitting Race Models with time-depended confidence variable. Before, the weight 'wrt' was bound from above by the weight 'wx' because of a bug. 
   - Added a UserInterrupt() call in all longer-running C-functions. 
 
 # dynConfiR 0.0.4 (January 2024)

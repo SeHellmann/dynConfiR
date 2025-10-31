@@ -47,7 +47,7 @@ head(ConfidenceOrientation)
 head(data)
 ```
 There are several steps of data preparation, which are either necessary or recommended. 
-First, the models implemented in `dynConfiR` all require confidence to be measured on a discrete scale, so we discretize the contionuous confidence rating. We do this using equidistant breaks. The functions would be fine with any integer or factor column, so we simply use the cut function.  
+First, the models implemented in `dynConfiR` all require confidence to be measured on a discrete scale, so we discretize the continuous confidence rating. We do this using equidistant breaks. The functions would be fine with any integer or factor column, so we simply use the cut function.  
 
 ```{r, echo=TRUE}
 data <- data %>%

@@ -120,7 +120,7 @@
 #' The functions dWEV and rWEV were renamed to ddynaViTE and rdynaViTE,
 #' respectively in version 0.1.0 of the package.
 #' They are still here for reasons of backwards compatibility. The functions
-#' just calls their counterpar ddynaViTE and rdynaViTE (and produce a deprecation warning).
+#' just calls their counterpart ddynaViTE and rdynaViTE (and produce a deprecation warning).
 #'
 #' The dynamical visibility, time, and evidence (dynaViTE) model
 #' and the weighted evidence and visibility model (dynWEV) are extensions of the 2DSD model
